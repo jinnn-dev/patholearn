@@ -23,14 +23,16 @@
         <skeleton-card
           v-for="(slide, index) of slides"
           :key="slide.name"
-          @click.prevent="SLIDE_STATUS[slide.status] !== SLIDE_STATUS.R ? $router.push('/slides/' + slide.file_id) : ''"
+          @click.prevent="
+            SLIDE_STATUS[slide.status] !== SLIDE_STATUS.R ? $router.push('/slides/' + slide.slide_id) : ''
+          "
           class="cursor-pointer my-4"
           inputClasses="px-5 py-0"
         >
           <div class="flex justify-between items-center">
             <div class="h-42 w-42 flex items-center">
               <lazy-image
-                :image-url="`http://localhost:9000/pyramids/${slide.file_id}/thumbnail.jpeg`"
+                :image-url="`http://localhost:9000/pyramids/${slide.slide_id}/thumbnail.jpeg`"
                 alt="Thumbnail des Slides"
                 class="max-h-full rounded-lg items-center"
               ></lazy-image>
@@ -123,7 +125,7 @@ export default defineComponent({
     };
 
     const deleteSlide = (slide: Slide, index: number) => {
-      SlideService.deleteSlide(slide.file_id).then(
+      SlideService.deleteSlide(slide.slide_id).then(
         (res) => {
           slides.value.splice(index, 1);
         },

@@ -1,14 +1,15 @@
+
 import os
 import uuid
 
 import aiofiles
-from fastapi import FastAPI, UploadFile, BackgroundTasks
+from fastapi import BackgroundTasks, FastAPI, HTTPException, UploadFile
 from fastapi.params import File, Form
 from starlette.middleware.cors import CORSMiddleware
 
-# from app.db.database import create_database, create_table, add_slide, all_slides
-from app.db.database import slide_db, SlideStatus, CreateSlide
+from app.db.database import CreateSlide, SlideStatus, slide_db
 from app.persistance.custom_minio_client import MinioClient
+from app.utils.util import convert_binary_to_base64, is_byte_data
 from app.worker import convert_slide
 
 app = FastAPI()
@@ -40,8 +41,6 @@ async def write_file(folder_name: str, file_name: str, file: UploadFile = File(.
 async def write_slide_to_disk(folder_name: str, file_name: str, file: UploadFile = File(...)):
     os.mkdir(f"/data/{folder_name}")
     await write_file(folder_name, file_name, file)
-    # minio_client.create_object(fr"{folder_name}/{file_name}", file.file.fileno(), file.content_type)
-    print("Slide has been saved")
     convert_slide.delay(file_name)
 
 
@@ -56,8 +55,13 @@ def create_slide(background_tasks: BackgroundTasks, name: str = Form(...), file:
 
     file_name = f"{file_id}.{file.filename.split('.')[1]}"
 
-    try:
+    if (slide_db.slide_with_name_exists(name)):
+            raise HTTPException(
+                status_code=400,
+                detail="Slide with this name already exists"
+            )
 
+    try:
         slide_db.insert_slide(CreateSlide(
             slide_id=file_id,
             name=name,
@@ -66,35 +70,23 @@ def create_slide(background_tasks: BackgroundTasks, name: str = Form(...), file:
         background_tasks.add_task(write_slide_to_disk, file_id, file_name, file=file)
     except Exception as e:
         print(e)
-
-    # file_id = str(uuid.uuid4())
-    #
-    # file_name = f"{file_id}.{file.filename.split('.')[1]}"
-    # try:
-    #     add_slide(
-    #         name=name,
-    #         file_id=file_id,
-    #         status='R',
-    #     )
-    #     background_tasks.add_task(write_slide_to_disk, file_id, file_name, file=file)
-    #     return {"Status": "Ok"}
-    # except Exception as err:
-    #     if err.__class__ == errors.IntegrityError:
-    #         raise HTTPException(
-    #             status_code=400,
-    #             detail="Slide with this name already exists"
-    #         )
-    #     raise HTTPException(
-    #         status_code=500,
-    #         detail="Slide couldn't be saved"
-    #     )
-    pass
+        raise HTTPException(
+            status_code=500,
+            detail="Slide couldn't be saved"
+        )
 
 
 @app.get('/slides')
 def read_slides():
-    slide_db.connection_is_healthy()
-    return {"status": "ok"}
+    slides = list(slide_db.get_all_slides())
+
+    for slide in slides:
+       if "metadata" in slide:
+        for metadata_key, metadata_value in slide["metadata"].items():
+            if(is_byte_data(metadata_value)):
+                slide["metadata"][metadata_key] = convert_binary_to_base64(metadata_value)
+    
+    return slides
 
 
 @app.delete('/slides/delete/all')

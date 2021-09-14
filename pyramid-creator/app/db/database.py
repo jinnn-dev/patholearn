@@ -1,13 +1,12 @@
 import logging
 import os
 from enum import IntEnum
-from typing import Optional, Dict
+from typing import Dict, Optional
 
+from app.db.pydantic_objectid import PydanticObjectId
 from bson import ObjectId
 from pydantic import BaseModel, Field
 from pymongo import MongoClient
-
-from app.db.pydantic_objectid import PydanticObjectId
 
 
 class SlideStatus(IntEnum):
@@ -87,5 +86,10 @@ class SlideDatabase:
         values_to_update = {"$set": slide_update.dict(skip_defaults=True)}
         return self.collection.update_one(slide_query, values_to_update)
 
+    def get_all_slides(self):
+        return self.collection.find({}, {'_id': False})
+
+    def slide_with_name_exists(self, name: str) -> bool:
+        return self.collection.count_documents({ 'name': name }, limit = 1) != 0
 
 slide_db = SlideDatabase()

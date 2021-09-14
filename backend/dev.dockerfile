@@ -8,5 +8,5 @@ COPY requirements.txt /
 RUN pip install -r /requirements.txt
 
 COPY ./app /app
-#ADD entry.sh /
-#CMD /entry.sh
+# ADD entry.sh /
+# CMD /entry.sh

@@ -1,0 +1,89 @@
+version: '3.3'
+services:
+  lern_db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: 'db'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password'
+    ports:
+      - '3306:3306'
+    volumes:
+      - my-db:/var/lib/mysql
+
+  lern_api:
+    build:
+      context: ./backend/.
+      dockerfile: dev.dockerfile
+    environment:
+      - DATABASE_URL=mysql+mysqlconnector://user:password@lern_db/db?charset=utf8mb4
+      - RABBIT_URL=amqp://guest:guest@rabbit:5672//
+    ports:
+      - '8000:8000'
+
+    command: uvicorn app.app:app --reload --host 0.0.0.0 --port 8000
+
+  # lern_frontend:
+  #   image: node:14
+  #   command: npm run dev
+  #   ports:
+  #     - '3000:3000'
+  #   volumes:
+  #     - ./frontend:/srv/frontend:rw
+  #   working_dir: /srv/frontend
+
+  slide_worker:
+    build: ./pyramid-creator/.
+    command: celery worker --app=worker.celery_app --loglevel=info
+    volumes:
+      - ./pyramid-creator/data:/data
+    environment:
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbit:5672//
+      - DATABASE_URL=mongodb://root:password@slide_db:27017
+
+  minio:
+    image: minio/minio
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - ./minio_data:/data
+    environment:
+      - MINIO_ROOT_USER=minio
+      - MINIO_ROOT_PASSWORD=minioKey1234
+    command: server --console-address :9001 /data
+
+  slide_db:
+    image: mongo:latest
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongodb_data:/mongodb
+
+  slide_api:
+    build:
+      context: ./pyramid-creator/.
+      dockerfile: Dockerfile
+    ports:
+      - '8001:8000'
+
+    command: uvicorn app.app:app --reload --host 0.0.0.0 --port 8000
+    environment:
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbit:5672//
+      - DATABASE_URL=mongodb://root:password@slide_db:27017
+    volumes:
+      - ./pyramid-creator/app:/app
+      - ./pyramid-creator/data:/data
+  rabbit:
+    image: rabbitmq:latest
+    ports:
+      - '5672:5672'
+
+volumes:
+  my-db:
+  mongodb_data:

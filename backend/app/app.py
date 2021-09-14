@@ -25,7 +25,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/data", StaticFiles(directory="./data/slide"), name="data")
+# app.mount("/data", StaticFiles(directory="./data/slide"), name="data")
 
 
 @app.get("/")
