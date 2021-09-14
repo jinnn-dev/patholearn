@@ -1,0 +1,69 @@
+import json
+import os
+from typing import Any
+
+from minio import Minio
+
+policy = {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": ["*"]
+            },
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::pyramids/*"
+        }
+    ]
+}
+
+
+class MinioClient:
+    def __init__(self):
+        self.instance = Minio(
+            endpoint="minio:9000",
+            access_key=os.environ.get("MINIO_ROOT_USER", "minio"),
+            secret_key=os.environ.get("MINIO_ROOT_PASSWORD", "minioKey1234"),
+            secure=False
+        )
+        self.bucket = None
+        self.bucket_name = None
+
+    def create_bucket(self, bucket_name: str) -> None:
+        self.bucket = self.instance.bucket_exists(bucket_name)
+        self.bucket_name = bucket_name
+        if not self.bucket:
+            self.bucket = self.instance.make_bucket(bucket_name, 'eu')
+            print("✔️ Bucket created")
+            self.instance.set_bucket_policy(self.bucket_name, json.dumps(policy))
+            print("✔️ Bucket policy created")
+        else:
+            print("Bucket already exists")
+
+    def create_object(self, file_name: str, file_content: Any, content_type: Any):
+        try:
+            self.instance.fput_object(self.bucket_name, file_name, file_content,
+                                      metadata={'Content-type': content_type})
+            print(f"✔️ {file_name} has been created")
+        except Exception as exc:
+            print(f"❌ {file_name} couldn't be created")
+            print(exc)
+
+    def delete_object(self, file_name: str):
+        self.instance.remove_object(self.bucket_name, file_name)
+
+    def delete_folder(self, folder_path: str):
+        objects_to_delete = self.instance.list_objects(self.bucket_name, prefix=folder_path, recursive=True)
+        objects_to_delete = [x.object_name for x in objects_to_delete]
+        for del_err in self.instance.remove_objects(self.bucket_name, objects_to_delete):
+            print("Deletion Error: {}".format(del_err))
+
+    def delete_all_objects(self):
+        objects = self.instance.list_objects(self.bucket_name)
+        for item in objects:
+            self.instance.remove_object(self.bucket_name, item.object_name)
+        print("✔️ All Objects deleted")
+
+    def get_object(self, file_name: str):
+        return self.instance.get_object(self.bucket_name, object_name=file_name)

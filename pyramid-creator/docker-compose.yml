@@ -1,0 +1,55 @@
+version: '3.9'
+services:
+  db:
+    image: mongo:latest
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/mongodb
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app
+      - ./data:/data
+    command: uvicorn  app.app:app --reload --host 0.0.0.0 --port 8000
+    environment:
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbit:5672//
+      - DATABASE_URL=mongodb://root:password@db:27017
+
+
+  worker:
+    build: .
+    command: celery worker --app=worker.celery_app --loglevel=info
+    volumes:
+      - ./app:/app
+      - ./data:/data
+    environment:
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbit:5672//
+      - DATABASE_URL=mongodb://root:password@db:27017
+
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ./minio_data:/data
+    environment:
+      - MINIO_ROOT_USER=minio
+      - MINIO_ROOT_PASSWORD=minioKey1234
+    command: server --console-address :9001 /data
+
+  rabbit:
+    image: rabbitmq:latest
+    ports:
+      - "5672:5672"
+    expose:
+      - '5672'
+    restart: unless-stopped
+volumes:
+  mongodb_data:
