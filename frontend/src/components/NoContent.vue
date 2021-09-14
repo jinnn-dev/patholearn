@@ -1,0 +1,21 @@
+<template>
+  <div class="flex w-full justify-center">
+    <div class="flex flex-col justify-center w-ful">
+      <div class="flex justify-center"><img src="../assets/no_content.svg" :class="iconSize" /></div>
+      <div class="text-center mt-3 font-medium text-gray-200 text-xl">{{ text }}</div>
+    </div>
+  </div>
+</template>
+<script lang="ts">
+import { defineComponent } from 'vue';
+export default defineComponent({
+  props: {
+    text: String,
+    iconSize: {
+      type: String,
+      default: 'w-32'
+    }
+  }
+});
+</script>
+<style></style>
