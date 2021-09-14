@@ -1,15 +1,15 @@
-
 import os
 import uuid
+from typing import List
 
 import aiofiles
 from fastapi import BackgroundTasks, FastAPI, HTTPException, UploadFile
 from fastapi.params import File, Form
 from starlette.middleware.cors import CORSMiddleware
 
-from app.db.database import CreateSlide, SlideStatus, slide_db
+from app.db.database import CreateSlide, SlideStatus, slide_db, Slide, DatabaseSlide
 from app.persistance.custom_minio_client import MinioClient
-from app.utils.util import convert_binary_to_base64, is_byte_data
+from app.utils.util import convert_binary_to_base64, is_byte_data, convert_binary_metadata_to_base64
 from app.worker import convert_slide
 
 app = FastAPI()
@@ -55,11 +55,11 @@ def create_slide(background_tasks: BackgroundTasks, name: str = Form(...), file:
 
     file_name = f"{file_id}.{file.filename.split('.')[1]}"
 
-    if (slide_db.slide_with_name_exists(name)):
-            raise HTTPException(
-                status_code=400,
-                detail="Slide with this name already exists"
-            )
+    if slide_db.slide_with_name_exists(name):
+        raise HTTPException(
+            status_code=400,
+            detail="Slide with this name already exists"
+        )
 
     try:
         slide_db.insert_slide(CreateSlide(
@@ -76,17 +76,11 @@ def create_slide(background_tasks: BackgroundTasks, name: str = Form(...), file:
         )
 
 
-@app.get('/slides')
-def read_slides():
-    slides = list(slide_db.get_all_slides())
-
-    for slide in slides:
-       if "metadata" in slide:
-        for metadata_key, metadata_value in slide["metadata"].items():
-            if(is_byte_data(metadata_value)):
-                slide["metadata"][metadata_key] = convert_binary_to_base64(metadata_value)
-    
-    return slides
+@app.get('/slides', response_model=List[Slide])
+def read_slides() -> List[Slide]:
+    slides = slide_db.get_all_slides()
+    slides_without_binary_metadata = convert_binary_metadata_to_base64(slides)
+    return slides_without_binary_metadata
 
 
 @app.delete('/slides/delete/all')
