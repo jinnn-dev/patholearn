@@ -1,0 +1,50 @@
+from enum import IntEnum
+from typing import List, Optional
+
+from pydantic import BaseModel
+
+
+class AnnotationType(IntEnum):
+    SOLUTION_POINT = 0
+    SOLUTION_LINE = 1
+    SOLUTION = 2
+    USER_SOLUTION_POINT = 3
+    USER_SOLUTION_LINE = 4
+    USER_SOLUTION = 5
+    BASE = 6
+
+
+class Point(BaseModel):
+    x: float
+    y: float
+
+
+class AnnotationCoord(BaseModel):
+    image: List[Point]
+
+
+class AnnotationData(BaseModel):
+    id: str
+    type: AnnotationType
+    color: str
+    coord: AnnotationCoord
+    name: Optional[str]
+
+
+class OffsetPolygonData(AnnotationData):
+    outerPoints: AnnotationCoord
+    innerPoints: AnnotationCoord
+    outerOffset: float
+    innerOffset: float
+    changedManual: bool
+
+
+class OffsetPointData(AnnotationData):
+    offsetImageRadius: float
+    offsetRadius: float
+
+
+class OffsetLineData(AnnotationData):
+    outerPoints: AnnotationCoord
+    offsetRadius: float
+    changedManual: bool

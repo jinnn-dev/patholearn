@@ -1,0 +1,71 @@
+version: "3.3"
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: 'db'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - my-db:/var/lib/mysql
+  rabbit:
+    image: rabbitmq:latest
+    ports:
+      - "5672:5672"
+    expose:
+      - '5672'
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    environment:
+      - DATABASE_URL=mysql+mysqlconnector://user:password@db/db?charset=utf8mb4
+      - RABBIT_URL=amqp://guest:guest@rabbit:5672//
+
+    volumes:
+      - ./app:/app
+      - ./data:/data
+    links:
+      - rabbit
+    depends_on:
+      - rabbit
+      - db
+    ports:
+      - "8000:8000"
+
+  celery:
+    build:
+      context: .
+      dockerfile: celery.dockerfile
+    entrypoint: celery
+    environment:
+      - DATABASE_URL=mysql+mysqlconnector://user:password@db/db?charset=utf8mb4
+      - RABBIT_URL=amqp://guest:guest@rabbit:5672//
+    command: -A app.worker.tasks worker -c 2 --loglevel=DEBUG --without-gossip --without-mingle --without-heartbeat -Ofair
+    volumes:
+      - ./app:/app
+      - ./data:/data
+    links:
+      - rabbit
+    depends_on:
+      - rabbit
+      - db
+    ports:
+      - "5555:5555"
+
+  frontend:
+    image: lernsoftware-frontend:0.1.1.1
+    depends_on:
+      - db
+    ports:
+      - "3000:80"
+    restart: always
+volumes:
+  my-db:
