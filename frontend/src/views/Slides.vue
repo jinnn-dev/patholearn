@@ -77,8 +77,6 @@ export default defineComponent({
     const slideNameInput = ref<string>('');
 
     onMounted(() => {
-      ApiService.init('http://localhost:8001');
-
       loadSlides();
     });
 
