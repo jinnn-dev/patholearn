@@ -1,5 +1,4 @@
 #!/bin/sh
-mkdir -p "/data/slide"
 while ! mysqladmin ping -h db --silent; do
     echo "Waiting for MySQL"
     sleep 1

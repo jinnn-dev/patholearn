@@ -20,7 +20,7 @@ export interface BaseTask {
 
 export interface CreateBaseTask {
   name: string;
-  slide_id: number;
+  slide_id: string;
   course_id: number;
   task_group_id?: number;
 }

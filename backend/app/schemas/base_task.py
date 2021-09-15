@@ -2,7 +2,6 @@ from typing import Optional, List
 
 from pydantic import BaseModel
 
-from app.schemas.slide import Slide
 from app.schemas.task import Task
 
 
@@ -14,7 +13,7 @@ class BaseTaskBase(BaseModel):
 
 class BaseTaskCreate(BaseTaskBase):
     name: str
-    slide_id: int
+    slide_id: str
     course_id: int
     task_group_id: Optional[int] = None
 
@@ -22,13 +21,13 @@ class BaseTaskCreate(BaseTaskBase):
 class BaseTaskUpdate(BaseTaskBase):
     base_task_id: int
     name: Optional[str] = None
-    slide_id: Optional[int] = None
+    slide_id: Optional[str] = None
     task_group_id: Optional[int] = None
 
 
 class BaseTaskInDBBase(BaseTaskBase):
     id: Optional[int] = None
-    slide_id: Optional[int] = None
+    slide_id: Optional[str] = None
     task_group_id: Optional[int] = None
 
     class Config:
@@ -40,7 +39,7 @@ class BaseTaskInDB(BaseTaskInDBBase):
 
 
 class BaseTask(BaseTaskInDB):
-    slide: Optional[Slide] = None
+    slide: Optional[str] = None
     percentage_solved: Optional[float]
     task_count: Optional[int]
     new_tasks: Optional[int] = 0

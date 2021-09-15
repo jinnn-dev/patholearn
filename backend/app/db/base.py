@@ -7,8 +7,6 @@ from app.models.course import Course
 # noinspection PyUnresolvedReferences
 from app.models.course_members import CourseMembers
 # noinspection PyUnresolvedReferences
-from app.models.slide import Slide
-# noinspection PyUnresolvedReferences
 from app.models.task import Task
 # noinspection PyUnresolvedReferences
 from app.models.task_group import TaskGroup
