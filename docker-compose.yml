@@ -24,9 +24,6 @@ services:
       - RABBIT_URL=amqp://guest:guest@rabbit:5672//
     ports:
       - '8000:8000'
-
-    command: uvicorn app.app:app --reload --host 0.0.0.0 --port 8000
-
   # lern_frontend:
   #   image: node:14
   #   command: npm run dev

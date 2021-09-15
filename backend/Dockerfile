@@ -7,6 +7,9 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY requirements.txt /
 RUN pip install -r /requirements.txt
 
+
+COPY ./alembic /alembic
+
 COPY ./app /app
 ADD entry.sh /
 CMD /entry.sh
