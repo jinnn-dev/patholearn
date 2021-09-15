@@ -36,7 +36,20 @@
 
   <div
     v-if="taskSaveLoading"
-    class="flex justify-center items-center fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 z-2 rounded-lg p-2"
+    class="
+      flex
+      justify-center
+      items-center
+      fixed
+      bottom-8
+      left-1/2
+      transform
+      -translate-x-1/2
+      bg-gray-800
+      z-2
+      rounded-lg
+      p-2
+    "
   >
     <svg
       class="animate-spin mr-3 h-5 w-5 text-white"
@@ -103,7 +116,7 @@ import {
 } from '../../model';
 import { getSlideUrl } from '../../config';
 import { TooltipGenerator } from '../../utils/tooltip-generator';
-import { ParseResult } from 'utils/annotation-parser';
+import { ParseResult } from '../../utils/annotation-parser';
 import { TaskService } from '../../services';
 import EscapeInfo from './EscapeInfo.vue';
 

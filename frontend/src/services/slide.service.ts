@@ -1,3 +1,4 @@
+import { SLIDE_API_URL } from '../config';
 import { ExtractionResult } from '../model';
 import { Slide } from '../model/slide';
 import { ApiService } from './api.service';
@@ -9,7 +10,7 @@ export class SlideService {
    * @returns All found slides
    */
   public static async getSlides(): Promise<Slide[]> {
-    const response = await ApiService.get<Slide[]>('/slides');
+    const response = await ApiService.get<Slide[]>({ resource: '/slides', host: SLIDE_API_URL });
     return response.data;
   }
 
@@ -21,7 +22,12 @@ export class SlideService {
    * @returns The created Slide
    */
   public static async uploadSlide(data: FormData, onUploadProgress: (event: any) => void): Promise<any> {
-    const response = await ApiService.post('/slides', data, { onUploadProgress });
+    const response = await ApiService.post({
+      resource: '/slides',
+      data,
+      config: { onUploadProgress },
+      host: SLIDE_API_URL
+    });
     return response.data;
   }
 
@@ -32,7 +38,7 @@ export class SlideService {
    * @returns The deleted Slide
    */
   public static async deleteSlide(slideName: string): Promise<any> {
-    const response = await ApiService.delete(`/slides/${slideName}`);
+    const response = await ApiService.delete({ resource: `/slides/${slideName}`, host: SLIDE_API_URL });
     return response.data;
   }
 
@@ -44,8 +50,13 @@ export class SlideService {
    * @returns The conversion result
    */
   public static async convertImage(data: FormData, onUploadProgress?: (event: any) => void): Promise<ExtractionResult> {
-    const response = await ApiService.post<ExtractionResult>('/slides/convert', data, {
-      ...(onUploadProgress && onUploadProgress)
+    const response = await ApiService.post<ExtractionResult>({
+      resource: '/slides/convert',
+      data,
+      config: {
+        ...(onUploadProgress && onUploadProgress)
+      },
+      host: SLIDE_API_URL
     });
     return response.data;
   }

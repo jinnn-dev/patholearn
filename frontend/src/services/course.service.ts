@@ -11,7 +11,7 @@ export class CourseService {
    * @returns Promise with the found courses
    */
   public static async getCourses(searchString: string = ''): Promise<Course[]> {
-    const response = await ApiService.get<Course[]>(this.apiURL('?search=' + searchString));
+    const response = await ApiService.get<Course[]>({ resource: this.apiURL('?search=' + searchString) });
     return response.data;
   }
 
@@ -21,7 +21,7 @@ export class CourseService {
    * @returns Promis with the found courses
    */
   public static async getMemberCourses(): Promise<Course[]> {
-    const response = await ApiService.get<Course[]>(this.apiURL('/member'));
+    const response = await ApiService.get<Course[]>({ resource: this.apiURL('/member') });
     return response.data;
   }
 
@@ -31,7 +31,7 @@ export class CourseService {
    * @returns Promise with the found courses
    */
   public static async getMyCourses(): Promise<Course[]> {
-    const response = await ApiService.get<Course[]>(this.apiURL('/owner'));
+    const response = await ApiService.get<Course[]>({ resource: this.apiURL('/owner') });
     return response.data;
   }
 
@@ -42,7 +42,7 @@ export class CourseService {
    * @returns Promise with the course
    */
   public static async getCourseDetails(courseName: string): Promise<Course> {
-    const response = await ApiService.get<Course>(this.apiURL('/' + courseName));
+    const response = await ApiService.get<Course>({ resource: this.apiURL('/' + courseName) });
     return response.data;
   }
 
@@ -53,7 +53,7 @@ export class CourseService {
    * @returns Promise with the created course
    */
   public static async createCourse(createCourse: CreateCourse): Promise<Course> {
-    const respose = await ApiService.post<Course>(this.apiURL(), createCourse);
+    const respose = await ApiService.post<Course>({ resource: this.apiURL(), data: createCourse });
     return respose.data;
   }
 
@@ -64,7 +64,7 @@ export class CourseService {
    * @returns Promise with the joined course
    */
   public static async joinCourse(short_name: string): Promise<Course> {
-    const response = await ApiService.post<Course>(this.apiURL('/' + short_name));
+    const response = await ApiService.post<Course>({ resource: this.apiURL('/' + short_name) });
     return response.data;
   }
 
@@ -75,7 +75,7 @@ export class CourseService {
    * @returns Promise with the left course
    */
   public static async leaveCourse(short_name: string): Promise<Course> {
-    const response = await ApiService.delete<Course>(this.apiURL('/' + short_name + '/member'));
+    const response = await ApiService.delete<Course>({ resource: this.apiURL('/' + short_name + '/member') });
     return response.data;
   }
 
@@ -86,7 +86,7 @@ export class CourseService {
    * @returns Promise with the delted course
    */
   public static async deleteCourse(short_name: string): Promise<Course> {
-    const response = await ApiService.delete<Course>(this.apiURL('/' + short_name));
+    const response = await ApiService.delete<Course>({ resource: this.apiURL('/' + short_name) });
     return response.data;
   }
 }

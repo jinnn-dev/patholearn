@@ -12,7 +12,7 @@ export class TaskGroupService {
    * @returns Promise with the created task group
    */
   public static async createTaskGroup(name: string, courseId: number): Promise<TaskGroup> {
-    const response = await ApiService.post<TaskGroup>(this._apiUrl, { name, course_id: courseId });
+    const response = await ApiService.post<TaskGroup>({ resource: this._apiUrl, data: { name, course_id: courseId } });
     return response.data;
   }
 
@@ -23,7 +23,7 @@ export class TaskGroupService {
    * @returns Promise with the found task groups
    */
   public static async getTaskGroups(courseId: number): Promise<TaskGroup[]> {
-    const response = await ApiService.get<TaskGroup[]>(this._apiUrl, { course_id: courseId });
+    const response = await ApiService.get<TaskGroup[]>({ resource: this._apiUrl, data: { course_id: courseId } });
     return response.data;
   }
 
@@ -34,7 +34,7 @@ export class TaskGroupService {
    * @returns Promise with the task group
    */
   public static async getTaskGroup(shortName: string): Promise<TaskGroup> {
-    const response = await ApiService.get<TaskGroup>(this._apiUrl + '/' + shortName);
+    const response = await ApiService.get<TaskGroup>({ resource: this._apiUrl + '/' + shortName });
     return response.data;
   }
 
@@ -45,7 +45,7 @@ export class TaskGroupService {
    * @returns Promise with the deleted task group
    */
   public static async removeTaskGroup(short_name: string): Promise<TaskGroup> {
-    const response = await ApiService.delete<TaskGroup>(this._apiUrl + '/' + short_name);
+    const response = await ApiService.delete<TaskGroup>({ resource: this._apiUrl + '/' + short_name });
     return response.data;
   }
 }

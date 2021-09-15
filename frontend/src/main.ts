@@ -37,12 +37,9 @@ import {
 import InputField from './components/InputField.vue';
 import SaveButton from './components/SaveButton.vue';
 import TextEdit from './components/TextEdit.vue';
-import { BASE_API_URL } from './config';
 import router from './router';
 import { ApiService } from './services/api.service';
 import { TokenService } from './services/token.service';
-
-ApiService.init(BASE_API_URL);
 
 if (TokenService.getToken()) {
   ApiService.setHeader();

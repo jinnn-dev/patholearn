@@ -1,18 +1,43 @@
 import axios, { AxiosPromise, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { BASE_API_URL } from '../config';
 import router from '../router';
 import { TokenService } from './token.service';
+
+interface Post {
+  resource: string;
+  data?: unknown;
+  config?: any;
+  host?: string;
+}
+
+interface Get {
+  resource: string;
+  data?: object;
+  host?: string;
+}
+
+interface Put {
+  resource: string;
+  data: any;
+  host?: string;
+}
+
+interface Delete {
+  resource: string;
+  host?: string;
+}
 
 export class ApiService {
   private static interceptor: number;
 
-  /**
-   * Initializes the API Service with the given base URL of the API
-   *
-   * @param baseUrl The base URL of the API
-   */
-  public static init(baseUrl: string): void {
-    axios.defaults.baseURL = baseUrl;
-  }
+  // /**
+  //  * Initializes the API Service with the given base URL of the API
+  //  *
+  //  * @param baseUrl The base URL of the API
+  //  */
+  // public static init(baseUrl: string): void {
+  //   axios.defaults.baseURL = baseUrl;
+  // }
 
   /**
    * Sets the authorization header
@@ -44,8 +69,8 @@ export class ApiService {
    * @param data The data to send with the request
    * @returns Thre Promise with the return data
    */
-  public static get<T>(resource: string, data?: object): Promise<AxiosResponse<T>> {
-    return axios.get(resource, {
+  public static get<T>({ resource, data, host = BASE_API_URL }: Get): Promise<AxiosResponse<T>> {
+    return axios.get(host + resource, {
       params: {
         ...(data && data)
       }
@@ -60,8 +85,8 @@ export class ApiService {
    * @param config Aditional configuration to send with the request
    * @returns The Promise with the return data
    */
-  public static post<T>(resource: string, data?: unknown, config?: any): Promise<AxiosResponse<T>> {
-    return axios.post(resource, data, config);
+  public static post<T>({ resource, data, config, host = BASE_API_URL }: Post): Promise<AxiosResponse<T>> {
+    return axios.post(host + resource, data, config);
   }
 
   /**
@@ -71,8 +96,8 @@ export class ApiService {
    * @param data The data to send with the request
    * @returns The Promise with the return data
    */
-  public static put<T>(resource: string, data: unknown): Promise<AxiosResponse<T>> {
-    return axios.put(resource, data, {
+  public static put<T>({ resource, data, host = BASE_API_URL }: Put): Promise<AxiosResponse<T>> {
+    return axios.put(host + resource, data, {
       headers: {
         'Content-Type': 'application/json'
       }
@@ -83,10 +108,10 @@ export class ApiService {
    * Wrapper function for HTTP-DELETE method
    *
    * @param resource The rest resource to call
-   * @returns The Promise with the return data
+   * @returns The Promise with the retur = BASE_API_URL data
    */
-  public static delete<T>(resource: string): Promise<AxiosResponse<T>> {
-    return axios.delete(resource);
+  public static delete<T>({ resource, host = BASE_API_URL }: Delete): Promise<AxiosResponse<T>> {
+    return axios.delete(host + resource);
   }
 
   /**

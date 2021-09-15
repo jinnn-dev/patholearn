@@ -32,7 +32,7 @@
           <div class="flex justify-between items-center">
             <div class="h-42 w-42 flex items-center">
               <lazy-image
-                :image-url="`http://localhost:9000/pyramids/${slide.slide_id}/thumbnail.jpeg`"
+                :image-url="getThumbnailUrl(slide.slide_id)"
                 alt="Thumbnail des Slides"
                 class="max-h-full rounded-lg items-center"
               ></lazy-image>

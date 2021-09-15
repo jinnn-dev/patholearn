@@ -14,7 +14,7 @@ export class TaskService {
    * @returns Promise with the base task
    */
   public static async getBaseTask(shortName: string): Promise<BaseTask> {
-    const response = await ApiService.get<BaseTask>(this._apiUrl('/' + shortName));
+    const response = await ApiService.get<BaseTask>({ resource: this._apiUrl('/' + shortName) });
     return response.data;
   }
 
@@ -25,7 +25,7 @@ export class TaskService {
    * @returns Promise with the base task
    */
   public static async getBaseTaskAdmin(shortName: string): Promise<BaseTask> {
-    const response = await ApiService.get<BaseTask>(this._apiUrl('/' + shortName + '/admin'));
+    const response = await ApiService.get<BaseTask>({ resource: this._apiUrl('/' + shortName + '/admin') });
     return response.data;
   }
 
@@ -36,7 +36,7 @@ export class TaskService {
    * @returns Promise with the created base task
    */
   public static async createBaseTask(createTask: CreateBaseTask): Promise<BaseTask> {
-    const response = await ApiService.post<BaseTask>(this._apiUrl(), createTask);
+    const response = await ApiService.post<BaseTask>({ resource: this._apiUrl(), data: createTask });
     return response.data;
   }
 
@@ -47,7 +47,7 @@ export class TaskService {
    * @returns Promise with the updated base task
    */
   public static async updateBaseTask(updateTask: UpdateBaseTask): Promise<BaseTask> {
-    const response = await ApiService.put<BaseTask>(this._apiUrl(), updateTask);
+    const response = await ApiService.put<BaseTask>({ resource: this._apiUrl(), data: updateTask });
     return response.data;
   }
 
@@ -58,7 +58,7 @@ export class TaskService {
    * @returns Promise with the deleted base task
    */
   public static async deleteBaseTask(shortName: string): Promise<BaseTask> {
-    const response = await ApiService.delete<BaseTask>(this._apiUrl('/' + shortName));
+    const response = await ApiService.delete<BaseTask>({ resource: this._apiUrl('/' + shortName) });
     return response.data;
   }
 
@@ -69,7 +69,10 @@ export class TaskService {
    * @returns Promise with the course base tasks
    */
   public static async getBaseTasksWithoutGroup(courseId: number): Promise<BaseTask[]> {
-    const response = await ApiService.get<BaseTask[]>(this._apiUrl('/noGroup'), { course_id: courseId });
+    const response = await ApiService.get<BaseTask[]>({
+      resource: this._apiUrl('/noGroup'),
+      data: { course_id: courseId }
+    });
     return response.data;
   }
 
@@ -80,7 +83,10 @@ export class TaskService {
    * @returns Promise with the created user solution
    */
   public static async saveUserSolution(solutionCreate: UserSolutionCreate): Promise<UserSolution> {
-    const response = await ApiService.post<UserSolution>(this._apiUrl('/userSolution'), solutionCreate);
+    const response = await ApiService.post<UserSolution>({
+      resource: this._apiUrl('/userSolution'),
+      data: solutionCreate
+    });
     return response.data;
   }
 
@@ -91,7 +97,7 @@ export class TaskService {
    * @returns Promise with the deleted user solution
    */
   public static async deleteUserSolution(task_id: number): Promise<UserSolution> {
-    const response = await ApiService.delete<UserSolution>(this._apiUrl(`/${task_id}/userSolution`));
+    const response = await ApiService.delete<UserSolution>({ resource: this._apiUrl(`/${task_id}/userSolution`) });
     return response.data;
   }
 
@@ -102,7 +108,9 @@ export class TaskService {
    * @returns Promise with the usersolution
    */
   public static async deleteTaskResult(task_id: number): Promise<UserSolution> {
-    const response = await ApiService.delete<UserSolution>(this._apiUrl(`/task/${task_id}/userSolution/taskResult`));
+    const response = await ApiService.delete<UserSolution>({
+      resource: this._apiUrl(`/task/${task_id}/userSolution/taskResult`)
+    });
     return response.data;
   }
 
@@ -113,7 +121,7 @@ export class TaskService {
    * @returns Promise with the created task
    */
   public static async createTask(taskCreate: TaskCreate): Promise<Task> {
-    const response = await ApiService.post<Task>(this._apiUrl('/task'), taskCreate);
+    const response = await ApiService.post<Task>({ resource: this._apiUrl('/task'), data: taskCreate });
     return response.data;
   }
 
@@ -124,7 +132,7 @@ export class TaskService {
    * @returns Promise with the updated task
    */
   public static async updateTask(taskUpdate: TaskUpdate): Promise<Task> {
-    const response = await ApiService.put<Task>(this._apiUrl('/task'), taskUpdate);
+    const response = await ApiService.put<Task>({ resource: this._apiUrl('/task'), data: taskUpdate });
     return response.data;
   }
 
@@ -135,7 +143,7 @@ export class TaskService {
    * @returns Promise with the deleted task
    */
   public static async deleteTask(task_id: number): Promise<Task> {
-    const response = await ApiService.delete<Task>(this._apiUrl('/task/' + task_id));
+    const response = await ApiService.delete<Task>({ resource: this._apiUrl('/task/' + task_id) });
     return response.data;
   }
 
@@ -146,7 +154,7 @@ export class TaskService {
    * @returns Promise with the solve result
    */
   public static async solveTask(task_id: number): Promise<TaskResult> {
-    const response = await ApiService.get<TaskResult>(this._apiUrl('/' + task_id + '/solve'));
+    const response = await ApiService.get<TaskResult>({ resource: this._apiUrl('/' + task_id + '/solve') });
     return response.data;
   }
 
@@ -158,7 +166,10 @@ export class TaskService {
    * @returns Promise with the update result
    */
   public static async updateAnnotation(task_id: number, annotation: any): Promise<any> {
-    const response = await ApiService.put<any>(this._apiUrl(`/task/${task_id}/${annotation.id}`), annotation);
+    const response = await ApiService.put<any>({
+      resource: this._apiUrl(`/task/${task_id}/${annotation.id}`),
+      data: annotation
+    });
     return response.data;
   }
 
@@ -170,7 +181,10 @@ export class TaskService {
    * @returns Promise with the create result
    */
   public static async createTaskAnnotation(task_id: number, annotation: any): Promise<any> {
-    const response = await ApiService.post<any>(this._apiUrl(`/task/${task_id}/annotations`), annotation);
+    const response = await ApiService.post<any>({
+      resource: this._apiUrl(`/task/${task_id}/annotations`),
+      data: annotation
+    });
     return response.data;
   }
 
@@ -181,7 +195,7 @@ export class TaskService {
    * @returns Promise with the task
    */
   public static async deleteTaskAnnotations(task_id: number): Promise<Task> {
-    const response = await ApiService.delete<Task>(this._apiUrl(`/task/${task_id}/annotations`));
+    const response = await ApiService.delete<Task>({ resource: this._apiUrl(`/task/${task_id}/annotations`) });
     return response.data;
   }
 
@@ -193,7 +207,10 @@ export class TaskService {
    * @returns Promise with the create result
    */
   public static async createUserAnnotation(task_id: number, annotation: any): Promise<any> {
-    const response = await ApiService.post(this._apiUrl(`/task/${task_id}/userSolution`), annotation);
+    const response = await ApiService.post({
+      resource: this._apiUrl(`/task/${task_id}/userSolution`),
+      data: annotation
+    });
     return response.data;
   }
 
@@ -205,7 +222,10 @@ export class TaskService {
    * @returns Promise with the update result
    */
   public static async updateUserAnnotation(task_id: number, annotation: any): Promise<any> {
-    const response = await ApiService.put(this._apiUrl(`/task/${task_id}/userSolution/${annotation.id}`), annotation);
+    const response = await ApiService.put({
+      resource: this._apiUrl(`/task/${task_id}/userSolution/${annotation.id}`),
+      data: annotation
+    });
     return response.data;
   }
 
@@ -217,7 +237,9 @@ export class TaskService {
    * @returns Promise with the task
    */
   public static async deleteAnnotation(task_id: number, annotation_id: string): Promise<Task | UserSolution> {
-    const response = await ApiService.delete<Task | UserSolution>(this._apiUrl(`/task/${task_id}/${annotation_id}`));
+    const response = await ApiService.delete<Task | UserSolution>({
+      resource: this._apiUrl(`/task/${task_id}/${annotation_id}`)
+    });
     return response.data;
   }
 
@@ -229,7 +251,9 @@ export class TaskService {
    * @returns Promise with the task
    */
   public static async deleteUserAnnotation(task_id: number, annotation_id: string): Promise<any> {
-    const response = await ApiService.delete(this._apiUrl(`/task/${task_id}/userSolution/${annotation_id}`));
+    const response = await ApiService.delete({
+      resource: this._apiUrl(`/task/${task_id}/userSolution/${annotation_id}`)
+    });
     return response.data;
   }
 
@@ -242,10 +266,13 @@ export class TaskService {
    * @returns Promise with the created annotation group
    */
   public static async createAnnotationGroup(task_id: number, name: string, color: string): Promise<AnnotationGroup> {
-    const response = await ApiService.post<AnnotationGroup>(this._apiUrl(`/task/${task_id}/annotationGroup`), {
-      task_id,
-      name,
-      color
+    const response = await ApiService.post<AnnotationGroup>({
+      resource: this._apiUrl(`/task/${task_id}/annotationGroup`),
+      data: {
+        task_id,
+        name,
+        color
+      }
     });
     return response.data;
   }
@@ -265,10 +292,13 @@ export class TaskService {
     name: string,
     color: string
   ): Promise<AnnotationGroup> {
-    const response = await ApiService.put<AnnotationGroup>(this._apiUrl(`/task/${task_id}/annotationGroup`), {
-      oldName,
-      name,
-      color
+    const response = await ApiService.put<AnnotationGroup>({
+      resource: this._apiUrl(`/task/${task_id}/annotationGroup`),
+      data: {
+        oldName,
+        name,
+        color
+      }
     });
     return response.data;
   }
@@ -280,7 +310,7 @@ export class TaskService {
    * @returns Promise with the task solution
    */
   public static async loadTaskSolution(task_id: number): Promise<any> {
-    const response = await ApiService.get<any>(this._apiUrl(`/task/${task_id}/solution`));
+    const response = await ApiService.get<any>({ resource: this._apiUrl(`/task/${task_id}/solution`) });
     return response.data;
   }
 }

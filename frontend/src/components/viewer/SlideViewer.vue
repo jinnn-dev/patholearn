@@ -18,7 +18,7 @@ export default defineComponent({
     onMounted(() => {
       const route = useRoute();
       // OpenSeadragon(options('viewerImage', getSlideUrl(route.params.id as string)));
-      OpenSeadragon(options('viewerImage', `http://localhost:9000/pyramids/${route.params.id as string}/dzi.dzi`));
+      OpenSeadragon(options('viewerImage', getSlideUrl(route.params.id as string)));
       new OpenSeadragon.TileCache({ maxImageCacheCount: 500 });
 
       const elements = document.getElementsByClassName('openseadragon-container');

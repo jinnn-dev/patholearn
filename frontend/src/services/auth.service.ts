@@ -13,7 +13,10 @@ export class AuthService {
     const form_data = new FormData();
     form_data.append('username', email);
     form_data.append('password', password);
-    const response = await ApiService.post<{ access_token: string; type: string }>('login/access-token', form_data);
+    const response = await ApiService.post<{ access_token: string; type: string }>({
+      resource: '/login/access-token',
+      data: form_data
+    });
     TokenService.saveToken(response.data.access_token);
     ApiService.setHeader();
   }
@@ -35,12 +38,15 @@ export class AuthService {
     email: string,
     password: string
   ): Promise<User> {
-    const response = await ApiService.post<User>('/users/open', {
-      firstname,
-      middlename,
-      lastname,
-      email,
-      password
+    const response = await ApiService.post<User>({
+      resource: '/users/open',
+      data: {
+        firstname,
+        middlename,
+        lastname,
+        email,
+        password
+      }
     });
     return response.data;
   }
@@ -62,12 +68,15 @@ export class AuthService {
     email: string,
     password: string
   ): Promise<User> {
-    const response = await ApiService.post<User>('/users/admin', {
-      firstname,
-      middlename,
-      lastname,
-      email,
-      password
+    const response = await ApiService.post<User>({
+      resource: '/users/admin',
+      data: {
+        firstname,
+        middlename,
+        lastname,
+        email,
+        password
+      }
     });
     return response.data;
   }
@@ -86,7 +95,7 @@ export class AuthService {
    * @returns The current user
    */
   public static async getUser(): Promise<User> {
-    const response = await ApiService.get<User>('/users/me');
+    const response = await ApiService.get<User>({ resource: '/users/me' });
     return response.data;
   }
 
@@ -96,7 +105,7 @@ export class AuthService {
    * @returns All available admin users
    */
   public static async getAdminUsers(): Promise<User[]> {
-    const response = await ApiService.get<User[]>('/users/admin');
+    const response = await ApiService.get<User[]>({ resource: '/users/admin' });
     return response.data;
   }
 }
