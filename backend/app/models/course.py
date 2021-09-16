@@ -13,6 +13,7 @@ class Course(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(length=255), unique=True)
     short_name = Column(String(length=255), index=True, default=shortuuid.uuid)
+    description = Column(String(length=255), nullable=True)
     created = Column(DateTime, default=datetime.now)
     owner_id = Column(Integer, ForeignKey("user.id"))
     owner = relationship("User", back_populates="courses")
