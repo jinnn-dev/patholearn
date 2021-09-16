@@ -10,6 +10,7 @@ from app.schemas.user import User
 class CourseBase(BaseModel):
     name: Optional[str] = None
     short_name: Optional[str] = None
+    description: Optional[str] = None
     created: Optional[datetime] = None
 
 
