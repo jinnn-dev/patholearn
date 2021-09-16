@@ -8,7 +8,7 @@
     @groupCreated="groupCreated"
   ></annotation-group>
 
-  <annotation-settings v-if="selectedPolygon && task?.task_type === 1" @saved="updateAnnotation(selectedPolygon)">
+  <annotation-settings v-if="selectedPolygon && task?.task_type === 1" @saved="updateSelectedAnnotation">
     <CustomSelect
       displayType="small"
       label="Annotationsklasse:"
@@ -21,28 +21,6 @@
 
   <tool-bar :tools="toolbarTools" @toolUpdate="setTool" :setMoving="is_solving || setMoving"></tool-bar>
 
-  <escape-info
-    :show="isPolygonDrawing || isLineDrawing"
-    :text="
-      isPolygonDrawing
-        ? 'Drücke die ESC-Taste um das Zeichnen des Polygons abzubrechen'
-        : ' Drücke die ESC-Taste um das Zeichnen der Linie zu beenden'
-    "
-  ></escape-info>
-
-  <saving-info></saving-info>
-
-  <div ref="viewerRef" id="viewerImage" class="h-screen bg-gray-900" @keyup="handleKeyup"></div>
-
-  <ground-truth-dialog
-    :showDialog="showUploadDialog"
-    :drawingViewer="drawingViewer"
-    :loading="false"
-    @applyAnnotations="onApplyAnnotations"
-    @closeDialog="showUploadDialog = false"
-    :isUserSolution="true"
-  ></ground-truth-dialog>
-
   <confirm-dialog
     :show="showDeleteAnnotationsModal"
     :loading="deleteAnnotationsLoading"
@@ -50,16 +28,20 @@
     @reject="showDeleteAnnotationsModal = false"
     @confirmation="deleteAnnotations"
   ></confirm-dialog>
+
+  <escape-info :show="isPolygonDrawing || isLineDrawing" :isPolygon="isPolygonDrawing"></escape-info>
+
+  <saving-info></saving-info>
+
+  <div ref="viewerRef" id="viewerImage" class="h-screen bg-gray-900" @keyup="handleKeyup"></div>
 </template>
 <script lang="ts">
 import { computed, defineComponent, onMounted, onUnmounted, PropType, reactive, ref, watch } from 'vue';
-import { options } from './core';
-import ToolBar from './ToolBar.vue';
-import { AnnotationViewer } from './core';
-import OpenSeadragon, { TileSource } from 'openseadragon';
-import { UserSolution } from 'model/userSolution';
+import OpenSeadragon from 'openseadragon';
 import { select, selectAll } from 'd3-selection';
 import {
+  options,
+  AnnotationViewer,
   SVG_ID,
   polygonChanged,
   selectedPolygon,
@@ -75,6 +57,7 @@ import {
   ANNOTATION_TYPE,
   isDrawingTool,
   isUserSolution,
+  UserSolution,
   RESULT_POLYGON_COLOR,
   Task,
   TaskResult,
@@ -87,6 +70,7 @@ import { getSlideUrl } from '../../config';
 import { TooltipGenerator } from '../../utils/tooltip-generator';
 import { ParseResult } from '../../utils/annotation-parser';
 import { TaskService } from '../../services';
+import { updateAnnotation } from './taskViewerHelper';
 
 export default defineComponent({
   props: {
@@ -129,19 +113,18 @@ export default defineComponent({
 
     watch(
       () => selectedPolygonData.name,
-      (newVal, oldVal) => {
+      (newVal, _) => {
         const group = props.task?.annotation_groups.find((group) => group.name === newVal);
         if (group) {
           selectedPolygon.value?.updateAnnotationClass(group.name, group.color);
         }
-        updateAnnotation(selectedPolygon.value);
-        // saveUserSolution(selectedPolygon.value?.type);
+        updateSelectedAnnotation(selectedPolygon.value);
       }
     );
 
     watch(
       () => props.task,
-      (newVal, oldVal) => {
+      (newVal, _) => {
         drawingViewer.value?.clear();
 
         setToolbarTools();
@@ -206,12 +189,8 @@ export default defineComponent({
       () => polygonChanged.changed,
       async (newVal, oldVal) => {
         if (newVal) {
-          await updateAnnotation(polygonChanged.polygon as Annotation);
+          await updateSelectedAnnotation(polygonChanged.polygon as Annotation);
           emit('userAnnotationChanged');
-          // drawingViewer.value?.save(props.task!, polygonChanged.polygon?.type)?.then((res: Task | UserSolution) => {
-          //   const data = res as UserSolution;
-          //   props.task!.user_solution = data;
-          // });
         }
       }
     );
@@ -285,8 +264,6 @@ export default defineComponent({
       } else {
         tool = Tool.USER_SOLUTION_DRAWING;
       }
-
-      // toolbarTools.value.splice(-1, 1);
 
       if (!toolbarTools.value.includes(tool)) {
         toolbarTools.value.push(tool);
@@ -368,20 +345,15 @@ export default defineComponent({
           });
       } else {
         await drawingViewer.value?.saveUserAnnotation(props.task!, annotation);
-
-        // drawingViewer.value?.save(props.task!, type && type)?.then((res: Task | UserSolution) => {
-        //   const data = res as UserSolution;
-        //   props.task!.user_solution = data;
-        // });
       }
     };
 
-    const updateAnnotation = async (annotation: Annotation | null | undefined) => {
-      if (annotation) {
-        isTaskSaving.value = true;
-        await drawingViewer.value?.updateUserAnnotation(props.task!, annotation);
-        isTaskSaving.value = false;
-      }
+    const updateSelectedAnnotation = async () => {
+      await updateAnnotation({
+        annotation: selectedPolygon.value!,
+        task: props.task!,
+        annotationViewer: drawingViewer.value!
+      });
     };
 
     const updateAnnotationName = (newName: { name: string; color: string }) => {
@@ -424,12 +396,6 @@ export default defineComponent({
             select(this).remove();
 
             await drawingViewer.value?.deleteAnnotationByID(props.task!, selectionId);
-
-            // drawingViewer.value?.deleteUserSolution(props.task!, selectionId)?.then((res: Task | UserSolution) => {
-            //   const userSolution = res as UserSolution;
-            //   props.task!.user_solution = userSolution;
-            //   emit('userAnnotationChanged');
-            // });
           });
       } else if (currentTool.value === Tool.SELECT) {
         if (event.quick) {
@@ -540,7 +506,7 @@ export default defineComponent({
       showUploadDialog,
       drawingViewer,
       hideGroup,
-      updateAnnotation,
+      updateSelectedAnnotation,
       showGroup,
       groupCreated,
       setMoving,

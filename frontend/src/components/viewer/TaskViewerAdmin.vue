@@ -9,10 +9,6 @@
   ></annotation-group>
 
   <annotation-settings v-if="selectedPolygon">
-    <!-- <div v-if="task?.task_type === 0 || isBackgroundPolygon" class="flex flex-col gap-2 my-2">
-      <div>Annotationsfarbe:</div>
-      <input type="color" id="body" name="body" v-model="selectedPolygonData.color" class="h-6 w-full" />
-    </div> -->
     <ColorPicker
       v-if="task?.task_type === 0 || isBackgroundPolygon"
       label="Annotationsfarbe"
@@ -85,16 +81,7 @@
 
   <tool-bar :tools="toolbarTools" @toolUpdate="setTool" :setMoving="setMoving"></tool-bar>
 
-  <div ref="viewerRef" id="viewerImage" class="h-screen bg-gray-900" @keyup="handleKeyup"></div>
-
-  <escape-info
-    :show="isPolygonDrawing || isLineDrawing"
-    :text="
-      isPolygonDrawing
-        ? 'Drücke die ESC-Taste um das Zeichnen des Polygons abzubrechen'
-        : ' Drücke die ESC-Taste um das Zeichnen der Linie zu beenden'
-    "
-  ></escape-info>
+  <escape-info :show="isPolygonDrawing || isLineDrawing" :isPolygon="isPolygonDrawing"></escape-info>
 
   <saving-info></saving-info>
 
@@ -113,6 +100,8 @@
     @reject="showConfirmationDialog = false"
     @confirmation="deleteAllAnnotations"
   ></confirm-dialog>
+
+  <div ref="viewerRef" id="viewerImage" class="h-screen bg-gray-900" @keyup="handleKeyup"></div>
 </template>
 
 <script lang="ts">
@@ -139,6 +128,7 @@ import { OffsetAnnotationPolygon } from '../../model';
 import { ParseResult } from '../../utils/annotation-parser';
 import { OffsetAnnotationPoint, OffsetAnnotationLine, AnnotationLine } from '../../model';
 import { TaskService } from '../../services';
+import { updateAnnotation } from './taskViewerHelper';
 
 export default defineComponent({
   props: {
@@ -152,7 +142,7 @@ export default defineComponent({
     course_id: Number
   },
 
-  setup(props, { emit }) {
+  setup(props) {
     const showConfirmationDialog = ref<boolean>(false);
     const deleteAnnotationsLoading = ref<boolean>(false);
 
@@ -177,26 +167,11 @@ export default defineComponent({
       offsetRadius: (selectedPolygon.value as OffsetAnnotationPoint)?.offsetRadius
     });
 
-    const taskSaveLoading = ref<Boolean>(false);
-
     const showUploadDialog = ref<Boolean>(false);
     const file = ref();
     const uploadResult = ref<ParseResult[]>();
-    const fileUploadLoading = ref<Boolean>(false);
-
-    const fileUploadResult = ref();
 
     const applyAnnotationsLoading = ref<Boolean>(false);
-
-    const onFileSelected = async (event: any) => {
-      file.value = event?.target.files[0];
-
-      if (file.value.type === 'text/xml') {
-        drawingViewer.value!.convertToAnnotations(file.value, (data: ParseResult[]) => {
-          uploadResult.value = data;
-        });
-      }
-    };
 
     const isBackgroundPolygon = computed(() => selectedPolygon.value?.type === ANNOTATION_TYPE.BASE);
 
@@ -221,7 +196,7 @@ export default defineComponent({
 
     watch(
       () => props.task,
-      (newVal, oldVal) => {
+      (newVal, _) => {
         drawingViewer.value?.clear();
         selectedPolygon.value = undefined;
         if (newVal === null) {
@@ -259,16 +234,16 @@ export default defineComponent({
     watch(
       () => polygonChanged.changed,
 
-      (newVal, oldVal) => {
+      (newVal, _) => {
         if (newVal) {
-          updateAnnotation(selectedPolygon.value);
+          updateSelectedAnnotation();
         }
       }
     );
 
     watch(
       () => selectedPolygonData.color,
-      (newVal, oldVal) => {
+      (newVal, _) => {
         let color = newVal;
         if (selectedPolygon.value?.type === ANNOTATION_TYPE.BASE) {
           color = 'none';
@@ -493,13 +468,12 @@ export default defineComponent({
       isTaskSaving.value = false;
     };
 
-    const updateAnnotation = async (annotation: Annotation | null | undefined) => {
-      if (annotation) {
-        isTaskSaving.value = true;
-        await drawingViewer.value?.updateAnnotation(props.task!, annotation);
-        isTaskSaving.value = false;
-        polygonChanged.changed = false;
-      }
+    const updateSelectedAnnotation = async () => {
+      await updateAnnotation({
+        annotation: selectedPolygon.value!,
+        task: props.task!,
+        annotationViewer: drawingViewer.value!
+      });
     };
 
     const updateAnnotationName = (newName: { name: string; color: string }) => {
@@ -626,8 +600,7 @@ export default defineComponent({
       handleKeyup,
       setTool,
       saveTask,
-      onFileSelected,
-      updateAnnotation,
+      updateSelectedAnnotation,
       showGroup,
       hideGroup,
       updateGroup,
@@ -638,17 +611,14 @@ export default defineComponent({
       selectedPolygon,
       resetAnnotationTolerance,
       selectedPolygonData,
-      taskSaveLoading,
       showUploadDialog,
       uploadResult,
       isLineDrawing,
       isPolygonDrawing,
-      fileUploadLoading,
       isOffsetAnnotationPoint,
       isOffsetAnnotationLine,
       isBackgroundPolygon,
       isOffsetAnnotationPolygon,
-      fileUploadResult,
       viewerZoom,
       setMoving,
       drawingViewer,
