@@ -21,6 +21,8 @@ export const viewerLoadingState = reactive<{
   solutionLoading: false
 });
 
+export const isTaskSaving = ref<Boolean>(false);
+
 export const userSolutionLocked = ref<Boolean>(false);
 export const showSolution = ref<Boolean>(false);
 

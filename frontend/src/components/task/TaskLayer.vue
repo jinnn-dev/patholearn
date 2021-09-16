@@ -60,7 +60,18 @@
             <div>Wähle einen Aufgabentyp:</div>
             <div class="flex flex-col w-full justify-evenly gap-2 my-2">
               <div
-                class="transition flex justify-center items-center bg-gray-600 hover:bg-gray-500 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg p-2"
+                class="
+                  transition
+                  flex
+                  justify-center
+                  items-center
+                  bg-gray-600
+                  hover:bg-gray-500 hover:ring-2
+                  ring-highlight-900
+                  cursor-pointer
+                  rounded-lg
+                  p-2
+                "
                 v-for="taskType in taskTypes"
                 :key="taskType.index"
                 :class="taskCreationForm.task_type === taskType.index && 'bg-gray-500 ring-2 ring-highlight-900'"
@@ -77,7 +88,19 @@
             <div class="mb-2">Welcher Annotationstyp soll verwendet werden:</div>
             <div class="flex w-full justify-evenly">
               <div
-                class="transition flex justify-center items-center w-20 h-20 bg-gray-600 hover:bg-gray-500 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg"
+                class="
+                  transition
+                  flex
+                  justify-center
+                  items-center
+                  w-20
+                  h-20
+                  bg-gray-600
+                  hover:bg-gray-500 hover:ring-2
+                  ring-highlight-900
+                  cursor-pointer
+                  rounded-lg
+                "
                 v-for="type in typeSelection"
                 :key="type.index"
                 :class="taskCreationForm.annotation_type === type.index && 'bg-gray-500 ring-2 ring-highlight-900'"
@@ -98,7 +121,18 @@
             </div>
             <div class="flex w-full justify-evenly gap-2 my-2">
               <div
-                class="transition flex justify-center items-center bg-gray-600 hover:bg-gray-500 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg p-2"
+                class="
+                  transition
+                  flex
+                  justify-center
+                  items-center
+                  bg-gray-600
+                  hover:bg-gray-500 hover:ring-2
+                  ring-highlight-900
+                  cursor-pointer
+                  rounded-lg
+                  p-2
+                "
                 v-for="level in knowledgeLevel"
                 :key="level.index"
                 :class="taskCreationForm.knowledge_level === level.index && 'bg-gray-500 ring-2 ring-highlight-900'"
@@ -158,7 +192,18 @@
             </div>
             <div class="flex w-full justify-evenly gap-2 my-2">
               <div
-                class="transition flex justify-center items-center bg-gray-600 hover:bg-gray-500 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg p-2"
+                class="
+                  transition
+                  flex
+                  justify-center
+                  items-center
+                  bg-gray-600
+                  hover:bg-gray-500 hover:ring-2
+                  ring-highlight-900
+                  cursor-pointer
+                  rounded-lg
+                  p-2
+                "
                 v-for="level in knowledgeLevel"
                 :key="level.index"
                 :class="taskUpdateForm.knowledge_level === level.index && 'bg-gray-500 ring-2 ring-highlight-900'"

@@ -16,11 +16,12 @@
       <div v-else class="w-full">
         <div
           v-for="value in filteredData"
-          :key="value[field]"
-          class="flex transition justify-start items-center hover:bg-gray-500 bg-gray-600 my-4 p-2 rounded-md cursor-pointer h-14"
+          :key="isObject(value) ? value[field] : value"
+          class="flex transition justify-start items-center hover:bg-gray-500 bg-gray-600 cursor-pointer"
+          :class="MAPPED_OPTION_SIZE[displayType]"
           @click="valueSelected(value)"
         >
-          <div class="w-full">{{ value[field] }}</div>
+          <div class="w-full">{{ isObject(value) ? value[field] : value }}</div>
         </div>
       </div>
     </div>
@@ -29,7 +30,15 @@
 
 <script lang="ts">
 import { onClickOutside } from '@vueuse/core';
-import { defineComponent, onMounted, ref, watch } from 'vue';
+import { defineComponent, onMounted, PropType, ref, watch } from 'vue';
+
+type SELECT_OPTIONS_SIZE = 'small' | 'medium' | 'large';
+
+const MAPPED_OPTION_SIZE: Record<SELECT_OPTIONS_SIZE, string> = {
+  small: 'p-2 h-6',
+  medium: 'my-4 p-2 rounded-md h-14',
+  large: ''
+};
 
 export default defineComponent({
   emits: ['valueChanged'],
@@ -43,7 +52,12 @@ export default defineComponent({
     },
     label: String,
     tip: String,
-    placeholder: String
+    placeholder: String,
+    displayType: {
+      type: String as PropType<SELECT_OPTIONS_SIZE>,
+      default: 'medium'
+    },
+    initialData: String
   },
   setup(props, { emit }) {
     const target = ref(null);
@@ -61,12 +75,12 @@ export default defineComponent({
     watch(
       () => searchString.value,
       (newVal, oldVal) => {
-        if (newVal.length < oldVal.length || newVal.length === 0) {
-          filteredData.value = props.values;
-        }
-        if (props.field) {
+        if (oldVal !== undefined && newVal !== undefined) {
+          if (newVal.length < oldVal.length || newVal.length === 0) {
+            filteredData.value = props.values;
+          }
           filteredData.value = props.values?.filter((value: any) =>
-            value[props.field as string].toLowerCase().includes(newVal.toLowerCase())
+            (isObject(value) ? value[props.field as string].toLowerCase() : value).includes(newVal.toLowerCase())
           );
         }
       }
@@ -80,17 +94,28 @@ export default defineComponent({
     );
 
     onMounted(() => {
+      if (props.initialData) {
+        valueSelected(props.initialData);
+      }
+
       filteredData.value = props.values;
     });
 
     const valueSelected = (value: any) => {
       isFocus.value = false;
 
-      searchString.value = value[props.field as string];
+      searchString.value = isObject(value) ? value[props.field as string] : value;
       emit('valueChanged', value);
     };
 
-    return { searchString, isFocus, target, valueSelected, filteredData };
+    const isObject = (value: object | string): boolean => {
+      if (typeof value === 'object') {
+        return true;
+      }
+      return false;
+    };
+
+    return { searchString, isFocus, target, valueSelected, filteredData, MAPPED_OPTION_SIZE, isObject };
   }
 });
 </script>

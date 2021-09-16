@@ -1,4 +1,3 @@
-import { Slide } from './slide';
 import { Task } from './task';
 
 export interface BaseTask {
@@ -6,7 +5,7 @@ export interface BaseTask {
   name: string;
   short_name: string;
   course_id?: number;
-  slide?: Slide;
+  slide_id?: string;
   task_group_id?: number;
   task_group_short_name: string;
   task_count?: number;

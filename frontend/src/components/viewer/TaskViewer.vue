@@ -1,27 +1,23 @@
 <template>
-  <annotation-group-vue
+  <annotation-group
     v-if="task?.task_type === 1"
     :annotationGroups="task.annotation_groups"
     :taskId="task.id"
     @hideGroup="hideGroup"
     @showGroup="showGroup"
     @groupCreated="groupCreated"
-  ></annotation-group-vue>
-  <div v-if="selectedPolygon && task?.task_type === 1" class="fixed z-99 bg-gray-700 p-2 rounded-lg top-20 left-2">
-    <div>Annotationsklasse:</div>
-    <select v-model="selectedPolygonData.name" class="bg-gray-500 hover:bg-gray-400 rounded-lg cursor-pointer w-full">
-      <option v-for="group in task?.annotation_groups" :key="group">
-        {{ group.name }}
-      </option>
-    </select>
+  ></annotation-group>
 
-    <save-button
-      class="mt-4"
-      name="Speichern"
-      @click="updateAnnotation(selectedPolygon)"
-      :loading="taskSaveLoading"
-    ></save-button>
-  </div>
+  <annotation-settings v-if="selectedPolygon && task?.task_type === 1" @saved="updateAnnotation(selectedPolygon)">
+    <CustomSelect
+      displayType="small"
+      label="Annotationsklasse:"
+      :values="task?.annotation_groups"
+      field="name"
+      :initial-data="selectedPolygon.name"
+      @valueChanged="updateAnnotationName"
+    />
+  </annotation-settings>
 
   <tool-bar :tools="toolbarTools" @toolUpdate="setTool" :setMoving="is_solving || setMoving"></tool-bar>
 
@@ -34,38 +30,7 @@
     "
   ></escape-info>
 
-  <div
-    v-if="taskSaveLoading"
-    class="
-      flex
-      justify-center
-      items-center
-      fixed
-      bottom-8
-      left-1/2
-      transform
-      -translate-x-1/2
-      bg-gray-800
-      z-2
-      rounded-lg
-      p-2
-    "
-  >
-    <svg
-      class="animate-spin mr-3 h-5 w-5 text-white"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-    >
-      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-      <path
-        class="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-      ></path>
-    </svg>
-    Saving...
-  </div>
+  <saving-info></saving-info>
 
   <div ref="viewerRef" id="viewerImage" class="h-screen bg-gray-900" @keyup="handleKeyup"></div>
 
@@ -88,17 +53,21 @@
 </template>
 <script lang="ts">
 import { computed, defineComponent, onMounted, onUnmounted, PropType, reactive, ref, watch } from 'vue';
-
 import { options } from './core';
 import ToolBar from './ToolBar.vue';
 import { AnnotationViewer } from './core';
 import OpenSeadragon, { TileSource } from 'openseadragon';
 import { UserSolution } from 'model/userSolution';
 import { select, selectAll } from 'd3-selection';
-import { SVG_ID, polygonChanged, selectedPolygon, showSolution, userSolutionLocked, viewerLoadingState } from './core';
-import AnnotationGroupVue from './AnnotationGroup.vue';
-import GroundTruthDialog from './GroundTruthDialog.vue';
-import ConfirmDialog from '../base/ConfirmDialog.vue';
+import {
+  SVG_ID,
+  polygonChanged,
+  selectedPolygon,
+  showSolution,
+  userSolutionLocked,
+  viewerLoadingState,
+  isTaskSaving
+} from './core';
 import {
   Annotation,
   AnnotationGroup,
@@ -118,7 +87,6 @@ import { getSlideUrl } from '../../config';
 import { TooltipGenerator } from '../../utils/tooltip-generator';
 import { ParseResult } from '../../utils/annotation-parser';
 import { TaskService } from '../../services';
-import EscapeInfo from './EscapeInfo.vue';
 
 export default defineComponent({
   props: {
@@ -137,9 +105,6 @@ export default defineComponent({
   },
 
   emits: ['userAnnotationChanged', 'userSolutionDeleted'],
-
-  components: { ToolBar, AnnotationGroupVue, GroundTruthDialog, ConfirmDialog, EscapeInfo },
-
   setup(props, { emit }) {
     const viewerRef = ref();
 
@@ -153,8 +118,6 @@ export default defineComponent({
     const drawingViewer = ref<AnnotationViewer>();
 
     const showUploadDialog = ref<Boolean>(false);
-
-    const taskSaveLoading = ref<Boolean>(false);
 
     const showDeleteAnnotationsModal = ref<Boolean>(false);
     const deleteAnnotationsLoading = ref<Boolean>(false);
@@ -415,9 +378,17 @@ export default defineComponent({
 
     const updateAnnotation = async (annotation: Annotation | null | undefined) => {
       if (annotation) {
-        taskSaveLoading.value = true;
+        isTaskSaving.value = true;
         await drawingViewer.value?.updateUserAnnotation(props.task!, annotation);
-        taskSaveLoading.value = false;
+        isTaskSaving.value = false;
+      }
+    };
+
+    const updateAnnotationName = (newName: { name: string; color: string }) => {
+      const group = props.task?.annotation_groups.find((group) => group.name === newName.name);
+      if (group) {
+        selectedPolygon.value?.updateAnnotationClass(group.name, group.color);
+        polygonChanged.changed = true;
       }
     };
 
@@ -566,7 +537,6 @@ export default defineComponent({
       handleKeyup,
       setTool,
       viewerRef,
-      taskSaveLoading,
       showUploadDialog,
       drawingViewer,
       hideGroup,
@@ -581,7 +551,8 @@ export default defineComponent({
       showDeleteAnnotationsModal,
       isLineDrawing,
       isPolygonDrawing,
-      deleteAnnotationsLoading
+      deleteAnnotationsLoading,
+      updateAnnotationName
     };
   }
 });

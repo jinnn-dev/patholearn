@@ -22,7 +22,7 @@
         </div>
 
         <task-viewer
-          :slide_name="baseTask?.slide?.file_id"
+          :slide_name="baseTask?.slide_id"
           :task="selectedTask"
           :base_task_id="baseTask?.id"
           :task_group_id="baseTask?.task_group_id"

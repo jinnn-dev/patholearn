@@ -1,94 +1,88 @@
 <template>
-  <annotation-group-vue
+  <annotation-group
     v-if="task?.task_type === 1"
     :annotationGroups="task.annotation_groups"
     :taskId="task.id"
     @showGroup="showGroup"
     @hideGroup="hideGroup"
     @groupUpdated="updateGroup"
-  ></annotation-group-vue>
+  ></annotation-group>
 
-  <div v-if="selectedPolygon" class="fixed z-99 bg-gray-700 p-2 rounded-lg top-20 left-2">
-    <div v-if="task?.task_type === 0 || isBackgroundPolygon" class="flex flex-col gap-2 my-2">
+  <annotation-settings v-if="selectedPolygon">
+    <!-- <div v-if="task?.task_type === 0 || isBackgroundPolygon" class="flex flex-col gap-2 my-2">
       <div>Annotationsfarbe:</div>
       <input type="color" id="body" name="body" v-model="selectedPolygonData.color" class="h-6 w-full" />
-    </div>
-    <div v-else>
-      <div>Annotationsklasse:</div>
-      <select v-model="selectedPolygonData.name" class="bg-gray-500 hover:bg-gray-400 rounded-lg cursor-pointer">
-        <option v-for="group in task?.annotation_groups" :key="group">
-          {{ group.name }}
-        </option>
-      </select>
-    </div>
-    <div v-if="isOffsetAnnotationPoint">
-      <div class="my-4">
-        Radius:
-        <div class="my-2">
-          <Slider
-            v-model="selectedPolygonData.offsetRadius"
-            :step="-1"
-            :min="0"
-            :max="maxRadius"
-            :tooltips="false"
-          ></Slider>
-        </div>
-      </div>
-    </div>
+    </div> -->
+    <ColorPicker
+      v-if="task?.task_type === 0 || isBackgroundPolygon"
+      label="Annotationsfarbe"
+      @isReleased="polygonChanged.changed = true"
+      @changed="updateAnnotationColor"
+      :initialColor="selectedPolygon.color"
+    ></ColorPicker>
 
-    <div v-if="isOffsetAnnotationLine && !isAnnotationChangedManually">
-      <div class="my-4">
-        Radius:
-        <div class="my-2">
-          <Slider
-            v-model="selectedPolygonData.offsetRadius"
-            :step="-1"
-            :min="0"
-            :max="maxRadius"
-            :tooltips="false"
-          ></Slider>
-        </div>
-      </div>
-    </div>
+    <CustomSelect
+      v-else
+      displayType="small"
+      label="Annotationsklasse:"
+      :values="task?.annotation_groups"
+      field="name"
+      :initial-data="selectedPolygon.name"
+      @valueChanged="updateAnnotationName"
+    />
+
+    <CustomSlider
+      v-if="isOffsetAnnotationPoint"
+      label="Kreisradius"
+      :step="-1"
+      :min="0"
+      :max="maxRadius"
+      :tooltips="false"
+      @valueChanged="updateAnnotationPointOffsetRadius"
+      @isReleased="polygonChanged.changed = true"
+      :initialPosition="selectedPolygonData.offsetRadius"
+    />
+
+    <CustomSlider
+      v-if="isOffsetAnnotationLine && !isAnnotationChangedManually"
+      label="Toleranzabstand"
+      :step="-1"
+      :min="0"
+      :max="maxRadius"
+      :tooltips="false"
+      @valueChanged="updateAnnotationLineOffsetRadius"
+      @isReleased="polygonChanged.changed = true"
+      :initialPosition="selectedPolygonData.offsetRadius"
+    />
 
     <div v-if="isOffsetAnnotationPolygon && !isAnnotationChangedManually">
-      <div class="my-4">
-        Äußerer Rand:
-        <div class="my-2">
-          <Slider
-            v-model="selectedPolygonData.outerOffset"
-            :step="-1"
-            :min="0"
-            :max="maxRadius"
-            :tooltips="false"
-          ></Slider>
-        </div>
-      </div>
-      <div class="my-4">
-        Innerer Rand:
-        <div class="my-2">
-          <Slider
-            v-model="selectedPolygonData.innerOffset"
-            :step="-1"
-            :min="0"
-            :max="maxRadius"
-            :tooltips="false"
-          ></Slider>
-        </div>
-      </div>
+      <CustomSlider
+        label="Äußerer Toleranzabstand:"
+        :step="-1"
+        :min="0"
+        :max="maxRadius"
+        :tooltips="false"
+        @valueChanged="updateOuterOffsetRadius"
+        @isReleased="polygonChanged.changed = true"
+        :initialPosition="selectedPolygonData.outerOffset"
+      />
+      <CustomSlider
+        label=" Innerer Toleranzabstand:"
+        :step="-1"
+        :min="0"
+        :max="maxRadius"
+        :tooltips="false"
+        @valueChanged="updateInnerOffsetRadius"
+        @isReleased="polygonChanged.changed = true"
+        :initialPosition="selectedPolygonData.innerOffset"
+      />
     </div>
 
     <div v-if="isAnnotationChangedManually" class="my-4">
       <primary-button bgColor="bg-gray-500" @click="resetAnnotationTolerance">Toleranz zurücksetzen</primary-button>
     </div>
+  </annotation-settings>
 
-    <save-button
-      class="mt-4"
-      name="Speichern"
-      @click="updateAnnotation(selectedPolygon)"
-      :loading="taskSaveLoading"
-    ></save-button>
-  </div>
   <tool-bar :tools="toolbarTools" @toolUpdate="setTool" :setMoving="setMoving"></tool-bar>
 
   <div ref="viewerRef" id="viewerImage" class="h-screen bg-gray-900" @keyup="handleKeyup"></div>
@@ -101,6 +95,8 @@
         : ' Drücke die ESC-Taste um das Zeichnen der Linie zu beenden'
     "
   ></escape-info>
+
+  <saving-info></saving-info>
 
   <ground-truth-dialog
     :showDialog="showUploadDialog"
@@ -121,7 +117,6 @@
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, PropType, reactive, ref, watch } from 'vue';
-import Slider from '@vueform/slider';
 
 import { getSlideUrl } from '../../config';
 import {
@@ -136,22 +131,14 @@ import {
   TOOL_POLYGON
 } from '../../model';
 import { options } from './core';
-import ToolBar from './ToolBar.vue';
 import { AnnotationViewer } from './core';
 import OpenSeadragon from 'openseadragon';
-import { UserSolution } from 'model/userSolution';
 import { select, selectAll } from 'd3-selection';
-import { SVG_ID, polygonChanged, selectedPolygon, viewerLoadingState, viewerZoom } from './core';
+import { SVG_ID, polygonChanged, selectedPolygon, viewerLoadingState, viewerZoom, isTaskSaving } from './core';
 import { OffsetAnnotationPolygon } from '../../model';
 import { ParseResult } from '../../utils/annotation-parser';
-import FormField from '../FormField.vue';
 import { OffsetAnnotationPoint, OffsetAnnotationLine, AnnotationLine } from '../../model';
-import AnnotationGroupVue from './AnnotationGroup.vue';
-import CustomSelect from '../CustomSelect.vue';
-import GroundTruthDialog from './GroundTruthDialog.vue';
-import ConfirmDialog from '../../components/base/ConfirmDialog.vue';
 import { TaskService } from '../../services';
-import EscapeInfo from './EscapeInfo.vue';
 
 export default defineComponent({
   props: {
@@ -163,17 +150,6 @@ export default defineComponent({
     base_task_id: Number,
     task_group_id: Number,
     course_id: Number
-  },
-
-  components: {
-    ToolBar,
-    Slider,
-    FormField,
-    AnnotationGroupVue,
-    CustomSelect,
-    GroundTruthDialog,
-    ConfirmDialog,
-    EscapeInfo
   },
 
   setup(props, { emit }) {
@@ -301,64 +277,56 @@ export default defineComponent({
       }
     );
 
-    watch(
-      () => selectedPolygonData.offsetRadius,
-      (newVal, oldVal) => {
-        if (newVal !== undefined && oldVal !== undefined) {
-          const newRadius = newVal / maxRadius / Math.pow(drawingViewer.value!.scale, 0.35);
-
-          if (selectedPolygon.value instanceof OffsetAnnotationPoint) {
-            (selectedPolygon.value as OffsetAnnotationPoint).updateOffset(newRadius);
-          } else {
-            (selectedPolygon.value as OffsetAnnotationLine).updateOffset(
-              newRadius,
-              drawingViewer.value!.scale,
-              drawingViewer.value!.viewer
-            );
-          }
-        }
+    const updateAnnotationColor = (color: string) => {
+      if (selectedPolygon.value?.type === ANNOTATION_TYPE.BASE) {
+        color = 'none';
       }
-    );
+      selectedPolygon.value?.updateColor(color + ANNOTATION_COLOR.FILL_OPACITY, color);
+    };
 
-    watch(
-      () => selectedPolygonData.innerOffset,
-      (newVal, oldVal) => {
-        if (oldVal !== undefined && newVal !== undefined) {
-          if (selectedPolygon.value instanceof OffsetAnnotationPolygon) {
-            (selectedPolygon.value as OffsetAnnotationPolygon)?.updateInlfationInnerOffset(
-              newVal / maxRadius / Math.pow(drawingViewer.value!.scale, 0.35),
-              drawingViewer.value!.scale,
-              drawingViewer.value!.viewer
-            );
-          }
-        }
-      }
-    );
+    const updateAnnotationPointOffsetRadius = (newRadius: number) => {
+      selectedPolygonData.offsetRadius = newRadius;
+      const normalizedRadius = calcNormalizedRadius(newRadius);
 
-    watch(
-      () => selectedPolygonData.outerOffset,
-      (newVal, oldVal) => {
-        if (oldVal !== undefined && newVal !== undefined) {
-          if (selectedPolygon.value instanceof OffsetAnnotationPolygon) {
-            (selectedPolygon.value as OffsetAnnotationPolygon)?.updateInflationOuterOffset(
-              newVal / maxRadius / Math.pow(drawingViewer.value!.scale, 0.35),
-              drawingViewer.value!.scale,
-              drawingViewer.value!.viewer
-            );
-          }
-        }
-      }
-    );
+      (selectedPolygon.value as OffsetAnnotationPoint).updateOffset(normalizedRadius);
+    };
 
-    watch(
-      () => selectedPolygonData.name,
-      (newVal, oldVal) => {
-        const group = props.task?.annotation_groups?.find((group) => group.name === newVal);
-        if (group) {
-          selectedPolygon.value?.updateAnnotationClass(group.name, group.color);
-        }
-      }
-    );
+    const updateAnnotationLineOffsetRadius = (newRadius: number) => {
+      selectedPolygonData.offsetRadius = newRadius;
+
+      const normalizedRadius = calcNormalizedRadius(newRadius);
+      (selectedPolygon.value as OffsetAnnotationLine).updateOffset(
+        normalizedRadius,
+        drawingViewer.value!.scale,
+        drawingViewer.value!.viewer
+      );
+    };
+
+    const updateInnerOffsetRadius = (newRadius: number) => {
+      selectedPolygonData.innerOffset = newRadius;
+
+      const normalizedRadius = calcNormalizedRadius(newRadius);
+      (selectedPolygon.value as OffsetAnnotationPolygon).updateInlfationInnerOffset(
+        normalizedRadius,
+        drawingViewer.value!.scale,
+        drawingViewer.value!.viewer
+      );
+    };
+
+    const updateOuterOffsetRadius = (newRadius: number) => {
+      selectedPolygonData.outerOffset = newRadius;
+
+      const normalizedRadius = calcNormalizedRadius(newRadius);
+      (selectedPolygon.value as OffsetAnnotationPolygon)?.updateInflationOuterOffset(
+        normalizedRadius,
+        drawingViewer.value!.scale,
+        drawingViewer.value!.viewer
+      );
+    };
+
+    const calcNormalizedRadius = (radius: number) => {
+      return radius / maxRadius / Math.pow(drawingViewer.value!.scale, 0.35);
+    };
 
     watch(
       () => viewerLoadingState.tilesLoaded,
@@ -515,22 +483,30 @@ export default defineComponent({
     };
 
     const saveTask = async (type?: ANNOTATION_TYPE) => {
-      taskSaveLoading.value = true;
+      isTaskSaving.value = true;
 
       if (type) {
         await drawingViewer.value?.save(props.task!, type);
       } else {
         await drawingViewer.value?.saveTaskAnnotation(props.task!);
       }
-      taskSaveLoading.value = false;
+      isTaskSaving.value = false;
     };
 
     const updateAnnotation = async (annotation: Annotation | null | undefined) => {
       if (annotation) {
-        taskSaveLoading.value = true;
-
+        isTaskSaving.value = true;
         await drawingViewer.value?.updateAnnotation(props.task!, annotation);
-        taskSaveLoading.value = false;
+        isTaskSaving.value = false;
+        polygonChanged.changed = false;
+      }
+    };
+
+    const updateAnnotationName = (newName: { name: string; color: string }) => {
+      const group = props.task?.annotation_groups.find((group) => group.name === newName.name);
+      if (group) {
+        selectedPolygon.value?.updateAnnotationClass(group.name, group.color);
+        polygonChanged.changed = true;
       }
     };
 
@@ -592,19 +568,20 @@ export default defineComponent({
               if (selectedPolygon.value instanceof OffsetAnnotationPolygon) {
                 const annotation = selectedPolygon.value as OffsetAnnotationPolygon;
 
-                selectedPolygonData.innerOffset =
+                const newInnerOffset =
                   annotation.inflationInnerOffset * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
-                selectedPolygonData.outerOffset =
+                updateInnerOffsetRadius(newInnerOffset);
+                const newOuterOffset =
                   annotation.inflationOuterOffset * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
+                updateOuterOffsetRadius(newOuterOffset);
               } else if (selectedPolygon.value instanceof OffsetAnnotationLine) {
                 const annotation = selectedPolygon.value as OffsetAnnotationLine;
-
-                selectedPolygonData.offsetRadius =
-                  annotation.offsetRadius * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
+                const newOffset = annotation.offsetRadius * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
+                updateAnnotationLineOffsetRadius(newOffset);
               } else if (selectedPolygon.value instanceof OffsetAnnotationPoint) {
                 const annotation = selectedPolygon.value as OffsetAnnotationPoint;
-                selectedPolygonData.offsetRadius =
-                  annotation.offsetRadius * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
+                const newOffset = annotation.offsetRadius * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
+                updateAnnotationPointOffsetRadius(newOffset);
               }
             });
         }
@@ -679,9 +656,15 @@ export default defineComponent({
       applyAnnotationsLoading,
       showConfirmationDialog,
       deleteAnnotationsLoading,
-      deleteAllAnnotations
+      deleteAllAnnotations,
+      updateAnnotationName,
+      updateAnnotationPointOffsetRadius,
+      updateAnnotationLineOffsetRadius,
+      updateInnerOffsetRadius,
+      updateOuterOffsetRadius,
+      polygonChanged,
+      updateAnnotationColor
     };
   }
 });
 </script>
-<style src="@vueform/slider/themes/default.css"></style>

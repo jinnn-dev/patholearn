@@ -11,7 +11,7 @@
     <task-container :baseTask="baseTask" :isOwner="true" @taskSelected="selectTask($event)"></task-container>
 
     <task-viewer-admin
-      :slide_name="baseTask?.slide?.file_id"
+      :slide_name="baseTask?.slide_id"
       :task="selectedTask"
       :base_task_id="baseTask?.id"
       :task_group_id="baseTask?.task_group_id"
