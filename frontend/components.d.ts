@@ -6,6 +6,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AnnotationGroup: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/viewer/AnnotationGroup.vue')['default']
     AnnotationSettings: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/viewer/annotation-settings/AnnotationSettings.vue')['default']
+    AreaInput: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/AreaInput.vue')['default']
     AuthInput: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/auth/AuthInput.vue')['default']
     CardList: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/CardList.vue')['default']
     CardLoading: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/CardLoading.vue')['default']
@@ -13,6 +14,7 @@ declare module 'vue' {
     ConfirmDialog: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/base/ConfirmDialog.vue')['default']
     ContentContainer: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/containers/ContentContainer.vue')['default']
     ContentHeader: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/ContentHeader.vue')['default']
+    CourseCard: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/CourseCard.vue')['default']
     CourseSearch: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/CourseSearch.vue')['default']
     CustomSelect: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/CustomSelect.vue')['default']
     CustomSlider: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/CustomSlider.vue')['default']
@@ -20,6 +22,7 @@ declare module 'vue' {
     EscapeInfo: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/viewer/EscapeInfo.vue')['default']
     FormField: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/FormField.vue')['default']
     GroundTruthDialog: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/viewer/GroundTruthDialog.vue')['default']
+    InputArea: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/InputArea.vue')['default']
     InputField: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/InputField.vue')['default']
     LazyImage: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/LazyImage.vue')['default']
     ModalDialog: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/containers/ModalDialog.vue')['default']

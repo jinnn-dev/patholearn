@@ -29,6 +29,7 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
         db_obj = Course()
         db_obj.name = obj_in.name
         db_obj.owner_id = owner_id
+        db_obj.description = obj_in.description
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)

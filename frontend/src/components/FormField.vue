@@ -1,11 +1,11 @@
 <template>
   <div class="flex flex-col justify-start items-start" :class="marginHor">
     <span class="text-gray-200 mb-0.5">{{ label }}</span>
-    <div class="relative w-full">
+    <div class="relative w-full h-full">
       <div class="pointer-events-none absolute inset-y-0 left-2 flex items-center">
         <slot name="icon"></slot>
       </div>
-      <div class="w-full flex flex-row justify-start">
+      <div class="w-full flex flex-row justify-start h-full">
         <slot></slot>
       </div>
     </div>

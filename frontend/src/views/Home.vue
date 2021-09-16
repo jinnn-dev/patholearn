@@ -1,8 +1,9 @@
 <template>
   <content-container>
     <template v-slot:header>
-      <!-- <div class="text-7xl font-bold mb-4">PATHOLEARN</div> -->
-      <div class="text-7xl">Willkommen zurück {{ appState.user?.firstname }}</div></template
+      <div class="flex justify-center w-full text-5xl font-semibold">
+        <div class="">Willkommen zurück {{ appState.user?.firstname }}</div>
+      </div></template
     >
     <template v-slot:content>
       <div class="flex justify-center items-center mb-8">
@@ -26,12 +27,7 @@
           </div>
           <div v-else class="flex flex-wrap">
             <div v-for="course in ownerCourses" :key="course.id" class="ml-4 mb-4">
-              <router-link :to="'/course/' + course.short_name + '/admin'">
-                <skeleton-card>
-                  <div class="text-xl">{{ course.name }}</div>
-                  <task-count-badge :count="course.task_count"></task-count-badge>
-                </skeleton-card>
-              </router-link>
+              <course-card :course="course" :isCourseOwner="appState.user?.is_superuser" />
             </div>
             <no-content v-if="ownerCourses.length === 0" text="Noch keinen Kurs erstellt"></no-content>
           </div>
@@ -40,7 +36,7 @@
 
       <div>
         <div class="text-xl font-bold text-gray-200 uppercase">
-          Deine {{ appState.user?.is_superuser ? 'beigetrenen' : '' }} Kurse
+          Deine {{ appState.user?.is_superuser ? 'beigetretenen' : '' }} Kurse
         </div>
         <div class="my-8">
           <div v-if="loading" class="flex">
@@ -48,21 +44,7 @@
           </div>
           <div v-else class="flex flex-wrap">
             <div v-for="course in courses" :key="course.id" class="ml-4">
-              <router-link :to="'/course/' + course.short_name">
-                <skeleton-card>
-                  <div class="text-xl">{{ course.name }}</div>
-                  <div class="text-gray-200">bei {{ course.owner.firstname }} {{ course.owner.lastname }}</div>
-                  <progress-bar
-                    :id="course.short_name"
-                    :percentage="course.percentage_solved"
-                    :wrongTasks="course.wrong_tasks"
-                    :correctTasks="course.correct_tasks"
-                    :taskCount="course.task_count"
-                  ></progress-bar>
-                  <task-count-badge :count="course.task_count"></task-count-badge>
-                  <new-task-badge v-if="course.new_tasks"></new-task-badge>
-                </skeleton-card>
-              </router-link>
+              <course-card :course="course" :isCourseOwner="false" />
             </div>
             <no-content v-if="courses.length === 0" text="Noch keinem Kurs beigetreten"></no-content>
           </div>
@@ -71,7 +53,7 @@
     </template>
   </content-container>
 
-  <modal-dialog :show="showModal">
+  <modal-dialog customClasses="w-[700px] h-1/2" :show="showModal">
     <div>
       <h1 class="text-2xl text-center">Erstelle einen neuen Kurs</h1>
       <form @submit.prevent="onSubmit" class="w-full">
@@ -86,6 +68,15 @@
         >
         </input-field>
         <!-- <div v-if="courseAlreadyExists" class="text-red-500">Es gibt bereits einen Kurs mit diesem Namen.</div> -->
+
+        <input-area
+          class="h-72"
+          v-model="formData.description"
+          label="Kursbeschreibung"
+          placeholder="Das ist der tollste Kurs"
+          tip="Gebe deinem Kurs eine optionale Beschreibung"
+        ></input-area>
+
         <div class="flex flex-end">
           <primary-button
             @click.prevent="hideModal"
@@ -104,22 +95,14 @@
 <script lang="ts">
 import { defineComponent, onMounted, reactive, ref } from 'vue';
 import { CourseService } from '../services/course.service';
-import { Course } from '../model/course';
+import { Course, CreateCourse } from '../model/course';
 import { AuthService } from '../services/auth.service';
 import router from '../router';
 
-import ModalDialog from '../components/containers/ModalDialog.vue';
-import CourseSearch from '../components/CourseSearch.vue';
-import ProgressBar from '../components/ProgressBar.vue';
-import ContentContainer from '../components/containers/ContentContainer.vue';
 import { appState } from '../utils/app.state';
-import TaskCountBadge from '../components/TaskCountBadge.vue';
-import NoContent from '../components/NoContent.vue';
-import NewTaskBadge from '../components/NewTaskBadge.vue';
 
 export default defineComponent({
   name: 'Home',
-  components: { ModalDialog, CourseSearch, ProgressBar, ContentContainer, TaskCountBadge, NoContent, NewTaskBadge },
 
   setup() {
     const courses = ref<Course[]>([]);
@@ -131,8 +114,12 @@ export default defineComponent({
     const courseIsCreating = ref<boolean>(false);
     const courseAlreadyExists = ref<boolean>(false);
 
-    const formData = reactive({
-      name: ''
+    const formData = reactive<{
+      name: string;
+      description: string | undefined;
+    }>({
+      name: '',
+      description: undefined
     });
 
     onMounted(async () => {
@@ -150,7 +137,13 @@ export default defineComponent({
 
     const onSubmit = () => {
       courseIsCreating.value = true;
-      CourseService.createCourse({ name: formData.name })
+
+      const createCourse: CreateCourse = {
+        name: formData.name,
+        ...(formData.description && { description: formData.description })
+      };
+
+      CourseService.createCourse(createCourse)
         .then((res) => {
           res.task_count = 0;
           ownerCourses.value.push(res);
@@ -180,7 +173,6 @@ export default defineComponent({
     return {
       appState,
       courses,
-      onLogout,
       ownerCourses,
       loading,
       showModal,

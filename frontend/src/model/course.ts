@@ -4,6 +4,7 @@ import { User } from './user';
 export interface Course {
   id: number;
   name: string;
+  description: string;
   short_name: string;
   owner: User;
   task_groups: TaskGroup[];
@@ -18,4 +19,5 @@ export interface Course {
 
 export interface CreateCourse {
   name: string;
+  description?: string;
 }

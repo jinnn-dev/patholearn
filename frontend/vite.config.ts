@@ -16,6 +16,9 @@ export default defineConfig({
       safelist: [
         'stroke-green-500',
         'text-lg',
+        'w-2/7',
+        'w-2/4',
+        'w-[700px]',
         'bg-green-500',
         'font-semibold',
         'group-hover:block',

@@ -20,6 +20,7 @@
           >
             <div
               class="bg-gray-800 tex-gray-100 rounded-lg text-left shadow-xl p-8 top-1/2"
+              :class="customClasses"
               role="dialog"
               ref="modal"
               araia-modal="true"
@@ -45,7 +46,8 @@ export default defineComponent({
     show: {
       type: Boolean,
       default: false
-    }
+    },
+    customClasses: String
   },
 
   setup(props) {
