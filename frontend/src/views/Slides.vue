@@ -23,9 +23,7 @@
         <skeleton-card
           v-for="(slide, index) of slides"
           :key="slide.name"
-          @click.prevent="
-            SLIDE_STATUS[slide.status] !== SLIDE_STATUS.R ? $router.push('/slides/' + slide.slide_id) : ''
-          "
+          @click.prevent="slide.status !== SLIDE_STATUS.RUNNING ? $router.push('/slides/' + slide.slide_id) : ''"
           class="cursor-pointer my-4"
           inputClasses="px-5 py-0"
         >
@@ -42,8 +40,8 @@
             <div class="text-md">{{ slide.width ? slide.width + 'px' : 'Keine Daten' }}</div>
             <div class="text-md">{{ slide.height ? slide.height + 'px' : 'Keine Daten' }}</div>
             <div class="text-md">{{ slide.mpp ? slide.mpp : 'Keine Daten' }}</div>
-            <div class="border-2 p-2 rounded-xl" :class="getStatusColor(SLIDE_STATUS[slide.status])">
-              {{ SLIDE_STATUS[slide.status] }}
+            <div class="border-2 p-2 rounded-xl" :class="getStatusColor(slide.status)">
+              {{ SLIDE_STATUS_STRING[slide.status] }}
             </div>
             <div>
               <ph-trash :size="24" @click.stop="deleteSlide(slide, index)" />
@@ -60,13 +58,12 @@ import { defineComponent, onMounted, ref } from 'vue';
 import { SlideService } from '../services/slide.service';
 import { Slide } from '../model/slide';
 import { getThumbnailUrl } from '../config';
-import { SLIDE_STATUS } from '../model/slideStatus';
+import { SLIDE_STATUS, SLIDE_STATUS_STRING } from '../model/slideStatus';
 import SlideUpload from '../components/SlideUpload.vue';
 import { AuthService } from '../services/auth.service';
 import { useRouter } from 'vue-router';
 import ContentContainer from '../components/containers/ContentContainer.vue';
 import LazyImage from '../components/LazyImage.vue';
-import { ApiService } from '../services/api.service';
 
 export default defineComponent({
   components: { SlideUpload, ContentContainer, LazyImage },
@@ -106,13 +103,13 @@ export default defineComponent({
       let color;
 
       switch (status) {
-        case SLIDE_STATUS.S:
+        case SLIDE_STATUS.SUCCESS:
           color = 'green-500';
           break;
-        case SLIDE_STATUS.R:
+        case SLIDE_STATUS.RUNNING:
           color = 'yellow-500';
           break;
-        case SLIDE_STATUS.E:
+        case SLIDE_STATUS.ERROR:
           color = 'red-500';
           break;
         default:
@@ -141,6 +138,7 @@ export default defineComponent({
       deleteSlide,
       loadSlides,
       onLogout,
+      SLIDE_STATUS_STRING,
       slideLoading,
       slideError
     };
