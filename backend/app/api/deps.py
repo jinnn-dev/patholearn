@@ -1,17 +1,18 @@
 from typing import Generator
 
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-from jose import jwt
-from pydantic import ValidationError
-from sqlalchemy.orm import Session
-
 from app.core import security
 from app.core.config import settings
+from app.crud.crud_base_task import crud_base_task
+from app.crud.crud_course import crud_course
 from app.crud.crud_user import crud_user
 from app.db.session import SessionLocal
 from app.models.user import User
 from app.schemas.token import TokenPayload
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from jose import jwt
+from pydantic import ValidationError
+from sqlalchemy.orm import Session, base
 
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_STR}/login/access-token"
@@ -87,3 +88,15 @@ def get_current_active_superuser(
             status_code=400, detail="The user doesn't have enough privileges"
         )
     return current_user
+
+
+def check_if_user_can_access_course(db: Session, user_id: int, course_id: int) -> None:
+    if not crud_course.user_is_course_owner(db, user_id=user_id, course_id=course_id):
+        raise HTTPException(
+            status_code=403, 
+            detail="The user doesn't have enough privileges"
+        )
+
+def check_if_user_can_access_task(db: Session, *, user_id: int, base_task_id: int) -> None:
+    base_task = crud_base_task.get(db, id=base_task_id);
+    check_if_user_can_access_course(db, user_id=user_id, course_id=base_task.course_id)

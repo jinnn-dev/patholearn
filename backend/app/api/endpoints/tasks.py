@@ -1,10 +1,10 @@
 import json
-from typing import List, Any, Union
+from typing import Any, List, Union
 
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-
-from app.api.deps import get_db, get_current_active_user, get_current_active_superuser
+from app.api.deps import (check_if_user_can_access_course,
+                          check_if_user_can_access_task,
+                          get_current_active_superuser,
+                          get_current_active_user, get_db)
 from app.core.solver.solver import Solver
 from app.crud.crud_base_task import crud_base_task
 from app.crud.crud_course import crud_course
@@ -12,13 +12,19 @@ from app.crud.crud_task import crud_task
 from app.crud.crud_task_group import crud_task_group
 from app.crud.crud_user_solution import crud_user_solution
 from app.models.user import User
-from app.schemas.base_task import BaseTask, BaseTaskCreate, BaseTaskDetail, BaseTaskUpdate
-from app.schemas.polygon_data import OffsetPolygonData, OffsetLineData, OffsetPointData, AnnotationData, AnnotationType
-from app.schemas.task import Task, TaskCreate, TaskUpdate, TaskFeedback, TaskStatus, AnnotationGroup, \
-    AnnotationGroupUpdate
-from app.schemas.user_solution import UserSolution, UserSolutionCreate, UserSolutionUpdate
+from app.schemas.base_task import (BaseTask, BaseTaskCreate, BaseTaskDetail,
+                                   BaseTaskUpdate)
+from app.schemas.polygon_data import (AnnotationData, AnnotationType,
+                                      OffsetLineData, OffsetPointData,
+                                      OffsetPolygonData)
+from app.schemas.task import (AnnotationGroup, AnnotationGroupUpdate, Task,
+                              TaskCreate, TaskFeedback, TaskStatus, TaskUpdate)
+from app.schemas.user_solution import (UserSolution, UserSolutionCreate,
+                                       UserSolutionUpdate)
 from app.utils.colored_printer import ColoredPrinter
 from app.utils.timer import Timer
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
 
 router = APIRouter()
 
@@ -26,8 +32,12 @@ router = APIRouter()
 @router.post('', response_model=BaseTask)
 def create_base_task(*, db: Session = Depends(get_db), base_task_in: BaseTaskCreate,
                      current_user: User = Depends(get_current_active_superuser)) -> Any:
+
     duplicate_base_task = crud_base_task.get_by_name(db, name=base_task_in.name,
                                                      task_group_id=base_task_in.task_group_id)
+
+    check_if_user_can_access_course(db, user_id=current_user.id, course_id=base_task_in.course_id)
+    
     if duplicate_base_task:
         raise HTTPException(
             status_code=400,
@@ -41,7 +51,11 @@ def create_base_task(*, db: Session = Depends(get_db), base_task_in: BaseTaskCre
 @router.put('', response_model=BaseTask)
 def update_base_task(*, db: Session = Depends(get_db), current_user: User = Depends(get_current_active_superuser),
                      obj_in: BaseTaskUpdate) -> BaseTask:
+
     base_task = crud_base_task.get(db, id=obj_in.base_task_id)
+
+    check_if_user_can_access_course(db, user_id=current_user.id, course_id=base_task.course_id)
+
     base_task = crud_base_task.update(db, db_obj=base_task, obj_in=obj_in)
     return base_task
 
@@ -49,6 +63,7 @@ def update_base_task(*, db: Session = Depends(get_db), current_user: User = Depe
 @router.get('/{short_name}', response_model=BaseTaskDetail)
 def read_task_details(*, db: Session = Depends(get_db), short_name: str,
                       current_user: User = Depends(get_current_active_user)) -> Any:
+
     base_task = crud_base_task.get_by_short_name(db, short_name=short_name)
 
     if crud_course.is_not_member_and_owner(db, course_id=base_task.course_id, user_id=current_user.id):
@@ -65,7 +80,7 @@ def read_task_details(*, db: Session = Depends(get_db), short_name: str,
     for task in base_task.tasks:
         task.user_solution = crud_user_solution.get_solution_to_task_and_user(db, task_id=task.id,
                                                                               user_id=current_user.id)
-        # delattr(task, 'solution')
+        delattr(task, 'solution')
 
     task_group = crud_task_group.get(db=db, id=base_task.task_group_id)
     base_task.task_group_short_name = task_group.short_name
@@ -75,19 +90,10 @@ def read_task_details(*, db: Session = Depends(get_db), short_name: str,
 
 @router.get('/{short_name}/admin', response_model=BaseTaskDetail)
 def read_task_details_admin(*, db: Session = Depends(get_db), short_name: str,
-                            current_user: User = Depends(get_current_active_user)) -> Any:
+                            current_user: User = Depends(get_current_active_superuser)) -> Any:
     base_task = crud_base_task.get_by_short_name(db, short_name=short_name)
 
-    if crud_course.is_not_member_and_owner(db, course_id=base_task.course_id, user_id=current_user.id):
-        course = crud_course.get(db, id=base_task.course_id)
-        raise HTTPException(
-            status_code=403,
-            detail={"course": {"name": course.name, "short_name": course.short_name, "owner": {
-                "firstname": course.owner.firstname,
-                "lastname": course.owner.lastname
-            }}}
-        )
-    crud_task.remove_new_task(db, base_task_id=base_task.id, user_id=current_user.id)
+    check_if_user_can_access_course(db, user_id=current_user.id, course_id=base_task.course_id)
 
     for task in base_task.tasks:
         task.user_solution = crud_user_solution.get_solution_to_task_and_user(db, task_id=task.id,
@@ -103,12 +109,9 @@ def read_task_details_admin(*, db: Session = Depends(get_db), short_name: str,
 def delete_base_task(*, db: Session = Depends(get_db), short_name: str,
                      current_user: User = Depends(get_current_active_user)) -> Any:
     base_task = crud_base_task.get_by_short_name(db, short_name=short_name)
-    course = crud_course.get(db, id=base_task.course_id)
-    if not course.owner.id == current_user.id:
-        raise HTTPException(
-            status_code=403,
-            detail="You are not allowed to delete the Task"
-        )
+    
+    check_if_user_can_access_course(db, user_id=current_user.id, course_id=base_task.course_id)
+
     crud_task.remove_all_to_task_id(db, base_task_id=base_task.id)
     crud_user_solution.remove_all_to_base_task(db, base_task_id=base_task.id)
     crud_base_task.remove(db, model_id=base_task.id)
@@ -127,6 +130,8 @@ def create_task(*, db: Session = Depends(get_db), task_create: TaskCreate,
                 current_user: User = Depends(get_current_active_superuser)) -> Any:
     task = crud_task.create(db, obj_in=task_create)
 
+    check_if_user_can_access_task(db, user_id=current_user.id, base_task_id=task.base_task_id)
+
     base_task = crud_base_task.get(db, task.base_task_id)
     course = crud_course.get(db=db, id=base_task.course_id)
 
@@ -141,7 +146,11 @@ def create_task(*, db: Session = Depends(get_db), task_create: TaskCreate,
 def create_annotation_group(*, db: Session = Depends(get_db), task_id: int,
                             annotation_group_create: AnnotationGroup,
                             current_user: User = Depends(get_current_active_superuser)) -> Any:
+
     task = crud_task.get(db, id=task_id)
+
+    check_if_user_can_access_task(db, user_id=current_user.id, base_task_id=task.base_task_id)
+
     new_group = {"name": annotation_group_create.name, "color": annotation_group_create.color}
     annotation_groups = task.annotation_groups + [new_group] if task.annotation_groups else [new_group]
     crud_task.update(db, db_obj=task, obj_in=TaskUpdate(annotation_groups=annotation_groups))
@@ -153,6 +162,8 @@ def update_annotation_group(*, db: Session = Depends(get_db), task_id: int,
                             annotation_group_update: AnnotationGroupUpdate,
                             current_user: User = Depends(get_current_active_superuser)) -> Any:
     task = crud_task.get(db, id=task_id)
+
+    check_if_user_can_access_task(db, user_id=current_user.id, base_task_id=task.base_task_id)
 
     annotation_group = None
     index = None
@@ -172,9 +183,16 @@ def update_annotation_group(*, db: Session = Depends(get_db), task_id: int,
 
 @router.delete('/task/{task_id}', response_model=Task)
 def delete_task(*, db: Session = Depends(get_db), task_id: int,
-                current_user: User = Depends(get_current_active_user)) -> Any:
-    crud_user_solution.remove_all_by_task_id(db, task_id=task_id)
+                current_user: User = Depends(get_current_active_superuser)) -> Any:
+
+    task_to_delete = crud_task.get(db, model_id=task_id)
+
+    check_if_user_can_access_task(db, user_id=current_user.id, base_task_id=task_to_delete.base_task_id)
+
     task = crud_task.remove(db, model_id=task_id)
+
+    crud_user_solution.remove_all_by_task_id(db, task_id=task_id)
+
     return task
 
 
@@ -182,6 +200,9 @@ def delete_task(*, db: Session = Depends(get_db), task_id: int,
 def delete_task_annotations(*, db: Session = Depends(get_db), task_id: int,
                             current_user: User = Depends(get_current_active_superuser)) -> Any:
     task = crud_task.get(db, id=task_id)
+
+    check_if_user_can_access_task(db, user_id=current_user.id, base_task_id=task.base_task_id)
+
     update = TaskUpdate()
     if task.task_data is not None:
         update.task_data = None
@@ -195,6 +216,9 @@ def add_task_annotation(*, db: Session = Depends(get_db), task_id: int,
                         annotation: Union[OffsetPolygonData, OffsetLineData, OffsetPointData, AnnotationData],
                         current_user: User = Depends(get_current_active_superuser)) -> Any:
     task = crud_task.get(db, id=task_id)
+
+    check_if_user_can_access_task(db, user_id=current_user.id, base_task_id=task.base_task_id)
+
     if annotation.type == AnnotationType.BASE:
         if task.task_data is None:
             data = [annotation]
@@ -216,7 +240,11 @@ def add_task_annotation(*, db: Session = Depends(get_db), task_id: int,
 def update_task_annotation(*, db: Session = Depends(get_db), task_id: int, annotation_id: str,
                            annotation: Union[OffsetPolygonData, OffsetLineData, OffsetPointData, AnnotationData],
                            current_user: User = Depends(get_current_active_superuser)) -> Any:
+    
     task = crud_task.get(db, id=task_id)
+
+    check_if_user_can_access_task(db, user_id=current_user.id, base_task_id=task.base_task_id)
+
     if annotation.type == AnnotationType.BASE:
         old_annotation_index = next((index for (index, d) in enumerate(task.task_data) if d["id"] == annotation_id),
                                     None)
@@ -233,9 +261,11 @@ def update_task_annotation(*, db: Session = Depends(get_db), task_id: int, annot
 
 
 @router.delete('/task/{task_id}/{annotation_id}', response_model=Any)
-def delete_task_annotation(*, db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user),
+def delete_task_annotation(*, db: Session = Depends(get_db), current_user: User = Depends(get_current_active_superuser),
                            task_id: int, annotation_id: str) -> Any:
+    
     task = crud_task.get(db, id=task_id)
+    check_if_user_can_access_task(db, user_id=current_user.id, base_task_id=task.base_task_id)
 
     solution = task.solution
 
@@ -258,15 +288,20 @@ def update_task(*, db: Session = Depends(get_db), task_in: TaskUpdate,
     if task_in.task_data:
         task_in.task_data = json.loads(task_in.task_data)
 
-    db_obj = crud_task.get(db, id=task_in.task_id)
+    task = crud_task.get(db, id=task_in.task_id)
+    base_task = crud_base_task.get(db, id=task.base_task_id)
+    
 
-    task = crud_task.update(db, db_obj=db_obj, obj_in=task_in)
+    check_if_user_can_access_course(db, user_id=current_user.id, course_id=base_task.course_id)
+
+    task = crud_task.update(db, db_obj=task, obj_in=task_in)
     return task
 
 
 @router.delete('/task/{task_id}/userSolution/taskResult', response_model=Any)
 def delete_task_result(*, db: Session = Depends(get_db), task_id: int,
                        current_user: User = Depends(get_current_active_user)) -> Any:
+
     user_solution = crud_user_solution.get_solution_to_task_and_user(db=db, task_id=task_id, user_id=current_user.id)
     temp = crud_user_solution.update(db=db, db_obj=user_solution,
                                      obj_in=UserSolutionUpdate(task_result=None, percentage_solved=0.00))
@@ -276,6 +311,7 @@ def delete_task_result(*, db: Session = Depends(get_db), task_id: int,
 @router.post('/userSolution', response_model=UserSolution)
 def save_user_solution(*, db: Session = Depends(get_db), user_solution_in: UserSolutionCreate,
                        current_user: User = Depends(get_current_active_user)) -> Any:
+
     user_solution = crud_user_solution.get_solution_to_task_and_user(db, user_id=current_user.id,
                                                                      task_id=user_solution_in.task_id)
     if user_solution is not None:

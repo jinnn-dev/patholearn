@@ -1,20 +1,24 @@
-from typing import List, Any, Union
+from typing import Any, List, Union
 
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-
-from app.api.deps import get_db, get_current_active_user, get_current_active_superuser
+from app.api.deps import (check_if_user_can_access_course,
+                          get_current_active_superuser,
+                          get_current_active_user, get_db)
 from app.crud.crud_course import crud_course
 from app.crud.crud_task import crud_task
 from app.crud.crud_user_solution import crud_user_solution
 from app.models.user import User
-from app.schemas.course import Course as CourseSchema, CourseCreate, CourseAdmin, CourseDetail, CourseAll
+from app.schemas.course import Course as CourseSchema
+from app.schemas.course import (CourseAdmin, CourseAll, CourseCreate,
+                                CourseDetail)
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from sqlalchemy.sql.functions import user
 
 router = APIRouter()
 
 
 @router.get('', response_model=List[CourseSchema])
-def read_courses(db: Session = Depends(get_db), search: str = '',
+def get_all_courses(db: Session = Depends(get_db), search: str = '',
                  current_user: User = Depends(get_current_active_user)) -> Any:
     if search == '':
         return crud_course.get_multi(db)
@@ -22,7 +26,7 @@ def read_courses(db: Session = Depends(get_db), search: str = '',
 
 
 @router.get('/member', response_model=List[CourseSchema])
-def read_user_courses(db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)) -> Any:
+def get_courses_of_user(db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)) -> Any:
     courses = crud_course.get_multi_by_user(db, user_id=current_user.id)
 
     for course in courses:
@@ -53,7 +57,7 @@ def read_user_courses(db: Session = Depends(get_db), current_user: User = Depend
 
 
 @router.get('/owner', response_model=List[CourseSchema])
-def read_courses(db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)) -> Any:
+def get_owned_courses(db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)) -> Any:
     """
     Retrieve courses
     :param db:
@@ -81,7 +85,7 @@ def read_courses(db: Session = Depends(get_db), current_user: User = Depends(get
 
 
 @router.get('/{short_name}', response_model=Union[CourseAdmin, CourseDetail])
-def read_course_detail(*, db: Session = Depends(get_db), short_name: str,
+def get_specific_course(*, db: Session = Depends(get_db), short_name: str,
                        current_user: User = Depends(get_current_active_user)) -> Any:
     course = crud_course.get_by_short_name(db, short_name=short_name)
 
@@ -98,7 +102,7 @@ def read_course_detail(*, db: Session = Depends(get_db), short_name: str,
 
     is_owner = course.owner.id == current_user.id
 
-    if is_member is False and is_owner is False:
+    if not is_member and not is_owner:
         raise HTTPException(
             status_code=403,
             detail={"course": {"name": course.name, "short_name": course.short_name, "owner": {
@@ -186,13 +190,12 @@ def leave_course(*, db: Session = Depends(get_db), short_name: str,
 
 @router.delete('/{short_name}', response_model=CourseSchema)
 def delete_course(*, db: Session = Depends(get_db), short_name: str,
-                  current_user: User = Depends(get_current_active_user)) -> Any:
+                  current_user: User = Depends(get_current_active_superuser)) -> Any:
+        
     course = crud_course.get_by_short_name(db, short_name=short_name)
-    if not current_user.id == course.owner.id:
-        raise HTTPException(
-            status_code=403,
-            detail="Your are not allowed to delete a Course"
-        )
+
+    check_if_user_can_access_course(db, user_id=current_user.id, course_id=course.owner.id)
+
     crud_user_solution.remove_all_to_course(db, course_id=course.id)
     crud_course.remove(db, model_id=course.id)
     return course

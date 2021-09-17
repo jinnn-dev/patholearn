@@ -1,11 +1,11 @@
 from typing import List, Optional
 
-from sqlalchemy.orm import Session
-
 from app.crud.base import CRUDBase
 from app.models.course import Course
 from app.models.course_members import CourseMembers
-from app.schemas.course import CourseCreate, CourseUpdate, CourseDetail, CourseAdmin
+from app.schemas.course import (CourseAdmin, CourseCreate, CourseDetail,
+                                CourseUpdate)
+from sqlalchemy.orm import Session
 
 
 def set_member_status(*, courses: List[Course], user_id: int) -> None:
@@ -137,7 +137,7 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
         is_owner = course.owner.id == user_id
         return is_member is False and is_owner is False
 
-    def user_is_course_owner(self, db, course_id: int, user_id: int) -> bool:
+    def user_is_course_owner(self, db, *, course_id: int, user_id: int) -> bool:
         course = self.get(db, id=course_id)
         return course.owner_id == user_id
 

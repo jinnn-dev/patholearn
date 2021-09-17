@@ -1,15 +1,16 @@
 from typing import Any, List
 
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-
-from app.api.deps import get_db, get_current_active_user, get_current_active_superuser
+from app.api.deps import (check_if_user_can_access_course,
+                          get_current_active_superuser,
+                          get_current_active_user, get_db)
 from app.crud.crud_course import crud_course
 from app.crud.crud_task import crud_task
 from app.crud.crud_task_group import crud_task_group
 from app.crud.crud_user_solution import crud_user_solution
 from app.models.user import User
 from app.schemas.task_group import TaskGroup, TaskGroupCreate, TaskGroupDetail
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
 
 router = APIRouter()
 
@@ -34,6 +35,9 @@ def get_task_groups_by_course(*, db: Session = Depends(get_db), course_id: int,
 @router.post('', response_model=TaskGroup)
 def create_task_group(*, db: Session = Depends(get_db), task_group_in: TaskGroupCreate,
                       current_user: User = Depends(get_current_active_superuser)):
+
+    check_if_user_can_access_course(db, user_id=current_user.id, course_id=task_group_in.course_id)
+
     task_group_duplicate = crud_task_group.get_by_name(db, name=task_group_in.name, course_id=task_group_in.course_id)
     if task_group_duplicate:
         raise HTTPException(
@@ -109,13 +113,8 @@ def get_task_group(*, db: Session = Depends(get_db), short_name: str,
 def remove_task_group(*, db: Session = Depends(get_db), short_name: str,
                       current_user: User = Depends(get_current_active_user)):
     task_group = crud_task_group.get_by_short_name(db, short_name=short_name)
-    course = crud_course.get(db, id=task_group.course_id)
 
-    if not course.owner.id == current_user.id:
-        raise HTTPException(
-            status_code=403,
-            detail="You are not allowed to delete the TaskGroup"
-        )
+    check_if_user_can_access_course(db, user_id=current_user.id, course_id=task_group.course_id)
 
     crud_user_solution.remove_all_to_task_group(db, task_group_id=task_group.id)
     deleted_task_group = crud_task_group.remove(db, model_id=task_group.id)
