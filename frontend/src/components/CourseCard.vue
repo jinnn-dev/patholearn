@@ -1,5 +1,5 @@
 <template>
-  <router-link :to="'/course/' + course.short_name">
+  <router-link :to="'/course/' + course.short_name + (isCourseOwner ? '/admin' : '')">
     <skeleton-card>
       <div class="max-h-60 w-96">
         <div class="text-xl truncated-lines-2">{{ course.name }}</div>

@@ -147,71 +147,64 @@ class FeedbackGenerator:
 
         FeedbackGenerator.__generate_invalid_feedback(task_result, invalid_ids)
 
-        matched_ids = FeedbackGenerator.__filter_best_match(matched_ids, key="percentage_outside")
-        no_match_ids = solve_result[1]
+        # Filter best match if polygon hits multiple solution polygons
+        matched_ids = FeedbackGenerator.__get_best_match_duplicate_hit(matched_ids, key="percentage_outside")
+
+        # matched_ids = FeedbackGenerator.__filter_best_match(matched_ids, key="percentage_outside")
+
         most_matches_values = get_max_value_length(matched_ids)
 
         if most_matches_values == 0 and len(no_match_ids) == 0:
             return TaskResultFactory.wrong_status(task_result)
+
         correct_count = 0
 
-        for key in matched_ids:
-            if len(matched_ids[key]) > 1:
+        for solution_id in matched_ids:
+            if len(matched_ids[solution_id]) > 1:
                 area_percentage_sum = 0
-                for annotation in matched_ids[key]:
-                    if annotation.percentage_outside > 0.20:
-                        TaskResultFactory.append_result_detail(annotation_id=annotation.id, status=TaskStatus.WRONG,
+                for user_annotation in matched_ids[solution_id]:
+                    if user_annotation.percentage_outside > 0.1:
+                        TaskResultFactory.append_result_detail(annotation_id=user_annotation.id,
+                                                               status=TaskStatus.WRONG,
                                                                percentage=0.0, task_result=task_result)
-                        matched_ids[key].remove(annotation)
+                        matched_ids[solution_id].remove(user_annotation)
                     else:
-                        area_percentage_sum += annotation.percentage_area_difference
-                for annotation in matched_ids[key]:
+                        area_percentage_sum += user_annotation.percentage_area_difference
 
+                for user_annotation in matched_ids[solution_id]:
                     lower_border = FeedbackConfig.get_weighted_border(border=FeedbackConfig.LOWER_AREA_BORDER,
                                                                       knowledge_level=knowledge_level)
                     upper_border = FeedbackConfig.get_weighted_border(border=FeedbackConfig.UPPER_AREA_BORDER,
                                                                       knowledge_level=knowledge_level)
+
                     if lower_border < area_percentage_sum < upper_border:
                         if check_name:
-                            if annotation.name_matches:
-                                TaskResultFactory.append_result_detail(annotation_id=annotation.id,
-                                                                       status=TaskStatus.CORRECT,
-                                                                       percentage=area_percentage_sum,
-                                                                       task_result=task_result)
+                            if FeedbackGenerator.__generate_name_feedback(user_annotation=user_annotation,
+                                                                          percentage=area_percentage_sum,
+                                                                          task_feedback=task_result):
                                 correct_count += 1
-                            else:
-                                if knowledge_level != 2:
-                                    TaskResultFactory.append_result_detail(annotation_id=annotation.id,
-                                                                           status=TaskStatus.WRONG_NAME,
-                                                                           percentage=area_percentage_sum,
-                                                                           task_result=task_result)
-                                else:
-                                    TaskResultFactory.append_result_detail(annotation_id=annotation.id,
-                                                                           status=TaskStatus.WRONG,
-                                                                           percentage=area_percentage_sum,
-                                                                           task_result=task_result)
                         else:
-                            TaskResultFactory.append_result_detail(annotation_id=annotation.id,
+                            TaskResultFactory.append_result_detail(annotation_id=user_annotation.id,
                                                                    status=TaskStatus.CORRECT,
                                                                    percentage=area_percentage_sum,
                                                                    task_result=task_result)
                             correct_count += 1
-
                     else:
-                        TaskResultFactory.append_result_detail(annotation_id=annotation.id,
+                        TaskResultFactory.append_result_detail(annotation_id=user_annotation.id,
                                                                status=TaskStatus.WRONG,
                                                                percentage=area_percentage_sum, task_result=task_result)
-            if len(matched_ids[key]) <= 1:
-                for annotation in matched_ids[key]:
+            else:
+                for user_annotation in matched_ids[solution_id]:
                     if knowledge_level != 0:
-                        annotation.lines_outside = []
+                        user_annotation.lines_outside = []
 
-                    task_result_detail = FeedbackGenerator.generate_detail_polygon_result(annotation, check_name,
-                                                                                          knowledge_level)
-                    task_result.result_detail.append(task_result_detail)
-                    if task_result_detail.status == TaskStatus.CORRECT:
-                        correct_count += 1
+                        task_result_detail = FeedbackGenerator.generate_detail_polygon_result(user_annotation, check_name,
+                                                                                              knowledge_level)
 
+                        task_result.result_detail.append(task_result_detail)
+                        if task_result_detail.status == TaskStatus.CORRECT:
+                            correct_count += 1
+                            
         if not task_result.task_status:
             if correct_count < min_correct:
                 TaskResultFactory.wrong_status(task_result)
@@ -313,6 +306,29 @@ class FeedbackGenerator:
         return annotation_result
 
     @staticmethod
+    def __generate_name_feedback(*, user_annotation: Union[PointResult, LineResult, PolygonResult],
+                                 percentage: float,
+                                 task_feedback: TaskFeedback) -> bool:
+        if user_annotation.name_matches:
+            TaskResultFactory.append_result_detail(annotation_id=user_annotation.id,
+                                                   status=TaskStatus.CORRECT,
+                                                   percentage=percentage,
+                                                   task_result=task_feedback)
+            return True
+        else:
+            if knowledge_level != 2:
+                TaskResultFactory.append_result_detail(annotation_id=user_annotation.id,
+                                                       status=TaskStatus.WRONG_NAME,
+                                                       percentage=percentage,
+                                                       task_result=task_feedback)
+            else:
+                TaskResultFactory.append_result_detail(annotation_id=user_annotation.id,
+                                                       status=TaskStatus.WRONG,
+                                                       percentage=percentage,
+                                                       task_result=task_feedback)
+        return False
+
+    @staticmethod
     def __check_name(matched_ids: Dict[str, List[Union[PointResult, LineResult, PolygonResult]]],
                      task_result: TaskFeedback) -> Dict[str, List[Union[PointResult, LineResult, PolygonResult]]]:
         """
@@ -333,6 +349,37 @@ class FeedbackGenerator:
                 else:
                     temp[key].remove(annotation)
         return temp
+
+    @staticmethod
+    def __get_best_match_duplicate_hit(matched_ids: Dict[str, List[Union[PointResult, LineResult, PolygonResult]]], *,
+                                       key: str) -> Dict[str, List[Union[PointResult, LineResult, PolygonResult]]]:
+        result_matched_ids = {}
+
+        solution_ids_to_user_solution = {}
+        matched_ids.keys()
+
+        for solution_id in matched_ids:
+            for annotation in matched_ids[solution_id]:
+                if not annotation.id in solution_ids_to_user_solution:
+                    solution_ids_to_user_solution[annotation.id] = [(solution_id, annotation)]
+                else:
+                    solution_ids_to_user_solution[annotation.id].append((solution_id, annotation))
+
+        for user_solution_id in solution_ids_to_user_solution:
+            solution_id = solution_ids_to_user_solution[user_solution_id][0][0]
+            annotation = solution_ids_to_user_solution[user_solution_id][0][1]
+            best = annotation
+            if len(solution_ids_to_user_solution[user_solution_id]) > 1:
+                best = \
+                    sorted(solution_ids_to_user_solution[user_solution_id], key=lambda x: x[1].dict()[key],
+                           reverse=False)[
+                        0][1]
+            if solution_id in result_matched_ids:
+                result_matched_ids[solution_id].append(best)
+            else:
+                result_matched_ids[solution_id] = [best]
+
+        return result_matched_ids
 
     @staticmethod
     def __filter_best_match(matched_ids: Dict[str, List[Union[PointResult, LineResult, PolygonResult]]], *, key: str) -> \
