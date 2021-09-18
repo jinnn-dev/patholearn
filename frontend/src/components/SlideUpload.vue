@@ -38,7 +38,7 @@
             <div>{{ progress }}%</div>
           </div>
 
-          <div v-if="progress === 100">Datei wird gespeichert. Dies kann einige Minuten dauern...</div>
+          <!-- <div v-if="progress === 100">Datei wird gespeichert. Dies kann einige Minuten dauern...</div> -->
           {{ errorMessage }}
         </div>
         <div class="w-full flex justify-end">
