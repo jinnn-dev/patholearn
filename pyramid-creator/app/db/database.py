@@ -1,14 +1,13 @@
 import logging
 import os
 from enum import IntEnum
-from typing import Dict, Optional, List
-
-from pymongo.results import UpdateResult
+from typing import Dict, List, Optional
 
 from app.db.pydantic_objectid import PydanticObjectId
 from bson import ObjectId
 from pydantic import BaseModel, Field, parse_obj_as
 from pymongo import MongoClient
+from pymongo.results import DeleteResult, UpdateResult
 
 
 class SlideStatus(IntEnum):
@@ -120,5 +119,7 @@ class SlideDatabase:
         """
         return self.collection.count_documents({'name': name}, limit=1) != 0
 
+    def delete_slide(self, slide_id: str) -> DeleteResult:
+        return self.collection.delete_one({'slide_id': slide_id})
 
 slide_db = SlideDatabase()

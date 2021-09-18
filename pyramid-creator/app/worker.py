@@ -25,14 +25,14 @@ minio_client.create_bucket("pyramids")
 @celery_app.task(name="convert_slide")
 def convert_slide(file_name: str):
     """
-       Converts WSI-Image to a image pyramid.
+       Converts any image to a image pyramid.
+       Image has to be stored on the disk beforehand.
+       Otherwise the conversion will not work.
 
-       :param file_name: Name of the WSI-Image
+       :param file_name: Name of the file
        :return: The convert status
        """
     file_id, file_extension = os.path.splitext(file_name)
-    logger.info(file_name)
-    pprint(vars(slide_db))
 
     try:
         # Save thumbnail

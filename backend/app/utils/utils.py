@@ -1,7 +1,10 @@
 from math import hypot
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Union
+
+import json
 
 from app.schemas.polygon_data import Point
+from app.schemas.solver_result import LineResult, PointResult, PolygonResult
 
 point_diff = lambda p1, p2: (p1.x - p2.x, p1.y - p2.y)
 
@@ -28,3 +31,12 @@ def get_max_value_length(arr_dict: Dict[Any, List[Any]]) -> int:
     if len(list_of_item_length) == 0:
         return 0
     return max(list_of_item_length)
+
+
+def print_python_dict(matched_ids: Dict[str, List[Union[PointResult, LineResult, PolygonResult]]]):
+    result = {}
+    for key in matched_ids:
+        result[key] = []
+        for annotation_result in matched_ids[key]:
+            result[key].append(annotation_result.dict())
+    print(json.dumps(result))

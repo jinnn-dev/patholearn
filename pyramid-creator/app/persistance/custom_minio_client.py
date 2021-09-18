@@ -3,6 +3,7 @@ import os
 from typing import Any
 
 from minio import Minio
+from minio.deleteobjects import DeleteObject
 
 policy = {
     "Version": "2012-10-17",
@@ -53,11 +54,23 @@ class MinioClient:
     def delete_object(self, file_name: str):
         self.instance.remove_object(self.bucket_name, file_name)
 
+    def delete_slide(self, slide_id: str):
+        # self.instance.remove_object(self.bucket_name, slide_id + '/')
+
+        self.delete_folder(slide_id)
+
     def delete_folder(self, folder_path: str):
-        objects_to_delete = self.instance.list_objects(self.bucket_name, prefix=folder_path, recursive=True)
-        objects_to_delete = [x.object_name for x in objects_to_delete]
-        for del_err in self.instance.remove_objects(self.bucket_name, objects_to_delete):
-            print("Deletion Error: {}".format(del_err))
+        # objects_to_delete = self.instance.list_objects(self.bucket_name, prefix=folder_path, recursive=True)
+        delete_object_list = map(
+            lambda x: DeleteObject(x.object_name),
+            self.instance.list_objects(self.bucket_name, prefix=folder_path, recursive=True)
+        )
+        errors = self.instance.remove_objects(self.bucket_name, delete_object_list)
+
+        for error in errors:
+            print(error)
+        # for obj in objects_to_delete:
+        #     self.instance.remove_object(self.bucket_name, obj.object_name)
 
     def delete_all_objects(self):
         objects = self.instance.list_objects(self.bucket_name)
