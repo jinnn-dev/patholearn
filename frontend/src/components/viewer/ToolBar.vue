@@ -16,7 +16,6 @@
 <script lang="ts">
 import { defineComponent, onMounted, PropType, ref, watch } from 'vue';
 import { Tool, TOOL_COMPONENTS, TOOL_HINTS } from '../../model';
-import ToolItem from './ToolItem.vue';
 import { userSolutionLocked, viewerLoadingState } from './core';
 export default defineComponent({
   props: {
@@ -25,10 +24,6 @@ export default defineComponent({
   },
 
   emits: ['toolUpdate'],
-
-  components: {
-    ToolItem
-  },
 
   setup(props, { emit }) {
     const currentTool = ref<Tool>();
@@ -40,7 +35,7 @@ export default defineComponent({
 
     watch(
       () => props.setMoving,
-      (newVal, oldVal) => {
+      (newVal, _) => {
         if (newVal) {
           changeTool(Tool.MOVE, null);
         }

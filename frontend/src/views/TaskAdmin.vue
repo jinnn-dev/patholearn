@@ -21,36 +21,19 @@
 </template>
 
 <script lang="ts">
-import CustomSelect from '../components/CustomSelect.vue';
 import { defineAsyncComponent, defineComponent, onDeactivated, onMounted, onUnmounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
-// import TaskViewerAdmin from '../components/viewer/TaskViewerAdmin.vue';
-import { BaseTask } from '../model/baseTask';
-import { Task } from '../model/task';
+import { BaseTask, Task } from '../model';
 import { TaskService } from '../services/task.service';
-import TaskQuestion from '../components/task/TaskQuestion.vue';
-import TaskContainer from '../components/task/TaskContainer.vue';
-import TaskHeader from '../components/task/TaskHeader.vue';
-import FormField from '../components/FormField.vue';
 import { viewerLoadingState } from '../components/viewer/core';
-import ViewerLoading from '../components/viewer/ViewerLoading.vue';
-import ViewerBackButton from '../components/viewer/ViewerBackButton.vue';
 
 const TaskViewerAdmin = defineAsyncComponent({
   loader: () => import('../components/viewer/TaskViewerAdmin.vue')
 });
 
 export default defineComponent({
-  components: {
-    TaskViewerAdmin,
-    CustomSelect,
-    TaskQuestion,
-    TaskContainer,
-    FormField,
-    TaskHeader,
-    ViewerLoading,
-    ViewerBackButton
-  },
+  components: { TaskViewerAdmin },
+
   setup() {
     const baseTask = ref<BaseTask>();
     const route = useRoute();

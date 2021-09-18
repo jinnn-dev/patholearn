@@ -65,13 +65,11 @@
 </template>
 
 <script lang="ts">
-import { AnnotationGroup } from '../../model/task';
-import { defineComponent, popScopeId, PropType, reactive, ref } from 'vue';
-import ModalDialog from '../../components/containers/ModalDialog.vue';
-import InputField from '../../components/InputField.vue';
+import { defineComponent, PropType, reactive, ref } from 'vue';
 import { TaskService } from '../../services/task.service';
+import { AnnotationGroup } from '../../model';
+
 export default defineComponent({
-  components: { ModalDialog, InputField },
   props: {
     annotationGroups: {
       type: Object as PropType<AnnotationGroup[]>,

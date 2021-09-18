@@ -10,10 +10,8 @@ import { defineComponent, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { getSlideUrl } from '../../config';
 import { options } from './core';
-import ViewerBackButton from './ViewerBackButton.vue';
 
 export default defineComponent({
-  components: { ViewerBackButton },
   setup() {
     onMounted(() => {
       const route = useRoute();

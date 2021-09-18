@@ -51,14 +51,9 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue';
-import { SlideService } from '../services/slide.service';
-import FormField from './FormField.vue';
+import { SlideService } from '../services';
 
 export default defineComponent({
-  components: {
-    FormField
-  },
-
   setup() {
     const showUpload = ref(false);
     const loading = ref(false);

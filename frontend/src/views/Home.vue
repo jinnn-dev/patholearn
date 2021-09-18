@@ -94,9 +94,8 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, reactive, ref } from 'vue';
-import { CourseService } from '../services/course.service';
-import { Course, CreateCourse } from '../model/course';
-import { AuthService } from '../services/auth.service';
+import { AuthService, CourseService } from '../services';
+import { Course, CreateCourse } from '../model';
 import router from '../router';
 
 import { appState } from '../utils/app.state';

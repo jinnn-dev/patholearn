@@ -6,7 +6,18 @@
         <div class="flex items-center">
           <label
             for="slide-upload"
-            class="transition cursor-pointer flex justify-center bg-gray-500 hover:bg-gray-300 px-2 w-full rounded-lg py-1"
+            class="
+              transition
+              cursor-pointer
+              flex
+              justify-center
+              bg-gray-500
+              hover:bg-gray-300
+              px-2
+              w-full
+              rounded-lg
+              py-1
+            "
           >
             <ph-cloud-arrow-up :size="24" class="mr-2" />
             <span>Musterlösung auswählen</span>
@@ -56,7 +67,7 @@
 <script lang="ts">
 import { SlideService } from '../../services';
 import { AnnotationParser, ParseResult } from '../../utils/annotation-parser';
-import { defineComponent, onMounted, PropType, ref, watch } from 'vue';
+import { defineComponent, onMounted, PropType, ref } from 'vue';
 import { AnnotationViewer } from './core';
 import { ANNOTATION_TYPE } from '../../model';
 export default defineComponent({
@@ -71,13 +82,6 @@ export default defineComponent({
   },
   emits: ['applyAnnotations', 'closeDialog'],
   setup(props, { emit }) {
-    // const show = ref(props.showDialog);
-
-    // watch(
-    //   () => props.showDialog,
-    //   (newVal, oldVal) => (show.value = newVal)
-    // );
-
     const file = ref();
 
     const convertResult = ref<ParseResult[]>();

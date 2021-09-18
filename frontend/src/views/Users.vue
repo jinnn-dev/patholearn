@@ -90,18 +90,13 @@
   </modal-dialog>
 </template>
 <script lang="ts">
-import ContentContainer from '../components/containers/ContentContainer.vue';
 import { defineComponent, ref, reactive, watch, onMounted } from 'vue';
-import Subheader from '../components/Subheader.vue';
 import { required, email, minLength } from '@vuelidate/validators';
 import useVuelidate from '@vuelidate/core';
-import AuthInput from '../components/auth/AuthInput.vue';
 import { AuthService } from '../services';
 import { User } from '../model';
-import CardLoading from '../components/CardLoading.vue';
 
 export default defineComponent({
-  components: { ContentContainer, Subheader, AuthInput, CardLoading },
   props: {},
 
   setup() {

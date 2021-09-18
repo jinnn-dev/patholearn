@@ -43,18 +43,6 @@
             :required="true"
           >
           </input-field>
-          <!-- <custom-select
-            :values="[
-              { name: 'Nur eine Region muss erkannt werden', type: 1 },
-              { name: 'Mehrere Regionen einer Klasse müssen erkannt werden', type: 2 },
-              { name: 'Mehrere Regionen und mehrere Klassen müssen erkannt werden', type: 3 }
-            ]"
-            field="name"
-            label="Aufgabentyp"
-            placeholder="Nur eine Region muss getroffen werden..."
-            @valueChanged="taskCreationForm.task_type = $event.type"
-          ></custom-select> -->
-          <!-- <div class="text-red-500" v-if="validator.task_type.$invalid">Wähle einen Aufgabentyp</div> -->
 
           <div class="my-4">
             <div>Wähle einen Aufgabentyp:</div>
@@ -101,14 +89,14 @@
                   cursor-pointer
                   rounded-lg
                 "
-                v-for="type in typeSelection"
-                :key="type.index"
-                :class="taskCreationForm.annotation_type === type.index && 'bg-gray-500 ring-2 ring-highlight-900'"
-                @click="taskCreationForm.annotation_type = type.index"
+                v-for="item in typeSelection"
+                :key="item.index"
+                :class="taskCreationForm.annotation_type === item.index && 'bg-gray-500 ring-2 ring-highlight-900'"
+                @click="taskCreationForm.annotation_type = item.index"
               >
                 <div class="flex flex-col gap-2 justify-center items-center">
-                  <component :is="type.icon" :size="30" />
-                  {{ type.type }}
+                  <component :is="item.icon" :size="30" />
+                  {{ item.type }}
                 </div>
               </div>
             </div>
@@ -236,16 +224,14 @@
 import { defineComponent, PropType, reactive, ref } from 'vue';
 import { required } from '@vuelidate/validators';
 import useVuelidate from '@vuelidate/core';
-import CustomSelect from '../CustomSelect.vue';
 import { Task, TaskCreate } from '../../model';
-import TaskItem from './TaskItem.vue';
 import { TaskService } from '../../services';
 import '@vueform/slider/themes/default.css';
-
 import Slider from '@vueform/slider';
 
 export default defineComponent({
-  components: { TaskItem, CustomSelect, Slider },
+  components: { Slider },
+
   props: {
     layerIndex: {
       type: Number,

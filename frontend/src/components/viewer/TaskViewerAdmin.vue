@@ -9,15 +9,15 @@
   ></annotation-group>
 
   <annotation-settings v-if="selectedPolygon">
-    <ColorPicker
+    <color-picker
       v-if="task?.task_type === 0 || isBackgroundPolygon"
       label="Annotationsfarbe"
       @isReleased="polygonChanged.changed = true"
       @changed="updateAnnotationColor"
       :initialColor="selectedPolygon.color"
-    ></ColorPicker>
+    ></color-picker>
 
-    <CustomSelect
+    <custom-select
       v-else
       displayType="small"
       label="Annotationsklasse:"
@@ -27,7 +27,7 @@
       @valueChanged="updateAnnotationName"
     />
 
-    <CustomSlider
+    <custom-slider
       v-if="isOffsetAnnotationPoint"
       label="Kreisradius"
       :step="-1"
@@ -39,7 +39,7 @@
       :initialPosition="selectedPolygonData.offsetRadius"
     />
 
-    <CustomSlider
+    <custom-slider
       v-if="isOffsetAnnotationLine && !isAnnotationChangedManually"
       label="Toleranzabstand"
       :step="-1"
@@ -52,7 +52,7 @@
     />
 
     <div v-if="isOffsetAnnotationPolygon && !isAnnotationChangedManually">
-      <CustomSlider
+      <custom-slider
         label="Äußerer Toleranzabstand:"
         :step="-1"
         :min="0"
@@ -109,7 +109,6 @@ import { computed, defineComponent, onMounted, PropType, reactive, ref, watch } 
 
 import { getSlideUrl } from '../../config';
 import {
-  Annotation,
   AnnotationGroup,
   ANNOTATION_COLOR,
   ANNOTATION_TYPE,

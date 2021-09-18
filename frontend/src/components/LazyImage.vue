@@ -27,7 +27,7 @@ export default defineComponent({
     },
     alt: String
   },
-  setup(props) {
+  setup() {
     const loaded = ref<Boolean>(false);
 
     const onLoaded = () => {

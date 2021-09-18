@@ -18,7 +18,19 @@
         <div
           v-for="course in foundCourses"
           :key="course.id"
-          class="flex transition justify-start items-center hover:bg-gray-500 bg-gray-600 my-4 p-2 rounded-md cursor-pointer h-14"
+          class="
+            flex
+            transition
+            justify-start
+            items-center
+            hover:bg-gray-500
+            bg-gray-600
+            my-4
+            p-2
+            rounded-md
+            cursor-pointer
+            h-14
+          "
           @click="course.is_member ? $router.push('/course/' + course.short_name) : ''"
         >
           <div class="w-full">{{ course.name }}</div>
@@ -48,7 +60,7 @@ export default defineComponent({
 
   emits: ['joined'],
 
-  setup(props, { emit }) {
+  setup(_, { emit }) {
     const searchString = debounceRef<String>('');
     const foundCourses = ref<Course[]>([]);
     const loading = ref<Boolean>(false);

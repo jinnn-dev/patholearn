@@ -171,22 +171,13 @@ import { useRoute } from 'vue-router';
 import { Course } from '../model/course';
 import { CourseService } from '../services/course.service';
 import { TaskService } from '../services/task.service';
-import SlideSelect from '../components/SlideSelect.vue';
 import { Slide } from '../model/slide';
 import { TaskGroupService } from '../services/task-group.service';
-import CustomSelect from '../components/CustomSelect.vue';
 import { TaskGroup } from '../model/taskGroup';
 import { BaseTask } from '../model/baseTask';
 import router from '../router';
-import ContentContainer from '../components/containers/ContentContainer.vue';
-import Subheader from '../components/Subheader.vue';
-import TaskCountBadge from '../components/TaskCountBadge.vue';
-import NoContent from '../components/NoContent.vue';
-import ContentHeader from '../components/ContentHeader.vue';
 
 export default defineComponent({
-  components: { SlideSelect, CustomSelect, ContentContainer, Subheader, TaskCountBadge, NoContent, ContentHeader },
-
   setup() {
     const course = ref<Course>();
     const route = useRoute();
@@ -223,7 +214,7 @@ export default defineComponent({
       taskLoading.value = true;
       TaskService.createBaseTask({
         name: formData.name,
-        slide_id: Number(formData.slide_id),
+        slide_id: formData.slide_id,
         ...(formData.task_group_id !== -1 && { task_group_id: formData.task_group_id }),
         course_id: course.value?.id as number
       })

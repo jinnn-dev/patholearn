@@ -39,22 +39,11 @@
 </template>
 
 <script lang="ts">
-import { TaskResult, TaskStatus } from '../model/result';
 import { defineComponent, onMounted, ref, onUnmounted, defineAsyncComponent, watch } from 'vue';
 import { useRoute } from 'vue-router';
-// import TaskViewer from '../components/viewer/TaskViewer.vue';
-import { BaseTask } from '../model/baseTask';
-import { Task } from '../model/task';
-import { TaskService } from '../services/task.service';
-import { Course } from '../model/course';
-import NotCourseMember from '../components/NotCourseMember.vue';
-import TaskQuestion from '../components/task/TaskQuestion.vue';
-import TaskContainer from '../components/task/TaskContainer.vue';
-import TaskResultComponent from '../components/task/TaskResult.vue';
-import TaskHeader from '../components/task/TaskHeader.vue';
+import { BaseTask, Task, Course, TaskResult, TaskStatus } from '../model';
+import { TaskService } from '../services';
 import { showSolution, userSolutionLocked, viewerLoadingState } from '../components/viewer/core';
-import ViewerLoading from '../components/viewer/ViewerLoading.vue';
-import ViewerBackButton from '../components/viewer/ViewerBackButton.vue';
 
 const TaskViewer = defineAsyncComponent({
   loader: () => import('../components/viewer/TaskViewer.vue')
@@ -62,14 +51,7 @@ const TaskViewer = defineAsyncComponent({
 
 export default defineComponent({
   components: {
-    TaskViewer,
-    NotCourseMember,
-    TaskQuestion,
-    TaskContainer,
-    TaskResultComponent,
-    TaskHeader,
-    ViewerLoading,
-    ViewerBackButton
+    TaskViewer
   },
 
   setup() {

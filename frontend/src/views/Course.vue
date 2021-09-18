@@ -64,34 +64,13 @@
 </template>
 
 <script lang="ts">
-import ProgressBar from '../components/ProgressBar.vue';
 import { defineComponent, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Course } from '../model/course';
 import { CourseService } from '../services/course.service';
-import NotCourseMember from '../components/NotCourseMember.vue';
-import ContentContainer from '../components/containers/ContentContainer.vue';
-import Subheader from '../components/Subheader.vue';
-import DangerButton from '../components/base/DangerButton.vue';
-import TaskCountBadge from '../components/TaskCountBadge.vue';
-import NewTaskBadge from '../components/NewTaskBadge.vue';
-import NoContent from '../components/NoContent.vue';
-import ContentHeader from '../components/ContentHeader.vue';
 
 export default defineComponent({
-  components: {
-    ProgressBar,
-    NotCourseMember,
-    ContentContainer,
-    Subheader,
-    DangerButton,
-    TaskCountBadge,
-    NewTaskBadge,
-    NoContent,
-    ContentHeader
-  },
-
-  setup(props) {
+  setup() {
     const course = ref<Course>();
     const route = useRoute();
 

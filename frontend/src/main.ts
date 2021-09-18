@@ -1,11 +1,6 @@
 import 'virtual:windi.css';
 import { createApp } from 'vue';
 import App from './App.vue';
-import PrimaryButton from './components/base/PrimaryButton.vue';
-import ModalDialog from './components/containers/ModalDialog.vue';
-import RoleOnly from './components/containers/RoleOnly.vue';
-import SkeletonCard from './components/containers/SkeletonCard.vue';
-import FormField from './components/FormField.vue';
 import {
   PhActivity,
   PhArrowLeft,
@@ -34,9 +29,6 @@ import {
   PhUser,
   PhXCircle
 } from './components/icons/phosphor-vue/src/entry';
-import InputField from './components/InputField.vue';
-import SaveButton from './components/SaveButton.vue';
-import TextEdit from './components/TextEdit.vue';
 import router from './router';
 import { ApiService } from './services/api.service';
 import { TokenService } from './services/token.service';
@@ -49,14 +41,14 @@ if (TokenService.getToken()) {
 const app = createApp(App);
 app.use(router);
 
-app.component('primary-button', PrimaryButton);
-app.component('save-button', SaveButton);
-app.component('role-only', RoleOnly);
-app.component('skeleton-card', SkeletonCard);
-app.component('input-field', InputField);
-app.component('modal-dialog', ModalDialog);
-app.component('text-edit', TextEdit);
-app.component('form-field', FormField);
+// app.component('primary-button', PrimaryButton);
+// app.component('save-button', SaveButton);
+// app.component('role-only', RoleOnly);
+// app.component('skeleton-card', SkeletonCard);
+// app.component('input-field', InputField);
+// app.component('modal-dialog', ModalDialog);
+// app.component('text-edit', TextEdit);
+// app.component('form-field', FormField);
 app.mount('#app');
 
 // Init Icons

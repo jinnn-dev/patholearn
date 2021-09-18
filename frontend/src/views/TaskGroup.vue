@@ -51,33 +51,10 @@
 <script lang="ts">
 import { defineComponent, onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { TaskGroup } from '../model/taskGroup';
-import { TaskGroupService } from '../services/task-group.service';
-import SlideSelect from '../components/SlideSelect.vue';
-import { Slide } from '../model/slide';
-import { TaskService } from '../services/task.service';
-import { BaseTask } from '../model/baseTask';
-import ProgressBar from '../components/ProgressBar.vue';
-import { Course } from 'model/course';
-import NotCourseMember from '../components/NotCourseMember.vue';
-import ContentContainer from '../components/containers/ContentContainer.vue';
-import NewTaskBadge from '../components/NewTaskBadge.vue';
-import TaskCountBadge from '../components/TaskCountBadge.vue';
-import NoContent from '../components/NoContent.vue';
-import ContentHeader from '../components/ContentHeader.vue';
+import { TaskGroupService, TaskService } from '../services';
+import { BaseTask, Course, Slide, TaskGroup } from '../model';
 
 export default defineComponent({
-  components: {
-    SlideSelect,
-    ProgressBar,
-    NotCourseMember,
-    ContentContainer,
-    NewTaskBadge,
-    TaskCountBadge,
-    NoContent,
-    ContentHeader
-  },
-
   setup() {
     const showModal = ref<Boolean>(false);
 

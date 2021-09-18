@@ -187,22 +187,11 @@
 <script lang="ts">
 import { defineComponent, onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { TaskGroup } from '../model/taskGroup';
-import { TaskGroupService } from '../services/task-group.service';
-import SlideSelect from '../components/SlideSelect.vue';
-import { Slide } from '../model/slide';
-import { TaskService } from '../services/task.service';
-import { BaseTask } from '../model/baseTask';
-import ProgressBar from '../components/ProgressBar.vue';
+import { TaskGroup, Slide, BaseTask } from '../model';
+import { TaskGroupService, TaskService } from '../services';
 import router from '../router';
-import ContentContainer from '../components/containers/ContentContainer.vue';
-import ContentHeader from '../components/ContentHeader.vue';
-import NoContent from '../components/NoContent.vue';
-import TaskCountBadge from '../components/TaskCountBadge.vue';
 
 export default defineComponent({
-  components: { SlideSelect, ProgressBar, ContentContainer, ContentHeader, NoContent, TaskCountBadge },
-
   setup() {
     const showDeleteBaseTask = ref<Boolean>(false);
     const deleteBaseLoading = ref<Boolean>(false);

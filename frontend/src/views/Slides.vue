@@ -55,33 +55,19 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue';
-import { SlideService } from '../services/slide.service';
-import { Slide } from '../model/slide';
+import { SlideService } from '../services';
+import { Slide, SLIDE_STATUS, SLIDE_STATUS_STRING } from '../model';
 import { getThumbnailUrl } from '../config';
-import { SLIDE_STATUS, SLIDE_STATUS_STRING } from '../model/slideStatus';
-import SlideUpload from '../components/SlideUpload.vue';
-import { AuthService } from '../services/auth.service';
-import { useRouter } from 'vue-router';
-import ContentContainer from '../components/containers/ContentContainer.vue';
-import LazyImage from '../components/LazyImage.vue';
 
 export default defineComponent({
-  components: { SlideUpload, ContentContainer, LazyImage },
   setup() {
     const slides = ref<Slide[]>([]);
     const slideLoading = ref<Boolean>(true);
     const slideError = ref<Boolean>(false);
-    const slideNameInput = ref<string>('');
 
     onMounted(() => {
       loadSlides();
     });
-
-    const router = useRouter();
-    const onLogout = () => {
-      AuthService.logout();
-      router.push('/login');
-    };
 
     const loadSlides = () => {
       slideLoading.value = true;
@@ -121,7 +107,7 @@ export default defineComponent({
 
     const deleteSlide = (slide: Slide, index: number) => {
       SlideService.deleteSlide(slide.slide_id).then(
-        (res) => {
+        (_) => {
           slides.value.splice(index, 1);
         },
         (err) => {
@@ -134,10 +120,8 @@ export default defineComponent({
       getThumbnailUrl,
       SLIDE_STATUS,
       getStatusColor,
-      slideNameInput,
       deleteSlide,
       loadSlides,
-      onLogout,
       SLIDE_STATUS_STRING,
       slideLoading,
       slideError

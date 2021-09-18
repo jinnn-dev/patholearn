@@ -48,14 +48,12 @@
 import { onClickOutside } from '@vueuse/core';
 import { getThumbnailUrl } from '../config';
 import { defineComponent, ref, watch } from 'vue';
-import { Slide } from '../model/slide';
-import { SlideService } from '../services/slide.service';
-import LazyImage from './LazyImage.vue';
+import { Slide } from '../model';
+import { SlideService } from '../services';
 
 export default defineComponent({
-  components: { LazyImage },
   emits: ['slideChanged'],
-  setup(props, { emit }) {
+  setup(_, { emit }) {
     const target = ref(null);
 
     const searchString = ref<string>('');

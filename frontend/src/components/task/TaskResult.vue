@@ -66,7 +66,7 @@
 </template>
 <script lang="ts">
 import { TaskResult, TaskStatus, RESULT_POLYGON_COLOR, RESULT_RESPONSE_NAME } from '../../model/result';
-import { computed, defineComponent, PropType, ref } from 'vue';
+import { computed, defineComponent, PropType } from 'vue';
 import { userSolutionLocked, showSolution, viewerLoadingState } from '../../components/viewer/core';
 export default defineComponent({
   props: {

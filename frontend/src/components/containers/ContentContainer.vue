@@ -12,10 +12,8 @@
   </div>
 </template>
 <script lang="ts">
-import Navigation from '../Navigation.vue';
 import { defineComponent } from 'vue';
 export default defineComponent({
-  components: { Navigation },
   props: {
     header: String
   },

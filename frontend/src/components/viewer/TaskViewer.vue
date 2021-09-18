@@ -9,7 +9,7 @@
   ></annotation-group>
 
   <annotation-settings v-if="selectedPolygon && task?.task_type === 1" @saved="updateSelectedAnnotation">
-    <CustomSelect
+    <custom-select
       displayType="small"
       label="Annotationsklasse:"
       :values="task?.annotation_groups"
@@ -47,8 +47,7 @@ import {
   selectedPolygon,
   showSolution,
   userSolutionLocked,
-  viewerLoadingState,
-  isTaskSaving
+  viewerLoadingState
 } from './core';
 import {
   Annotation,

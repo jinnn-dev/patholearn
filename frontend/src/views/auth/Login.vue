@@ -43,16 +43,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, watch, watchEffect } from 'vue';
-import FormField from '../../components/FormField.vue';
-import AuthInput from '../../components/auth/AuthInput.vue';
-import { AuthService } from '../../services/auth.service';
+import { defineComponent, reactive, ref } from 'vue';
+import { AuthService } from '../../services';
 import { useRouter } from 'vue-router';
 import useVuelidate from '@vuelidate/core';
 import { required, email } from '@vuelidate/validators';
 
 export default defineComponent({
-  components: { FormField, AuthInput },
   setup() {
     const formData = reactive({
       email: '',

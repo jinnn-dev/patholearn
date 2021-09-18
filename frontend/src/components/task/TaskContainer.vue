@@ -1,6 +1,21 @@
 <template>
   <div
-    class="transition-all transform cursor-pointer absolute z-10 top-1/2 -translate-y-1/2 bg-gray-700 text-3xl rounded-l-lg h-12 flex flex-col items-center justify-center"
+    class="
+      transition-all
+      transform
+      cursor-pointer
+      absolute
+      z-10
+      top-1/2
+      -translate-y-1/2
+      bg-gray-700
+      text-3xl
+      rounded-l-lg
+      h-12
+      flex flex-col
+      items-center
+      justify-center
+    "
     @click="isCollapsed = !isCollapsed"
     :title="isCollapsed ? 'Ausklappen' : 'Einklappen'"
     :class="[isCollapsed ? 'right-0' : 'right-84']"
@@ -9,7 +24,20 @@
   </div>
 
   <div
-    class="transition-all w-84 fixed z-10 right-0 top-1/2 transform -translate-y-1/2 rounded-l-lg overflow-hidden bg-gray-700 shadow-xl"
+    class="
+      transition-all
+      w-84
+      fixed
+      z-10
+      right-0
+      top-1/2
+      transform
+      -translate-y-1/2
+      rounded-l-lg
+      overflow-hidden
+      bg-gray-700
+      shadow-xl
+    "
     :class="[isCollapsed ? '-right-84' : 'right-0']"
   >
     <div class="flex gap-4 justify-between items-center m-2 text-center text-xl">
@@ -70,20 +98,15 @@
 </template>
 
 <script lang="ts">
-import { BaseTask } from 'model/baseTask';
-import { Task } from 'model/task';
-import { TaskService } from '../../services/task.service';
 import { defineComponent, onMounted, PropType, ref } from 'vue';
-import TaskLayer from './TaskLayer.vue';
-import TaskQuestion from './TaskQuestion.vue';
-import { TaskStatus } from '../../model/result';
+import { TaskStatus, Task, BaseTask } from '../../model';
+import { TaskService } from '../../services';
 
 interface LayeredTasks {
   [key: number]: Task[];
 }
 
 export default defineComponent({
-  components: { TaskQuestion, TaskLayer },
   props: {
     baseTask: {
       type: Object as PropType<BaseTask>,

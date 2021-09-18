@@ -21,33 +21,13 @@
       </div>
     </role-only>
   </div>
-
-  <!-- <role-only v-if="isOwner">
-    <modal-dialog :show="showDeleteTask">
-      <div class="relative">
-        <h1 class="text-2xl">Mächtest du die Aufgabe löschen?</h1>
-        <div class="my-4">Es werden auch alle Lösungen der Lernenden gelöscht!</div>
-        <div class="flex justify-end">
-          <primary-button
-            @click.prevent="showDeleteTask = false"
-            class="mr-2 w-28"
-            name="Nein"
-            bgColor="bg-gray-500"
-            bgHoverColor="bg-gray-700"
-            fontWeight="font-normal"
-          ></primary-button>
-          <primary-button name="Ja" type="submit" @click="deleteTask" class="w-28"></primary-button>
-        </div>
-      </div>
-    </modal-dialog>
-  </role-only> -->
 </template>
 
 <script lang="ts">
-import { userSolutionLocked, viewerLoadingState } from '../../components/viewer/core';
-import { UserSolution } from 'model/userSolution';
 import { defineComponent, PropType, ref } from 'vue';
-import { TaskStatus } from '../../model/result';
+import { TaskStatus, UserSolution } from '../../model';
+import { userSolutionLocked, viewerLoadingState } from '../../components/viewer/core';
+
 export default defineComponent({
   props: {
     isOwner: {

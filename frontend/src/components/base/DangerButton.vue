@@ -41,7 +41,7 @@ export default defineComponent({
 
   emits: ['confirmation'],
 
-  setup(props, { emit }) {
+  setup(_, { emit }) {
     const showConfirmationDialog = ref<Boolean>(false);
 
     const confirm = () => {
