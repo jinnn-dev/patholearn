@@ -150,8 +150,6 @@ class FeedbackGenerator:
         # Filter best match if polygon hits multiple solution polygons
         matched_ids = FeedbackGenerator.__get_best_match_duplicate_hit(matched_ids, key="percentage_outside")
 
-        # matched_ids = FeedbackGenerator.__filter_best_match(matched_ids, key="percentage_outside")
-
         most_matches_values = get_max_value_length(matched_ids)
 
         if most_matches_values == 0 and len(no_match_ids) == 0:
@@ -198,13 +196,13 @@ class FeedbackGenerator:
                     if knowledge_level != 0:
                         user_annotation.lines_outside = []
 
-                        task_result_detail = FeedbackGenerator.generate_detail_polygon_result(user_annotation, check_name,
-                                                                                              knowledge_level)
+                    task_result_detail = FeedbackGenerator.generate_detail_polygon_result(user_annotation, check_name,
+                                                                                          knowledge_level)
 
-                        task_result.result_detail.append(task_result_detail)
-                        if task_result_detail.status == TaskStatus.CORRECT:
-                            correct_count += 1
-                            
+                    task_result.result_detail.append(task_result_detail)
+                    if task_result_detail.status == TaskStatus.CORRECT:
+                        correct_count += 1
+
         if not task_result.task_status:
             if correct_count < min_correct:
                 TaskResultFactory.wrong_status(task_result)

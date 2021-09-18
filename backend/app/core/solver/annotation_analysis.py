@@ -148,12 +148,11 @@ class AnnotationAnalysis:
 
             for solution_annotation in solution_annotation_data:
 
-
-
                 time_before = timer.time_elapsed
 
                 if solution_annotation.id not in correct_polygon_ids:
                     correct_polygon_ids[solution_annotation.id] = []
+
                 solution_inner_polygon = Polygon([p.x, p.y] for p in solution_annotation.innerPoints.image)
                 solution_outer_polygon = Polygon([p.x, p.y] for p in solution_annotation.outerPoints.image)
 
@@ -194,7 +193,6 @@ class AnnotationAnalysis:
                         if user_annotation.id in no_match_ids:
                             no_match_ids.remove(user_annotation.id)
                         correct_polygon_ids[solution_annotation.id].append(annotation_result)
-
                     if not hole_difference.is_empty and not hole_difference.equals(user_polygon):
                         annotation_result.percentage_outside = hole_difference.length / user_polygon.length
                         if isinstance(hole_difference, LineString):
@@ -205,13 +203,14 @@ class AnnotationAnalysis:
                             no_match_ids.remove(user_annotation.id)
                         correct_polygon_ids[solution_annotation.id].append(annotation_result)
 
-                    ColoredPrinter.print_lined_info(f"Polygon check needed {(timer.time_elapsed - time_before) * 1000}ms")
+                    # ColoredPrinter.print_lined_info(f"Polygon check needed {(timer.time_elapsed - time_before) * 1000}ms")
                 except TopologicalError:
                     if user_annotation.id in no_match_ids:
                         no_match_ids.remove(user_annotation.id)
                     invalid_ids.append(user_annotation.id)
         timer.stop()
-        ColoredPrinter.print_lined_info(f"Complete Polygon Check needed {timer.total_run_time * 1000}ms")
+
+        # ColoredPrinter.print_lined_info(f"Complete Polygon Check needed {timer.total_run_time * 1000}ms")
         return correct_polygon_ids, no_match_ids, invalid_ids
 
     @staticmethod
