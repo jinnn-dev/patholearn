@@ -7,10 +7,11 @@ from fastapi import BackgroundTasks, FastAPI, HTTPException, UploadFile
 from fastapi.params import File, Form
 from starlette.middleware.cors import CORSMiddleware
 
-from app.db.database import CreateSlide, SlideStatus, slide_db, Slide, DatabaseSlide
+from app.db.database import (CreateSlide, DatabaseSlide, Slide, SlideStatus,
+                             slide_db)
 from app.persistance.custom_minio_client import MinioClient
-from app.utils.util import convert_binary_to_base64, is_byte_data, convert_binary_metadata_to_base64
-from app.worker import convert_slide
+from app.utils.util import (convert_binary_metadata_to_base64,
+                            convert_binary_to_base64, is_byte_data, write_slide_to_disk)
 
 app = FastAPI()
 
@@ -30,18 +31,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-async def write_file(folder_name: str, file_name: str, file: UploadFile = File(...)):
-    async with aiofiles.open(f"/data/{folder_name}/{file_name}", "wb") as out_file:
-        while content := await file.read(1024):
-            await out_file.write(content)
-
-
-async def write_slide_to_disk(folder_name: str, file_name: str, file: UploadFile = File(...)):
-    os.mkdir(f"/data/{folder_name}")
-    await write_file(folder_name, file_name, file)
-    convert_slide.delay(file_name)
 
 
 @app.get('')
@@ -70,6 +59,7 @@ def create_slide(background_tasks: BackgroundTasks, name: str = Form(...), file:
         background_tasks.add_task(write_slide_to_disk, file_id, file_name, file=file)
     except Exception as e:
         print(e)
+        slide_db.delete_slide(slide_id=file_id)
         raise HTTPException(
             status_code=500,
             detail="Slide couldn't be saved"
@@ -81,6 +71,15 @@ def read_slides() -> List[Slide]:
     slides = slide_db.get_all_slides()
     slides_without_binary_metadata = convert_binary_metadata_to_base64(slides)
     return slides_without_binary_metadata
+
+
+@app.delete('/slides/{slide_id}')
+def delete_slide(slide_id: str):
+    try:
+        minio_client.delete_slide(slide_id=slide_id)
+        slide_db.delete_slide(slide_id=slide_id)
+    except Exception as e:
+        print(e)
 
 
 @app.delete('/slides/delete/all')
