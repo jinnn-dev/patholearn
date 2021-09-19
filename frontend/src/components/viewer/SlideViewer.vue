@@ -9,7 +9,7 @@ import OpenSeadragon from 'openseadragon';
 import { defineComponent, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { getSlideUrl } from '../../config';
-import { options } from './core';
+import { options } from './core/options';
 
 export default defineComponent({
   setup() {
@@ -18,7 +18,6 @@ export default defineComponent({
       // OpenSeadragon(options('viewerImage', getSlideUrl(route.params.id as string)));
       OpenSeadragon(options('viewerImage', getSlideUrl(route.params.id as string)));
       new OpenSeadragon.TileCache({ maxImageCacheCount: 500 });
-
       const elements = document.getElementsByClassName('openseadragon-container');
 
       if (elements.length === 4) {
@@ -28,3 +27,8 @@ export default defineComponent({
   }
 });
 </script>
+<style>
+#viewerImage {
+  cursor: grab;
+}
+</style>

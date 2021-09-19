@@ -4,50 +4,34 @@
     <template v-slot:content>
       <slide-upload class="mb-4" />
 
-      <div class="flex justify-end w-full">
-        <save-button
+      <div class="flex justify-end w-full mb-4">
+        <primary-button
           class="w-32 mt-2"
           name="Aktualisieren"
           fontWeight="font-semibold"
           @click="loadSlides"
-        ></save-button>
+        ></primary-button>
       </div>
 
-      <div v-if="slideLoading">
+      <div
+        v-if="slideLoading"
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+      >
         <skeleton-card v-for="i of [1, 2, 3]" :key="i" class="my-4 min-h-42" :loading="slideLoading"></skeleton-card>
       </div>
       <div v-else>
-        <div v-if="slides.length === 0" class="text-4xl">Keine WSI-Bilder vorhanden</div>
+        <div v-if="slides.length === 0 && !slideError" class="text-4xl">Keine WSI-Bilder vorhanden</div>
         <div v-if="slideError" class="text-4xl">Fehler beim Laden der WSI-Bilder</div>
 
-        <skeleton-card
-          v-for="(slide, index) of slides"
-          :key="slide.name"
-          @click.prevent="slide.status !== SLIDE_STATUS.RUNNING ? $router.push('/slides/' + slide.slide_id) : ''"
-          class="cursor-pointer my-4"
-          inputClasses="px-5 py-0"
-        >
-          <div class="flex justify-between items-center">
-            <div class="h-42 w-42 flex items-center">
-              <lazy-image
-                :image-url="getThumbnailUrl(slide.slide_id)"
-                alt="Thumbnail des Slides"
-                class="max-h-full rounded-lg items-center"
-              ></lazy-image>
-            </div>
-            <div class="text-xl">{{ slide.name }}</div>
-            <div class="text-md">{{ slide.mag ? slide.mag + 'x' : 'Keine Daten' }}</div>
-            <div class="text-md">{{ slide.width ? slide.width + 'px' : 'Keine Daten' }}</div>
-            <div class="text-md">{{ slide.height ? slide.height + 'px' : 'Keine Daten' }}</div>
-            <div class="text-md">{{ slide.mpp ? slide.mpp : 'Keine Daten' }}</div>
-            <div class="border-2 p-2 rounded-xl" :class="getStatusColor(slide.status)">
-              {{ SLIDE_STATUS_STRING[slide.status] }}
-            </div>
-            <div>
-              <ph-trash :size="24" @click.stop="deleteSlide(slide, index)" />
-            </div>
-          </div>
-        </skeleton-card>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          <slide-card
+            v-for="(slide, index) of slides"
+            :key="slide.name"
+            :slide="slide"
+            @delete="deleteSlide(slide, index)"
+          >
+          </slide-card>
+        </div>
       </div>
     </template>
   </content-container>
@@ -56,8 +40,8 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue';
 import { SlideService } from '../services';
-import { Slide, SLIDE_STATUS, SLIDE_STATUS_STRING } from '../model';
 import { getThumbnailUrl } from '../config';
+import { Slide } from '../model/slide';
 
 export default defineComponent({
   setup() {
@@ -85,26 +69,6 @@ export default defineComponent({
         });
     };
 
-    const getStatusColor = (status: SLIDE_STATUS) => {
-      let color;
-
-      switch (status) {
-        case SLIDE_STATUS.SUCCESS:
-          color = 'green-500';
-          break;
-        case SLIDE_STATUS.RUNNING:
-          color = 'yellow-500';
-          break;
-        case SLIDE_STATUS.ERROR:
-          color = 'red-500';
-          break;
-        default:
-          color = 'white';
-          break;
-      }
-      return 'border-' + color + ' text-' + color;
-    };
-
     const deleteSlide = (slide: Slide, index: number) => {
       SlideService.deleteSlide(slide.slide_id).then(
         (_) => {
@@ -118,11 +82,8 @@ export default defineComponent({
     return {
       slides,
       getThumbnailUrl,
-      SLIDE_STATUS,
-      getStatusColor,
       deleteSlide,
       loadSlides,
-      SLIDE_STATUS_STRING,
       slideLoading,
       slideError
     };

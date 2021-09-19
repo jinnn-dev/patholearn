@@ -2,7 +2,7 @@
   <div class="overflow-hidden w-full h-full flex justify-center items-center">
     <svg
       v-if="!loaded"
-      class="animate-spin mr-3 h-5 w-5 text-white"
+      class="animate-spin h-5 w-5 text-white absolute"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"

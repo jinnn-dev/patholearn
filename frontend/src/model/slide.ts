@@ -5,8 +5,5 @@ export interface Slide {
   slide_id: string;
   name: string;
   status: SLIDE_STATUS;
-  mag: number;
-  width: number;
-  height: number;
-  mpp: number;
+  metadata: [];
 }

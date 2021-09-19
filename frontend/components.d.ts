@@ -62,6 +62,7 @@ declare module 'vue' {
     SaveButton: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/SaveButton.vue')['default']
     SavingInfo: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/viewer/SavingInfo.vue')['default']
     SkeletonCard: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/containers/SkeletonCard.vue')['default']
+    SlideCard: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/SlideCard.vue')['default']
     SlideSelect: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/SlideSelect.vue')['default']
     SlideUpload: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/SlideUpload.vue')['default']
     SlideViewer: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/viewer/SlideViewer.vue')['default']
