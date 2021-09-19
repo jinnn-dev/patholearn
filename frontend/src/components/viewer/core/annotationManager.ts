@@ -1,5 +1,5 @@
 import { select } from 'd3-selection';
-import OpenSeadragon, { Point } from 'openseadragon';
+import { Point } from 'openseadragon';
 import {
   Annotation,
   AnnotationData,
@@ -13,6 +13,7 @@ import {
   OffsetAnnotationLine,
   OffsetAnnotationLineData,
   OffsetAnnotationPoint,
+  OffsetAnnotationPointData,
   OffsetAnnotationPolygon,
   OffsetAnnotationPolygonData,
   PointData
@@ -138,13 +139,13 @@ export class AnnotationManager {
    * @param scale Current viewer scale
    */
   addAnnotation(data: AnnotationData[], scale: number): void {
-    for (const polygon of data) {
-      if (polygon.type === ANNOTATION_TYPE.BASE) {
-        this.addBackgroundAnnotation(polygon, scale);
-      } else if (isSolution(polygon.type)) {
-        this.addSolutionAnnotation(polygon, scale);
+    for (const annotation of data) {
+      if (annotation.type === ANNOTATION_TYPE.BASE) {
+        this.addBackgroundAnnotation(annotation, scale);
+      } else if (isSolution(annotation.type)) {
+        this.addSolutionAnnotation(annotation, scale);
       } else {
-        this.addUserSolutionAnnotation(polygon, scale);
+        this.addUserSolutionAnnotation(annotation, scale);
       }
     }
   }
@@ -152,11 +153,11 @@ export class AnnotationManager {
   /**
    * Adds the serialized background annotations
    *
-   * @param polygonData Serialized background annotations
+   * @param annotationData Serialized background annotations
    * @param scale Current viewer scale
    */
-  addBackgroundAnnotations(polygonData: AnnotationData[], scale: number): void {
-    polygonData.forEach((data: AnnotationData) => {
+  addBackgroundAnnotations(annotationData: AnnotationData[], scale: number): void {
+    annotationData.forEach((data: AnnotationData) => {
       this.addBackgroundAnnotation(data, scale);
     });
   }
@@ -165,107 +166,62 @@ export class AnnotationManager {
     const radius = POLYGON_VERTICE_RADIUS / scale;
     const strokeWidth = POLYGON_STROKE_WIDTH / scale;
 
-    const points: OpenSeadragon.Point[] = [];
+    let generatedAnnotation: Annotation;
 
-    data.coord.viewport!.forEach((point: PointData) => {
-      points.push(new Point(point.x, point.y));
-    });
+    switch (data.type) {
+      case ANNOTATION_TYPE.SOLUTION:
+        generatedAnnotation = this._createOffsetAnnotationPolygon({
+          data: data,
+          radius: radius,
+          strokeWidth: strokeWidth,
+          fillColor: fillColor,
+          strokeColor: strokeColor,
+          scale: scale
+        });
 
-    let newPolygon: Annotation;
+        break;
+      case ANNOTATION_TYPE.SOLUTION_POINT:
+        generatedAnnotation = this._createOffsetAnnotationPoint({
+          data: data,
+          strokeWidth: strokeWidth,
+          radius: radius
+        });
 
-    if (data.type === ANNOTATION_TYPE.SOLUTION) {
-      newPolygon = new OffsetAnnotationPolygon(
-        this.getNode(data.type),
-        data.type,
-        fillColor,
-        strokeColor,
-        (data as OffsetAnnotationPolygonData).outerOffset,
-        (data as OffsetAnnotationPolygonData).innerOffset,
-        data.id,
-        (data as OffsetAnnotationPolygonData).changedManual
-      );
-
-      newPolygon.name = data.name;
-
-      const insetData = data as OffsetAnnotationPolygonData;
-      if (insetData.innerPoints && insetData.outerPoints) {
-        const innerPoints = (data as OffsetAnnotationPolygonData).innerPoints.viewport!.map(
-          (point) => new Point(point.x, point.y)
-        );
-        const outerPoints = (data as OffsetAnnotationPolygonData).outerPoints.viewport!.map(
-          (point) => new Point(point.x, point.y)
-        );
-        (newPolygon as OffsetAnnotationPolygon).addClosedInsetPolygon(points, outerPoints, innerPoints, scale);
-      } else {
-        (newPolygon as OffsetAnnotationPolygon).addClosedPolygon(
-          points,
-          POLYGON_VERTICE_RADIUS / scale,
-          POLYGON_STROKE_WIDTH / scale
-        );
-        (newPolygon as OffsetAnnotationPolygon).inflationInnerOffset =
-          (POLYGON_INFLATE_OFFSET / scale) * (ANNOTATION_OFFSET_SCALAR / 10);
-        (newPolygon as OffsetAnnotationPolygon).inflationOuterOffset =
-          (POLYGON_INFLATE_OFFSET / scale) * (ANNOTATION_OFFSET_SCALAR / 10);
-        (newPolygon as OffsetAnnotationPolygon).createInflation(scale);
-      }
-    } else if (data.type === ANNOTATION_TYPE.SOLUTION_POINT) {
-      newPolygon = new OffsetAnnotationPoint(
-        this.getNode(data.type),
-        data.type,
-        (data as OffsetAnnotationLineData).offsetRadius,
-        data.color,
-        data.id
-      );
-      newPolygon.name = data.name;
-
-      (newPolygon as OffsetAnnotationPoint).setPoint(
-        new Point(data.coord.viewport![0].x, data.coord.viewport![0].y),
-        POLYGON_VERTICE_RADIUS / scale,
-        strokeWidth / scale
-      );
-    } else if (data.type === ANNOTATION_TYPE.SOLUTION_LINE) {
-      newPolygon = new OffsetAnnotationLine(
-        this.getNode(data.type),
-        data.type,
-        data.color,
-        (data as OffsetAnnotationLineData).offsetRadius,
-        data.id,
-        (data as OffsetAnnotationLineData).changedManual
-      );
-
-      newPolygon.name = data.name;
-
-      const outerPoints = (data as OffsetAnnotationLineData).outerPoints.viewport!.map(
-        (point) => new Point(point.x, point.y)
-      );
-      (newPolygon as OffsetAnnotationLine).addClosedOffsetLine(
-        points,
-        outerPoints,
-        (data as OffsetAnnotationLineData).offsetRadius,
-        scale
-      );
-    } else if (data.type === ANNOTATION_TYPE.USER_SOLUTION_POINT) {
-      newPolygon = new AnnotationPoint(this.getNode(data.type), data.type, strokeColor, data.id);
-      newPolygon.name = data.name;
-
-      (newPolygon as AnnotationPoint).setPoint(
-        new Point(data.coord.viewport![0].x, data.coord.viewport![0].y),
-        POLYGON_VERTICE_RADIUS / scale,
-        strokeWidth / scale
-      );
-    } else if (data.type === ANNOTATION_TYPE.USER_SOLUTION_LINE) {
-      newPolygon = new AnnotationLine(this.getNode(data.type), data.type, strokeColor, data.id);
-      newPolygon.name = data.name;
-
-      (newPolygon as AnnotationLine).addClosedLine(points, radius, strokeWidth);
-    } else {
-      newPolygon = new AnnotationPolygon(this.getNode(data.type), data.type, fillColor, strokeColor, data.id);
-      newPolygon.name = data.name;
-
-      (newPolygon as AnnotationPolygon).addClosedPolygon(points, radius, strokeWidth);
+        break;
+      case ANNOTATION_TYPE.SOLUTION_LINE:
+        generatedAnnotation = this._createOffsetAnnotationLine({
+          data: data,
+          scale: scale
+        });
+        break;
+      case ANNOTATION_TYPE.USER_SOLUTION_POINT:
+        generatedAnnotation = this._createAnnotationPoint({
+          data: data,
+          strokeWidth: strokeWidth,
+          radius: radius,
+          strokeColor: strokeColor
+        });
+        break;
+      case ANNOTATION_TYPE.USER_SOLUTION_LINE:
+        generatedAnnotation = this._createAnnotationLine({
+          data: data,
+          radius: radius,
+          strokeWidth: strokeWidth,
+          strokeColor: strokeColor
+        });
+        break;
+      default:
+        generatedAnnotation = this._createAnnotationPolygon({
+          data: data,
+          radius: radius,
+          strokeWidth: strokeWidth,
+          fillColor: fillColor,
+          strokeColor: strokeColor
+        });
+        break;
     }
 
-    return newPolygon;
+    return generatedAnnotation;
   }
 
   /**
@@ -278,16 +234,16 @@ export class AnnotationManager {
     const radius = POLYGON_VERTICE_RADIUS / scale;
     const strokeWidth = POLYGON_STROKE_WIDTH / scale;
 
-    for (const polygon of this._backgroundAnnotations) {
-      polygon.update(radius, strokeWidth);
+    for (const annotation of this._backgroundAnnotations) {
+      annotation.update(radius, strokeWidth);
     }
 
-    for (const polygon of this._userSolutionAnnotations) {
-      polygon.update(radius, strokeWidth);
+    for (const annotation of this._userSolutionAnnotations) {
+      annotation.update(radius, strokeWidth);
     }
 
-    for (const polygon of this._solutionAnnotations) {
-      polygon.update(radius, strokeWidth);
+    for (const annotation of this._solutionAnnotations) {
+      annotation.update(radius, strokeWidth);
     }
   }
 
@@ -317,11 +273,7 @@ export class AnnotationManager {
   getAnnotations(type: ANNOTATION_TYPE): Annotation[] {
     if (type === ANNOTATION_TYPE.BASE) {
       return this._backgroundAnnotations;
-    } else if (
-      type === ANNOTATION_TYPE.SOLUTION ||
-      type === ANNOTATION_TYPE.SOLUTION_POINT ||
-      type === ANNOTATION_TYPE.SOLUTION_LINE
-    ) {
+    } else if (isSolution(type)) {
       return this._solutionAnnotations;
     } else {
       return this._userSolutionAnnotations;
@@ -337,11 +289,7 @@ export class AnnotationManager {
   getNode(type: ANNOTATION_TYPE): HTMLElement {
     if (type === ANNOTATION_TYPE.BASE) {
       return this._backgroundNode;
-    } else if (
-      type === ANNOTATION_TYPE.SOLUTION ||
-      type === ANNOTATION_TYPE.SOLUTION_POINT ||
-      type === ANNOTATION_TYPE.SOLUTION_LINE
-    ) {
+    } else if (isSolution(type)) {
       return this._solutionNode;
     } else {
       return this._userSolutionNode;
@@ -355,21 +303,21 @@ export class AnnotationManager {
    * @returns The annotation to the ID
    */
   getAnnotationById(annotationID: string) {
-    for (const polygon of this._userSolutionAnnotations) {
-      if (polygon.id === annotationID) {
-        return polygon;
+    for (const annotation of this._userSolutionAnnotations) {
+      if (annotation.id === annotationID) {
+        return annotation;
       }
     }
 
-    for (const polygon of this._backgroundAnnotations) {
-      if (polygon.id === annotationID) {
-        return polygon;
+    for (const annotation of this._backgroundAnnotations) {
+      if (annotation.id === annotationID) {
+        return annotation;
       }
     }
 
-    for (const polygon of this._solutionAnnotations) {
-      if (polygon.id === annotationID) {
-        return polygon;
+    for (const annotation of this._solutionAnnotations) {
+      if (annotation.id === annotationID) {
+        return annotation;
       }
     }
   }
@@ -382,42 +330,243 @@ export class AnnotationManager {
    */
   findByIdAndUnselect(annotationId: string): Annotation {
     let resultAnnotation: Annotation;
-    for (const polygon of this._backgroundAnnotations) {
-      if (polygon.id !== annotationId) {
-        polygon.unselect();
+    for (const annotation of this._backgroundAnnotations) {
+      if (annotation.id !== annotationId) {
+        annotation.unselect();
       } else {
-        resultAnnotation = polygon;
+        resultAnnotation = annotation;
       }
     }
 
-    for (const polygon of this._solutionAnnotations) {
-      if (polygon.id !== annotationId) {
-        polygon.unselect();
+    for (const annotation of this._solutionAnnotations) {
+      if (annotation.id !== annotationId) {
+        annotation.unselect();
       } else {
-        resultAnnotation = polygon;
+        resultAnnotation = annotation;
       }
     }
 
-    for (const polygon of this._userSolutionAnnotations) {
-      if (polygon.id !== annotationId) {
-        polygon.unselect();
+    for (const annotation of this._userSolutionAnnotations) {
+      if (annotation.id !== annotationId) {
+        annotation.unselect();
       } else {
-        resultAnnotation = polygon;
+        resultAnnotation = annotation;
       }
     }
 
     return resultAnnotation!;
   }
 
-  get backgroundPolygons() {
+  _convertToPoints(points: PointData[]): Point[] {
+    const resultPoints: Point[] = [];
+    points.forEach((point) => {
+      resultPoints.push(new Point(point.x, point.y));
+    });
+    return resultPoints;
+  }
+
+  _createAnnotationPoint({
+    data,
+    strokeColor,
+    radius,
+    strokeWidth
+  }: {
+    data: AnnotationData;
+    strokeWidth: number;
+    radius: number;
+    strokeColor: string;
+  }): AnnotationPoint {
+    let annotationPoint: AnnotationPoint = new AnnotationPoint(
+      this.getNode(data.type),
+      data.type,
+      strokeColor,
+      data.id
+    );
+
+    annotationPoint.name = data.name;
+
+    annotationPoint.setPoint(new Point(data.coord.viewport![0].x, data.coord.viewport![0].y), radius, strokeWidth);
+
+    return annotationPoint;
+  }
+
+  _createAnnotationLine({
+    data,
+    radius,
+    strokeWidth,
+    strokeColor
+  }: {
+    data: AnnotationData;
+    radius: number;
+    strokeWidth: number;
+    strokeColor: string;
+  }): AnnotationLine {
+    const points: Point[] = this._convertToPoints(data.coord.viewport || []);
+
+    let annotationLine: AnnotationLine = new AnnotationLine(this.getNode(data.type), data.type, strokeColor, data.id);
+
+    annotationLine.name = data.name;
+
+    annotationLine.addClosedLine(points, radius, strokeWidth);
+
+    return annotationLine;
+  }
+
+  _createAnnotationPolygon({
+    data,
+    radius,
+    strokeWidth,
+    fillColor,
+    strokeColor
+  }: {
+    data: AnnotationData;
+    radius: number;
+    strokeWidth: number;
+    fillColor: string;
+    strokeColor: string;
+  }): AnnotationPolygon {
+    const points: Point[] = this._convertToPoints(data.coord.viewport || []);
+
+    let annotationPolygon = new AnnotationPolygon(this.getNode(data.type), data.type, fillColor, strokeColor, data.id);
+    annotationPolygon.name = data.name;
+    annotationPolygon.addClosedPolygon(points, radius, strokeWidth);
+
+    return annotationPolygon;
+  }
+
+  _createOffsetAnnotationPoint({
+    data,
+    strokeWidth,
+    radius
+  }: {
+    data: AnnotationData;
+    strokeWidth: number;
+    radius: number;
+  }): OffsetAnnotationPoint {
+    let offsetAnnotationPoint: OffsetAnnotationPoint;
+
+    offsetAnnotationPoint = new OffsetAnnotationPoint(
+      this.getNode(data.type),
+      data.type,
+      (data as OffsetAnnotationPointData).offsetRadius,
+      data.color,
+      data.id
+    );
+    offsetAnnotationPoint.name = data.name;
+
+    offsetAnnotationPoint.setPoint(
+      new Point(data.coord.viewport![0].x, data.coord.viewport![0].y),
+      radius,
+      strokeWidth
+    );
+
+    return offsetAnnotationPoint;
+  }
+
+  _createOffsetAnnotationLine({ data, scale }: { data: AnnotationData; scale: number }): OffsetAnnotationLine {
+    const points: Point[] = this._convertToPoints(data.coord.viewport || []);
+
+    const offsetAnnotationLineData: OffsetAnnotationLineData = data as OffsetAnnotationLineData;
+
+    let offsetAnnotationLine = new OffsetAnnotationLine(
+      this.getNode(data.type),
+      data.type,
+      data.color,
+      offsetAnnotationLineData.offsetRadius,
+      data.id,
+      offsetAnnotationLineData.changedManual
+    );
+
+    offsetAnnotationLine.name = data.name;
+
+    const outerPoints = offsetAnnotationLineData.outerPoints.viewport!.map((point) => new Point(point.x, point.y));
+    offsetAnnotationLine.addClosedOffsetLine(points, outerPoints, offsetAnnotationLineData.offsetRadius, scale);
+
+    return offsetAnnotationLine;
+  }
+
+  _createOffsetAnnotationPolygon({
+    data,
+    radius,
+    strokeWidth,
+    fillColor,
+    strokeColor,
+    scale
+  }: {
+    data: AnnotationData;
+    radius: number;
+    strokeWidth: number;
+    fillColor: string;
+    strokeColor: string;
+    scale: number;
+  }): OffsetAnnotationPolygon {
+    const points: Point[] = this._convertToPoints(data.coord.viewport || []);
+
+    const offsetPolygonData: OffsetAnnotationPolygonData = data as OffsetAnnotationPolygonData;
+
+    let offsetPolygonAnnotation = new OffsetAnnotationPolygon(
+      this.getNode(data.type),
+      data.type,
+      fillColor,
+      strokeColor,
+      offsetPolygonData.outerOffset,
+      offsetPolygonData.innerOffset,
+      data.id,
+      offsetPolygonData.changedManual
+    );
+
+    offsetPolygonAnnotation.name = data.name;
+
+    offsetPolygonAnnotation = this._createPolygonOffset({
+      offsetPolygonAnnotation: offsetPolygonAnnotation,
+      points: points,
+      data: offsetPolygonData,
+      radius: radius,
+      strokeWidth: strokeWidth,
+      scale: scale
+    });
+
+    return offsetPolygonAnnotation;
+  }
+
+  _createPolygonOffset({
+    offsetPolygonAnnotation,
+    points,
+    data,
+    radius,
+    strokeWidth,
+    scale
+  }: {
+    offsetPolygonAnnotation: OffsetAnnotationPolygon;
+    points: Point[];
+    data: OffsetAnnotationPolygonData;
+    radius: number;
+    strokeWidth: number;
+    scale: number;
+  }): OffsetAnnotationPolygon {
+    if (data.innerPoints && data.outerPoints) {
+      const innerPoints = data.innerPoints.viewport!.map((point) => new Point(point.x, point.y));
+      const outerPoints = data.outerPoints.viewport!.map((point) => new Point(point.x, point.y));
+      offsetPolygonAnnotation.addClosedInsetPolygon(points, outerPoints, innerPoints, scale);
+    } else {
+      offsetPolygonAnnotation.addClosedPolygon(points, radius, strokeWidth);
+      offsetPolygonAnnotation.inflationInnerOffset = (POLYGON_INFLATE_OFFSET / scale) * (ANNOTATION_OFFSET_SCALAR / 10);
+      offsetPolygonAnnotation.inflationOuterOffset = (POLYGON_INFLATE_OFFSET / scale) * (ANNOTATION_OFFSET_SCALAR / 10);
+      offsetPolygonAnnotation.createInflation(scale);
+    }
+
+    return offsetPolygonAnnotation;
+  }
+
+  get backgroundAnnotations() {
     return this._backgroundAnnotations;
   }
 
-  get solutionPolygons() {
+  get solutionAnnotations() {
     return this._solutionAnnotations;
   }
 
-  get userSolutionPolygons() {
+  get userSolutionAnnotations() {
     return this._userSolutionAnnotations;
   }
 

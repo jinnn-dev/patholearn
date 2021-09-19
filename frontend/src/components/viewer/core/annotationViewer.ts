@@ -510,23 +510,23 @@ export class AnnotationViewer {
    */
   async deleteAnnotationByID(task: Task, selectionId: string): Promise<any> {
     let annotation: Annotation;
-    this._annotationManager.backgroundPolygons.forEach((element: Annotation, index: number) => {
+    this._annotationManager.backgroundAnnotations.forEach((element: Annotation, index: number) => {
       if (element.id === selectionId) {
-        annotation = this._annotationManager.backgroundPolygons.splice(index, 1)[0];
+        annotation = this._annotationManager.backgroundAnnotations.splice(index, 1)[0];
         return;
       }
     });
 
-    this._annotationManager.userSolutionPolygons.forEach((element: Annotation, index: number) => {
+    this._annotationManager.userSolutionAnnotations.forEach((element: Annotation, index: number) => {
       if (element.id === selectionId) {
-        annotation = this._annotationManager.userSolutionPolygons.splice(index, 1)[0];
+        annotation = this._annotationManager.userSolutionAnnotations.splice(index, 1)[0];
         return;
       }
     });
 
-    this._annotationManager.solutionPolygons.forEach((element: Annotation, index: number) => {
+    this._annotationManager.solutionAnnotations.forEach((element: Annotation, index: number) => {
       if (element.id === selectionId) {
-        annotation = this._annotationManager.solutionPolygons.splice(index, 1)[0];
+        annotation = this._annotationManager.solutionAnnotations.splice(index, 1)[0];
         return;
       }
     });
@@ -545,9 +545,9 @@ export class AnnotationViewer {
    */
   deleteUserSolution(task: Task, selectionId: string) {
     let polygon: Annotation;
-    this._annotationManager.userSolutionPolygons.forEach((element: Annotation, index: number) => {
+    this._annotationManager.userSolutionAnnotations.forEach((element: Annotation, index: number) => {
       if (element.id === selectionId) {
-        polygon = this._annotationManager.userSolutionPolygons.splice(index, 1)[0];
+        polygon = this._annotationManager.userSolutionAnnotations.splice(index, 1)[0];
       }
     });
 
@@ -586,7 +586,7 @@ export class AnnotationViewer {
    * Resets annotations
    */
   resetAnnotations(): void {
-    for (const polygon of this._annotationManager.userSolutionPolygons) {
+    for (const polygon of this._annotationManager.userSolutionAnnotations) {
       if (polygon instanceof AnnotationLine) {
         (polygon as AnnotationLine).removeResultPolylines();
       }
@@ -611,7 +611,7 @@ export class AnnotationViewer {
    * @param color New color
    */
   changeAllUserAnnotationColor(color: string): void {
-    for (const annotation of this._annotationManager.userSolutionPolygons) {
+    for (const annotation of this._annotationManager.userSolutionAnnotations) {
       annotation.changeRenderColor(color + ANNOTATION_COLOR.FILL_OPACITY, color);
     }
   }
