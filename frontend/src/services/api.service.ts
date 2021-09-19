@@ -30,15 +30,6 @@ interface Delete {
 export class ApiService {
   private static interceptor: number;
 
-  // /**
-  //  * Initializes the API Service with the given base URL of the API
-  //  *
-  //  * @param baseUrl The base URL of the API
-  //  */
-  // public static init(baseUrl: string): void {
-  //   axios.defaults.baseURL = baseUrl;
-  // }
-
   /**
    * Sets the authorization header
    */
