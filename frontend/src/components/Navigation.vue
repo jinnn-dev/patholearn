@@ -9,13 +9,15 @@
         Benutzerverwaltung
       </router-link>
     </role-only>
-    <div @click="onLogout" class="transition cursor-pointer text-gray-200 hover:text-highlight-800">Logout</div>
+    <div @click="onLogout" class="transition cursor-pointer text-gray-200 hover:text-highlight-800 mr-8">Logout</div>
+    <div @click="createError" class="transition cursor-pointer text-gray-200 hover:text-highlight-800">Show Error</div>
   </nav>
 </template>
 <script lang="ts">
 import router from '../router';
 import { AuthService } from '../services';
 import { defineComponent } from 'vue';
+import { CustomError, errorState } from '../services/error-handler';
 export default defineComponent({
   props: {},
   setup() {
@@ -24,7 +26,15 @@ export default defineComponent({
       router.go(0);
     };
 
-    return { onLogout };
+    const createError = () => {
+      const err: CustomError = {
+        err: new Error('error'),
+        errorMessage: 'Test error' + new Date()
+      };
+      errorState.value.push(err);
+    };
+
+    return { onLogout, errorState, createError };
   }
 });
 </script>

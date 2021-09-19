@@ -2,6 +2,7 @@
   <div class="w-full bg-gray-800 text-gray-100 min-h-screen">
     <router-view />
   </div>
+  <error-bar></error-bar>
 </template>
 
 <script lang="ts">

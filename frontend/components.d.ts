@@ -19,6 +19,7 @@ declare module 'vue' {
     CustomSelect: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/form/CustomSelect.vue')['default']
     CustomSlider: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/form/CustomSlider.vue')['default']
     DangerButton: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/base/DangerButton.vue')['default']
+    ErrorBar: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/ErrorBar.vue')['default']
     EscapeInfo: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/viewer/EscapeInfo.vue')['default']
     FormField: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/form/FormField.vue')['default']
     GroundTruthDialog: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/viewer/GroundTruthDialog.vue')['default']

@@ -1,5 +1,6 @@
 import { User } from '../model/user';
 import { ApiService } from './api.service';
+import { handleError } from './error-handler';
 import { TokenService } from './token.service';
 
 export class AuthService {
@@ -13,11 +14,15 @@ export class AuthService {
     const form_data = new FormData();
     form_data.append('username', email);
     form_data.append('password', password);
-    const response = await ApiService.post<{ access_token: string; type: string }>({
-      resource: '/login/access-token',
-      data: form_data
-    });
-    TokenService.saveToken(response.data.access_token);
+    const [_, response] = await handleError(
+      ApiService.post<{ access_token: string; type: string }>({
+        resource: '/login/access-token',
+        data: form_data
+      }),
+      'You could not be logged in: '
+    );
+
+    TokenService.saveToken(response!.data.access_token);
     ApiService.setHeader();
   }
 
@@ -38,17 +43,21 @@ export class AuthService {
     email: string,
     password: string
   ): Promise<User> {
-    const response = await ApiService.post<User>({
-      resource: '/users/open',
-      data: {
-        firstname,
-        middlename,
-        lastname,
-        email,
-        password
-      }
-    });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.post<User>({
+        resource: '/users/open',
+        data: {
+          firstname,
+          middlename,
+          lastname,
+          email,
+          password
+        }
+      }),
+      'You could not be registered: '
+    );
+
+    return response!.data;
   }
 
   /**
@@ -68,17 +77,21 @@ export class AuthService {
     email: string,
     password: string
   ): Promise<User> {
-    const response = await ApiService.post<User>({
-      resource: '/users/admin',
-      data: {
-        firstname,
-        middlename,
-        lastname,
-        email,
-        password
-      }
-    });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.post<User>({
+        resource: '/users/admin',
+        data: {
+          firstname,
+          middlename,
+          lastname,
+          email,
+          password
+        }
+      }),
+      'Admin could not be created: '
+    );
+
+    return response!.data;
   }
 
   /**
@@ -95,8 +108,12 @@ export class AuthService {
    * @returns The current user
    */
   public static async getUser(): Promise<User> {
-    const response = await ApiService.get<User>({ resource: '/users/me' });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.get<User>({ resource: '/users/me' }),
+      'User could not be loaded: '
+    );
+
+    return response!.data;
   }
 
   /**
@@ -105,7 +122,10 @@ export class AuthService {
    * @returns All available admin users
    */
   public static async getAdminUsers(): Promise<User[]> {
-    const response = await ApiService.get<User[]>({ resource: '/users/admin' });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.get<User[]>({ resource: '/users/admin' }),
+      'User could not be loaded: '
+    );
+    return response!.data;
   }
 }

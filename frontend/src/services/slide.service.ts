@@ -2,6 +2,7 @@ import { SLIDE_API_URL } from '../config';
 import { ExtractionResult } from '../model';
 import { Slide } from '../model/slide';
 import { ApiService } from './api.service';
+import { handleError } from './error-handler';
 
 export class SlideService {
   /**
@@ -10,8 +11,11 @@ export class SlideService {
    * @returns All found slides
    */
   public static async getSlides(): Promise<Slide[]> {
-    const response = await ApiService.get<Slide[]>({ resource: '/slides', host: SLIDE_API_URL });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.get<Slide[]>({ resource: '/slides', host: SLIDE_API_URL }),
+      'Slides could not be loaded'
+    );
+    return response!.data;
   }
 
   /**
@@ -22,13 +26,16 @@ export class SlideService {
    * @returns The created Slide
    */
   public static async uploadSlide(data: FormData, onUploadProgress: (event: any) => void): Promise<any> {
-    const response = await ApiService.post({
-      resource: '/slides',
-      data,
-      config: { onUploadProgress },
-      host: SLIDE_API_URL
-    });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.post({
+        resource: '/slides',
+        data,
+        config: { onUploadProgress },
+        host: SLIDE_API_URL
+      }),
+      'Slide could not be uploaded'
+    );
+    return response!.data;
   }
 
   /**
@@ -38,8 +45,11 @@ export class SlideService {
    * @returns The deleted Slide
    */
   public static async deleteSlide(slideName: string): Promise<any> {
-    const response = await ApiService.delete({ resource: `/slides/${slideName}`, host: SLIDE_API_URL });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.delete({ resource: `/slides/${slideName}`, host: SLIDE_API_URL }),
+      'Slide could bot be deleted'
+    );
+    return response!.data;
   }
 
   /**
@@ -50,14 +60,17 @@ export class SlideService {
    * @returns The conversion result
    */
   public static async convertImage(data: FormData, onUploadProgress?: (event: any) => void): Promise<ExtractionResult> {
-    const response = await ApiService.post<ExtractionResult>({
-      resource: '/slides/convert',
-      data,
-      config: {
-        ...(onUploadProgress && onUploadProgress)
-      },
-      host: SLIDE_API_URL
-    });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.post<ExtractionResult>({
+        resource: '/slides/convert',
+        data,
+        config: {
+          ...(onUploadProgress && onUploadProgress)
+        },
+        host: SLIDE_API_URL
+      }),
+      'Image could not be converted'
+    );
+    return response!.data;
   }
 }

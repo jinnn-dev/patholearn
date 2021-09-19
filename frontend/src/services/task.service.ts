@@ -3,6 +3,7 @@ import { BaseTask, CreateBaseTask, UpdateBaseTask } from '../model/baseTask';
 import { AnnotationGroup, Task, TaskCreate, TaskUpdate } from '../model/task';
 import { UserSolution, UserSolutionCreate } from '../model/userSolution';
 import { ApiService } from './api.service';
+import { handleError } from './error-handler';
 
 export class TaskService {
   private static _apiUrl = (shortName: string = '') => '/tasks' + shortName;
@@ -14,8 +15,11 @@ export class TaskService {
    * @returns Promise with the base task
    */
   public static async getBaseTask(shortName: string): Promise<BaseTask> {
-    const response = await ApiService.get<BaseTask>({ resource: this._apiUrl('/' + shortName) });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.get<BaseTask>({ resource: this._apiUrl('/' + shortName) }),
+      'Base task could not be loaded'
+    );
+    return response!.data;
   }
 
   /**
@@ -25,8 +29,11 @@ export class TaskService {
    * @returns Promise with the base task
    */
   public static async getBaseTaskAdmin(shortName: string): Promise<BaseTask> {
-    const response = await ApiService.get<BaseTask>({ resource: this._apiUrl('/' + shortName + '/admin') });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.get<BaseTask>({ resource: this._apiUrl('/' + shortName + '/admin') }),
+      'Base task could not be loaded'
+    );
+    return response!.data;
   }
 
   /**
@@ -36,8 +43,11 @@ export class TaskService {
    * @returns Promise with the created base task
    */
   public static async createBaseTask(createTask: CreateBaseTask): Promise<BaseTask> {
-    const response = await ApiService.post<BaseTask>({ resource: this._apiUrl(), data: createTask });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.post<BaseTask>({ resource: this._apiUrl(), data: createTask }),
+      'Base task could not be created'
+    );
+    return response!.data;
   }
 
   /**
@@ -47,8 +57,11 @@ export class TaskService {
    * @returns Promise with the updated base task
    */
   public static async updateBaseTask(updateTask: UpdateBaseTask): Promise<BaseTask> {
-    const response = await ApiService.put<BaseTask>({ resource: this._apiUrl(), data: updateTask });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.put<BaseTask>({ resource: this._apiUrl(), data: updateTask }),
+      'Base task could not be updated'
+    );
+    return response!.data;
   }
 
   /**
@@ -58,8 +71,11 @@ export class TaskService {
    * @returns Promise with the deleted base task
    */
   public static async deleteBaseTask(shortName: string): Promise<BaseTask> {
-    const response = await ApiService.delete<BaseTask>({ resource: this._apiUrl('/' + shortName) });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.delete<BaseTask>({ resource: this._apiUrl('/' + shortName) }),
+      'Base task could not be deleted'
+    );
+    return response!.data;
   }
 
   /**
@@ -69,11 +85,14 @@ export class TaskService {
    * @returns Promise with the course base tasks
    */
   public static async getBaseTasksWithoutGroup(courseId: number): Promise<BaseTask[]> {
-    const response = await ApiService.get<BaseTask[]>({
-      resource: this._apiUrl('/noGroup'),
-      data: { course_id: courseId }
-    });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.get<BaseTask[]>({
+        resource: this._apiUrl('/noGroup'),
+        data: { course_id: courseId }
+      }),
+      'Base tasks could not be loaded'
+    );
+    return response!.data;
   }
 
   /**
@@ -83,11 +102,14 @@ export class TaskService {
    * @returns Promise with the created user solution
    */
   public static async saveUserSolution(solutionCreate: UserSolutionCreate): Promise<UserSolution> {
-    const response = await ApiService.post<UserSolution>({
-      resource: this._apiUrl('/userSolution'),
-      data: solutionCreate
-    });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.post<UserSolution>({
+        resource: this._apiUrl('/userSolution'),
+        data: solutionCreate
+      }),
+      'User solution could not be saved'
+    );
+    return response!.data;
   }
 
   /**
@@ -97,8 +119,11 @@ export class TaskService {
    * @returns Promise with the deleted user solution
    */
   public static async deleteUserSolution(task_id: number): Promise<UserSolution> {
-    const response = await ApiService.delete<UserSolution>({ resource: this._apiUrl(`/${task_id}/userSolution`) });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.delete<UserSolution>({ resource: this._apiUrl(`/${task_id}/userSolution`) }),
+      'User solution could not be deleted'
+    );
+    return response!.data;
   }
 
   /**
@@ -108,10 +133,13 @@ export class TaskService {
    * @returns Promise with the usersolution
    */
   public static async deleteTaskResult(task_id: number): Promise<UserSolution> {
-    const response = await ApiService.delete<UserSolution>({
-      resource: this._apiUrl(`/task/${task_id}/userSolution/taskResult`)
-    });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.delete<UserSolution>({
+        resource: this._apiUrl(`/task/${task_id}/userSolution/taskResult`)
+      }),
+      'Task result could not be deleted'
+    );
+    return response!.data;
   }
 
   /**
@@ -121,8 +149,11 @@ export class TaskService {
    * @returns Promise with the created task
    */
   public static async createTask(taskCreate: TaskCreate): Promise<Task> {
-    const response = await ApiService.post<Task>({ resource: this._apiUrl('/task'), data: taskCreate });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.post<Task>({ resource: this._apiUrl('/task'), data: taskCreate }),
+      'Task could not be created'
+    );
+    return response!.data;
   }
 
   /**
@@ -132,8 +163,11 @@ export class TaskService {
    * @returns Promise with the updated task
    */
   public static async updateTask(taskUpdate: TaskUpdate): Promise<Task> {
-    const response = await ApiService.put<Task>({ resource: this._apiUrl('/task'), data: taskUpdate });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.put<Task>({ resource: this._apiUrl('/task'), data: taskUpdate }),
+      'Task could not be updated'
+    );
+    return response!.data;
   }
 
   /**
@@ -143,8 +177,11 @@ export class TaskService {
    * @returns Promise with the deleted task
    */
   public static async deleteTask(task_id: number): Promise<Task> {
-    const response = await ApiService.delete<Task>({ resource: this._apiUrl('/task/' + task_id) });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.delete<Task>({ resource: this._apiUrl('/task/' + task_id) }),
+      'Task could not be deleted'
+    );
+    return response!.data;
   }
 
   /**
@@ -154,8 +191,11 @@ export class TaskService {
    * @returns Promise with the solve result
    */
   public static async solveTask(task_id: number): Promise<TaskResult> {
-    const response = await ApiService.get<TaskResult>({ resource: this._apiUrl('/' + task_id + '/solve') });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.get<TaskResult>({ resource: this._apiUrl('/' + task_id + '/solve') }),
+      'Task could not be solved'
+    );
+    return response!.data;
   }
 
   /**
@@ -166,11 +206,14 @@ export class TaskService {
    * @returns Promise with the update result
    */
   public static async updateAnnotation(task_id: number, annotation: any): Promise<any> {
-    const response = await ApiService.put<any>({
-      resource: this._apiUrl(`/task/${task_id}/${annotation.id}`),
-      data: annotation
-    });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.put<any>({
+        resource: this._apiUrl(`/task/${task_id}/${annotation.id}`),
+        data: annotation
+      }),
+      'Annotation could not be updated'
+    );
+    return response!.data;
   }
 
   /**
@@ -181,11 +224,14 @@ export class TaskService {
    * @returns Promise with the create result
    */
   public static async createTaskAnnotation(task_id: number, annotation: any): Promise<any> {
-    const response = await ApiService.post<any>({
-      resource: this._apiUrl(`/task/${task_id}/annotations`),
-      data: annotation
-    });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.post<any>({
+        resource: this._apiUrl(`/task/${task_id}/annotations`),
+        data: annotation
+      }),
+      'Task annotation could not be created'
+    );
+    return response!.data;
   }
 
   /**
@@ -195,8 +241,11 @@ export class TaskService {
    * @returns Promise with the task
    */
   public static async deleteTaskAnnotations(task_id: number): Promise<Task> {
-    const response = await ApiService.delete<Task>({ resource: this._apiUrl(`/task/${task_id}/annotations`) });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.delete<Task>({ resource: this._apiUrl(`/task/${task_id}/annotations`) }),
+      'Task annotations could not be deleted'
+    );
+    return response!.data;
   }
 
   /**
@@ -207,11 +256,14 @@ export class TaskService {
    * @returns Promise with the create result
    */
   public static async createUserAnnotation(task_id: number, annotation: any): Promise<any> {
-    const response = await ApiService.post({
-      resource: this._apiUrl(`/task/${task_id}/userSolution`),
-      data: annotation
-    });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.post({
+        resource: this._apiUrl(`/task/${task_id}/userSolution`),
+        data: annotation
+      }),
+      'User annotation could not be created'
+    );
+    return response!.data;
   }
 
   /**
@@ -222,11 +274,14 @@ export class TaskService {
    * @returns Promise with the update result
    */
   public static async updateUserAnnotation(task_id: number, annotation: any): Promise<any> {
-    const response = await ApiService.put({
-      resource: this._apiUrl(`/task/${task_id}/userSolution/${annotation.id}`),
-      data: annotation
-    });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.put({
+        resource: this._apiUrl(`/task/${task_id}/userSolution/${annotation.id}`),
+        data: annotation
+      }),
+      'User annotation could not be updated'
+    );
+    return response!.data;
   }
 
   /**
@@ -237,10 +292,13 @@ export class TaskService {
    * @returns Promise with the task
    */
   public static async deleteAnnotation(task_id: number, annotation_id: string): Promise<Task | UserSolution> {
-    const response = await ApiService.delete<Task | UserSolution>({
-      resource: this._apiUrl(`/task/${task_id}/${annotation_id}`)
-    });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.delete<Task | UserSolution>({
+        resource: this._apiUrl(`/task/${task_id}/${annotation_id}`)
+      }),
+      'Annotation could not be deleted'
+    );
+    return response!.data;
   }
 
   /**
@@ -251,10 +309,13 @@ export class TaskService {
    * @returns Promise with the task
    */
   public static async deleteUserAnnotation(task_id: number, annotation_id: string): Promise<any> {
-    const response = await ApiService.delete({
-      resource: this._apiUrl(`/task/${task_id}/userSolution/${annotation_id}`)
-    });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.delete({
+        resource: this._apiUrl(`/task/${task_id}/userSolution/${annotation_id}`)
+      }),
+      'User annotation could not be deleted'
+    );
+    return response!.data;
   }
 
   /**
@@ -266,15 +327,18 @@ export class TaskService {
    * @returns Promise with the created annotation group
    */
   public static async createAnnotationGroup(task_id: number, name: string, color: string): Promise<AnnotationGroup> {
-    const response = await ApiService.post<AnnotationGroup>({
-      resource: this._apiUrl(`/task/${task_id}/annotationGroup`),
-      data: {
-        task_id,
-        name,
-        color
-      }
-    });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.post<AnnotationGroup>({
+        resource: this._apiUrl(`/task/${task_id}/annotationGroup`),
+        data: {
+          task_id,
+          name,
+          color
+        }
+      }),
+      'Annotation group could not be created'
+    );
+    return response!.data;
   }
 
   /**
@@ -292,15 +356,18 @@ export class TaskService {
     name: string,
     color: string
   ): Promise<AnnotationGroup> {
-    const response = await ApiService.put<AnnotationGroup>({
-      resource: this._apiUrl(`/task/${task_id}/annotationGroup`),
-      data: {
-        oldName,
-        name,
-        color
-      }
-    });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.put<AnnotationGroup>({
+        resource: this._apiUrl(`/task/${task_id}/annotationGroup`),
+        data: {
+          oldName,
+          name,
+          color
+        }
+      }),
+      'Annotation group could not be updated'
+    );
+    return response!.data;
   }
 
   /**
@@ -310,7 +377,10 @@ export class TaskService {
    * @returns Promise with the task solution
    */
   public static async loadTaskSolution(task_id: number): Promise<any> {
-    const response = await ApiService.get<any>({ resource: this._apiUrl(`/task/${task_id}/solution`) });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.get<any>({ resource: this._apiUrl(`/task/${task_id}/solution`) }),
+      'Task solution could not be loaded'
+    );
+    return response!.data;
   }
 }

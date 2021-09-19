@@ -1,5 +1,6 @@
 import { TaskGroup } from '../model/taskGroup';
 import { ApiService } from './api.service';
+import { handleError } from './error-handler';
 
 export class TaskGroupService {
   private static _apiUrl = '/taskgroups';
@@ -12,8 +13,11 @@ export class TaskGroupService {
    * @returns Promise with the created task group
    */
   public static async createTaskGroup(name: string, courseId: number): Promise<TaskGroup> {
-    const response = await ApiService.post<TaskGroup>({ resource: this._apiUrl, data: { name, course_id: courseId } });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.post<TaskGroup>({ resource: this._apiUrl, data: { name, course_id: courseId } }),
+      'Task group could not be created'
+    );
+    return response!.data;
   }
 
   /**
@@ -23,8 +27,11 @@ export class TaskGroupService {
    * @returns Promise with the found task groups
    */
   public static async getTaskGroups(courseId: number): Promise<TaskGroup[]> {
-    const response = await ApiService.get<TaskGroup[]>({ resource: this._apiUrl, data: { course_id: courseId } });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.get<TaskGroup[]>({ resource: this._apiUrl, data: { course_id: courseId } }),
+      'Task groups could not be loaded'
+    );
+    return response!.data;
   }
 
   /**
@@ -34,8 +41,11 @@ export class TaskGroupService {
    * @returns Promise with the task group
    */
   public static async getTaskGroup(shortName: string): Promise<TaskGroup> {
-    const response = await ApiService.get<TaskGroup>({ resource: this._apiUrl + '/' + shortName });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.get<TaskGroup>({ resource: this._apiUrl + '/' + shortName }),
+      'Task group could not be loaded'
+    );
+    return response!.data;
   }
 
   /**
@@ -45,7 +55,10 @@ export class TaskGroupService {
    * @returns Promise with the deleted task group
    */
   public static async removeTaskGroup(short_name: string): Promise<TaskGroup> {
-    const response = await ApiService.delete<TaskGroup>({ resource: this._apiUrl + '/' + short_name });
-    return response.data;
+    const [_, response] = await handleError(
+      ApiService.delete<TaskGroup>({ resource: this._apiUrl + '/' + short_name }),
+      'Task group could not be removed'
+    );
+    return response!.data;
   }
 }
