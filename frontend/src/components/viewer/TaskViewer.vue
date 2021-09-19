@@ -277,12 +277,9 @@ export default defineComponent({
 
       setMoving.value = false;
 
-      if (isDrawingTool(currentTool.value) || currentTool.value === Tool.POINT_SOLUTION) {
+      if (isDrawingTool(currentTool.value)) {
         drawingViewer.value?.update(data.event.screenX, data.event.screenY);
         drawingViewer.value?.appendMouseCirlce();
-        if (currentTool.value !== Tool.POINT_SOLUTION) {
-          drawingViewer.value?.updateType(TOOL_POLYGON[currentTool.value!]!);
-        }
       } else {
         drawingViewer.value?.removeMouseCircle();
       }
@@ -409,13 +406,8 @@ export default defineComponent({
               selectedPolygonData.name = selectedPolygon.value?.name;
             });
         }
-      } else if (currentTool.value === Tool.POINT_SOLUTION) {
-        if (event.quick) {
-          TooltipGenerator.destoyAll();
-
-          drawingViewer.value?.addPoint();
-        }
       } else {
+        TooltipGenerator.destoyAll();
         drawingViewer.value?.removeListener();
       }
     };

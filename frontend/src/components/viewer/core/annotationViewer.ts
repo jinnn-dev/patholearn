@@ -36,6 +36,7 @@ import { viewerLoadingState, viewerScale, viewerZoom } from './viewerState';
 
 export class AnnotationViewer {
   private _viewer: OpenSeadragon.Viewer;
+
   private _overlay: SvgOverlay;
 
   private _annotationManager: AnnotationManager;
@@ -113,8 +114,8 @@ export class AnnotationViewer {
    * @param file XML-File with annotations
    * @param callback Function to execute when annotation are convertet
    */
-  convertToAnnotations(file: Blob, callback: (data: any) => void): void {
-    AnnotationParser.convertXmlToPolygons(file, this._viewer, callback);
+  convertToAnnotations(file: Blob | File, callback: (data: any) => void): void {
+    AnnotationParser.convertXmlToPolygons(file as File, this._viewer, callback);
   }
 
   /**
@@ -128,7 +129,7 @@ export class AnnotationViewer {
       return;
     }
     if (!this._drawingAnnotation) {
-      let node;
+      let node: HTMLElement;
 
       if (type === ANNOTATION_TYPE.BASE) {
         node = this._annotationManager.backgroundNode;
@@ -138,33 +139,40 @@ export class AnnotationViewer {
         node = this._annotationManager.solutionNode;
       }
 
-      if (type === ANNOTATION_TYPE.SOLUTION) {
-        this._drawingAnnotation = new OffsetAnnotationPolygon(
-          node,
-          type,
-          this._currentColor + ANNOTATION_COLOR.FILL_OPACITY,
-          this._currentColor,
-          (POLYGON_INFLATE_OFFSET / this.scale) * ANNOTATION_OFFSET_SCALAR,
-          (POLYGON_INFLATE_OFFSET / this.scale) * ANNOTATION_OFFSET_SCALAR
-        );
-      } else if (type === ANNOTATION_TYPE.SOLUTION_LINE) {
-        this._drawingAnnotation = new OffsetAnnotationLine(
-          node,
-          type,
-          this._currentColor,
-          (POLYGON_INFLATE_OFFSET / this.scale) * ANNOTATION_OFFSET_SCALAR
-        );
-      } else if (type === ANNOTATION_TYPE.USER_SOLUTION_LINE) {
-        this._drawingAnnotation = new AnnotationLine(node, type, this._currentColor);
-      } else if (type === ANNOTATION_TYPE.BASE) {
-        this._drawingAnnotation = new AnnotationPolygon(node, type, 'none', this._currentColor);
-      } else {
-        this._drawingAnnotation = new AnnotationPolygon(
-          node,
-          type,
-          this._currentColor + ANNOTATION_COLOR.FILL_OPACITY,
-          this._currentColor
-        );
+      switch (type) {
+        case ANNOTATION_TYPE.SOLUTION:
+          this._drawingAnnotation = new OffsetAnnotationPolygon(
+            node,
+            type,
+            this._currentColor + ANNOTATION_COLOR.FILL_OPACITY,
+            this._currentColor,
+            (POLYGON_INFLATE_OFFSET / this.scale) * ANNOTATION_OFFSET_SCALAR,
+            (POLYGON_INFLATE_OFFSET / this.scale) * ANNOTATION_OFFSET_SCALAR
+          );
+          break;
+        case ANNOTATION_TYPE.SOLUTION_LINE:
+          this._drawingAnnotation = new OffsetAnnotationLine(
+            node,
+            type,
+            this._currentColor,
+            (POLYGON_INFLATE_OFFSET / this.scale) * ANNOTATION_OFFSET_SCALAR
+          );
+          break;
+        case ANNOTATION_TYPE.USER_SOLUTION_LINE:
+          this._drawingAnnotation = new AnnotationLine(node, type, this._currentColor);
+          break;
+        case ANNOTATION_TYPE.BASE:
+          this._drawingAnnotation = new AnnotationPolygon(node, type, 'none', this._currentColor);
+
+          break;
+        default:
+          this._drawingAnnotation = new AnnotationPolygon(
+            node,
+            type,
+            this._currentColor + ANNOTATION_COLOR.FILL_OPACITY,
+            this._currentColor
+          );
+          break;
       }
     }
   }
@@ -225,7 +233,7 @@ export class AnnotationViewer {
   /**
    * Adds new annotation point
    */
-  addPoint(): void {
+  addUserAnnotationPoint(): void {
     select(this._annotationManager.userSolutionNode)
       .append('circle')
       .attr('cx', this._mouseCircle.cx)
