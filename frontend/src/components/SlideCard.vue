@@ -36,11 +36,12 @@
     </div>
   </skeleton-card>
 
-  <modal-dialog :show="showInfoDialog" customClasses="w-1/2">
-    <div class="sticky top-0 flex justify-end bg-gray-800 text-right p-2">
+  <modal-dialog :show="showInfoDialog" customClasses="w-1/2 mb-8 mt-8">
+    <div class="sticky top-0 flex justify-end bg-gray-800 p-2">
+      <div class="w-full text-4xl">Metadaten</div>
       <primary-button class="w-12 bg-gray-500" @click="showInfoDialog = false">Close</primary-button>
     </div>
-    <div>
+    <div class="h-full">
       <div v-for="(metaValue, metaKey) in slide.metadata" :key="metaKey" class="bg-gray-600 my-2 p-2 rounded-md">
         <div class="text-gray-300 font-semibold">{{ metaKey }}</div>
         <div class="break-all hyphens-auto">{{ metaValue }}</div>
