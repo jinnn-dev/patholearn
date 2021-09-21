@@ -19,7 +19,7 @@
               py-1
             "
           >
-            <ph-cloud-arrow-up :size="24" class="mr-2" />
+            <Icon name="cloud-up-arrow" class="mr-2" />
             <span>Musterlösung auswählen</span>
           </label>
           <div v-if="file" class="ml-4">{{ file.name }}</div>

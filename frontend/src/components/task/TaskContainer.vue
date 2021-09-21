@@ -20,7 +20,7 @@
     :title="isCollapsed ? 'Ausklappen' : 'Einklappen'"
     :class="[isCollapsed ? 'right-0' : 'right-84']"
   >
-    <ph-caret-left class="transition-all transform" :class="[isCollapsed ? '-rotate-0' : 'rotate-180']"></ph-caret-left>
+    <Icon name="caret-left" class="transition-all transform" :class="[isCollapsed ? '-rotate-0' : 'rotate-180']" />
   </div>
 
   <div

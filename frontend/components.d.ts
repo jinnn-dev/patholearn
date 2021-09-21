@@ -23,6 +23,7 @@ declare module 'vue' {
     EscapeInfo: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/viewer/EscapeInfo.vue')['default']
     FormField: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/form/FormField.vue')['default']
     GroundTruthDialog: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/viewer/GroundTruthDialog.vue')['default']
+    Icon: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/Icon.vue')['default']
     InputArea: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/form/InputArea.vue')['default']
     InputField: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/form/InputField.vue')['default']
     LazyImage: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/LazyImage.vue')['default']

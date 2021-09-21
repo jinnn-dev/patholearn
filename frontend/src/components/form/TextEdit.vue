@@ -7,13 +7,21 @@
       </role-only>
     </div>
     <role-only>
-      <ph-pencil-simple
+      <Icon
+        name="pencil-simple"
         v-if="!activeEdit"
         :size="20"
         class="group-hover:block ml-2 cursor-pointer"
         @click="activeEdit = true"
       />
-      <ph-floppy-disk v-if="activeEdit" class="cursor-pointer ml-2" :size="20" weight="bold" @click="saveValue" />
+      <Icon
+        name="floppy-disk"
+        v-if="activeEdit"
+        class="cursor-pointer ml-2"
+        :size="20"
+        weight="bold"
+        @click="saveValue"
+      />
     </role-only>
   </div>
 </template>

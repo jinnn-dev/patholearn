@@ -16,7 +16,7 @@
                 name="Neue Aufgabengruppe"
                 @click="showGroupModal = !showGroupModal"
               >
-                <ph-plus class="mr-2" :size="24" weight="bold" />
+                <Icon name="plus" class="mr-2" weight="bold" />
               </primary-button>
             </div>
             <primary-button
@@ -46,14 +46,15 @@
                         {{ taskgroup.name }}
                       </div>
                       <div>
-                        <ph-trash
+                        <Icon
+                          name="trash"
                           class="text-red-400 cursor-pointer ml-4 hover:text-red-500"
                           weight="bold"
                           @click.prevent="
                             showDeleteTaskGroup = true;
                             deleteTaskGroupItem = taskgroup;
                           "
-                        ></ph-trash>
+                        ></Icon>
                       </div>
                     </div>
 

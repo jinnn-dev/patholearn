@@ -3,7 +3,7 @@
     <div id="test" class="flex w-9/10 relative items-center bg-gray-700 rounded-xl bg-opacity-40 py-5">
       <div class="flex transition ml-2 text-xl items-center cursor-pointer hover:text-highlight-500 absolute">
         <router-link class="flex p-2 items-center text-xl" :to="link"
-          ><ph-arrow-left class="mr-2" :size="24" />{{ linkText }}</router-link
+          ><Icon name="arrow-left" class="mr-2" />{{ linkText }}</router-link
         >
       </div>
       <div class="w-full flex flex-col gap-4">

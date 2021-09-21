@@ -21,18 +21,18 @@ type ToolComponent = {
 };
 
 export const TOOL_COMPONENTS: ToolComponent = {
-  [Tool.SELECT]: 'ph-hand-pointing',
-  [Tool.MOVE]: 'ph-hand-grabbing',
-  [Tool.DELETE_ANNOTATION]: 'ph-eraser',
-  [Tool.SOLUTION_DRAWING]: 'ph-pen-nib',
-  [Tool.USER_SOLUTION_DRAWING]: 'ph-pen-nib',
-  [Tool.BASE_DRAWING]: 'ph-pencil',
-  [Tool.POINT_SOLUTION]: 'ph-push-pin',
-  [Tool.POINT_USER_SOLUTION]: 'ph-push-pin',
-  [Tool.LINE_SOLUTION]: 'ph-activity',
-  [Tool.LINE_USER_SOLUTION]: 'ph-activity',
-  [Tool.UPLOAD]: 'ph-upload',
-  [Tool.DELETE]: 'ph-trash'
+  [Tool.SELECT]: 'hand-pointing',
+  [Tool.MOVE]: 'hand-grabbing',
+  [Tool.DELETE_ANNOTATION]: 'eraser',
+  [Tool.SOLUTION_DRAWING]: 'pen-nib',
+  [Tool.USER_SOLUTION_DRAWING]: 'pen-nib',
+  [Tool.BASE_DRAWING]: 'pencil',
+  [Tool.POINT_SOLUTION]: 'push-pin',
+  [Tool.POINT_USER_SOLUTION]: 'push-pin',
+  [Tool.LINE_SOLUTION]: 'activity',
+  [Tool.LINE_USER_SOLUTION]: 'activity',
+  [Tool.UPLOAD]: 'upload',
+  [Tool.DELETE]: 'trash'
 };
 
 type ToolColors = {

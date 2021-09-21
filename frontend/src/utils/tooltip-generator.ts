@@ -1,5 +1,5 @@
 import { select } from 'd3-selection';
-import tippy, { animateFill, followCursor, Instance, Props } from 'tippy.js';
+import tippy, { animateFill, followCursor, Instance, Placement, Props } from 'tippy.js';
 import 'tippy.js/animations/shift-away.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/dist/tippy.css';
@@ -81,5 +81,17 @@ export class TooltipGenerator {
     <p class="text-sm my-2">${percentage}% Übereinstimmung</p>
     ${content ? `<p class="font-semibold break-words">${content}</p>` : ''}
     </div>`;
+  }
+
+  public static addGeneralTooltip({
+    target,
+    content,
+    placement
+  }: {
+    target: string;
+    content: string;
+    placement: Placement;
+  }) {
+    tippy(target, { content, placement, theme: 'myDark' });
   }
 }

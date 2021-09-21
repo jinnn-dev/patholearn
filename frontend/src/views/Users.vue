@@ -31,13 +31,13 @@
     <h1 class="text-2xl">Lege einen neuen Lehrenden an</h1>
     <form @submit.prevent="onSubmit" class="w-full">
       <auth-input :required="true" label="Vorname" placeholder="Max" v-model="formData.firstname"
-        ><ph-user size="24"
+        ><Icon name="user"
       /></auth-input>
       <auth-input :required="false" label="Mittelname (Optional)" placeholder="Max" v-model="formData.middlename"
-        ><ph-user size="24"
+        ><Icon name="user"
       /></auth-input>
       <auth-input :required="true" label="Nachname" placeholder="Max" v-model="formData.lastname"
-        ><ph-user size="24"
+        ><Icon name="user"
       /></auth-input>
       <auth-input
         v-model="formData.email"
@@ -47,7 +47,7 @@
         :required="true"
         autocomplete="enail"
       >
-        <ph-at size="24" />
+        <Icon name="at" />
       </auth-input>
       <div class="text-red-500" v-if="validator.email.$errors.some((e) => e.hasOwnProperty('$property'))">
         Keine gültige E-Mail-Adresse
@@ -63,7 +63,7 @@
         :required="true"
         autocomplete="new-password"
       >
-        <ph-key size="24" />
+        <Icon name="key" size="24" />
       </auth-input>
       <auth-input
         v-model="formData.confirmPassword"
@@ -73,7 +73,7 @@
         autocomplete="new-password"
         :required="true"
       >
-        <ph-key size="24" />
+        <Icon name="key" size="24" />
       </auth-input>
       <div v-if="!passwordMatch" class="text-red-500">Passwörter stimmen nicht überein.</div>
       <div class="flex flex-end">

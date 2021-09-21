@@ -1,6 +1,6 @@
 <template>
   <div :id="comp" class="transition cursor-pointer flex justify-center items-center p-2 hover:bg-gray-300">
-    <component :is="comp" class="fill-white" weight="regular" :size="24"></component>
+    <Icon :name="comp" class="fill-white" />
   </div>
 </template>
 <script lang="ts">

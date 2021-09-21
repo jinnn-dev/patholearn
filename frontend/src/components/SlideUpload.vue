@@ -4,11 +4,11 @@
       <primary-button
         name="WSI hochladen"
         @click="toggleShowUpload"
-        class="w-46 mb-6"
+        class="w-52 mb-6"
         bgColor="bg-gray-400"
         bgHoverColor="bg-gray-300"
       >
-        <ph-plus :size="24" weight="bold" class="mx-2" />
+        <Icon name="plus" class="mr-2 w-8" :width="24" :height="24" />
       </primary-button>
     </div>
     <div v-if="showUpload" class="bg-gray-800 p-4 rounded-xl border-2 border-gray-500">
@@ -20,7 +20,7 @@
         <form-field label="WSI" tip="Wähle ein WSI aus, welches hochgeladen werden soll">
           <div class="flex items-center">
             <label for="slide-upload" class="cursor-pointer flex justify-center bg-gray-500 w-54 rounded-lg py-1">
-              <ph-cloud-arrow-up :size="24" class="mr-2" />
+              <Icon name="cloud-arrow-up" class="mr-2" />
               <span>WSI auswählen</span>
             </label>
             <div v-if="formModel.file" class="ml-4">{{ formModel.file.name }}</div>

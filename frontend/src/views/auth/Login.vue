@@ -12,7 +12,7 @@
           :required="true"
           autocomplete="email"
         >
-          <ph-at class="text-gray-200" size="24" />
+          <Icon name="at" class="text-gray-200" />
         </auth-input>
         <div class="text-red-500" v-if="validator.email.$errors.some((e) => e.hasOwnProperty('$property'))">
           Keine gültige E-Mail-Adresse
@@ -25,7 +25,7 @@
           autocomplete="password"
           :required="true"
         >
-          <ph-key class="text-gray-200" size="24" />
+          <Icon name="key" class="text-gray-200" size="24" />
         </auth-input>
 
         <div v-if="error" class="text-red-500 font-bold">Falsche E-Mail oder Passwort</div>

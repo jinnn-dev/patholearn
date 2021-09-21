@@ -1,23 +1,23 @@
 <template>
   <div class="transition flex items-center my-2 mx-2 p-2 bg-gray-500 rounded-xl hover:bg-gray-400" :title="question">
     <div v-if="!isOwner">
-      <ph-circle
+      <Icon
+        name="circle"
         v-if="!userSolution || userSolution?.solution_data?.length === 0 || !userSolution.task_result"
-        :size="24"
         class="text-gray-200"
-      ></ph-circle>
-      <ph-check-circle
+      ></Icon>
+      <Icon
+        name="check-circle"
         v-else-if="userSolution.task_result.task_status === TaskStatus.CORRECT"
-        :size="24"
         class="text-green-400"
-      ></ph-check-circle>
-      <ph-x-circle v-else :size="24" class="text-red-500"></ph-x-circle>
+      ></Icon>
+      <Icon name="x-circle" v-else class="text-red-500" />
     </div>
     <div class="ml-2 w-full mx-2">{{ question }}</div>
     <role-only v-if="isOwner">
       <div class="flex">
-        <ph-pencil-simple class="text-xl mx-2" weight="bold" @click.stop="editTask" />
-        <ph-trash class="text-red-400 text-xl" weight="bold" @click.stop="deleteTask"></ph-trash>
+        <Icon name="pencil-simple" class="text-xl mx-2" @click.stop="editTask" />
+        <Icon name="trash" class="text-red-400 text-xl" @click.stop="deleteTask" />
       </div>
     </role-only>
   </div>

@@ -5,7 +5,8 @@
     "dev": "vite --force",
     "build": "vite build",
     "serve": "vite preview",
-    "dev-build": "vite build --mode development"
+    "dev-build": "vite build --mode development",
+    "gen:icons": "node scripts/generateIcons.js"
   },
   "dependencies": {
     "@types/d3-selection": "^3.0.0",

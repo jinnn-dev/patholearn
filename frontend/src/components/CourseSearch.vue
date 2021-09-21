@@ -7,7 +7,7 @@
       @click="isFocus = true"
     >
       <template v-slot:firstIcon>
-        <ph-magnifying-glass class="text-gray-200" :size="24" />
+        <Icon name="magnifying-glass" class="text-gray-200" />
       </template>
     </input-field>
 

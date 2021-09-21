@@ -13,7 +13,7 @@
         <div class="flex justify-between items-center">
           <div class="w-full text-xl font-bold text-gray-200 uppercase">Deine Kurse</div>
           <primary-button bgColor="bg-gray-400" class="w-46 h-10" name="Neuer Kurs" @click="showModal = !showModal">
-            <ph-plus class="mr-2" :size="24" weight="bold" />
+            <Icon name="plus" class="mr-2" weight="bold" />
           </primary-button>
         </div>
         <div class="my-8">

@@ -10,8 +10,8 @@
           class="bg-gray-600 rounded-lg px-2 py-1 flex items-center my-2"
         >
           <div class="mr-2" :title="!isHidden(group) ? 'Klasse einblenden' : 'Klasse ausblenden'">
-            <ph-eye v-if="!isHidden(group)" class="cursor-pointer" :size="24" @click="toggleAnnotationGroup(group)" />
-            <ph-eye-slash v-else class="cursor-pointer" :size="24" @click="toggleAnnotationGroup(group)" />
+            <Icon name="eye" v-if="!isHidden(group)" class="cursor-pointer" @click="toggleAnnotationGroup(group)" />
+            <Icon name="eye-slash" v-else class="cursor-pointer" @click="toggleAnnotationGroup(group)" />
           </div>
           <div class="w-4 h-4 mr-3 rounded-full" :style="`background-color:${group.color}`"></div>
           <text-edit :value="group.name" @valueChanged="updateGroup($event, group)"></text-edit>

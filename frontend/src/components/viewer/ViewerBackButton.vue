@@ -3,7 +3,7 @@
     class="flex transition items-center fixed top-4 left-2 bg-gray-700 hover:bg-gray-600 p-2 rounded-lg z-10 shadow-md"
     :to="routeName"
   >
-    <ph-arrow-left :size="24" />
+    <Icon name="arrow-left" />
     <div class="ml-1">{{ text }}</div>
   </router-link>
 </template>

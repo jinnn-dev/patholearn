@@ -13,7 +13,7 @@
       </div>
       <div class="my-4 flex justify-between">
         <primary-button class="w-48 h-10" name="Neue Aufgabe" bgColor="bg-gray-400" @click="showModal = !showModal">
-          <ph-plus class="mr-2" :size="24" weight="bold" />
+          <Icon name="plus" class="mr-2" weight="bold" />
         </primary-button>
         <primary-button
           class="w-56"
@@ -35,14 +35,15 @@
                   {{ baseTask.name }}
                 </div>
                 <div>
-                  <ph-trash
+                  <Icon
+                    name="trash"
                     class="text-red-400 cursor-pointer ml-4 hover:text-red-500"
                     weight="bold"
                     @click.prevent="
                       showDeleteBaseTask = true;
                       deleteBaseTaskItem = baseTask;
                     "
-                  ></ph-trash>
+                  ></Icon>
                 </div>
               </div>
 

@@ -2,13 +2,13 @@
   <div class="w-full flex items-center justify-between p-2 bg-gray-600 sticky top-0">
     <div class="mr-2">{{ layerIndex }}. Ebene</div>
     <role-only class="flex gap-2" v-if="isOwner">
-      <ph-minus
+      <Icon
+        name="minus"
         v-if="layerIndex !== 1"
-        :size="18"
         class="text-white cursor-pointer"
         weight="bold"
         @click="removeLayer"
-      ></ph-minus>
+      ></Icon>
     </role-only>
   </div>
   <div class="w-full cursor-pointer">
@@ -95,7 +95,7 @@
                 @click="taskCreationForm.annotation_type = item.index"
               >
                 <div class="flex flex-col gap-2 justify-center items-center">
-                  <component :is="item.icon" :size="30" />
+                  <Icon :name="item.icon" :width="30" :height="30" />
                   {{ item.type }}
                 </div>
               </div>
@@ -270,17 +270,17 @@ export default defineComponent({
       {
         index: 0,
         type: 'Punkt',
-        icon: 'ph-push-pin'
+        icon: 'push-pin'
       },
       {
         index: 1,
         type: 'Linie',
-        icon: 'ph-activity'
+        icon: 'activity'
       },
       {
         index: 2,
         type: 'Polygon',
-        icon: 'ph-triangle'
+        icon: 'triangle'
       }
     ];
 
