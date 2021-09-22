@@ -14,6 +14,7 @@ declare module 'vue' {
     ContentHeader: typeof import('F:/projects/learning-by-annotations/frontend/src/components/ContentHeader.vue')['default']
     CourseCard: typeof import('F:/projects/learning-by-annotations/frontend/src/components/CourseCard.vue')['default']
     CourseSearch: typeof import('F:/projects/learning-by-annotations/frontend/src/components/CourseSearch.vue')['default']
+    CreateTask: typeof import('F:/projects/learning-by-annotations/frontend/src/components/task/CreateTask.vue')['default']
     CustomSelect: typeof import('F:/projects/learning-by-annotations/frontend/src/components/form/CustomSelect.vue')['default']
     CustomSlider: typeof import('F:/projects/learning-by-annotations/frontend/src/components/form/CustomSlider.vue')['default']
     DangerButton: typeof import('F:/projects/learning-by-annotations/frontend/src/components/base/DangerButton.vue')['default']
@@ -53,6 +54,7 @@ declare module 'vue' {
     TextEdit: typeof import('F:/projects/learning-by-annotations/frontend/src/components/form/TextEdit.vue')['default']
     ToolBar: typeof import('F:/projects/learning-by-annotations/frontend/src/components/viewer/ToolBar.vue')['default']
     ToolItem: typeof import('F:/projects/learning-by-annotations/frontend/src/components/viewer/ToolItem.vue')['default']
+    UpdateTask: typeof import('F:/projects/learning-by-annotations/frontend/src/components/task/UpdateTask.vue')['default']
     ViewerBackButton: typeof import('F:/projects/learning-by-annotations/frontend/src/components/viewer/ViewerBackButton.vue')['default']
     ViewerLoading: typeof import('F:/projects/learning-by-annotations/frontend/src/components/viewer/ViewerLoading.vue')['default']
   }

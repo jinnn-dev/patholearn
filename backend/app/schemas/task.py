@@ -1,10 +1,9 @@
 from enum import IntEnum
-from typing import Any, Optional, List, Union
+from typing import Any, List, Optional, Union
 
-from pydantic import BaseModel
-
-from app.schemas.polygon_data import OffsetPolygonData, AnnotationData
+from app.schemas.polygon_data import AnnotationData, OffsetPolygonData
 from app.schemas.task_hint import TaskHint
+from pydantic import BaseModel
 
 
 class TaskAnnotationType(IntEnum):
@@ -64,7 +63,6 @@ class TaskBase(BaseModel):
 class TaskCreate(TaskBase):
     solution: Optional[List[Union[AnnotationData, OffsetPolygonData]]]
     task_data: Optional[List[AnnotationData]]
-    task_hints: Optional[List[TaskHint]]
     base_task_id: int
 
 
@@ -78,7 +76,6 @@ class TaskUpdate(TaskBase):
     annotation_type: Optional[TaskAnnotationType]
     task_data: Optional[Any]
     solution: Optional[Any]
-    task_hints: Optional[List[TaskHint]]
     annotation_groups: Optional[List[AnnotationGroup]]
 
 

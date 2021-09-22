@@ -1,6 +1,7 @@
 import { UserSolution } from './userSolution';
 import { AnnotationData } from './viewer';
 
+export interface TaskHint {}
 export interface AnnotationGroup {
   name: string;
   color: string;
@@ -31,6 +32,7 @@ export interface TaskCreate {
   annotation_type: number;
   min_correct: number;
   annotation_groups?: AnnotationGroup[];
+  hints: TaskHint[];
 }
 
 export interface TaskUpdate {
