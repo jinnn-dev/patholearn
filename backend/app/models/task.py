@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, JSON, String, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, JSON, String, ForeignKey
+from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base
 
@@ -15,4 +16,4 @@ class Task(Base):
     solution = Column(JSON, nullable=True)
     task_data = Column(JSON, nullable=True)
     annotation_groups = Column(JSON, nullable=True)
-    
+    hints = relationship("TaskHint", cascade="all, delete-orphan")

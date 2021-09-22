@@ -7,8 +7,6 @@ from app.models.course import Course
 # noinspection PyUnresolvedReferences
 from app.models.course_members import CourseMembers
 # noinspection PyUnresolvedReferences
-from app.models.new_task import NewTask
-# noinspection PyUnresolvedReferences
 from app.models.task import Task
 # noinspection PyUnresolvedReferences
 from app.models.task_group import TaskGroup
@@ -16,3 +14,9 @@ from app.models.task_group import TaskGroup
 from app.models.user import User
 # noinspection PyUnresolvedReferences
 from app.models.user_solution import UserSolution
+# noinspection PyUnresolvedReferences
+from app.models.new_task import NewTask
+# noinspection PyUnresolvedReferences
+from app.models.task_hint import TaskHint
+# noinspection PyUnresolvedReferences
+from app.models.hint_image import HintImage

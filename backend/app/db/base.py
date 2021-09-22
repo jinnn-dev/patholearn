@@ -16,3 +16,7 @@ from app.models.user import User
 from app.models.user_solution import UserSolution
 # noinspection PyUnresolvedReferences
 from app.models.new_task import NewTask
+# noinspection PyUnresolvedReferences
+from app.models.task_hint import TaskHint
+# noinspection PyUnresolvedReferences
+from app.models.hint_image import HintImage
