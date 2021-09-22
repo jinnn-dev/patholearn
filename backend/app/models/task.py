@@ -15,3 +15,4 @@ class Task(Base):
     solution = Column(JSON, nullable=True)
     task_data = Column(JSON, nullable=True)
     annotation_groups = Column(JSON, nullable=True)
+    
