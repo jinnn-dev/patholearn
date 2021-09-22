@@ -12,7 +12,7 @@
       <role-only>
         <div class="flex justify-between items-center">
           <div class="w-full text-xl font-bold text-gray-200 uppercase">Deine Kurse</div>
-          <primary-button bgColor="bg-gray-400" class="w-46 h-10" name="Neuer Kurs" @click="showModal = !showModal">
+          <primary-button bgColor="bg-gray-400" class="w-48 h-10" name="Neuer Kurs" @click="showModal = !showModal">
             <Icon name="plus" class="mr-2" weight="bold" />
           </primary-button>
         </div>
@@ -22,7 +22,7 @@
               v-for="i in 4"
               :loading="loading"
               :key="i"
-              skeletonClasses="h-24 w-46 ml-4 mb-4"
+              skeletonClasses="h-24 w-44 ml-4 mb-4"
             ></skeleton-card>
           </div>
           <div v-else class="flex flex-wrap">
@@ -40,7 +40,7 @@
         </div>
         <div class="my-8">
           <div v-if="loading" class="flex">
-            <skeleton-card v-for="i in 4" :loading="loading" :key="i" skeletonClasses="h-24 w-46 ml-4"></skeleton-card>
+            <skeleton-card v-for="i in 4" :loading="loading" :key="i" skeletonClasses="h-24 w-44 ml-4"></skeleton-card>
           </div>
           <div v-else class="flex flex-wrap">
             <div v-for="course in courses" :key="course.id" class="ml-4">

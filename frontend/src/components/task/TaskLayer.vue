@@ -31,7 +31,7 @@
   </div>
 
   <role-only>
-    <modal-dialog :show="taskCreationModal">
+    <modal-dialog :show="taskCreationModal" customClasses="w-2/5">
       <div>
         <h1 class="text-2xl text-center">Füge eine neue Aufgabe der {{ taskCreationForm.layer }}. Ebene hinzu</h1>
         <form @submit.prevent="onSubmit" class="w-full">
@@ -103,7 +103,7 @@
           </div>
           <div class="my-8">
             <div>Welches Vorwissen ist bei den Lernenden vorhanden:</div>
-            <div class="my-2 w-130 break-words text-sm text-gray-200">
+            <div class="my-2  break-words text-sm text-gray-200 py-2">
               Die Vorwissensstufe bestimmt den Schwierigkeitsgrad der Aufgabe. Mit steigender Stufe wird das Feedback
               weniger unterstützend. Außerdem wird die Aufgabenüberprüfung strenger.
             </div>

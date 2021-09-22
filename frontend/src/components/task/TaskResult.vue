@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-gray-800 z-99 rounded-xl p-4 flex flex-col items-center border-3"
+    class="bg-gray-800 z-[99] rounded-xl p-4 flex flex-col items-center border-3"
     v-if="solveResult"
     :style="{ borderColor: color }"
   >

@@ -11,7 +11,7 @@
       transform
       -translate-x-1/2
       bg-gray-800
-      z-2
+      z-[2]
       rounded-lg
       p-2
     "

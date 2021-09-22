@@ -44,7 +44,7 @@
     </template>
   </content-container>
   <div class="w-full flex justify-center pt-8">
-    <div class="w-9/10"></div>
+    <div class="w-11/12"></div>
   </div>
 </template>
 

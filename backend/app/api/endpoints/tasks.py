@@ -185,7 +185,7 @@ def update_annotation_group(*, db: Session = Depends(get_db), task_id: int,
 def delete_task(*, db: Session = Depends(get_db), task_id: int,
                 current_user: User = Depends(get_current_active_superuser)) -> Any:
 
-    task_to_delete = crud_task.get(db, model_id=task_id)
+    task_to_delete = crud_task.get(db, id=task_id)
 
     check_if_user_can_access_task(db, user_id=current_user.id, base_task_id=task_to_delete.base_task_id)
 

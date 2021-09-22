@@ -8,7 +8,7 @@
       leave-from-class="opacity-100"
       leave-to-class="opacity-0"
     >
-      <div v-show="showModal" ref="modal-backdrop" class="fixed z-99 inset-0 overflow-y-auto bg-black bg-opacity-50">
+      <div v-show="showModal" ref="modal-backdrop" class="fixed z-[99] inset-0 overflow-y-auto bg-black bg-opacity-50">
         <div class="flex items-center justify-center min-h-screen text-center text-gray-100">
           <transition
             enter-active-class="transition ease-out duration-300 transform "

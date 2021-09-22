@@ -1,6 +1,6 @@
 <template>
   <content-container>
-    <template v-slot:header><div class="text-center">Hochgeladene WSI-Bilder</div></template>
+    <template v-slot:header><div class="text-center">Hochgeladene Bilder</div></template>
     <template v-slot:content>
       <slide-upload class="mb-4" />
 
@@ -20,8 +20,8 @@
         <skeleton-card v-for="i of [1, 2, 3]" :key="i" class="my-4 min-h-42" :loading="slideLoading"></skeleton-card>
       </div>
       <div v-else>
-        <div v-if="slides.length === 0 && !slideError" class="text-4xl">Keine WSI-Bilder vorhanden</div>
-        <div v-if="slideError" class="text-4xl">Fehler beim Laden der WSI-Bilder</div>
+        <div v-if="slides.length === 0 && !slideError" class="text-4xl">Keine Bilder vorhanden</div>
+        <div v-if="slideError" class="text-4xl">Fehler beim Laden der Bilder</div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           <slide-card

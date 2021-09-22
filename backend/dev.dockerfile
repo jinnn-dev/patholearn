@@ -11,4 +11,4 @@ COPY ./alembic /alembic
 ADD alembic.ini /
 COPY ./app /app
 ADD entry.sh /
-CMD /entry.sh
+CMD ["/entry.sh"]

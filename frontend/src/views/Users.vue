@@ -7,7 +7,7 @@
       <div class="flex justify-between">
         <subheader text="Vorhandene Lehrende"></subheader>
         <primary-button
-          class="w-46"
+          class="w-44"
           name="Neuer Lehrender"
           bgColor="bg-gray-500"
           @click="showModal = true"

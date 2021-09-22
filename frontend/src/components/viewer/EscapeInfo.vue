@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show" class="fixed bottom-10 p-2 rounded-xl shadow-md bg-gray-800 left-1/2 transform -translate-x-1/2 z-2">
+  <div v-if="show" class="fixed bottom-10 p-2 rounded-xl shadow-md bg-gray-800 left-1/2 transform -translate-x-1/2 z-[2]">
     {{
       isPolygon
         ? 'Drücke die ESC-Taste um das Zeichnen des Polygons abzubrechen'

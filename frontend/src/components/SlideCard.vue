@@ -44,8 +44,12 @@
         </div>
       </div>
 
-      <div class="h-full w-full flex items-center">
+      <div class="h-full w-full flex items-center justify-center">
+        <div v-if="slide.status === SLIDE_STATUS.ERROR">
+          <Icon name="smiley-sad" class="text-gray-500 opacity-80" :width="150" :height="150"/>  
+        </div>
         <lazy-image
+        v-else
           :image-url="getThumbnailUrl(slide.slide_id)"
           alt="Thumbnail des Slides"
           class="max-h-full rounded-lg items-center"
@@ -83,10 +87,6 @@ import { defineComponent, onMounted, PropType, ref } from 'vue';
 import { Slide } from '../model/slide';
 import { SLIDE_STATUS, SLIDE_STATUS_STRING } from '../model/slideStatus';
 import { getThumbnailUrl } from '../config';
-import tippy from 'tippy.js';
-import 'tippy.js/animations/shift-away.css';
-import 'tippy.js/dist/backdrop.css';
-import 'tippy.js/dist/tippy.css';
 import { TooltipGenerator } from '../utils/tooltip-generator';
 
 export default defineComponent({

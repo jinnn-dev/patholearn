@@ -14,7 +14,7 @@
 
     <div
       v-if="isFocus"
-      class="absolute top-19 max-h-62 w-full bg-gray-700 rounded-lg px-2 shadow-2xl z-99 overflow-auto"
+      class="absolute top-19 max-h-62 w-full bg-gray-700 rounded-lg px-2 shadow-2xl z-[99] overflow-auto"
     >
       <div v-if="!loading && slides.length === 0" class="p-2">Keine Slides gefunden</div>
       <div v-else class="w-full">

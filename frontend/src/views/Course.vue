@@ -33,7 +33,7 @@
                 v-for="i in 4"
                 :loading="loading"
                 :key="i"
-                skeletonClasses="h-24 w-46 ml-4"
+                skeletonClasses="h-24 w-44 ml-4"
               ></skeleton-card>
             </div>
             <div v-else class="flex flex-wrap">

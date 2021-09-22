@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed z-99 bottom-4 left-1/2 transform -translate-x-1/2">
+  <div class="fixed z-[99] bottom-4 left-1/2 transform -translate-x-1/2">
     <div
       v-for="(err, index) in errorState"
       :key="index"

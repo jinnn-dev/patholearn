@@ -1,5 +1,5 @@
 <template>
-  <div
+    <div
     class="
       transition-all
       transform
@@ -18,9 +18,10 @@
     "
     @click="isCollapsed = !isCollapsed"
     :title="isCollapsed ? 'Ausklappen' : 'Einklappen'"
-    :class="[isCollapsed ? 'right-0' : 'right-84']"
+    :class="[isCollapsed ? 'right-0' : 'right-[16.9rem]']"
   >
-    <Icon name="caret-left" class="transition-all transform" :class="[isCollapsed ? '-rotate-0' : 'rotate-180']" />
+    <Icon name="caret-left" class="transition-all transform" :class="[isCollapsed ? 'rotate-180' : 'rotate-90']" />
+    
   </div>
 
   <div
@@ -38,7 +39,7 @@
       bg-gray-700
       shadow-xl
     "
-    :class="[isCollapsed ? '-right-84' : 'right-0']"
+    :class="[isCollapsed ? '-right-80' : 'right-0']"
   >
     <div class="flex gap-4 justify-between items-center m-2 text-center text-xl">
       <h3>{{ baseTask?.name }}</h3>

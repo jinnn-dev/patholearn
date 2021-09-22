@@ -2,7 +2,7 @@
   <div>
     <div class="flex justify-end">
       <primary-button
-        name="WSI hochladen"
+        name="Bild hochladen"
         @click="toggleShowUpload"
         class="w-52 mb-6"
         bgColor="bg-gray-400"
@@ -13,15 +13,15 @@
     </div>
     <div v-if="showUpload" class="bg-gray-800 p-4 rounded-xl border-2 border-gray-500">
       <form @submit.prevent="onSubmit" class="flex flex-col">
-        <form-field label="Name" tip="Gebe dem WSI einen eindeutigen Namen. An diesem findest du das WSI wieder.">
+        <form-field label="Name" tip="Gebe dem Bild einen eindeutigen Namen.">
           <input placeholder="Session 1" type="text" v-model="formModel.name" class="bg-gray-800 rounded-lg w-full" />
         </form-field>
 
-        <form-field label="WSI" tip="Wähle ein WSI aus, welches hochgeladen werden soll">
+        <form-field label="Bild" tip="Wähle ein Bild aus, welches hochgeladen werden soll">
           <div class="flex items-center">
-            <label for="slide-upload" class="cursor-pointer flex justify-center bg-gray-500 w-54 rounded-lg py-1">
+            <label for="slide-upload" class="cursor-pointer flex justify-center bg-gray-500 w-56 rounded-lg py-1">
               <Icon name="cloud-arrow-up" class="mr-2" />
-              <span>WSI auswählen</span>
+              <span>Bild auswählen</span>
             </label>
             <div v-if="formModel.file" class="ml-4">{{ formModel.file.name }}</div>
           </div>
@@ -96,7 +96,7 @@ export default defineComponent({
           loading.value = false;
           progress.value = 0;
           console.log(err);
-          errorMessage.value = 'WSI konnte nicht hochgeladen werden';
+          errorMessage.value = 'Bild konnte nicht hochgeladen werden';
         });
     };
 
