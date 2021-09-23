@@ -14,6 +14,7 @@ declare module 'vue' {
     ContentHeader: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/ContentHeader.vue')['default']
     CourseCard: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/CourseCard.vue')['default']
     CourseSearch: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/CourseSearch.vue')['default']
+    CreateTask: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/task/CreateTask.vue')['default']
     CustomSelect: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/form/CustomSelect.vue')['default']
     CustomSlider: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/form/CustomSlider.vue')['default']
     DangerButton: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/base/DangerButton.vue')['default']
@@ -53,6 +54,7 @@ declare module 'vue' {
     TextEdit: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/form/TextEdit.vue')['default']
     ToolBar: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/viewer/ToolBar.vue')['default']
     ToolItem: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/viewer/ToolItem.vue')['default']
+    UpdateTask: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/task/UpdateTask.vue')['default']
     ViewerBackButton: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/viewer/ViewerBackButton.vue')['default']
     ViewerLoading: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/viewer/ViewerLoading.vue')['default']
   }

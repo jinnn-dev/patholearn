@@ -4,22 +4,8 @@
     <div class="my-2">
       <form-field label="Ground Thruth" tip="Wähle eine XML- oder PNG-Datei mit der Musterlösung aus">
         <div class="flex items-center">
-          <label
-            for="slide-upload"
-            class="
-              transition
-              cursor-pointer
-              flex
-              justify-center
-              bg-gray-500
-              hover:bg-gray-300
-              px-2
-              w-full
-              rounded-lg
-              py-1
-            "
-          >
-            <Icon name="cloud-up-arrow" class="mr-2" />
+          <label for="slide-upload" class="transition cursor-pointer flex justify-center bg-gray-500 hover:bg-gray-300 px-2 w-full rounded-lg py-1">
+            <Icon name="cloud-arrow-up" class="mr-2" />
             <span>Musterlösung auswählen</span>
           </label>
           <div v-if="file" class="ml-4">{{ file.name }}</div>
@@ -77,8 +63,8 @@ export default defineComponent({
     loading: Boolean,
     isUserSolution: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   emits: ['applyAnnotations', 'closeDialog'],
   setup(props, { emit }) {
@@ -146,9 +132,9 @@ export default defineComponent({
       file,
       convertResult,
       isWrongFormat,
-      conversionLoading
+      conversionLoading,
     };
-  }
+  },
 });
 </script>
 <style></style>

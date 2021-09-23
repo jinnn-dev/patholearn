@@ -22,24 +22,24 @@ export default defineComponent({
   props: {
     name: {
       type: String as PropType<IconNames>,
-      default: ''
+      default: '',
     },
     iconStyle: {
       type: String,
-      default: 'line'
+      default: 'line',
     },
     width: {
       type: [String, Number],
-      default: 24
+      default: 24,
     },
     height: {
       type: [String, Number],
-      default: 24
+      default: 24,
     },
     viewBox: {
       type: String,
-      default: '0 0 256 256'
-    }
+      default: '0 0 256 256',
+    },
   },
 
   add(icons: Icon[] | Icon) {
@@ -62,9 +62,9 @@ export default defineComponent({
     });
 
     return {
-      icon
+      icon,
     };
-  }
+  },
 });
 </script>
 <style></style>
