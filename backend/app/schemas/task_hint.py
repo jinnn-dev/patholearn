@@ -2,18 +2,17 @@ from typing import Optional, List
 
 from pydantic import BaseModel
 
-from enum import Enum
+from enum import IntEnum
 
 from app.schemas.hint_image import HintImage
 
 
-class HintType(Enum):
+class HintType(IntEnum):
     TEXT = 0
     IMAGE = 1
     SOLUTION = 2
 
-class TaskHint(BaseModel):
-    id: int
+class TaskHintBase(BaseModel):
     task_id: int
     content: str
     order_position: int
@@ -21,18 +20,26 @@ class TaskHint(BaseModel):
     hint_type: HintType
     images: Optional[List[HintImage]]
 
+class TaskHintInDb(TaskHintBase):
+    id: Optional[int]
 
-class TaskHintCreate(TaskHint):
+    class Config:
+        orm_mode = True
+
+class TaskHintCreate(TaskHintBase):
     task_id: int
     content: str
     order_position: Optional[int]
     needed_mistakes: Optional[int]
     hint_type: HintType
-    images: Optional[List[HintImage]]
+    images: Optional[List[HintImage]] = []
 
-class TaskHintUpdate(TaskHint):
+class TaskHintUpdate(TaskHintBase):
     content: Optional[str]
     hint_type: Optional[HintType]
     images: Optional[List[HintImage]]
     order_position: Optional[int]
     needed_mistakes: Optional[int]
+
+class TaskHint(TaskHintInDb):
+    pass

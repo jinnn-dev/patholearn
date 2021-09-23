@@ -64,7 +64,7 @@ class TaskBase(BaseModel):
 class TaskCreate(TaskBase):
     solution: Optional[List[Union[AnnotationData, OffsetPolygonData]]]
     task_data: Optional[List[AnnotationData]]
-    task_hints: Optional[List[TaskHint]]
+    hints: Optional[List[TaskHint]] = []
     base_task_id: int
 
 
