@@ -11,7 +11,8 @@ from app.db.database import (CreateSlide, DatabaseSlide, Slide, SlideStatus,
                              slide_db)
 from app.persistance.custom_minio_client import MinioClient
 from app.utils.util import (convert_binary_metadata_to_base64,
-                            convert_binary_to_base64, is_byte_data, write_slide_to_disk)
+                            convert_binary_to_base64, is_byte_data,
+                            write_slide_to_disk)
 
 app = FastAPI()
 

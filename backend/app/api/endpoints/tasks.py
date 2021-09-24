@@ -1,8 +1,6 @@
 import json
-from typing import Any, List, Union
-
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+import uuid
+from typing import Any, Dict, List, Union
 
 from app.api.deps import (check_if_user_can_access_course,
                           check_if_user_can_access_task,
@@ -13,8 +11,8 @@ from app.crud.crud_base_task import crud_base_task
 from app.crud.crud_course import crud_course
 from app.crud.crud_task import crud_task
 from app.crud.crud_task_group import crud_task_group
-from app.crud.crud_user_solution import crud_user_solution
 from app.crud.crud_task_hint import crud_task_hint
+from app.crud.crud_user_solution import crud_user_solution
 from app.models.user import User
 from app.schemas.base_task import (BaseTask, BaseTaskCreate, BaseTaskDetail,
                                    BaseTaskUpdate)
@@ -23,11 +21,17 @@ from app.schemas.polygon_data import (AnnotationData, AnnotationType,
                                       OffsetPolygonData)
 from app.schemas.task import (AnnotationGroup, AnnotationGroupUpdate, Task,
                               TaskCreate, TaskFeedback, TaskStatus, TaskUpdate)
-from app.schemas.task_hint import TaskHint, TaskHintCreate, HintType, TaskHintUpdate
+from app.schemas.task_hint import (HintType, TaskHint, TaskHintCreate,
+                                   TaskHintUpdate)
 from app.schemas.user_solution import (UserSolution, UserSolutionCreate,
                                        UserSolutionUpdate)
 from app.utils.colored_printer import ColoredPrinter
+from app.utils.minio_client import minio_client
 from app.utils.timer import Timer
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.datastructures import UploadFile
+from fastapi.params import File
+from sqlalchemy.orm import Session
 
 router = APIRouter()
 
@@ -448,3 +452,21 @@ def update_task_hint(*, db: Session = Depends(get_db), task_id: int, hint_id: in
 
     obj = crud_task_hint.update(db, db_obj=hint, obj_in=task_hint_in)
     return obj
+
+@router.post('/task/{task_id}/hint/image', response_model=Dict)
+def upload_task_hint_image(*, db: Session = Depends(get_db), task_id: int, current_user: User = Depends(get_current_active_superuser), image: UploadFile = File(...)) -> Any:
+    
+    image_name = uuid.uuid4()
+
+    file_name = f"{image_name}.{image.filename.split('.')[-1]}"
+
+    try:
+        minio_client.create_object(file_name, image.file.fileno(), image.content_type)
+        return { "path": minio_client.bucket_name + '/' + file_name }
+    except Exception as e:
+        print(e)
+        raise HTTPException(
+            status_code=500,
+            detail="Image could not be saved"
+        )
+    
