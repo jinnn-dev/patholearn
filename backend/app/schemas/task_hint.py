@@ -29,8 +29,8 @@ class TaskHintInDb(TaskHintBase):
 class TaskHintCreate(TaskHintBase):
     task_id: int
     content: str
-    order_position: Optional[int]
-    needed_mistakes: Optional[int]
+    order_position: Optional[int] = 0
+    needed_mistakes: Optional[int] = 3
     hint_type: HintType
     images: Optional[List[HintImage]] = []
 

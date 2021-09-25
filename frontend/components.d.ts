@@ -4,10 +4,14 @@
 
 declare module 'vue' {
   export interface GlobalComponents {
+    Accordion: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/containers/Accordion.vue')['default']
+    AccordionItem: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/containers/AccordionItem.vue')['default']
     AnnotationGroup: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/viewer/AnnotationGroup.vue')['default']
     AnnotationSettings: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/viewer/annotation-settings/AnnotationSettings.vue')['default']
+    Arcordion: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/containers/Arcordion.vue')['default']
     AuthInput: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/auth/AuthInput.vue')['default']
     CardLoading: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/CardLoading.vue')['default']
+    CollapseTransition: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/containers/CollapseTransition.vue')['default']
     ColorPicker: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/ColorPicker.vue')['default']
     ConfirmDialog: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/base/ConfirmDialog.vue')['default']
     ContentContainer: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/containers/ContentContainer.vue')['default']
@@ -22,6 +26,9 @@ declare module 'vue' {
     EscapeInfo: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/viewer/EscapeInfo.vue')['default']
     FormField: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/form/FormField.vue')['default']
     GroundTruthDialog: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/viewer/GroundTruthDialog.vue')['default']
+    Hint: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/task/hint/Hint.vue')['default']
+    HintCreator: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/task/hint/HintCreator.vue')['default']
+    HintList: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/task/hint/HintList.vue')['default']
     Icon: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/Icon.vue')['default']
     InputArea: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/form/InputArea.vue')['default']
     InputField: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/form/InputField.vue')['default']

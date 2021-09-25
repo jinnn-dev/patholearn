@@ -1,3 +1,6 @@
+import { MotionPlugin } from '@vueuse/motion';
+import VueViewer from 'v-viewer';
+import 'viewerjs/dist/viewer.css';
 import { createApp } from 'vue';
 import * as icons from '../icons';
 import App from './App.vue';
@@ -6,7 +9,6 @@ import './index.css';
 import router from './router';
 import { ApiService } from './services/api.service';
 import { TokenService } from './services/token.service';
-
 Icon.add(Object.values({ ...icons }));
 
 if (TokenService.getToken()) {
@@ -16,5 +18,6 @@ if (TokenService.getToken()) {
 
 const app = createApp(App);
 app.use(router);
-
+app.use(MotionPlugin);
+app.use(VueViewer);
 app.mount('#app');

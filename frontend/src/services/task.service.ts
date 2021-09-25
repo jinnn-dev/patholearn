@@ -1,4 +1,5 @@
 import { TaskResult } from 'model';
+import { TaskHintCreate, TaskHintUpdate } from 'model/taskHint';
 import { BaseTask, CreateBaseTask, UpdateBaseTask } from '../model/baseTask';
 import { AnnotationGroup, Task, TaskCreate, TaskUpdate } from '../model/task';
 import { UserSolution, UserSolutionCreate } from '../model/userSolution';
@@ -381,6 +382,33 @@ export class TaskService {
       ApiService.get<any>({ resource: this._apiUrl(`/task/${task_id}/solution`) }),
       'Task solution could not be loaded'
     );
+    return response!.data;
+  }
+
+  public static async createHint(task_id: number, hint: TaskHintCreate): Promise<any> {
+    const [_, response] = await handleError(
+      ApiService.post<any>({ resource: this._apiUrl(`/task/${task_id}/hint`), data: hint }),
+      'Hint could not be created'
+    );
+
+    return response!.data;
+  }
+
+  public static async updateHint(hint_id: number, hint: TaskHintUpdate): Promise<any> {
+    const [_, response] = await handleError(
+      ApiService.put<any>({ resource: this._apiUrl(`/task/${hint_id}/hint`), data: hint }),
+      'Hint could not be updated'
+    );
+
+    return response!.data;
+  }
+
+  public static async uploadHintImage(task_id: number, data: FormData): Promise<any> {
+    const [_, response] = await handleError(
+      ApiService.post<any>({ resource: this._apiUrl(`/task/${task_id}/hint/upload`), data }),
+      'Hint-Image upload failed'
+    );
+
     return response!.data;
   }
 }

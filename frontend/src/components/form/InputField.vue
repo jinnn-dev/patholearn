@@ -17,6 +17,8 @@
         focus:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-highlight-400 focus:border-transparent
       "
       :class="paddingLeft"
+      :min="min"
+      :max="max"
     />
   </form-field>
 </template>
@@ -30,7 +32,7 @@ export default defineComponent({
   emits: ['update:modelValue'],
 
   props: {
-    modelValue: String,
+    modelValue: [String, Number],
     placeholder: String,
     label: String,
     tip: String,
@@ -50,7 +52,9 @@ export default defineComponent({
     marginHor: {
       type: String,
       default: 'my-4'
-    }
+    },
+    min: [String, Number],
+    max: [String, Number]
   },
 
   setup(_, { emit }) {

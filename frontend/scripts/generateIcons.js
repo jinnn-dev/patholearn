@@ -22,7 +22,8 @@ directories.forEach((dir) => {
       .replace(regex, '')
       .replace('</svg>', '')
       .replace(/stroke="#(.)*?"/g, 'stroke="current"')
-      .replace(/fill="#(.)*?"/g, 'fill="current"');
+      .replace(/fill="#(.)*?"/g, 'fill="current"')
+      .replace(/stroke-width="(.)*?"/g, '');
 
     const icon = {
       style: dir,
