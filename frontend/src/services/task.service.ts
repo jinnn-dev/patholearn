@@ -391,7 +391,7 @@ export class TaskService {
 
   public static async uploadHintImage(hint_id: number, data: FormData): Promise<any> {
     const [_, response] = await handleError(
-      ApiService.post<any>({ resource: this._apiUrl(`/hint/${hint_id}upload`), data }),
+      ApiService.post<any>({ resource: this._apiUrl(`/hint/${hint_id}/image`), data }),
       'Hint-Image upload failed'
     );
 

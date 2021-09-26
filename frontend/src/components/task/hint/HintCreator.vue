@@ -17,7 +17,7 @@
       <div class="h-20 w-20 bg-gray-500 rounded-lg" v-for="image in hint.images">
         <HintImage :src="image.image_name" @click="deleteImage(image.image_name)" />
       </div>
-      <div class="h-20 w-20 bg-gray-500 rounded-lg" v-for="image in tempImages">
+      <div class="h-20 w-20 bg-gray-500 rounded-lg" v-for="image in tempPreviewImages">
         <HintImage :ImageSrc="image" @click="deleteImage(image)" />
       </div>
       <div
@@ -55,6 +55,7 @@ export default defineComponent({
   },
   setup(props) {
     const fileRef = ref<HTMLInputElement>();
+    const tempPreviewImages = ref<string[]>([]);
     const tempImages = ref<string[]>([]);
 
     const hint = reactive<TaskHint>({
@@ -69,6 +70,19 @@ export default defineComponent({
 
     async function createHint() {
       //TODO images still NOT WORKING .. filename is generated in backend so this could be a problem anyway
+      const imageNames = [];
+      for await (const img of tempImages.value) {
+        const name = await uploadImage(img);
+        console.log('name', name);
+        imageNames.push(name.path);
+      }
+
+      hint.images?.push(
+        ...imageNames.map((name) => ({
+          image_name: name,
+        }))
+      );
+      console.log(hint.images);
       if (props.hint) {
         console.log(props.taskId);
         await TaskService.updateHint(hint.id, hint);
@@ -80,7 +94,8 @@ export default defineComponent({
     function onFileChange(e: any) {
       const files = e.target.files || e.dataTransfer.files;
       if (!files.length) return;
-      tempImages.value.push(URL.createObjectURL(files[0]));
+      tempPreviewImages.value.push(URL.createObjectURL(files[0]));
+      tempImages.value.push(files[0]);
     }
 
     function deleteImage(imageName: string) {
@@ -88,14 +103,14 @@ export default defineComponent({
       hint.images!.filter((img) => img.image_name != imageName);
     }
 
-    function uploadImage(image: Blob) {
+    async function uploadImage(image: Blob) {
       const formData = new FormData();
-      formData.append('file', image);
+      formData.append('image', image);
 
-      TaskService.uploadHintImage(hint.task_id, formData);
+      return await TaskService.uploadHintImage(hint.id, formData);
     }
 
-    return { createHint, hint, tempImages, fileRef, onFileChange, deleteImage };
+    return { createHint, hint, tempImages, tempPreviewImages, fileRef, onFileChange, deleteImage };
   },
 });
 </script>
