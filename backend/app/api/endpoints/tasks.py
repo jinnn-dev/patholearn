@@ -435,6 +435,7 @@ def get_task_solution(*, db: Session = Depends(get_db), task_id: int,
 @router.post('/task/{task_id}/hint', response_model=TaskHint)
 def create_task_hint(*, db: Session = Depends(get_db), task_id: int,
                      current_user: User = Depends(get_current_active_superuser), task_hint_in: TaskHintCreate) -> Any:
+    print("here")
     task = crud_task.get(db, id=task_id)
     base_task = crud_base_task.get(db, id=task.base_task_id)
     check_if_user_can_access_course(db, user_id=current_user.id, course_id=base_task.course_id)
@@ -448,13 +449,14 @@ def update_task_hint(*, db: Session = Depends(get_db), task_id: int, hint_id: in
     base_task = crud_base_task.get(db, id=task.base_task_id)
     check_if_user_can_access_course(db, user_id=current_user.id, course_id=base_task.course_id)
 
+    print(hint_id)
     hint = crud_task_hint.get(db, id=hint_id)
 
     obj = crud_task_hint.update(db, db_obj=hint, obj_in=task_hint_in)
     return obj
 
-@router.post('/task/{task_id}/hint/image', response_model=Dict)
-def upload_task_hint_image(*, db: Session = Depends(get_db), task_id: int, current_user: User = Depends(get_current_active_superuser), image: UploadFile = File(...)) -> Any:
+@router.post('/hint/{hint_id}/image', response_model=Dict)
+def upload_task_hint_image(*, db: Session = Depends(get_db), hint_id: int, current_user: User = Depends(get_current_active_superuser), image: UploadFile = File(...)) -> Any:
     
     image_name = uuid.uuid4()
 

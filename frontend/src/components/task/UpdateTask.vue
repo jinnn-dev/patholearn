@@ -4,44 +4,51 @@
     <form @submit.prevent="updateTask" class="w-full">
       <input-field v-model="taskUpdateForm.task_question" label="Fragestellung" placeholder="Markiere..." type="text" :required="true"> </input-field>
 
-      <div class="my-8" v-if="taskUpdateForm.task_type === 0">
-        <div>Wie viele Annotationen müssen die Lernenden mindestens richtig treffen:</div>
-        <div class="pb-4 pt-11">
-          <Slider v-model="taskUpdateForm.min_correct" :min="0" :max="50" :tooltips="true"></Slider>
-        </div>
-      </div>
-
-      <div class="my-8">
-        <div>Welches Vorwissen ist bei den Lernenden vorhanden:</div>
-        <div class="my-2 w-140 break-words text-sm text-gray-200">
-          Die Vorwissensstufe bestimmt den Schwierigkeitsgrad der Aufgabe. Mit steigender Stufe wird das Feedback weniger unterstützend. Außerdem wird
-          die Aufgabenüberprüfung strenger.
-        </div>
-        <div class="flex w-full justify-evenly gap-2 my-2">
-          <div
-            class="
-              transition
-              flex
-              justify-center
-              items-center
-              bg-gray-600
-              hover:bg-gray-500 hover:ring-2
-              ring-highlight-900
-              cursor-pointer
-              rounded-lg
-              p-2
-            "
-            v-for="level in knowledgeLevel"
-            :key="level.index"
-            :class="taskUpdateForm.knowledge_level === level.index && 'bg-gray-500 ring-2 ring-highlight-900'"
-            @click="taskUpdateForm.knowledge_level = level.index"
-          >
-            <div class="flex flex-col gap-3 justify-center items-center">
-              {{ level.name }}
+      <Accordion>
+        <AccordionItem title="Aufgabeneinstellungen" :first="true">
+          <div class="my-8" v-if="taskUpdateForm.task_type === 0">
+            <div>Wie viele Annotationen müssen die Lernenden mindestens richtig treffen:</div>
+            <div class="pb-4 pt-11">
+              <Slider v-model="taskUpdateForm.min_correct" :min="0" :max="50" :tooltips="true"></Slider>
             </div>
           </div>
-        </div>
-      </div>
+
+          <div class="my-8">
+            <div>Welches Vorwissen ist bei den Lernenden vorhanden:</div>
+            <div class="my-2 w-140 break-words text-sm text-gray-200">
+              Die Vorwissensstufe bestimmt den Schwierigkeitsgrad der Aufgabe. Mit steigender Stufe wird das Feedback weniger unterstützend. Außerdem
+              wird die Aufgabenüberprüfung strenger.
+            </div>
+            <div class="flex w-full justify-evenly gap-2 my-2">
+              <div
+                class="
+                  transition
+                  flex
+                  justify-center
+                  items-center
+                  bg-gray-600
+                  hover:bg-gray-500 hover:ring-2
+                  ring-highlight-900
+                  cursor-pointer
+                  rounded-lg
+                  p-2
+                "
+                v-for="level in knowledgeLevel"
+                :key="level.index"
+                :class="taskUpdateForm.knowledge_level === level.index && 'bg-gray-500 ring-2 ring-highlight-900'"
+                @click="taskUpdateForm.knowledge_level = level.index"
+              >
+                <div class="flex flex-col gap-3 justify-center items-center">
+                  {{ level.name }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </AccordionItem>
+        <AccordionItem title="Tipps (optional)">
+          <HintList :task="task" :isUpdate="true" />
+        </AccordionItem>
+      </Accordion>
 
       <div class="flex justify-end w-full">
         <primary-button
@@ -74,17 +81,6 @@ export default defineComponent({
   setup(props, { emit }) {
     const taskUpdateLoading = ref<Boolean>(false);
 
-    watch(
-      () => props.task,
-      () => {
-        taskUpdateForm.layer = props.task!.layer;
-        taskUpdateForm.task_question = props.task!.task_question;
-        taskUpdateForm.knowledge_level = props.task!.knowledge_level;
-        taskUpdateForm.min_correct = props.task!.min_correct;
-        taskUpdateForm.task_id = props.task!.id;
-        taskUpdateForm.task_type = props.task!.task_type;
-      }
-    );
     const taskUpdateForm = reactive<{
       layer: number;
       task_question: string | null;
@@ -100,6 +96,20 @@ export default defineComponent({
       task_id: 0,
       task_type: 0,
     });
+
+    watch(
+      () => props.task,
+      () => {
+        console.log(props.task);
+        taskUpdateForm.layer = props.task!.layer;
+        taskUpdateForm.task_question = props.task!.task_question;
+        taskUpdateForm.knowledge_level = props.task!.knowledge_level;
+        taskUpdateForm.min_correct = props.task!.min_correct;
+        taskUpdateForm.task_id = props.task!.id;
+        taskUpdateForm.task_type = props.task!.task_type;
+        console.log('qq', taskUpdateForm);
+      }
+    );
 
     const updateTask = async () => {
       taskUpdateLoading.value = true;
