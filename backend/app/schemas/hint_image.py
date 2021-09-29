@@ -1,14 +1,14 @@
 from pydantic import BaseModel
 
 
+class HintImageBase(BaseModel):
+    image_name: str
 
-class HintImage(BaseModel):
+class HintImage(HintImageBase):
     id: int
-    image_name: str
 
-class HintImageCreate(HintImage):
-    image_name: str
+class HintImageCreate(HintImageBase):
     task_hint_id: int
 
-class HintImageUpdate(HintImage):
-    image_name: str
+class HintImageUpdate(HintImageBase):
+    pass

@@ -9,6 +9,7 @@ from app.api.deps import (check_if_user_can_access_course,
 from app.core.solver.solver import Solver
 from app.crud.crud_base_task import crud_base_task
 from app.crud.crud_course import crud_course
+from app.crud.crud_hint_image import crud_hint_image
 from app.crud.crud_task import crud_task
 from app.crud.crud_task_group import crud_task_group
 from app.crud.crud_task_hint import crud_task_hint
@@ -16,6 +17,7 @@ from app.crud.crud_user_solution import crud_user_solution
 from app.models.user import User
 from app.schemas.base_task import (BaseTask, BaseTaskCreate, BaseTaskDetail,
                                    BaseTaskUpdate)
+from app.schemas.hint_image import HintImageCreate
 from app.schemas.polygon_data import (AnnotationData, AnnotationType,
                                       OffsetLineData, OffsetPointData,
                                       OffsetPolygonData)
@@ -105,6 +107,8 @@ def read_task_details_admin(*, db: Session = Depends(get_db), short_name: str,
 
     task_group = crud_task_group.get(db=db, id=base_task.task_group_id)
     base_task.task_group_short_name = task_group.short_name
+
+    print(base_task.tasks)
 
     return base_task
 
@@ -435,11 +439,18 @@ def get_task_solution(*, db: Session = Depends(get_db), task_id: int,
 @router.post('/task/{task_id}/hint', response_model=TaskHint)
 def create_task_hint(*, db: Session = Depends(get_db), task_id: int,
                      current_user: User = Depends(get_current_active_superuser), task_hint_in: TaskHintCreate) -> Any:
-    print("here")
     task = crud_task.get(db, id=task_id)
     base_task = crud_base_task.get(db, id=task.base_task_id)
     check_if_user_can_access_course(db, user_id=current_user.id, course_id=base_task.course_id)
     obj = crud_task_hint.create(db, obj_in=task_hint_in)
+
+    hint_id = obj.id
+
+    for image in task_hint_in.images:
+        crud_hint_image.create(db, obj_in=HintImageCreate(task_hint_id=hint_id, image_name=image.image_name))
+    
+    db.refresh(obj)
+
     return obj
 
 @router.put('/task/{task_id}/hint/{hint_id}', response_model=TaskHint)
@@ -453,6 +464,14 @@ def update_task_hint(*, db: Session = Depends(get_db), task_id: int, hint_id: in
     hint = crud_task_hint.get(db, id=hint_id)
 
     obj = crud_task_hint.update(db, db_obj=hint, obj_in=task_hint_in)
+
+    hint_id = obj.id
+
+    for image in task_hint_in.images:
+        crud_hint_image.create(db, obj_in=HintImageCreate(task_hint_id=hint_id, image_name=image.image_name))
+    
+    db.refresh(obj)
+    print(obj.images)
     return obj
 
 @router.post('/hint/{hint_id}/image', response_model=Dict)
