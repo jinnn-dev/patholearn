@@ -147,7 +147,14 @@ export default defineComponent({
 
     const viewerRef = ref();
 
-    const toolbarTools = ref<Tool[]>([Tool.MOVE, Tool.SELECT, Tool.DELETE, Tool.DELETE_ANNOTATION, Tool.BASE_DRAWING]);
+    const toolbarTools = ref<Tool[]>([
+      Tool.MOVE,
+      Tool.SELECT,
+      Tool.DELETE,
+      Tool.DELETE_ANNOTATION,
+      Tool.BASE_DRAWING,
+      Tool.RECT_SOLUTION
+    ]);
     const currentTool = ref<Tool>();
 
     const drawingViewer = ref<AnnotationViewer>();
@@ -343,11 +350,26 @@ export default defineComponent({
     });
 
     const setToolbarTools = () => {
+      const tools = [
+        Tool.MOVE,
+        Tool.SELECT,
+        Tool.DELETE,
+        Tool.DELETE_ANNOTATION,
+        Tool.BASE_DRAWING,
+        Tool.RECT_SOLUTION
+      ];
       if (toolbarTools.value.length === 0) {
-        toolbarTools.value = [Tool.MOVE, Tool.SELECT, Tool.DELETE, Tool.DELETE_ANNOTATION, Tool.BASE_DRAWING];
+        toolbarTools.value = [
+          Tool.MOVE,
+          Tool.SELECT,
+          Tool.DELETE,
+          Tool.DELETE_ANNOTATION,
+          Tool.BASE_DRAWING,
+          Tool.RECT_SOLUTION
+        ];
       }
 
-      toolbarTools.value = toolbarTools.value.slice(0, 5);
+      toolbarTools.value = toolbarTools.value.slice(0, tools.length);
 
       let tool;
 

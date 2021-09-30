@@ -13,7 +13,9 @@ export enum Tool {
   LINE_SOLUTION,
   LINE_USER_SOLUTION,
   UPLOAD,
-  DELETE
+  DELETE,
+  RECT_SOLUTION,
+  RECT_USER_SOLUTION
 }
 
 type ToolComponent = {
@@ -32,7 +34,9 @@ export const TOOL_COMPONENTS: ToolComponent = {
   [Tool.LINE_SOLUTION]: 'activity',
   [Tool.LINE_USER_SOLUTION]: 'activity',
   [Tool.UPLOAD]: 'upload',
-  [Tool.DELETE]: 'trash'
+  [Tool.DELETE]: 'trash',
+  [Tool.RECT_SOLUTION]: 'rectangle',
+  [Tool.RECT_USER_SOLUTION]: 'rectangle'
 };
 
 type ToolColors = {
@@ -46,7 +50,9 @@ export const TOOL_COLORS: ToolColors = {
   [Tool.POINT_USER_SOLUTION]: ANNOTATION_COLOR.USER_SOLUTION_COLOR,
   [Tool.POINT_SOLUTION]: ANNOTATION_COLOR.SOLUTION_COLOR,
   [Tool.LINE_SOLUTION]: ANNOTATION_COLOR.SOLUTION_COLOR,
-  [Tool.LINE_USER_SOLUTION]: ANNOTATION_COLOR.USER_SOLUTION_COLOR
+  [Tool.LINE_USER_SOLUTION]: ANNOTATION_COLOR.USER_SOLUTION_COLOR,
+  [Tool.RECT_SOLUTION]: ANNOTATION_COLOR.SOLUTION_COLOR,
+  [Tool.RECT_USER_SOLUTION]: ANNOTATION_COLOR.USER_SOLUTION_COLOR
 };
 
 export const TOOL_HINTS: ToolComponent = {
@@ -61,7 +67,9 @@ export const TOOL_HINTS: ToolComponent = {
   [Tool.POINT_SOLUTION]: 'Markiere einen Punkt',
   [Tool.LINE_SOLUTION]: 'Zeiche eine Linie',
   [Tool.LINE_USER_SOLUTION]: 'Zeichne eine Linie',
-  [Tool.DELETE]: 'Alle Annotationen löschen'
+  [Tool.DELETE]: 'Alle Annotationen löschen',
+  [Tool.RECT_SOLUTION]: 'Zeichne ein Rechteck',
+  [Tool.RECT_USER_SOLUTION]: 'Zeichne ein Rechteck'
 };
 
 type ToolAnnotation = {
@@ -75,7 +83,9 @@ export const TOOL_POLYGON: ToolAnnotation = {
   [Tool.LINE_SOLUTION]: ANNOTATION_TYPE.SOLUTION_LINE,
   [Tool.LINE_USER_SOLUTION]: ANNOTATION_TYPE.USER_SOLUTION_LINE,
   [Tool.SOLUTION_DRAWING]: ANNOTATION_TYPE.SOLUTION,
-  [Tool.BASE_DRAWING]: ANNOTATION_TYPE.BASE
+  [Tool.BASE_DRAWING]: ANNOTATION_TYPE.BASE,
+  [Tool.RECT_SOLUTION]: ANNOTATION_TYPE.SOLUTION_RECT,
+  [Tool.RECT_USER_SOLUTION]: ANNOTATION_TYPE.USER_SOLUTION_RECT
 };
 
 export const isDrawingTool = (tool: Tool) => {
@@ -92,7 +102,8 @@ export const isSolution = (type: ANNOTATION_TYPE) => {
   return (
     type === ANNOTATION_TYPE.SOLUTION ||
     type === ANNOTATION_TYPE.SOLUTION_POINT ||
-    type === ANNOTATION_TYPE.SOLUTION_LINE
+    type === ANNOTATION_TYPE.SOLUTION_LINE ||
+    type === ANNOTATION_TYPE.SOLUTION_RECT
   );
 };
 
@@ -100,6 +111,7 @@ export const isUserSolution = (type: ANNOTATION_TYPE) => {
   return (
     type === ANNOTATION_TYPE.USER_SOLUTION ||
     type === ANNOTATION_TYPE.USER_SOLUTION_POINT ||
-    type === ANNOTATION_TYPE.USER_SOLUTION_LINE
+    type === ANNOTATION_TYPE.USER_SOLUTION_LINE ||
+    type === ANNOTATION_TYPE.USER_SOLUTION_RECT
   );
 };
