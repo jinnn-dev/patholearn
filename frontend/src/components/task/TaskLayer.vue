@@ -2,7 +2,13 @@
   <div class="w-full flex items-center justify-between p-2 bg-gray-600 sticky top-0">
     <div class="mr-2">{{ layerIndex }}. Ebene</div>
     <role-only class="flex gap-2" v-if="isOwner">
-      <Icon name="minus" v-if="layerIndex !== 1" class="text-white cursor-pointer" weight="bold" @click="removeLayer"></Icon>
+      <Icon
+        name="minus"
+        v-if="layerIndex !== 1"
+        class="text-white cursor-pointer"
+        weight="bold"
+        @click="removeLayer"
+      ></Icon>
     </role-only>
   </div>
   <div class="w-full cursor-pointer">
@@ -26,9 +32,14 @@
 
   <role-only>
     <modal-dialog :show="taskCreationModal" customClasses="w-2/5">
-      <CreateTask @close="taskCreationModal = false" @taskCreated="$emit('taskCreated', $event)" :layerIndex="layerIndex" :baseTaskId="baseTaskId" />
+      <CreateTask
+        @close="taskCreationModal = false"
+        @taskCreated="$emit('taskCreated', $event)"
+        :layerIndex="layerIndex"
+        :baseTaskId="baseTaskId"
+      />
     </modal-dialog>
-    <modal-dialog :show="taskUpdateModal">
+    <modal-dialog :show="taskUpdateModal" customClasses="w-2/5">
       <UpdateTask @close="taskUpdateModal = false" @taskUpdated="$emit('taskUpdated', $event)" :task="selectedTask" />
     </modal-dialog>
   </role-only>
@@ -42,21 +53,21 @@ export default defineComponent({
   props: {
     layerIndex: {
       type: Number,
-      required: true,
+      required: true
     },
     tasks: {
       type: Array as PropType<Task[]>,
-      default: [],
+      default: []
     },
     baseTaskId: {
       type: Number,
-      required: true,
+      required: true
     },
     selectedTaskId: Number,
     isOwner: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
 
   emits: ['taskCreated', 'taskUpdated', 'taskSelected', 'taskDeleted', 'layerDeleted'],
@@ -100,9 +111,9 @@ export default defineComponent({
       deleteTask,
       editTask,
       selectTask,
-      taskUpdateModal,
+      taskUpdateModal
     };
-  },
+  }
 });
 </script>
 <style>

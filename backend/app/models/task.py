@@ -16,4 +16,4 @@ class Task(Base):
     solution = Column(JSON, nullable=True)
     task_data = Column(JSON, nullable=True)
     annotation_groups = Column(JSON, nullable=True)
-    hints = relationship("TaskHint", cascade="all, delete-orphan")
+    hints = relationship("TaskHint", cascade="all, delete-orphan", order_by="TaskHint.needed_mistakes")

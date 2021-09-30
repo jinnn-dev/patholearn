@@ -10,6 +10,8 @@
 
     <task-container :baseTask="baseTask" :isOwner="true" @taskSelected="selectTask($event)"></task-container>
 
+    <hint-overlay :hints="selectedTask?.hints" />
+
     <task-viewer-admin
       :slide_name="baseTask?.slide_id"
       :task="selectedTask"

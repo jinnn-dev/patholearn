@@ -1,6 +1,18 @@
 <template>
   <div
-    class="fixed z-10 bg-gray-600 top-1/2 transform -translate-y-1/2 text-white rounded-r-lg overflow-hidden"
+    class="
+      fixed
+      z-10
+      bg-gray-600/70
+      filter
+      backdrop-blur-md
+      top-1/2
+      transform
+      -translate-y-1/2
+      text-white
+      rounded-r-lg
+      overflow-hidden
+    "
     v-if="!userSolutionLocked && !viewerLoadingState.solveResultLoading"
   >
     <tool-item

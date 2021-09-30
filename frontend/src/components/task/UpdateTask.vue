@@ -2,7 +2,14 @@
   <div>
     <h1 class="text-2xl text-center">Füge eine neue Aufgabe der {{ taskUpdateForm.layer }}. Ebene hinzu</h1>
     <form @submit.prevent="updateTask" class="w-full">
-      <input-field v-model="taskUpdateForm.task_question" label="Fragestellung" placeholder="Markiere..." type="text" :required="true"> </input-field>
+      <input-field
+        v-model="taskUpdateForm.task_question"
+        label="Fragestellung"
+        placeholder="Markiere..."
+        type="text"
+        :required="true"
+      >
+      </input-field>
 
       <Accordion>
         <AccordionItem title="Aufgabeneinstellungen" :first="true">
@@ -15,9 +22,9 @@
 
           <div class="my-8">
             <div>Welches Vorwissen ist bei den Lernenden vorhanden:</div>
-            <div class="my-2 w-140 break-words text-sm text-gray-200">
-              Die Vorwissensstufe bestimmt den Schwierigkeitsgrad der Aufgabe. Mit steigender Stufe wird das Feedback weniger unterstützend. Außerdem
-              wird die Aufgabenüberprüfung strenger.
+            <div class="my-2 break-words text-sm text-gray-200 py-2">
+              Die Vorwissensstufe bestimmt den Schwierigkeitsgrad der Aufgabe. Mit steigender Stufe wird das Feedback
+              weniger unterstützend. Außerdem wird die Aufgabenüberprüfung strenger.
             </div>
             <div class="flex w-full justify-evenly gap-2 my-2">
               <div
@@ -38,8 +45,8 @@
                 :class="taskUpdateForm.knowledge_level === level.index && 'bg-gray-500 ring-2 ring-highlight-900'"
                 @click="taskUpdateForm.knowledge_level = level.index"
               >
-                <div class="flex flex-col gap-3 justify-center items-center">
-                  {{ level.name }}
+                <div class="flex flex-col gap-3 justify-center items-center text-center">
+                  <div>{{ level.name }}</div>
                 </div>
               </div>
             </div>
@@ -74,8 +81,8 @@ export default defineComponent({
   components: { Slider },
   props: {
     task: {
-      type: Object as PropType<Task>,
-    },
+      type: Object as PropType<Task>
+    }
   },
   emits: ['close', 'taskUpdated'],
   setup(props, { emit }) {
@@ -94,7 +101,7 @@ export default defineComponent({
       knowledge_level: 0,
       min_correct: 0,
       task_id: 0,
-      task_type: 0,
+      task_type: 0
     });
 
     watch(
@@ -117,7 +124,7 @@ export default defineComponent({
         task_id: taskUpdateForm.task_id,
         task_question: taskUpdateForm.task_question!,
         min_correct: taskUpdateForm.min_correct,
-        knowledge_level: taskUpdateForm.knowledge_level,
+        knowledge_level: taskUpdateForm.knowledge_level
       });
       taskUpdateLoading.value = false;
 
@@ -125,7 +132,7 @@ export default defineComponent({
       emit('taskUpdated', res);
     };
     return { taskUpdateForm, updateTask, taskUpdateLoading, knowledgeLevel, taskTypes };
-  },
+  }
 });
 </script>
 <style></style>

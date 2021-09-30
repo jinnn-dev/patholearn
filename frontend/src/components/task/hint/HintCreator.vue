@@ -1,6 +1,14 @@
 <template>
   <div>
-    id: {{ hint.id }}
+    <div class="flex">
+      <div
+        class="flex bg-gray-800/40 font-semibold rounded-lg p-2 cursor-pointer hover:bg-gray-800/60"
+        @click="closeCreator"
+      >
+        <Icon name="arrow-left" class="mr-1" />
+        Zurück
+      </div>
+    </div>
     <input-field
       label="Anzahl benötigter Fehler"
       v-model="hint.needed_mistakes"
@@ -15,13 +23,24 @@
     />
     <div class="my-2 flex gap-2" v-viewer>
       <div class="h-20 w-20 bg-gray-500 rounded-lg" v-for="image in hint.images">
-        <HintImage :src="image.image_name" @click="deleteImage(image.image_name)" />
+        <HintImage :imgSrc="SLIDE_IMAGE_URL + '/' + image.image_name" @click="deleteImage(image.image_name)" />
       </div>
       <div class="h-20 w-20 bg-gray-500 rounded-lg" v-for="image in tempPreviewImages">
-        <HintImage :ImageSrc="image" @click="deleteImage(image)" />
+        <HintImage :imgSrc="image" @click="deleteImage(image)" />
       </div>
       <div
-        class="h-20 w-20 bg-green-600 rounded-lg flex items-center justify-center cursor-pointer hover:bg-green-500 transition"
+        class="
+          h-20
+          w-20
+          bg-green-600
+          rounded-lg
+          flex
+          items-center
+          justify-center
+          cursor-pointer
+          hover:bg-green-500
+          transition
+        "
         @click="fileRef?.click()"
       >
         <Icon name="plus" width="30" height="30" stroke-width="25" />
@@ -38,22 +57,25 @@
 import { TaskService } from '../../../services/task.service';
 import { defineComponent, PropType, reactive, ref } from 'vue';
 import { HintType, TaskHint } from '../../../model/taskHint';
+import { SLIDE_IMAGE_URL } from '../../../config';
+
 export default defineComponent({
+  emtis: ['closeMe', 'updated', 'created'],
   props: {
     hint: {
-      type: Object as PropType<TaskHint>,
+      type: Object as PropType<TaskHint>
     },
     taskId: {
       type: Number,
-      required: true,
+      required: true
     },
     isUpdate: {
       type: Boolean,
-      default: false,
+      default: false
     },
-    selectedHint: Number,
+    selectedHint: Number
   },
-  setup(props) {
+  setup(props, { emit }) {
     const fileRef = ref<HTMLInputElement>();
     const tempPreviewImages = ref<string[]>([]);
     const tempImages = ref<string[]>([]);
@@ -65,11 +87,12 @@ export default defineComponent({
       order_position: props.hint?.order_position || 0,
       needed_mistakes: props.hint?.needed_mistakes || 0,
       hint_type: props.hint?.hint_type || HintType.IMAGE,
-      images: props.hint?.images || [],
+      images: props.hint?.images || []
     });
 
+    console.log(props.selectedHint);
+
     async function createHint() {
-      //TODO images still NOT WORKING .. filename is generated in backend so this could be a problem anyway
       const imageNames = [];
       for await (const img of tempImages.value) {
         const name = await uploadImage(img);
@@ -79,15 +102,19 @@ export default defineComponent({
 
       hint.images?.push(
         ...imageNames.map((name) => ({
-          image_name: name,
+          image_name: name
         }))
       );
-      console.log(hint.images);
+
+      tempImages.value = [];
+      tempPreviewImages.value = [];
+
       if (props.hint) {
-        console.log(props.taskId);
         await TaskService.updateHint(hint.id, hint);
+        emit('updated', hint);
       } else {
-        await TaskService.createHint(props.taskId, hint);
+        const newHint = await TaskService.createHint(props.taskId, hint);
+        emit('created', newHint);
       }
     }
 
@@ -100,7 +127,7 @@ export default defineComponent({
 
     function deleteImage(imageName: string) {
       tempImages.value = tempImages.value.filter((img) => img != imageName);
-      hint.images!.filter((img) => img.image_name != imageName);
+      hint.images = hint.images!.filter((img) => img.image_name != imageName);
     }
 
     async function uploadImage(image: Blob) {
@@ -110,8 +137,22 @@ export default defineComponent({
       return await TaskService.uploadHintImage(hint.id, formData);
     }
 
-    return { createHint, hint, tempImages, tempPreviewImages, fileRef, onFileChange, deleteImage };
-  },
+    function closeCreator() {
+      emit('closeMe');
+    }
+
+    return {
+      createHint,
+      hint,
+      tempImages,
+      tempPreviewImages,
+      fileRef,
+      onFileChange,
+      deleteImage,
+      SLIDE_IMAGE_URL,
+      closeCreator
+    };
+  }
 });
 </script>
 <style></style>

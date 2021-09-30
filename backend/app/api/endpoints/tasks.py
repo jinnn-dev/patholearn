@@ -1,7 +1,11 @@
+import io
 import json
+import pathlib
 import uuid
 from typing import Any, Dict, List, Union
 
+import os
+import pyvips
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.datastructures import UploadFile
 from fastapi.params import File
@@ -22,7 +26,7 @@ from app.crud.crud_user_solution import crud_user_solution
 from app.models.user import User
 from app.schemas.base_task import (BaseTask, BaseTaskCreate, BaseTaskDetail,
                                    BaseTaskUpdate)
-from app.schemas.hint_image import HintImageCreate, HintImageBase
+from app.schemas.hint_image import HintImageCreate
 from app.schemas.polygon_data import (AnnotationData, AnnotationType,
                                       OffsetLineData, OffsetPointData,
                                       OffsetPolygonData)
@@ -192,7 +196,7 @@ def update_annotation_group(*, db: Session = Depends(get_db), task_id: int,
 def delete_task(*, db: Session = Depends(get_db), task_id: int,
                 current_user: User = Depends(get_current_active_superuser)) -> Any:
     task_to_delete = crud_task.get(db, id=task_id)
-
+    
     check_if_user_can_access_task(db, user_id=current_user.id, base_task_id=task_to_delete.base_task_id)
 
     task = crud_task.remove(db, model_id=task_id)
@@ -467,12 +471,28 @@ def update_task_hint(*, db: Session = Depends(get_db), task_id: int, hint_id: in
 
     obj = crud_task_hint.update(db, db_obj=hint, obj_in=task_hint_in)
 
-    hint_id = obj.id
-    images = []
-    for image in task_hint_in.images:
-        images.append(
-            crud_hint_image.create(db, obj_in=HintImageCreate(task_hint_id=hint_id, image_name=image.image_name)))
-    obj.images = images
+    if len(task_hint_in.images) == 0:
+        for image in obj.images:
+            crud_hint_image.remove(db, model_id=image.id)
+    else:
+        task_hint_image_names = [image.image_name for image in obj.images]
+        in_image_names = [image.image_name for image in task_hint_in.images]
+        deleted_images_names = set(task_hint_image_names).difference(in_image_names)
+        new_images_names = set(in_image_names).difference(task_hint_image_names).difference(deleted_images_names)
+
+        for new_image_name in new_images_names:
+            obj.images.append(
+                        crud_hint_image.create(db, obj_in=HintImageCreate(task_hint_id=hint_id, image_name=new_image_name)))
+
+        result_images = []
+
+        for image in obj.images:
+            if image.image_name in deleted_images_names:
+                crud_hint_image.remove(db, model_id=image.id)
+            else:
+                result_images.append(image)
+
+        obj.images = result_images
     db.refresh(obj)
     return obj
 
@@ -485,12 +505,25 @@ def upload_task_hint_image(*, db: Session = Depends(get_db), hint_id: int,
 
     file_name = f"{image_name}.{image.filename.split('.')[-1]}"
 
+    final_name = f'{image_name}.jpeg'
+
+    pyvips_image = pyvips.Image.new_from_buffer(image.file.read(), options="")
+
+    pyvips_image.jpegsave(final_name, Q=75)
+
     try:
-        minio_client.create_object(file_name, image.file.fileno(), image.content_type)
+        minio_client.create_object(file_name, final_name, "image/jpeg")
+        os.remove(final_name)
         return {"path": minio_client.bucket_name + '/' + file_name}
     except Exception as e:
         print(e)
+        os.remove(final_name)
         raise HTTPException(
             status_code=500,
             detail="Image could not be saved"
         )
+
+
+@router.delete('/hint/{hint_id}', response_model=TaskHint)
+def remove_task_hint(*, db: Session = Depends(get_db), hint_id: int, current_user: User = Depends(get_current_active_superuser)):
+    return crud_task_hint.remove(db, model_id=hint_id)

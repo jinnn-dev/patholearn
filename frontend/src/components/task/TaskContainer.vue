@@ -1,5 +1,5 @@
 <template>
-    <div
+  <div
     class="
       transition-all
       transform
@@ -8,7 +8,9 @@
       z-10
       top-1/2
       -translate-y-1/2
-      bg-gray-700
+      bg-gray-700/70
+      filter
+      backdrop-blur-md
       text-3xl
       rounded-l-lg
       h-12
@@ -18,16 +20,15 @@
     "
     @click="isCollapsed = !isCollapsed"
     :title="isCollapsed ? 'Ausklappen' : 'Einklappen'"
-    :class="[isCollapsed ? 'right-0' : 'right-[16.9rem]']"
+    :class="[isCollapsed ? 'right-0' : 'right-80']"
   >
     <Icon name="caret-left" class="transition-all transform" :class="[isCollapsed ? 'rotate-180' : 'rotate-90']" />
-    
   </div>
 
   <div
     class="
       transition-all
-      w-84
+      w-80
       fixed
       z-10
       right-0
@@ -36,8 +37,9 @@
       -translate-y-1/2
       rounded-l-lg
       overflow-hidden
-      bg-gray-700
-      shadow-xl
+      bg-gray-700/70
+      filter
+      backdrop-blur-md
     "
     :class="[isCollapsed ? '-right-80' : 'right-0']"
   >
@@ -45,7 +47,7 @@
       <h3>{{ baseTask?.name }}</h3>
     </div>
 
-    <div class="relative max-h-90 overflow-auto">
+    <div class="relative max-h-[22.5rem] overflow-auto">
       <div class="flex flex-col justify-center items-center w-full">
         <div v-for="(layer, index) in taskMap" :key="index" class="w-full">
           <task-layer

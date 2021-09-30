@@ -95,7 +95,7 @@
                   :class="taskCreationForm.knowledge_level === level.index && 'bg-gray-500 ring-2 ring-highlight-900'"
                   @click="taskCreationForm.knowledge_level = level.index"
                 >
-                  <div class="flex gap-3 justify-center items-center">
+                  <div class="flex gap-3 justify-center items-center text-center">
                     {{ level.name }}
                   </div>
                 </div>
@@ -108,8 +108,9 @@
               </div>
             </div>
           </div>
-
-          <save-button name="Speichern" type="submit" class="w-36" :loading="taskCreationLoading"></save-button>
+          <div class="flex justify-end">
+            <save-button name="Speichern" type="submit" class="w-36" :loading="taskCreationLoading"></save-button>
+          </div>
         </AccordionItem>
         <AccordionItem title="Tipps (optional)">
           <HintList :task="createdTask" />

@@ -20,4 +20,20 @@ const app = createApp(App);
 app.use(router);
 app.use(MotionPlugin);
 app.use(VueViewer);
+VueViewer.setDefaults({
+  zoomRatio: 1,
+  title: false,
+  navbar: false,
+  fullscreen: false,
+  tooltip: false,
+  toolbar: {
+    rotateLeft: true,
+    rotateRight: true,
+    zoomIn: true,
+    zoomOut: true,
+    reset: true,
+    flipHorizontal: true,
+    flipVertical: true
+  }
+});
 app.mount('#app');

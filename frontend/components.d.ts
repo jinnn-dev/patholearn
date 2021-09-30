@@ -29,6 +29,8 @@ declare module 'vue' {
     HintCreator: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/task/hint/HintCreator.vue')['default']
     HintImage: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/task/hint/HintImage.vue')['default']
     HintList: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/task/hint/HintList.vue')['default']
+    HintOverlay: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/task/hint/HintOverlay.vue')['default']
+    HintOverlayItem: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/task/hint/HintOverlayItem.vue')['default']
     Icon: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/Icon.vue')['default']
     InputArea: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/form/InputArea.vue')['default']
     InputField: typeof import('D:/viscom-lernsoftware/learning-by-annotations/frontend/src/components/form/InputField.vue')['default']

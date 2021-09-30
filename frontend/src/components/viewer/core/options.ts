@@ -21,8 +21,8 @@ export const options = (
     gestureSettingsMouse: {
       clickToZoom: false
     },
-    showNavigator: true,
-    navigatorPosition: 'BOTTOM_LEFT',
+    // showNavigator: true,
+    // navigatorPosition: 'BOTTOM_LEFT',
     navigatorHeight: 150,
     navigatorWidth: 150,
     showNavigationControl: false
