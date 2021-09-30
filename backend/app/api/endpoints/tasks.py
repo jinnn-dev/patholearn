@@ -2,6 +2,11 @@ import json
 import uuid
 from typing import Any, Dict, List, Union
 
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.datastructures import UploadFile
+from fastapi.params import File
+from sqlalchemy.orm import Session
+
 from app.api.deps import (check_if_user_can_access_course,
                           check_if_user_can_access_task,
                           get_current_active_superuser,
@@ -17,23 +22,19 @@ from app.crud.crud_user_solution import crud_user_solution
 from app.models.user import User
 from app.schemas.base_task import (BaseTask, BaseTaskCreate, BaseTaskDetail,
                                    BaseTaskUpdate)
-from app.schemas.hint_image import HintImageCreate
+from app.schemas.hint_image import HintImageCreate, HintImageBase
 from app.schemas.polygon_data import (AnnotationData, AnnotationType,
                                       OffsetLineData, OffsetPointData,
                                       OffsetPolygonData)
 from app.schemas.task import (AnnotationGroup, AnnotationGroupUpdate, Task,
                               TaskCreate, TaskFeedback, TaskStatus, TaskUpdate)
-from app.schemas.task_hint import (HintType, TaskHint, TaskHintCreate,
+from app.schemas.task_hint import (TaskHint, TaskHintCreate,
                                    TaskHintUpdate)
 from app.schemas.user_solution import (UserSolution, UserSolutionCreate,
                                        UserSolutionUpdate)
 from app.utils.colored_printer import ColoredPrinter
 from app.utils.minio_client import minio_client
 from app.utils.timer import Timer
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.datastructures import UploadFile
-from fastapi.params import File
-from sqlalchemy.orm import Session
 
 router = APIRouter()
 
@@ -107,8 +108,6 @@ def read_task_details_admin(*, db: Session = Depends(get_db), short_name: str,
 
     task_group = crud_task_group.get(db=db, id=base_task.task_group_id)
     base_task.task_group_short_name = task_group.short_name
-
-    print(base_task.tasks)
 
     return base_task
 
@@ -442,16 +441,20 @@ def create_task_hint(*, db: Session = Depends(get_db), task_id: int,
     task = crud_task.get(db, id=task_id)
     base_task = crud_base_task.get(db, id=task.base_task_id)
     check_if_user_can_access_course(db, user_id=current_user.id, course_id=base_task.course_id)
-    obj = crud_task_hint.create(db, obj_in=task_hint_in)
+
+    task_hint_create = task_hint_in.copy(deep=True)
+
+    task_hint_create.images = []
+    obj = crud_task_hint.create(db, obj_in=task_hint_create)
 
     hint_id = obj.id
-
     for image in task_hint_in.images:
         crud_hint_image.create(db, obj_in=HintImageCreate(task_hint_id=hint_id, image_name=image.image_name))
-    
+
     db.refresh(obj)
 
     return obj
+
 
 @router.put('/task/{task_id}/hint/{hint_id}', response_model=TaskHint)
 def update_task_hint(*, db: Session = Depends(get_db), task_id: int, hint_id: int,
@@ -460,34 +463,34 @@ def update_task_hint(*, db: Session = Depends(get_db), task_id: int, hint_id: in
     base_task = crud_base_task.get(db, id=task.base_task_id)
     check_if_user_can_access_course(db, user_id=current_user.id, course_id=base_task.course_id)
 
-    print(hint_id)
     hint = crud_task_hint.get(db, id=hint_id)
 
     obj = crud_task_hint.update(db, db_obj=hint, obj_in=task_hint_in)
 
     hint_id = obj.id
-
+    images = []
     for image in task_hint_in.images:
-        crud_hint_image.create(db, obj_in=HintImageCreate(task_hint_id=hint_id, image_name=image.image_name))
-    
+        images.append(
+            crud_hint_image.create(db, obj_in=HintImageCreate(task_hint_id=hint_id, image_name=image.image_name)))
+    obj.images = images
     db.refresh(obj)
-    print(obj.images)
     return obj
 
+
 @router.post('/hint/{hint_id}/image', response_model=Dict)
-def upload_task_hint_image(*, db: Session = Depends(get_db), hint_id: int, current_user: User = Depends(get_current_active_superuser), image: UploadFile = File(...)) -> Any:
-    
+def upload_task_hint_image(*, db: Session = Depends(get_db), hint_id: int,
+                           current_user: User = Depends(get_current_active_superuser),
+                           image: UploadFile = File(...)) -> Any:
     image_name = uuid.uuid4()
 
     file_name = f"{image_name}.{image.filename.split('.')[-1]}"
 
     try:
         minio_client.create_object(file_name, image.file.fileno(), image.content_type)
-        return { "path": minio_client.bucket_name + '/' + file_name }
+        return {"path": minio_client.bucket_name + '/' + file_name}
     except Exception as e:
         print(e)
         raise HTTPException(
             status_code=500,
             detail="Image could not be saved"
         )
-    
