@@ -52,9 +52,6 @@
       >
         <div class="w-full h-full flex items-center justify-center">
           <div class="w-full h-52" v-if="hints">
-            <!-- <Icon name="caret-left" class="" />
-        
-        <Icon name="caret-right" class="" /> -->
             <Swiper
               :slides-per-view="1"
               :space-between="52"
@@ -76,25 +73,37 @@
 </template>
 <script lang="ts">
 import { TaskHint } from '../../../model/taskHint';
-import { defineComponent, onMounted, PropType, ref } from 'vue';
+import { computed, defineComponent, onMounted, PropType, ref, watch } from 'vue';
 import SwiperCore, { Navigation, Pagination, A11y, Swiper as SwiderType } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
+import { getTaskHints, store } from '../../../utils/hint.store';
 SwiperCore.use([Navigation, Pagination, A11y]);
 export default defineComponent({
   components: { Swiper, SwiperSlide },
   props: {
-    hints: {
-      type: Object as PropType<TaskHint[]>
+    taskId: {
+      type: Number
     }
   },
-  setup() {
-    const isCollapsed = ref(false);
+  setup(props) {
+    watch(
+      () => props.taskId,
+      () => {
+        console.log('get hints');
+        getTaskHints(props.taskId!);
+      },
+      { deep: true }
+    );
 
-    return { modules: [Navigation, Pagination, A11y], isCollapsed };
+    const hints = computed(() => store.hints);
+
+    const isCollapsed = ref(true);
+
+    return { modules: [Navigation, Pagination, A11y], isCollapsed, hints };
   }
 });
 </script>

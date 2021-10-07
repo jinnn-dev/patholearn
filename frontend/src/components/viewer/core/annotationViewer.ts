@@ -1,4 +1,5 @@
 import { select } from 'd3-selection';
+import { AnnotationRectangleData } from 'model/viewer/export/annotationRectangleData';
 import OpenSeadragon, { Point, Viewer } from 'openseadragon';
 import {
   Annotation,
@@ -6,6 +7,7 @@ import {
   AnnotationLine,
   AnnotationPoint,
   AnnotationPolygon,
+  AnnotationRectangle,
   ANNOTATION_COLOR,
   ANNOTATION_TYPE,
   isUserSolution,
@@ -14,6 +16,7 @@ import {
   OffsetAnnotationPoint,
   OffsetAnnotationPolygon,
   OffsetAnnotationPolygonData,
+  OffsetAnnotationRectangle,
   PointData,
   Task,
   UserSolution,
@@ -43,7 +46,7 @@ export class AnnotationViewer {
 
   private _mouseCircle: MouseCircle;
 
-  private _drawingAnnotation!: AnnotationLine | undefined;
+  private _drawingAnnotation!: AnnotationLine | AnnotationRectangle | undefined;
 
   private _currentColor: ANNOTATION_COLOR;
 
@@ -161,10 +164,29 @@ export class AnnotationViewer {
         case ANNOTATION_TYPE.USER_SOLUTION_LINE:
           this._drawingAnnotation = new AnnotationLine(node, type, this._currentColor);
           break;
+        case ANNOTATION_TYPE.USER_SOLUTION_RECT:
+          this._drawingAnnotation = new AnnotationRectangle(
+            node,
+            type,
+            this._currentColor + ANNOTATION_COLOR.FILL_OPACITY,
+            this._currentColor
+          );
+          break;
+
+        case ANNOTATION_TYPE.SOLUTION_RECT:
+          this._drawingAnnotation = new OffsetAnnotationRectangle(
+            node,
+            type,
+            this._currentColor + ANNOTATION_COLOR.FILL_OPACITY,
+            this._currentColor,
+            (POLYGON_INFLATE_OFFSET / this.scale) * ANNOTATION_OFFSET_SCALAR,
+            (POLYGON_INFLATE_OFFSET / this.scale) * ANNOTATION_OFFSET_SCALAR
+          );
+          break;
         case ANNOTATION_TYPE.BASE:
           this._drawingAnnotation = new AnnotationPolygon(node, type, 'none', this._currentColor);
-
           break;
+
         default:
           this._drawingAnnotation = new AnnotationPolygon(
             node,
@@ -280,6 +302,11 @@ export class AnnotationViewer {
     return annotationPoint;
   }
 
+  addAnnotationRect(type: ANNOTATION_TYPE, x: number, y: number) {
+    const annotationRect = new AnnotationRectangle(this._annotationManager.getNode(type), type);
+    const viewport = webToViewport(x, y, this._viewer);
+  }
+
   /**
    * Adds the given serialized background annotations
    *
@@ -335,8 +362,8 @@ export class AnnotationViewer {
    * @param data The serialized annotations
    */
   addAnnotations(data: AnnotationData[]): void {
-    const dataInstance = data as OffsetAnnotationPolygonData[];
-    for (const item of dataInstance) {
+    let dataInstance = data as OffsetAnnotationPolygonData[];
+    for (const item of data) {
       const items: PointData[] = [];
       item.coord.image.forEach((point: PointData) => {
         let i = imageToViewport(new Point(point.x, point.y), this._viewer);
@@ -347,37 +374,41 @@ export class AnnotationViewer {
         items.push(ks);
       });
       item.coord.viewport = items;
-
-      if (item.innerPoints) {
-        const innerPointData: PointData[] = [];
-        item.innerPoints.image.forEach((point: PointData) => {
-          let i = imageToViewport(new Point(point.x, point.y), this._viewer);
-          const ks: PointData = {
-            x: i.x,
-            y: i.y
-          };
-          innerPointData.push(ks);
-        });
-
-        item.innerPoints.viewport = innerPointData;
-      }
-
-      if (item.outerPoints) {
-        const outerPointData: PointData[] = [];
-        item.outerPoints.image.forEach((point: PointData) => {
-          let i = imageToViewport(new Point(point.x, point.y), this._viewer);
-          const ks: PointData = {
-            x: i.x,
-            y: i.y
-          };
-          outerPointData.push(ks);
-        });
-
-        item.outerPoints.viewport = outerPointData;
-      }
     }
+    if (dataInstance[0]?.innerPoints) {
+      for (const item of dataInstance) {
+        if (item.innerPoints) {
+          const innerPointData: PointData[] = [];
+          item.innerPoints.image.forEach((point: PointData) => {
+            let i = imageToViewport(new Point(point.x, point.y), this._viewer);
+            const ks: PointData = {
+              x: i.x,
+              y: i.y
+            };
+            innerPointData.push(ks);
+          });
 
-    this._annotationManager.addAnnotation(dataInstance, this.scale);
+          item.innerPoints.viewport = innerPointData;
+        }
+
+        if (item.outerPoints) {
+          const outerPointData: PointData[] = [];
+          item.outerPoints.image.forEach((point: PointData) => {
+            let i = imageToViewport(new Point(point.x, point.y), this._viewer);
+            const ks: PointData = {
+              x: i.x,
+              y: i.y
+            };
+            outerPointData.push(ks);
+          });
+
+          item.outerPoints.viewport = outerPointData;
+        }
+      }
+      this._annotationManager.addAnnotation(dataInstance, this.scale);
+    } else {
+      this._annotationManager.addAnnotation(data as AnnotationRectangleData[], this.scale);
+    }
   }
 
   /**
@@ -595,7 +626,7 @@ export class AnnotationViewer {
    */
   resetAnnotations(): void {
     for (const polygon of this._annotationManager.userSolutionAnnotations) {
-      if (polygon instanceof AnnotationLine) {
+      if (polygon instanceof AnnotationLine || polygon instanceof AnnotationRectangle) {
         (polygon as AnnotationLine).removeResultPolylines();
       }
       polygon.resetColors();
@@ -633,7 +664,7 @@ export class AnnotationViewer {
   addPolyline(id: string, points: number[][][]): void {
     const annotation = this._annotationManager.getAnnotationById(id);
 
-    if (annotation instanceof AnnotationLine) {
+    if (annotation instanceof AnnotationLine || annotation instanceof AnnotationRectangle) {
       for (let i = 0; i < points.length; i++) {
         const line = points[i];
         const resultPoints = line.map((lineItem) => {
@@ -655,7 +686,11 @@ export class AnnotationViewer {
   }
 
   get drawingPolygonIsClosed() {
-    if (this._drawingAnnotation?.isClosed && this._drawingAnnotation instanceof OffsetAnnotationPolygon) {
+    if (
+      this._drawingAnnotation?.isClosed &&
+      (this._drawingAnnotation instanceof OffsetAnnotationPolygon ||
+        this._drawingAnnotation instanceof OffsetAnnotationRectangle)
+    ) {
       (this._drawingAnnotation as OffsetAnnotationPolygon).createInflation(this.scale);
     }
     return this._drawingAnnotation?.isClosed;

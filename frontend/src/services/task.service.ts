@@ -420,4 +420,13 @@ export class TaskService {
 
     return response!.data;
   }
+
+  public static async getHints(task_id: number): Promise<any> {
+    const [_, response] = await handleError(
+      ApiService.get<any>({ resource: this._apiUrl(`/hints/${task_id}`) }),
+      'Could not load any hints'
+    );
+
+    return response!.data;
+  }
 }

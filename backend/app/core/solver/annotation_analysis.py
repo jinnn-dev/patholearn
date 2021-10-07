@@ -1,14 +1,17 @@
 import math
-from typing import List, Tuple, Dict, Union
+from typing import Dict, List, Tuple, Union
 
-from shapely.errors import TopologicalError
-from shapely.geometry import LineString, Polygon, LinearRing
-
-from app.schemas.polygon_data import AnnotationData, OffsetLineData, OffsetPointData, OffsetPolygonData
+from app.schemas.polygon_data import (AnnotationData, AnnotationType,
+                                      OffsetLineData, OffsetPointData,
+                                      OffsetPolygonData, OffsetRectangleData,
+                                      Point, RectangleData)
 from app.schemas.solver_result import LineResult, PointResult, PolygonResult
 from app.utils.colored_printer import ColoredPrinter
 from app.utils.timer import Timer
 from app.utils.utils import get_path_length
+from shapely.errors import TopologicalError
+from shapely.geometry import LinearRing, LineString, Polygon
+from shapely.validation import explain_validity
 
 
 class AnnotationAnalysis:
@@ -121,8 +124,8 @@ class AnnotationAnalysis:
         return correct_line_ids, no_match_ids
 
     @staticmethod
-    def check_polygon_in_polygon(*, user_annotation_data: List[AnnotationData],
-                                 solution_annotation_data: List[OffsetPolygonData]) -> Tuple[
+    def check_polygon_in_polygon(*, user_annotation_data: List[Union[RectangleData, AnnotationData]],
+                                 solution_annotation_data: List[Union[OffsetRectangleData, OffsetPolygonData]]) -> Tuple[
         Dict[str, List[PolygonResult]], List[str], List[str]]:
         """
         Test every polygon in the user annotation with the solution polygons and generates a solve result.
@@ -139,7 +142,20 @@ class AnnotationAnalysis:
         timer.start()
 
         for user_annotation in user_annotation_data:
-            user_polygon = LinearRing([p.x, p.y] for p in user_annotation.coord.image)
+            if user_annotation.type == AnnotationType.USER_SOLUTION_RECT:
+                p1 = user_annotation.coord.image[0]
+                p4 = user_annotation.coord.image[1]
+
+                p2 = Point(x=p1.x + (p4.x - p1.x), y=p1.y)
+                p3 = Point(x=p1.x, y=p1.y + (p4.y - p1.y))
+                print(p1, p2, p3, p4)
+                user_polygon = LinearRing([p.x, p.y] for p in [p1, p3, p4, p2])
+                print(explain_validity(user_polygon))
+            else:
+                user_polygon = Polygon([p.x, p.y] for p in user_annotation.coord.image)
+
+            print(user_polygon)
+            print(user_polygon.is_valid)
 
             if not user_polygon.is_valid:
                 invalid_ids.append(user_annotation.id)
@@ -174,16 +190,22 @@ class AnnotationAnalysis:
                         else:
                             for line in hole_difference:
                                 lines_outside.append(list(line.coords))
+                    
+                    p1 = solution_annotation.coord.image[0] 
+                    p4 = solution_annotation.coord.image[1]
 
+                    p2 = Point(x=p1.x + (p4.x - p1.x), y=p1.y)
+                    p3 = Point(x=p1.x, y=p1.y + (p4.y - p1.y))
+                    
+                    solution_polygon_ring = Polygon([p.x, p.y] for p in [p1, p2, p3, p4])
+                    print(solution_polygon_ring.area)
                     annotation_result = PolygonResult(
                         id=user_annotation.id,
                         name_matches=False,
                         percentage_outside=0.0,
                         intersections=0,
                         percentage_length_difference=percentage_length_difference,
-                        percentage_area_difference=Polygon(
-                            [p.x, p.y] for p in user_annotation.coord.image).area / Polygon(
-                            [p.x, p.y] for p in solution_annotation.coord.image).area,
+                        percentage_area_difference=user_polygon.area,
                         lines_outside=lines_outside
                     )
 
@@ -204,7 +226,10 @@ class AnnotationAnalysis:
                         correct_polygon_ids[solution_annotation.id].append(annotation_result)
 
                     # ColoredPrinter.print_lined_info(f"Polygon check needed {(timer.time_elapsed - time_before) * 1000}ms")
-                except TopologicalError:
+                except TopologicalError as e:
+
+                    print(e)
+
                     if user_annotation.id in no_match_ids:
                         no_match_ids.remove(user_annotation.id)
                     invalid_ids.append(user_annotation.id)
@@ -214,7 +239,8 @@ class AnnotationAnalysis:
         return correct_polygon_ids, no_match_ids, invalid_ids
 
     @staticmethod
-    def __check_name(user_annotation: AnnotationData, solution_annotation: Union[OffsetPolygonData, OffsetLineData],
+    def __check_name(user_annotation: AnnotationData,
+                     solution_annotation: Union[OffsetRectangleData, OffsetPolygonData, OffsetLineData],
                      annotation_result: Union[PolygonResult, LineResult]) -> Union[PolygonResult, LineResult]:
         if user_annotation.name and solution_annotation.name:
             annotation_result.name_matches = user_annotation.name == solution_annotation.name

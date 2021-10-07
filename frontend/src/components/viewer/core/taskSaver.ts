@@ -1,9 +1,12 @@
+import { AnnotationRectangleData } from 'model/viewer/export/annotationRectangleData';
+import { OffsetAnnotationRectangleData } from 'model/viewer/export/offsetAnnotationRectangleData';
 import OpenSeadragon, { Point } from 'openseadragon';
 import {
   Annotation,
   AnnotationData,
   AnnotationLine,
   AnnotationPoint,
+  AnnotationRectangle,
   ANNOTATION_TYPE,
   isSolution,
   isUserSolution,
@@ -13,6 +16,7 @@ import {
   OffsetAnnotationPointData,
   OffsetAnnotationPolygon,
   OffsetAnnotationPolygonData,
+  OffsetAnnotationRectangle,
   Task,
   UserSolution,
   UserSolutionCreate
@@ -250,6 +254,13 @@ export class TaskSaver {
         elem.coord.image.push({ x: imagePoint.x, y: imagePoint.y });
       }
 
+      if (annotation instanceof AnnotationRectangle) {
+        const rectangle = annotation as AnnotationRectangle;
+        const data = elem as AnnotationRectangleData;
+        data.width = rectangle.width;
+        data.height = rectangle.height;
+      }
+
       if (annotation instanceof OffsetAnnotationLine) {
         const data = elem as OffsetAnnotationLineData;
         const offsetLine = annotation as OffsetAnnotationLine;
@@ -261,8 +272,8 @@ export class TaskSaver {
         data.changedManual = offsetLine.changedManual;
       }
 
-      if (annotation instanceof OffsetAnnotationPolygon) {
-        const data = elem as OffsetAnnotationPolygonData;
+      if (annotation instanceof OffsetAnnotationPolygon || annotation instanceof OffsetAnnotationRectangle) {
+        let data = elem as OffsetAnnotationPolygonData;
         const offsetPolygon = annotation as OffsetAnnotationPolygon;
 
         data.innerPoints = { image: [] };
@@ -273,8 +284,16 @@ export class TaskSaver {
         data.innerOffset = offsetPolygon.inflationInnerOffset;
         data.outerOffset = offsetPolygon.inflationOuterOffset;
         data.changedManual = offsetPolygon.changedManual;
+
+        if (annotation instanceof OffsetAnnotationRectangle) {
+          const newData = data as OffsetAnnotationRectangleData;
+          newData.width = annotation.width;
+          newData.height = annotation.height;
+        }
       }
     }
+
+    console.log(elem);
 
     return elem;
   }
@@ -292,60 +311,7 @@ export class TaskSaver {
     const result: AnnotationData[] = [];
 
     for (const polygon of annotations) {
-      const elem: AnnotationData = {
-        id: polygon.id,
-        type: polygon.type,
-        color: polygon.color,
-        coord: {
-          image: []
-        },
-        name: polygon.name
-      };
-
-      if (polygon instanceof AnnotationPoint) {
-        const point = polygon as AnnotationPoint;
-        const imagePoint = viewportToImage(point.vertex!, viewer);
-        elem.coord.image.push(imagePoint);
-        if (polygon instanceof OffsetAnnotationPoint) {
-          const centerPoint = point.vertex;
-          const borderPoint = new Point(centerPoint!.x + polygon.offsetRadius, centerPoint!.y);
-          const imageBorderpoint = viewportToImage(borderPoint, viewer);
-          const radius = imagePoint.distanceTo(imageBorderpoint);
-
-          (elem as OffsetAnnotationPointData).offsetImageRadius = radius;
-          (elem as OffsetAnnotationPointData).offsetRadius = polygon.offsetRadius;
-        }
-      } else {
-        for (const vertice of (polygon as AnnotationLine).vertice) {
-          const imagePoint = viewportToImage(vertice.viewport, viewer);
-          elem.coord.image.push({ x: imagePoint.x, y: imagePoint.y });
-        }
-
-        if (polygon instanceof OffsetAnnotationLine) {
-          const data = elem as OffsetAnnotationLineData;
-          const offsetLine = polygon as OffsetAnnotationLine;
-          data.outerPoints = { image: [] };
-          data.offsetRadius = offsetLine.offsetRadius;
-
-          data.outerPoints.image = offsetLine.outerPoints.map((point) => viewportToImage(point, viewer));
-          data.changedManual = offsetLine.changedManual;
-        }
-
-        if (polygon instanceof OffsetAnnotationPolygon) {
-          const data = elem as OffsetAnnotationPolygonData;
-          const offsetPolygon = polygon as OffsetAnnotationPolygon;
-
-          data.innerPoints = { image: [] };
-          data.innerPoints.image = offsetPolygon.innerPolygon.map((point) => viewportToImage(point, viewer));
-
-          data.outerPoints = { image: [] };
-          data.outerPoints.image = offsetPolygon.outerPolygon.map((point) => viewportToImage(point, viewer));
-          data.innerOffset = offsetPolygon.inflationInnerOffset;
-          data.outerOffset = offsetPolygon.inflationOuterOffset;
-          data.changedManual = offsetPolygon.changedManual;
-        }
-      }
-      result.push(elem);
+      result.push(this.serializeAnnotation(polygon, viewer));
     }
     return JSON.stringify(result);
   }

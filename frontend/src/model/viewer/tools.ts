@@ -94,7 +94,9 @@ export const isDrawingTool = (tool: Tool) => {
     tool === Tool.USER_SOLUTION_DRAWING ||
     tool === Tool.BASE_DRAWING ||
     tool === Tool.LINE_SOLUTION ||
-    tool === Tool.LINE_USER_SOLUTION
+    tool === Tool.LINE_USER_SOLUTION ||
+    tool === Tool.RECT_USER_SOLUTION ||
+    tool === Tool.RECT_SOLUTION
   );
 };
 

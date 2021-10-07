@@ -117,7 +117,7 @@ export default defineComponent({
         if (group) {
           selectedPolygon.value?.updateAnnotationClass(group.name, group.color);
         }
-        updateSelectedAnnotation(selectedPolygon.value);
+        updateSelectedAnnotation();
       }
     );
 
@@ -132,6 +132,8 @@ export default defineComponent({
 
         if (viewerLoadingState.tilesLoaded) {
           if (newVal?.user_solution?.solution_data) {
+            console.log(newVal?.user_solution?.solution_data);
+
             drawingViewer.value?.addAnnotations(newVal?.user_solution?.solution_data);
           }
 
@@ -188,7 +190,7 @@ export default defineComponent({
       () => polygonChanged.changed,
       async (newVal, oldVal) => {
         if (newVal) {
-          await updateSelectedAnnotation(polygonChanged.polygon as Annotation);
+          await updateSelectedAnnotation();
           emit('userAnnotationChanged');
         }
       }
@@ -262,6 +264,7 @@ export default defineComponent({
         tool = Tool.LINE_USER_SOLUTION;
       } else {
         tool = Tool.USER_SOLUTION_DRAWING;
+        toolbarTools.value.push(Tool.RECT_USER_SOLUTION);
       }
 
       if (!toolbarTools.value.includes(tool)) {
@@ -386,7 +389,7 @@ export default defineComponent({
       } else if (currentTool.value === Tool.DELETE_ANNOTATION) {
         select('#' + SVG_ID)
           .select('#userSolution')
-          .selectAll('polyline, circle')
+          .selectAll('polyline, circle, rect')
           .on('click', async function () {
             const selectionId = select(this).attr('id');
             select(this).remove();
@@ -394,21 +397,23 @@ export default defineComponent({
             await drawingViewer.value?.deleteAnnotationByID(props.task!, selectionId);
           });
       } else if (currentTool.value === Tool.SELECT) {
-        if (event.quick) {
-          TooltipGenerator.destoyAll();
+        if (!userSolutionLocked.value) {
+          if (event.quick) {
+            TooltipGenerator.destoyAll();
 
-          select('#' + SVG_ID)
-            .select('#userSolution')
-            .selectAll('polyline, circle')
-            .on('click', function () {
-              const selectionId = select(this).attr('id');
-              selectedPolygon.value = drawingViewer.value?.selectAnnotation(selectionId);
-              selectedPolygonData.name = selectedPolygon.value?.name;
-            });
+            select('#' + SVG_ID)
+              .select('#userSolution')
+              .selectAll('polyline, circle, rect')
+              .on('click', function () {
+                const selectionId = select(this).attr('id');
+                selectedPolygon.value = drawingViewer.value?.selectAnnotation(selectionId);
+                selectedPolygonData.name = selectedPolygon.value?.name;
+              });
+          }
+        } else {
+          TooltipGenerator.destoyAll();
+          drawingViewer.value?.removeListener();
         }
-      } else {
-        TooltipGenerator.destoyAll();
-        drawingViewer.value?.removeListener();
       }
     };
 

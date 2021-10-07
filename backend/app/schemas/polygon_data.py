@@ -33,6 +33,19 @@ class AnnotationData(BaseModel):
     name: Optional[str]
 
 
+class RectangleData(AnnotationData):
+    width: float
+    height: float
+
+
+class OffsetRectangleData(RectangleData):
+    outerPoints: AnnotationCoord
+    innerPoints: AnnotationCoord
+    outerOffset: float
+    innerOffset: float
+    changedManual: bool
+
+
 class OffsetPolygonData(AnnotationData):
     outerPoints: AnnotationCoord
     innerPoints: AnnotationCoord

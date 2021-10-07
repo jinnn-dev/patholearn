@@ -1,4 +1,6 @@
 import { select } from 'd3-selection';
+import { AnnotationRectangleData } from 'model/viewer/export/annotationRectangleData';
+import { OffsetAnnotationRectangleData } from 'model/viewer/export/offsetAnnotationRectangleData';
 import { Point } from 'openseadragon';
 import {
   Annotation,
@@ -6,6 +8,7 @@ import {
   AnnotationLine,
   AnnotationPoint,
   AnnotationPolygon,
+  AnnotationRectangle,
   ANNOTATION_COLOR,
   ANNOTATION_TYPE,
   isSolution,
@@ -16,6 +19,7 @@ import {
   OffsetAnnotationPointData,
   OffsetAnnotationPolygon,
   OffsetAnnotationPolygonData,
+  OffsetAnnotationRectangle,
   PointData
 } from '../../../model';
 import {
@@ -180,6 +184,18 @@ export class AnnotationManager {
         });
 
         break;
+
+      case ANNOTATION_TYPE.SOLUTION_RECT:
+        generatedAnnotation = this._createOffsetAnnotationRectangle({
+          data: data,
+          radius: radius,
+          strokeWidth: strokeWidth,
+          fillColor: fillColor,
+          strokeColor: strokeColor,
+          scale: scale
+        });
+        break;
+
       case ANNOTATION_TYPE.SOLUTION_POINT:
         generatedAnnotation = this._createOffsetAnnotationPoint({
           data: data,
@@ -208,6 +224,16 @@ export class AnnotationManager {
           radius: radius,
           strokeWidth: strokeWidth,
           strokeColor: strokeColor
+        });
+        break;
+
+      case ANNOTATION_TYPE.USER_SOLUTION_RECT:
+        generatedAnnotation = this._createAnnotationRectangle({
+          data: data,
+          radius: radius,
+          strokeWidth: strokeWidth,
+          strokeColor: strokeColor,
+          fillColor: fillColor
         });
         break;
       default:
@@ -434,6 +460,37 @@ export class AnnotationManager {
     return annotationPolygon;
   }
 
+  _createAnnotationRectangle({
+    data,
+    radius,
+    strokeWidth,
+    fillColor,
+    strokeColor
+  }: {
+    data: AnnotationData;
+    radius: number;
+    strokeWidth: number;
+    fillColor: string;
+    strokeColor: string;
+  }): AnnotationRectangle {
+    const points: Point[] = this._convertToPoints(data.coord.viewport || []);
+
+    let annotationRectangle = new AnnotationRectangle(
+      this.getNode(data.type),
+      data.type,
+      fillColor,
+      strokeColor,
+      data.id
+    );
+
+    annotationRectangle.width = (data as AnnotationRectangleData).width;
+    annotationRectangle.height = (data as AnnotationRectangleData).height;
+
+    annotationRectangle.addClosedRectangle(points, radius, strokeWidth);
+
+    return annotationRectangle;
+  }
+
   _createOffsetAnnotationPoint({
     data,
     strokeWidth,
@@ -483,6 +540,52 @@ export class AnnotationManager {
     offsetAnnotationLine.addClosedOffsetLine(points, outerPoints, offsetAnnotationLineData.offsetRadius, scale);
 
     return offsetAnnotationLine;
+  }
+
+  _createOffsetAnnotationRectangle({
+    data,
+    radius,
+    strokeWidth,
+    fillColor,
+    strokeColor,
+    scale
+  }: {
+    data: AnnotationData;
+    radius: number;
+    strokeWidth: number;
+    fillColor: string;
+    strokeColor: string;
+    scale: number;
+  }): OffsetAnnotationRectangle {
+    const points: Point[] = this._convertToPoints(data.coord.viewport || []);
+
+    const offsetRectangleData: OffsetAnnotationRectangleData = data as OffsetAnnotationRectangleData;
+
+    let offsetRectangle = new OffsetAnnotationRectangle(
+      this.getNode(data.type),
+      data.type,
+      fillColor,
+      strokeColor,
+      offsetRectangleData.outerOffset,
+      offsetRectangleData.innerOffset,
+      data.id,
+      offsetRectangleData.changedManual
+    );
+
+    offsetRectangle.name = offsetRectangleData.name;
+    offsetRectangle.width = offsetRectangleData.width;
+    offsetRectangle.height = offsetRectangleData.height;
+
+    offsetRectangle = this._createRectangleOffset({
+      offsetRectangleAnnotation: offsetRectangle,
+      points: points,
+      data: offsetRectangleData,
+      radius: radius,
+      strokeWidth: strokeWidth,
+      scale: scale
+    });
+
+    return offsetRectangle;
   }
 
   _createOffsetAnnotationPolygon({
@@ -556,6 +659,37 @@ export class AnnotationManager {
     }
 
     return offsetPolygonAnnotation;
+  }
+
+  _createRectangleOffset({
+    offsetRectangleAnnotation,
+    points,
+    data,
+    radius,
+    strokeWidth,
+    scale
+  }: {
+    offsetRectangleAnnotation: OffsetAnnotationRectangle;
+    points: Point[];
+    data: OffsetAnnotationRectangleData;
+    radius: number;
+    strokeWidth: number;
+    scale: number;
+  }): OffsetAnnotationRectangle {
+    if (data.innerPoints && data.outerPoints) {
+      const innerPoints = data.innerPoints.viewport!.map((point) => new Point(point.x, point.y));
+      const outerPoints = data.outerPoints.viewport!.map((point) => new Point(point.x, point.y));
+      offsetRectangleAnnotation.addClosedOffsetRectangle(points, outerPoints, innerPoints, scale);
+    } else {
+      offsetRectangleAnnotation.addClosedRectangle(points, radius, strokeWidth);
+      offsetRectangleAnnotation.inflationInnerOffset =
+        (POLYGON_INFLATE_OFFSET / scale) * (ANNOTATION_OFFSET_SCALAR / 10);
+      offsetRectangleAnnotation.inflationOuterOffset =
+        (POLYGON_INFLATE_OFFSET / scale) * (ANNOTATION_OFFSET_SCALAR / 10);
+      offsetRectangleAnnotation.createInflation(scale);
+    }
+
+    return offsetRectangleAnnotation;
   }
 
   get backgroundAnnotations() {

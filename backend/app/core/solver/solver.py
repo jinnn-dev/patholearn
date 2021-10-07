@@ -1,13 +1,15 @@
-from typing import List
-
-from pydantic import parse_obj_as
+from typing import List, Union
 
 from app.core.solver.annotation_analysis import AnnotationAnalysis
 from app.core.solver.feeback_generator import FeedbackGenerator
-from app.schemas.polygon_data import AnnotationData, OffsetPolygonData, AnnotationType, OffsetPointData, OffsetLineData
+from app.schemas.polygon_data import (AnnotationData, AnnotationType,
+                                      OffsetLineData, OffsetPointData,
+                                      OffsetPolygonData, OffsetRectangleData,
+                                      RectangleData)
 from app.schemas.task import Task, TaskFeedback, TaskStatus
 from app.utils.colored_printer import ColoredPrinter
 from app.utils.timer import Timer
+from pydantic import parse_obj_as
 
 
 class Solver:
@@ -43,7 +45,7 @@ class Solver:
             task_result.response_text = f"Es {'fehlt noch eine ' if annotation_diff == 1 else f'fehlen noch {annotation_diff}'} " \
                                         f"{'Annotation' if annotation_diff == 1 else 'Annotationen'}!"
 
-        parsed_user_solution = parse_obj_as(List[AnnotationData], user_solution)
+        parsed_user_solution = parse_obj_as(List[Union[RectangleData, AnnotationData]], user_solution)
 
         if task_annotation_type == AnnotationType.SOLUTION_POINT:
             parsed_task_solution = parse_obj_as(List[OffsetPointData], task_solution)
@@ -65,7 +67,7 @@ class Solver:
                                                                    knowledge_level=task.knowledge_level)
 
         if task_annotation_type == AnnotationType.SOLUTION:
-            parsed_task_solution = parse_obj_as(List[OffsetPolygonData], task_solution)
+            parsed_task_solution = parse_obj_as(List[Union[OffsetRectangleData, OffsetPolygonData]], task_solution)
             solve_result = AnnotationAnalysis.check_polygon_in_polygon(user_annotation_data=parsed_user_solution,
                                                                        solution_annotation_data=parsed_task_solution)
             task_result = FeedbackGenerator.generate_polygon_feedback(solve_result=solve_result,

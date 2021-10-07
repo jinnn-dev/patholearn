@@ -1,4 +1,5 @@
 <template>
+  dwadwad
   <div class="flex justify-between items-center mb-2" v-if="!creatorOpen">
     <div v-if="task && task.hints.length === 0" class="text-xl">Keine Tipps vorhanden</div>
 
@@ -29,7 +30,9 @@
 <script lang="ts">
 import { Task } from '../../../model/task';
 import { defineComponent, PropType, ref, computed } from 'vue';
-import { TaskHint } from 'model/taskHint';
+import { TaskHint } from '../../../model/taskHint';
+import { TaskService } from '../../../services/task.service';
+import { getTaskHints, store } from '../../../utils/hint.store';
 
 export default defineComponent({
   props: {
@@ -43,11 +46,13 @@ export default defineComponent({
     }
   },
   setup(props) {
+    console.log('taskId', props.task.id);
+    getTaskHints(props.task.id);
     const creatorOpen = ref(false);
     const selectedHint = ref();
 
     const sortedHints = computed(() => {
-      return props.task.hints.sort((a, b) => {
+      return store.hints.sort((a: any, b: any) => {
         return a.needed_mistakes - b.needed_mistakes;
       });
     });
@@ -63,7 +68,7 @@ export default defineComponent({
     }
 
     function updateList(updatedHint: TaskHint) {
-      props.task.hints.forEach((hint) => {
+      store.hints.forEach((hint) => {
         if (hint.id == updatedHint.id) {
           hint.content = updatedHint.content;
           hint.hint_type = updatedHint.hint_type;
@@ -75,11 +80,11 @@ export default defineComponent({
     }
 
     function deleteHint(hintId: number) {
-      props.task.hints = props.task.hints.filter((hint) => hint.id != hintId);
+      store.hints = store.hints.filter((hint) => hint.id != hintId);
     }
 
     function addHint(hint: TaskHint) {
-      props.task.hints.push(hint);
+      store.hints.push(hint);
     }
 
     return {

@@ -1,16 +1,9 @@
-import io
 import json
-import pathlib
+import os
 import uuid
 from typing import Any, Dict, List, Union
 
-import os
 import pyvips
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.datastructures import UploadFile
-from fastapi.params import File
-from sqlalchemy.orm import Session
-
 from app.api.deps import (check_if_user_can_access_course,
                           check_if_user_can_access_task,
                           get_current_active_superuser,
@@ -29,16 +22,20 @@ from app.schemas.base_task import (BaseTask, BaseTaskCreate, BaseTaskDetail,
 from app.schemas.hint_image import HintImageCreate
 from app.schemas.polygon_data import (AnnotationData, AnnotationType,
                                       OffsetLineData, OffsetPointData,
-                                      OffsetPolygonData)
+                                      OffsetPolygonData, OffsetRectangleData,
+                                      RectangleData)
 from app.schemas.task import (AnnotationGroup, AnnotationGroupUpdate, Task,
                               TaskCreate, TaskFeedback, TaskStatus, TaskUpdate)
-from app.schemas.task_hint import (TaskHint, TaskHintCreate,
-                                   TaskHintUpdate)
+from app.schemas.task_hint import TaskHint, TaskHintCreate, TaskHintUpdate
 from app.schemas.user_solution import (UserSolution, UserSolutionCreate,
                                        UserSolutionUpdate)
 from app.utils.colored_printer import ColoredPrinter
 from app.utils.minio_client import minio_client
 from app.utils.timer import Timer
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.datastructures import UploadFile
+from fastapi.params import File
+from sqlalchemy.orm import Session
 
 router = APIRouter()
 
@@ -223,7 +220,8 @@ def delete_task_annotations(*, db: Session = Depends(get_db), task_id: int,
 
 @router.post('/task/{task_id}/annotations', response_model=Any)
 def add_task_annotation(*, db: Session = Depends(get_db), task_id: int,
-                        annotation: Union[OffsetPolygonData, OffsetLineData, OffsetPointData, AnnotationData],
+                        annotation: Union[
+                            OffsetRectangleData, OffsetPolygonData, OffsetLineData, OffsetPointData, AnnotationData],
                         current_user: User = Depends(get_current_active_superuser)) -> Any:
     task = crud_task.get(db, id=task_id)
 
@@ -248,7 +246,8 @@ def add_task_annotation(*, db: Session = Depends(get_db), task_id: int,
 
 @router.put('/task/{task_id}/{annotation_id}', response_model=Any)
 def update_task_annotation(*, db: Session = Depends(get_db), task_id: int, annotation_id: str,
-                           annotation: Union[OffsetPolygonData, OffsetLineData, OffsetPointData, AnnotationData],
+                           annotation: Union[
+                               OffsetRectangleData, OffsetPolygonData, OffsetLineData, OffsetPointData, AnnotationData],
                            current_user: User = Depends(get_current_active_superuser)) -> Any:
     task = crud_task.get(db, id=task_id)
 
@@ -359,7 +358,7 @@ def update_user_solution(*, db: Session = Depends(get_db), task_id: int, user_so
 @router.post('/task/{task_id}/userSolution', response_model=Any)
 def add_user_solution_annotation(*, db: Session = Depends(get_db), task_id: int,
                                  current_user: User = Depends(get_current_active_user),
-                                 annotation_data: AnnotationData) -> Any:
+                                 annotation_data: Union[RectangleData, AnnotationData]) -> Any:
     user_solution = crud_user_solution.get_solution_to_task_and_user(db, task_id=task_id, user_id=current_user.id)
     data = user_solution.solution_data
     data.append(annotation_data)
@@ -386,7 +385,7 @@ def delete_user_solution_annotation(*, db: Session = Depends(get_db), task_id: i
 
 @router.put('/task/{task_id}/userSolution/{annotation_id}', response_model=Any)
 def update_user_solution_annotation(*, db: Session = Depends(get_db), task_id: int, annotation_id: str,
-                                    annotation: AnnotationData,
+                                    annotation: Union[RectangleData, AnnotationData],
                                     current_user: User = Depends(get_current_active_user)) -> Any:
     timer = Timer()
     timer.start()
@@ -482,7 +481,7 @@ def update_task_hint(*, db: Session = Depends(get_db), task_id: int, hint_id: in
 
         for new_image_name in new_images_names:
             obj.images.append(
-                        crud_hint_image.create(db, obj_in=HintImageCreate(task_hint_id=hint_id, image_name=new_image_name)))
+                crud_hint_image.create(db, obj_in=HintImageCreate(task_hint_id=hint_id, image_name=new_image_name)))
 
         result_images = []
 
@@ -525,5 +524,15 @@ def upload_task_hint_image(*, db: Session = Depends(get_db), hint_id: int,
 
 
 @router.delete('/hint/{hint_id}', response_model=TaskHint)
-def remove_task_hint(*, db: Session = Depends(get_db), hint_id: int, current_user: User = Depends(get_current_active_superuser)):
+def remove_task_hint(*, db: Session = Depends(get_db), hint_id: int,
+                     current_user: User = Depends(get_current_active_superuser)):
     return crud_task_hint.remove(db, model_id=hint_id)
+
+
+@router.get("/hints/{task_id}", response_model=List[TaskHint])
+def get_task_hints(*, db: Session = Depends(get_db), task_id: int, current_user: User = Depends(get_current_active_user)):
+    
+    mistakes = 5
+    hints = crud_task_hint.get_hints_by_task(db, task_id=task_id, mistakes=mistakes)
+    return hints
+    

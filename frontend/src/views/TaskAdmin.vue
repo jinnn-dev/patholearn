@@ -2,7 +2,6 @@
   <viewer-loading
     :show="!viewerLoadingState.dataLoaded || !viewerLoadingState.tilesLoaded || !viewerLoadingState.annotationsLoaded"
   ></viewer-loading>
-
   <div v-if="viewerLoadingState.dataLoaded">
     <viewer-back-button :routeName="`/group/${baseTask?.task_group_short_name}/admin`"></viewer-back-button>
 
@@ -10,7 +9,7 @@
 
     <task-container :baseTask="baseTask" :isOwner="true" @taskSelected="selectTask($event)"></task-container>
 
-    <hint-overlay :hints="selectedTask?.hints" />
+    <hint-overlay :taskId="selectedTask?.id" />
 
     <task-viewer-admin
       :slide_name="baseTask?.slide_id"

@@ -114,6 +114,7 @@ import {
   ANNOTATION_TYPE,
   isDrawingTool,
   isSolution,
+  OffsetAnnotationRectangle,
   Task,
   Tool,
   TOOL_POLYGON
@@ -185,7 +186,11 @@ export default defineComponent({
 
     const isOffsetAnnotationLine = computed(() => selectedPolygon.value instanceof OffsetAnnotationLine);
 
-    const isOffsetAnnotationPolygon = computed(() => selectedPolygon.value instanceof OffsetAnnotationPolygon);
+    const isOffsetAnnotationPolygon = computed(
+      () =>
+        selectedPolygon.value instanceof OffsetAnnotationPolygon ||
+        selectedPolygon.value instanceof OffsetAnnotationRectangle
+    );
 
     const isAnnotationChangedManually = computed(() => {
       if (isOffsetAnnotationLine.value || isOffsetAnnotationPolygon.value) {
@@ -350,23 +355,9 @@ export default defineComponent({
     });
 
     const setToolbarTools = () => {
-      const tools = [
-        Tool.MOVE,
-        Tool.SELECT,
-        Tool.DELETE,
-        Tool.DELETE_ANNOTATION,
-        Tool.BASE_DRAWING,
-        Tool.RECT_SOLUTION
-      ];
+      const tools = [Tool.MOVE, Tool.SELECT, Tool.DELETE, Tool.DELETE_ANNOTATION, Tool.BASE_DRAWING];
       if (toolbarTools.value.length === 0) {
-        toolbarTools.value = [
-          Tool.MOVE,
-          Tool.SELECT,
-          Tool.DELETE,
-          Tool.DELETE_ANNOTATION,
-          Tool.BASE_DRAWING,
-          Tool.RECT_SOLUTION
-        ];
+        toolbarTools.value = [Tool.MOVE, Tool.SELECT, Tool.DELETE, Tool.DELETE_ANNOTATION, Tool.BASE_DRAWING];
       }
 
       toolbarTools.value = toolbarTools.value.slice(0, tools.length);
@@ -379,6 +370,7 @@ export default defineComponent({
         tool = Tool.LINE_SOLUTION;
       } else {
         tool = Tool.SOLUTION_DRAWING;
+        toolbarTools.value.push(Tool.RECT_SOLUTION);
       }
 
       if (!toolbarTools.value.includes(tool)) {
@@ -529,7 +521,7 @@ export default defineComponent({
         if (event.quick) {
           select('#' + SVG_ID)
             .selectAll('*')
-            .selectAll('polyline, path, circle')
+            .selectAll('polyline, path, circle, rect')
             .on('click', async function () {
               const selectionId = select(this).attr('id');
               select(this).remove();
@@ -542,7 +534,7 @@ export default defineComponent({
         if (event.quick) {
           select('#' + SVG_ID)
             .selectAll('*')
-            .selectAll('polyline, path, circle')
+            .selectAll('polyline, path, circle, rect')
             .on('click', function () {
               const selectionId = select(this).attr('id');
 
@@ -560,7 +552,10 @@ export default defineComponent({
               selectedPolygonData.color = selectedPolygon.value!.color;
               selectedPolygonData.name = selectedPolygon.value!.name;
 
-              if (selectedPolygon.value instanceof OffsetAnnotationPolygon) {
+              if (
+                selectedPolygon.value instanceof OffsetAnnotationPolygon ||
+                selectedPolygon.value instanceof OffsetAnnotationRectangle
+              ) {
                 const annotation = selectedPolygon.value as OffsetAnnotationPolygon;
 
                 const newInnerOffset =
