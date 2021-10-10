@@ -148,14 +148,9 @@ class AnnotationAnalysis:
 
                 p2 = Point(x=p1.x + (p4.x - p1.x), y=p1.y)
                 p3 = Point(x=p1.x, y=p1.y + (p4.y - p1.y))
-                print(p1, p2, p3, p4)
-                user_polygon = LinearRing([p.x, p.y] for p in [p1, p3, p4, p2])
-                print(explain_validity(user_polygon))
+                user_polygon = LinearRing([p.x, p.y] for p in [p1, p3, p4, p2, p1])
             else:
-                user_polygon = Polygon([p.x, p.y] for p in user_annotation.coord.image)
-
-            print(user_polygon)
-            print(user_polygon.is_valid)
+                user_polygon = LinearRing([p.x, p.y] for p in user_annotation.coord.image)
 
             if not user_polygon.is_valid:
                 invalid_ids.append(user_annotation.id)
@@ -182,30 +177,46 @@ class AnnotationAnalysis:
 
                 try:
                     hole_difference = user_polygon.difference(polygon_hole)
+                    print(isinstance(hole_difference, LineString))
                     lines_outside = []
-
                     if not hole_difference.is_empty:
                         if isinstance(hole_difference, LineString):
                             lines_outside.append(list(hole_difference.coords))
+
+                        elif isinstance(hole_difference, Polygon):
+                             lines_outside.append(list(hole_difference.exterior.coords))
                         else:
                             for line in hole_difference:
                                 lines_outside.append(list(line.coords))
                     
-                    p1 = solution_annotation.coord.image[0] 
-                    p4 = solution_annotation.coord.image[1]
+                    solution_area = 1
 
-                    p2 = Point(x=p1.x + (p4.x - p1.x), y=p1.y)
-                    p3 = Point(x=p1.x, y=p1.y + (p4.y - p1.y))
-                    
-                    solution_polygon_ring = Polygon([p.x, p.y] for p in [p1, p2, p3, p4])
-                    print(solution_polygon_ring.area)
+                    if solution_annotation.type == AnnotationType.SOLUTION_RECT:
+                        p1 = solution_annotation.coord.image[0] 
+                        p4 = solution_annotation.coord.image[1]
+
+                        p2 = Point(x=p1.x + (p4.x - p1.x), y=p1.y)
+                        p3 = Point(x=p1.x, y=p1.y + (p4.y - p1.y))
+                        
+                        solution_polygon = Polygon([p.x, p.y] for p in [p1, p2, p3, p4, p1])
+                        
+                        solution_polygon = solution_polygon.buffer(0)
+                        solution_area = solution_polygon.area
+
+                    else: 
+                        solution_area  = Polygon([p.x, p.y] for p in solution_annotation.coord.image).area
+
+                    if solution_area == 0:
+                        solution_area = 1
+
+
                     annotation_result = PolygonResult(
                         id=user_annotation.id,
                         name_matches=False,
                         percentage_outside=0.0,
                         intersections=0,
                         percentage_length_difference=percentage_length_difference,
-                        percentage_area_difference=user_polygon.area,
+                        percentage_area_difference=user_polygon.area / solution_area,
                         lines_outside=lines_outside
                     )
 
@@ -217,7 +228,7 @@ class AnnotationAnalysis:
                         correct_polygon_ids[solution_annotation.id].append(annotation_result)
                     if not hole_difference.is_empty and not hole_difference.equals(user_polygon):
                         annotation_result.percentage_outside = hole_difference.length / user_polygon.length
-                        if isinstance(hole_difference, LineString):
+                        if isinstance(hole_difference, LineString) or isinstance(hole_difference, Polygon):
                             annotation_result.intersections = 1
                         else:
                             annotation_result.intersections = len(hole_difference)

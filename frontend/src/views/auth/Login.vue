@@ -1,6 +1,5 @@
 <template>
   <div class="w-full min-h-screen flex items-center flex-col justify-center">
-    <!-- <div class="text-7xl font-bold text-white my-20">PATHOLEARN</div> -->
     <div class="bg-gray-700 rounded-xl p-4 shadow-md w-96 z-[2]">
       <div class="text-4xl font-semibold text-center">Login</div>
       <form @submit.prevent="onSubmit" class="w-full">

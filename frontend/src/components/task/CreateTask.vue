@@ -108,13 +108,13 @@
               </div>
             </div>
           </div>
-          <div class="flex justify-end">
+          <!-- <div class="flex justify-end">
             <save-button name="Speichern" type="submit" class="w-36" :loading="taskCreationLoading"></save-button>
-          </div>
+          </div> -->
         </AccordionItem>
-        <AccordionItem title="Tipps (optional)">
+        <!-- <AccordionItem title="Tipps (optional)">
           <HintList :task="createdTask" />
-        </AccordionItem>
+        </AccordionItem> -->
       </Accordion>
       <div class="flex justify-end w-full">
         <primary-button
@@ -223,7 +223,7 @@ export default defineComponent({
           emit('taskCreated', res);
           taskCreationLoading.value = false;
           createdTask.value = res;
-          // emit('close');
+          emit('close');
           // Object.assign(taskCreationForm, initialState);
         });
       }

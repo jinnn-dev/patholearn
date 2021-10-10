@@ -60,7 +60,7 @@
         <input-field
           v-model="formData.name"
           label="Kursname"
-          placeholder="Pathologie"
+          placeholder="Kursname"
           type="text"
           tip="Gebe dem Kurs einen eindeutigen Namen."
           :required="true"

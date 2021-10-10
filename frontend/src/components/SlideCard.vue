@@ -46,10 +46,10 @@
 
       <div class="h-full w-full flex items-center justify-center">
         <div v-if="slide.status === SLIDE_STATUS.ERROR">
-          <Icon name="smiley-sad" class="text-gray-500 opacity-80" :width="150" :height="150"/>  
+          <Icon name="smiley-sad" class="text-gray-500 opacity-80" :width="150" :height="150" />
         </div>
         <lazy-image
-        v-else
+          v-else
           :image-url="getThumbnailUrl(slide.slide_id)"
           alt="Thumbnail des Slides"
           class="max-h-full rounded-lg items-center"

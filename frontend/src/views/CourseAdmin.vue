@@ -97,7 +97,7 @@
         <input-field
           v-model="fromGroupData.name"
           label="Gruppenname"
-          placeholder="Entzündungen"
+          placeholder="Aufgabengruppe"
           tip="Gebe der Gruppe einen eindeutigen Namen"
           :errorMessage="taskGroupExists ? 'Es existiert bereits eine Gruppe mit diesem Namen' : ''"
           type="text"

@@ -171,6 +171,21 @@ export class AnnotationPolygon extends AnnotationLine {
     this.polyline?.style('fill', fillColor).attr('stroke', stroke);
   }
 
+  getSize() {
+    let total = 0;
+    for (let i = 0; i < this.vertice.length / 2; i++) {
+      var addX = this.vertice[i].viewport.x;
+      var addY = this.vertice[i == this.vertice.length - 1 ? 0 : i + 1].viewport.y;
+      var subX = this.vertice[i == this.vertice.length - 1 ? 0 : i + 1].viewport.x;
+      var subY = this.vertice[i].viewport.y;
+
+      total += addX * addY * 0.5;
+      total -= subX * subY * 0.5;
+    }
+
+    return Math.abs(total);
+  }
+
   set externalDragHandler(
     externalDragHandler: (event: OpenSeadragon.OSDEvent<any>, index: number, point: OpenSeadragon.Point) => void
   ) {

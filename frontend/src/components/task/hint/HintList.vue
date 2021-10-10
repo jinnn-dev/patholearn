@@ -1,5 +1,4 @@
 <template>
-  dwadwad
   <div class="flex justify-between items-center mb-2" v-if="!creatorOpen">
     <div v-if="task && task.hints.length === 0" class="text-xl">Keine Tipps vorhanden</div>
 

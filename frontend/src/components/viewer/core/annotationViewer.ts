@@ -346,8 +346,13 @@ export class AnnotationViewer {
     if (this._drawingAnnotation) {
       if (this._drawingAnnotation.vertice.length > 1) {
         if (this._drawingAnnotation! instanceof OffsetAnnotationLine) {
+          if (this._drawingAnnotation! instanceof OffsetAnnotationPolygon) {
+            const annotation = this._drawingAnnotation as OffsetAnnotationPolygon;
+            console.log(annotation.getSize());
+          }
           (this._drawingAnnotation as OffsetAnnotationLine).createInflation(this.scale);
         }
+
         this._drawingAnnotation!.isClosed = true;
         this._drawingAnnotation!.redrawPolyline();
         this._annotationManager.pushAnnotation(this._drawingAnnotation!);
@@ -691,7 +696,18 @@ export class AnnotationViewer {
       (this._drawingAnnotation instanceof OffsetAnnotationPolygon ||
         this._drawingAnnotation instanceof OffsetAnnotationRectangle)
     ) {
-      (this._drawingAnnotation as OffsetAnnotationPolygon).createInflation(this.scale);
+      const annotation = this._drawingAnnotation as OffsetAnnotationPolygon;
+      console.log(this.scale);
+      const offset = POLYGON_INFLATE_OFFSET * annotation.getSize();
+      console.log('offset', offset);
+      const value = (offset * ANNOTATION_OFFSET_SCALAR) / 150;
+      console.log('value', value);
+      console.log('old value', (POLYGON_INFLATE_OFFSET / this.scale) * ANNOTATION_OFFSET_SCALAR);
+
+      annotation.inflationInnerOffset = value;
+      annotation.inflationOuterOffset = value;
+
+      annotation.createInflation(this.scale);
     }
     return this._drawingAnnotation?.isClosed;
   }

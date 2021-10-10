@@ -109,7 +109,7 @@
         <input-field
           v-model="formData.name"
           label="Aufgabenname"
-          placeholder="Pathologie"
+          placeholder="Markiere alle ..."
           tip="Gebe der Aufgabe einen eindeutigen Namen"
           type="text"
           :required="true"

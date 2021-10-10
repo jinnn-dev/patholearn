@@ -337,6 +337,13 @@ export class AnnotationRectangle extends Annotation {
     this._resultPolylines = [];
   }
 
+  getSize(): number {
+    console.log('w ', this.width);
+    console.log('h ', this.height);
+
+    return this.width * this.height;
+  }
+
   get polyline(): Selection<SVGRectElement, unknown, null, undefined> | undefined {
     return this._polyline;
   }

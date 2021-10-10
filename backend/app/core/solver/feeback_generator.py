@@ -1,10 +1,10 @@
-from typing import List, Dict, Tuple, Union
+from typing import Dict, List, Tuple, Union
 
 from app.core.solver.feedback_config import FeedbackConfig
 from app.core.solver.task_result_factory import TaskResultFactory
-from app.schemas.solver_result import LineResult, PolygonResult, PointResult
-from app.schemas.task import TaskFeedback, AnnotationFeedback, TaskStatus
-from app.utils.utils import get_max_value_length
+from app.schemas.solver_result import LineResult, PointResult, PolygonResult
+from app.schemas.task import AnnotationFeedback, TaskFeedback, TaskStatus
+from app.utils.utils import get_max_value_length, print_python_dict
 
 
 class FeedbackGenerator:
@@ -143,6 +143,7 @@ class FeedbackGenerator:
 
         matched_ids, no_match_ids, invalid_ids = solve_result
 
+
         FeedbackGenerator.__generate_no_match_feedback(task_result, no_match_ids)
 
         FeedbackGenerator.__generate_invalid_feedback(task_result, invalid_ids)
@@ -179,7 +180,7 @@ class FeedbackGenerator:
                         if check_name:
                             if FeedbackGenerator.__generate_name_feedback(user_annotation=user_annotation,
                                                                           percentage=area_percentage_sum,
-                                                                          task_feedback=task_result):
+                                                                          task_feedback=task_result, knowledge_level=knowledge_level):
                                 correct_count += 1
                         else:
                             TaskResultFactory.append_result_detail(annotation_id=user_annotation.id,
@@ -232,8 +233,6 @@ class FeedbackGenerator:
 
         percentage_outside_border = FeedbackConfig.get_weighted_border(
             border=FeedbackConfig.PERCENTAGE_OUTSIDE, knowledge_level=knowledge_level, decent_value=0.02)
-
-        print(length_border, percentage_outside_border)
 
         if percentage_length_difference < length_border:
             annotation_result.status = TaskStatus.WRONG
@@ -306,7 +305,7 @@ class FeedbackGenerator:
     @staticmethod
     def __generate_name_feedback(*, user_annotation: Union[PointResult, LineResult, PolygonResult],
                                  percentage: float,
-                                 task_feedback: TaskFeedback) -> bool:
+                                 task_feedback: TaskFeedback, knowledge_level: int) -> bool:
         if user_annotation.name_matches:
             TaskResultFactory.append_result_detail(annotation_id=user_annotation.id,
                                                    status=TaskStatus.CORRECT,
@@ -366,16 +365,18 @@ class FeedbackGenerator:
         for user_solution_id in solution_ids_to_user_solution:
             solution_id = solution_ids_to_user_solution[user_solution_id][0][0]
             annotation = solution_ids_to_user_solution[user_solution_id][0][1]
-            best = annotation
+
+            best_annotation = annotation
             if len(solution_ids_to_user_solution[user_solution_id]) > 1:
-                best = \
+                sorted_best_key = \
                     sorted(solution_ids_to_user_solution[user_solution_id], key=lambda x: x[1].dict()[key],
-                           reverse=False)[
-                        0][1]
+                           reverse=False)
+                solution_id = sorted_best_key[0][0]
+                best_annotation = sorted_best_key[0][1]
             if solution_id in result_matched_ids:
-                result_matched_ids[solution_id].append(best)
+                result_matched_ids[solution_id].append(best_annotation)
             else:
-                result_matched_ids[solution_id] = [best]
+                result_matched_ids[solution_id] = [best_annotation]
 
         return result_matched_ids
 
