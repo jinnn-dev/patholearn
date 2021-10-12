@@ -8,8 +8,6 @@ const directories = fs
   .filter((dirent) => dirent.isDirectory())
   .map((dirent) => dirent.name);
 
-// console.log(directories);
-
 const icons = [];
 
 directories.forEach((dir) => {

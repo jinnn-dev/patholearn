@@ -14,9 +14,8 @@
       <not-course-member v-if="!isMember" :course="course" @courseJoined="loadCourseDetails"></not-course-member>
       <div v-else>
         <div>
-          <div class="flex justify-between items-center">
-            <subheader text="Aufgabengruppen"></subheader>
-
+          <div class="flex">
+            <subheader class="w-full" text="Aufgabengruppen"></subheader>
             <danger-button
               buttonText="Kurs verlassen"
               @confirmation="leaveGroup"
@@ -24,9 +23,11 @@
               :loading="leaveCourseLoading"
               header="Möchtest du die Gruppe wirklich verlassen?"
               info="All dein Fortschritt wird gelöscht!"
+              customClasses="w-72"
             >
             </danger-button>
           </div>
+
           <div class="my-8">
             <div v-if="loading" class="flex">
               <skeleton-card

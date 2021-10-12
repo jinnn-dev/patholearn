@@ -93,7 +93,6 @@ export default defineComponent({
     watch(
       () => props.taskId,
       () => {
-        console.log('get hints');
         getTaskHints(props.taskId!);
       },
       { deep: true }

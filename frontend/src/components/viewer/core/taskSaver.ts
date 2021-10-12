@@ -293,8 +293,6 @@ export class TaskSaver {
       }
     }
 
-    console.log(elem);
-
     return elem;
   }
 

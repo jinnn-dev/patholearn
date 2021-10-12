@@ -45,7 +45,6 @@ export default defineComponent({
     }
   },
   setup(props) {
-    console.log('taskId', props.task.id);
     getTaskHints(props.task.id);
     const creatorOpen = ref(false);
     const selectedHint = ref();

@@ -287,21 +287,9 @@ export class AnnotationRectangle extends Annotation {
       this._width = x - rootX;
     }
 
-    // else {
-    //   this._vertice[0].viewport.x = x;
-    //   this._width = rootX - x;
-    // }
-
     if (y > rootY) {
       this._height = y - rootY;
     }
-
-    // else {
-    //   console.log(rootY, y);
-
-    //   this._vertice[0].viewport.y = y;
-    //   this._height = rootY - y;
-    // }
 
     this.redrawPolyline();
   }
@@ -338,9 +326,6 @@ export class AnnotationRectangle extends Annotation {
   }
 
   getSize(): number {
-    console.log('w ', this.width);
-    console.log('h ', this.height);
-
     return this.width * this.height;
   }
 

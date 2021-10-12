@@ -348,7 +348,6 @@ export class AnnotationViewer {
         if (this._drawingAnnotation! instanceof OffsetAnnotationLine) {
           if (this._drawingAnnotation! instanceof OffsetAnnotationPolygon) {
             const annotation = this._drawingAnnotation as OffsetAnnotationPolygon;
-            console.log(annotation.getSize());
           }
           (this._drawingAnnotation as OffsetAnnotationLine).createInflation(this.scale);
         }
@@ -367,12 +366,8 @@ export class AnnotationViewer {
    * @param data The serialized annotations
    */
   addAnnotations(data: AnnotationData[]): void {
-    console.log('Data', data);
-
     let dataInstance = data as OffsetAnnotationPolygonData[];
     for (const item of data) {
-      console.log('Item', item);
-
       const items: PointData[] = [];
       item.coord.image.forEach((point: PointData) => {
         let i = imageToViewport(new Point(point.x, point.y), this._viewer);

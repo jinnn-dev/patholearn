@@ -107,14 +107,12 @@ export default defineComponent({
     watch(
       () => props.task,
       () => {
-        console.log(props.task);
         taskUpdateForm.layer = props.task!.layer;
         taskUpdateForm.task_question = props.task!.task_question;
         taskUpdateForm.knowledge_level = props.task!.knowledge_level;
         taskUpdateForm.min_correct = props.task!.min_correct;
         taskUpdateForm.task_id = props.task!.id;
         taskUpdateForm.task_type = props.task!.task_type;
-        console.log('qq', taskUpdateForm);
       }
     );
 

@@ -16,6 +16,9 @@
         </router-link>
       </role-only>
       <div @click="onLogout" class="transition cursor-pointer text-gray-200 hover:text-highlight-800 mr-8">Logout</div>
+      <!-- <div @click="createError" class="transition cursor-pointer text-gray-200 hover:text-highlight-800 mr-8">
+        Error
+      </div> -->
     </div>
   </nav>
 </template>

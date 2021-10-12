@@ -132,8 +132,6 @@ export default defineComponent({
 
         if (viewerLoadingState.tilesLoaded) {
           if (newVal?.user_solution?.solution_data) {
-            console.log(newVal?.user_solution?.solution_data);
-
             drawingViewer.value?.addAnnotations(newVal?.user_solution?.solution_data);
           }
 

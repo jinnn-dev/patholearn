@@ -24,7 +24,7 @@
             justify-start
             items-center
             hover:bg-gray-500
-            bg-gray-600
+            bg-gray-500
             my-4
             p-2
             rounded-md

@@ -1,11 +1,12 @@
 <template>
   <primary-button
-    class="max-width-48"
+    class="w-auto"
     fontWeight="font-medium"
     textColor="text-red-400"
     bgColor="bg-gray-700"
     :name="buttonText"
     @click="showConfirmationDialog = true"
+    :class="customClasses"
   ></primary-button>
   <modal-dialog :show="showConfirmationDialog || show">
     <div class="relative">
@@ -36,7 +37,8 @@ export default defineComponent({
     show: {
       type: Boolean,
       default: true
-    }
+    },
+    customClasses: String
   },
 
   emits: ['confirmation'],

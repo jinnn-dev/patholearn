@@ -90,13 +90,10 @@ export default defineComponent({
       images: props.hint?.images || []
     });
 
-    console.log(props.selectedHint);
-
     async function createHint() {
       const imageNames = [];
       for await (const img of tempImages.value) {
         const name = await uploadImage(img);
-        console.log('name', name);
         imageNames.push(name.path);
       }
 

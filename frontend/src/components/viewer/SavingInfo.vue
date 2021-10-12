@@ -6,7 +6,7 @@
       justify-center
       items-center
       fixed
-      bottom-8
+      bottom-14
       left-1/2
       transform
       -translate-x-1/2

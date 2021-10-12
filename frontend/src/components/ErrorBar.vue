@@ -1,6 +1,15 @@
 <template>
   <div class="fixed z-[99] bottom-4 left-1/2 transform -translate-x-1/2">
-    <div
+    <error-notification
+      v-for="(error, index) in errorState"
+      :key="index"
+      :index="index"
+      :error="error"
+      @expired="removeItem($event)"
+    >
+    </error-notification>
+
+    <!-- <div
       v-for="(err, index) in errorState"
       :key="index"
       @click="removeItem(index)"
@@ -13,24 +22,21 @@
         <div v-if="err.err.response">{{ err.err.response.data }}</div>
       </div>
       <div></div>
-    </div>
+    </div> -->
   </div>
 </template>
+
 <script lang="ts">
-import { computed, defineComponent, watch } from 'vue';
+import { defineComponent } from 'vue';
 import { errorState } from '../services/error-handler';
 export default defineComponent({
   props: {},
   setup() {
-    const getDate = computed(() =>
-      new Date().toLocaleDateString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-    );
-
     const removeItem = (index: number) => {
       errorState.value.splice(index, 1);
     };
 
-    return { errorState, removeItem, getDate };
+    return { errorState, removeItem };
   }
 });
 </script>

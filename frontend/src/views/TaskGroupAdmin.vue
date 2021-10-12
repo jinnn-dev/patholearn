@@ -57,7 +57,7 @@
                   @click.prevent="toggleEnabledState(baseTask)"
                   type="button"
                   class="
-                    bg-gray-200
+                    bg-gray-300
                     relative
                     inline-flex
                     flex-shrink-0
@@ -73,7 +73,7 @@
                   "
                   role="switch"
                   aria-checked="false"
-                  :class="baseTask.enabled ? 'bg-green-300' : 'bg-gray-400'"
+                  :class="baseTask.enabled ? 'bg-green-500' : 'bg-gray-400'"
                 >
                   <span
                     aria-hidden="true"
@@ -83,7 +83,7 @@
                       h-5
                       w-5
                       rounded-full
-                      bg-white
+                      bg-gray-100
                       shadow
                       transform
                       ring-0
