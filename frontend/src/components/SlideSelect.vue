@@ -26,8 +26,8 @@
             transition
             justify-start
             items-center
-            hover:bg-gray-500
-            bg-gray-600
+            hover:bg-gray-400
+            bg-gray-500
             my-4
             p-2
             rounded-md
@@ -36,7 +36,7 @@
           "
           @click="selectSlide(slide)"
         >
-          <lazy-image :image-url="getThumbnailUrl(slide.slide_id)" class="w-14 rounded-md mr-4"></lazy-image>
+          <lazy-image :image-url="getThumbnailUrl(slide.slide_id)" class="w-14 rounded-sm mr-4"></lazy-image>
           <div class="w-full">{{ slide.name }}</div>
         </div>
       </div>

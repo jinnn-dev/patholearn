@@ -10,14 +10,27 @@
 
     <div
       v-if="isFocus"
-      class="absolute top-19 left-auto max-h-62 w-full bg-gray-700 rounded-lg px-2 shadow-2xl z-[99] overflow-auto"
+      class="
+        absolute
+        top-[80px]
+        left-auto
+        max-h-62
+        w-full
+        bg-gray-500
+        rounded-lg
+        px-2
+        py-2
+        shadow-md
+        z-[99]
+        overflow-auto
+      "
     >
       <div v-if="filteredData?.length === 0" class="p-2">Nichts gefunden</div>
       <div v-else class="w-full">
         <div
           v-for="value in filteredData"
           :key="isObject(value) && field ? value[field] : value"
-          class="flex transition justify-start items-center hover:bg-gray-500 bg-gray-600 cursor-pointer"
+          class="flex transition justify-start items-center hover:bg-gray-400 bg-gray-300 cursor-pointer"
           :class="MAPPED_OPTION_SIZE[displayType]"
           @click="valueSelected(value)"
         >
@@ -35,7 +48,7 @@ import { defineComponent, onMounted, PropType, ref, watch } from 'vue';
 type SELECT_OPTIONS_SIZE = 'small' | 'medium' | 'large';
 
 const MAPPED_OPTION_SIZE: Record<SELECT_OPTIONS_SIZE, string> = {
-  small: 'p-2 h-6',
+  small: 'p-2 h-6 rounded-md my-2',
   medium: 'my-4 p-2 rounded-md h-14',
   large: ''
 };

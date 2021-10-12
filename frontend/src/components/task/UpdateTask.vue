@@ -33,8 +33,8 @@
                   flex
                   justify-center
                   items-center
-                  bg-gray-600
-                  hover:bg-gray-500 hover:ring-2
+                  bg-gray-400
+                  hover:bg-gray-300 hover:ring-2
                   ring-highlight-900
                   cursor-pointer
                   rounded-lg

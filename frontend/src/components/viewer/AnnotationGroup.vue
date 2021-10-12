@@ -7,7 +7,7 @@
         <div
           v-for="group in annotationGroups"
           :key="group.name + group.color"
-          class="bg-gray-600 rounded-lg px-2 py-1 flex items-center my-2"
+          class="bg-gray-500 rounded-lg px-2 py-1 flex items-center my-2"
         >
           <div class="mr-2" :title="!isHidden(group) ? 'Klasse einblenden' : 'Klasse ausblenden'">
             <Icon name="eye" v-if="!isHidden(group)" class="cursor-pointer" @click="toggleAnnotationGroup(group)" />

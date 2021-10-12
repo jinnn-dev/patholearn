@@ -1,5 +1,5 @@
 <template>
-  <div class="transition flex items-center my-2 mx-2 p-2 bg-gray-500/80 rounded-xl hover:bg-gray-400" :title="question">
+  <div class="transition flex items-center my-2 mx-2 p-2 bg-gray-500 rounded-xl hover:bg-gray-400" :title="question">
     <div v-if="!isOwner">
       <Icon
         name="circle"

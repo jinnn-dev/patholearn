@@ -264,10 +264,12 @@ export default defineComponent({
     );
 
     const updateAnnotationColor = (color: string) => {
+      let fillColor = color + ANNOTATION_COLOR.FILL_OPACITY;
+
       if (selectedPolygon.value?.type === ANNOTATION_TYPE.BASE) {
-        color = 'none';
+        fillColor = 'none';
       }
-      selectedPolygon.value?.updateColor(color + ANNOTATION_COLOR.FILL_OPACITY, color);
+      selectedPolygon.value?.updateColor(fillColor, color);
     };
 
     const updateAnnotationPointOffsetRadius = (newRadius: number) => {
