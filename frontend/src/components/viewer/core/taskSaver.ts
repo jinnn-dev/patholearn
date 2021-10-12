@@ -81,9 +81,9 @@ export class TaskSaver {
         task.user_solution?.solution_data?.splice(index, 1);
       }
 
-      if (task.user_solution?.solution_data?.length === 0) {
-        task.user_solution.solution_data = undefined;
-      }
+      // if (task.user_solution?.solution_data?.length === 0) {
+      //   task.user_solution.solution_data = undefined;
+      // }
 
       return TaskService.deleteUserAnnotation(task.id, annotation.id);
     } else {

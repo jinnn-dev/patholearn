@@ -367,8 +367,12 @@ export class AnnotationViewer {
    * @param data The serialized annotations
    */
   addAnnotations(data: AnnotationData[]): void {
+    console.log('Data', data);
+
     let dataInstance = data as OffsetAnnotationPolygonData[];
     for (const item of data) {
+      console.log('Item', item);
+
       const items: PointData[] = [];
       item.coord.image.forEach((point: PointData) => {
         let i = imageToViewport(new Point(point.x, point.y), this._viewer);
@@ -697,12 +701,16 @@ export class AnnotationViewer {
         this._drawingAnnotation instanceof OffsetAnnotationRectangle)
     ) {
       const annotation = this._drawingAnnotation as OffsetAnnotationPolygon;
-      console.log(this.scale);
-      const offset = POLYGON_INFLATE_OFFSET * annotation.getSize();
-      console.log('offset', offset);
-      const value = (offset * ANNOTATION_OFFSET_SCALAR) / 150;
-      console.log('value', value);
-      console.log('old value', (POLYGON_INFLATE_OFFSET / this.scale) * ANNOTATION_OFFSET_SCALAR);
+
+      let size = annotation.getSize();
+
+      if (this._drawingAnnotation instanceof OffsetAnnotationRectangle) {
+        size *= 1 / (size * 2) / 100;
+      }
+
+      const offset = POLYGON_INFLATE_OFFSET * size;
+
+      const value = (offset * ANNOTATION_OFFSET_SCALAR) / 80;
 
       annotation.inflationInnerOffset = value;
       annotation.inflationOuterOffset = value;

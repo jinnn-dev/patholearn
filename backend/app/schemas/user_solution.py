@@ -10,6 +10,7 @@ class UserSolutionBase(BaseModel):
     percentage_solved: float
     solution_data: List[Union[AnnotationData]]
     task_result: Optional[TaskFeedback] = None
+    failed_attempts: Optional[int] = 0
 
 
 class UserSolutionCreate(BaseModel):

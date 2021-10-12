@@ -215,6 +215,15 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         return self.__get_amount_of_wrong_solutions(db, user_id=user_id, id_name="base_task_id",
                                                     id_value=base_task_id)
 
+    def increment_failed_attempts(self, db: Session, user_id: int, task_id: int) -> int:
+        model = self.get_solution_to_task_and_user(db, user_id=user_id, task_id=task_id)
+        new_attempts = model.failed_attempts + 1
+        model.failed_attempts = new_attempts
+        db.add(model)
+        db.commit()
+        db.refresh(model)
+        return new_attempts
+
     def __get_amount_of_wrong_solutions(self, db: Session, *, user_id: int, id_name: str, id_value: int) -> int:
         return db.query(func.count()).filter(
             self.model.user_id == user_id).filter(getattr(self.model, id_name) == id_value).filter(and_(

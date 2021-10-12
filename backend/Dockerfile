@@ -9,7 +9,7 @@ RUN pip install -r /requirements.txt
 
 
 COPY ./alembic /alembic
-
+ADD alembic.ini /
 COPY ./app /app
 ADD entry.sh /
 CMD /entry.sh

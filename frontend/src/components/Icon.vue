@@ -6,7 +6,6 @@
       :height="height"
       :viewBox.camel="viewBox"
       v-bind="$attrs"
-      @click="$emit('click')"
       v-html="icon"
       class="stroke-current fill-current"
       :stroke-width="strokeWidth"

@@ -40,12 +40,15 @@ class Solver:
         should_check_name = False if task.task_type == 0 else True
 
         if len(user_solution) < min_correct:
+
             annotation_diff = min_correct - len(user_solution)
             task_result.task_status = TaskStatus.TOO_LESS_INPUTS
             task_result.response_text = f"Es {'fehlt noch eine ' if annotation_diff == 1 else f'fehlen noch {annotation_diff}'} " \
                                         f"{'Annotation' if annotation_diff == 1 else 'Annotationen'}!"
 
         parsed_user_solution = parse_obj_as(List[Union[RectangleData, AnnotationData]], user_solution)
+
+
 
         if task_annotation_type == AnnotationType.SOLUTION_POINT:
             parsed_task_solution = parse_obj_as(List[OffsetPointData], task_solution)

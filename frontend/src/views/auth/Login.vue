@@ -1,7 +1,7 @@
 <template>
-  <img src="/logo-schrift.png" alt="logo" class="h-48 rounded-lg absolute left-1/2 transform -translate-x-1/2 top-36" />
+  <div class="w-full min-h-screen flex items-center flex-col pt-[10%]">
+    <img src="/logo-schrift.png" alt="logo" class="h-48 rounded-lg mb-12" />
 
-  <div class="w-full min-h-screen flex items-center flex-col justify-center">
     <div class="bg-gray-700 rounded-xl p-4 shadow-md w-96 z-[2]">
       <div class="text-4xl font-semibold text-center">Login</div>
       <form @submit.prevent="onSubmit" class="w-full">

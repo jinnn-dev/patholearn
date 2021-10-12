@@ -173,7 +173,7 @@ class AnnotationAnalysis:
                     polygon_hole = Polygon(solution_outer_polygon.exterior.coords,
                                            [solution_inner_polygon.exterior.coords])
 
-                percentage_length_difference = user_polygon.length / get_path_length(solution_annotation.coord.image)
+                percentage_length_difference = user_polygon.length / (get_path_length(solution_annotation.coord.image) if not 0 else 1)
 
                 try:
                     hole_difference = user_polygon.difference(polygon_hole)

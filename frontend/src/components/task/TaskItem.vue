@@ -16,8 +16,8 @@
     <div class="ml-2 w-full mx-2 break-all">{{ question }}</div>
     <role-only v-if="isOwner">
       <div class="flex">
-        <Icon name="pencil-simple" class="text-xl mx-2" @click="editTask" />
-        <Icon name="trash" class="text-red-400 text-xl" @click="deleteTask" />
+        <Icon name="pencil-simple" class="text-xl mx-2" @click.stop="editTask" />
+        <Icon name="trash" class="text-red-400 text-xl" @click.stop="deleteTask" />
       </div>
     </role-only>
   </div>

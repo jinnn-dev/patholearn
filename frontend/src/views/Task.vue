@@ -46,6 +46,7 @@ import { useRoute } from 'vue-router';
 import { BaseTask, Task, Course, TaskResult, TaskStatus } from '../model';
 import { TaskService } from '../services';
 import { showSolution, userSolutionLocked, viewerLoadingState } from '../components/viewer/core';
+import { getTaskHints } from '../utils/hint.store';
 
 const TaskViewer = defineAsyncComponent({
   loader: () => import('../components/viewer/TaskViewer.vue')
@@ -138,7 +139,7 @@ export default defineComponent({
         });
     };
 
-    const solveTask = () => {
+    const solveTask = async () => {
       if (selectedTask.value?.user_solution?.solution_data) {
         isSolving.value = true;
 
@@ -150,6 +151,8 @@ export default defineComponent({
           isSolving.value = false;
           if (res) showTaskResult.value = true;
         });
+
+        await getTaskHints(selectedTask.value.id);
       }
     };
 

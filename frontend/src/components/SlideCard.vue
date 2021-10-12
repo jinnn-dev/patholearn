@@ -34,11 +34,10 @@
             @click="showInfoDialog = true"
             bgColor="bg-gray-500"
             bgHoverColor="bg-gray-400"
-            @click.stop=""
             class="w-10 h-10"
             ><Icon name="info" :width="30" :height="30" class="text-white" />
           </primary-button>
-          <primary-button @click.stop="" class="w-10 h-10" bgColor="bg-red-600"
+          <primary-button @click.stop="$emit('delete')" class="w-10 h-10" bgColor="bg-red-600"
             ><Icon :width="30" :height="30" name="trash"
           /></primary-button>
         </div>

@@ -192,13 +192,23 @@ def update_annotation_group(*, db: Session = Depends(get_db), task_id: int,
 @router.delete('/task/{task_id}', response_model=Task)
 def delete_task(*, db: Session = Depends(get_db), task_id: int,
                 current_user: User = Depends(get_current_active_superuser)) -> Any:
-    task_to_delete = crud_task.get(db, id=task_id)
+    try:
+        task_to_delete = crud_task.get(db, id=task_id)
 
-    check_if_user_can_access_task(db, user_id=current_user.id, base_task_id=task_to_delete.base_task_id)
+        print(task_to_delete)
 
-    task = crud_task.remove(db, model_id=task_id)
+        check_if_user_can_access_task(db, user_id=current_user.id, base_task_id=task_to_delete.base_task_id)
 
-    crud_user_solution.remove_all_by_task_id(db, task_id=task_id)
+        task = crud_task.remove(db, model_id=task_id)
+
+        crud_user_solution.remove_all_by_task_id(db, task_id=task_id)
+
+    except Exception as e:
+        print(e)
+        raise HTTPException(
+            status_code=500,
+            detail="Task could not be deleted"
+        )
 
     return task
 
@@ -318,7 +328,11 @@ def save_user_solution(*, db: Session = Depends(get_db), user_solution_in: UserS
                        current_user: User = Depends(get_current_active_user)) -> Any:
     user_solution = crud_user_solution.get_solution_to_task_and_user(db, user_id=current_user.id,
                                                                      task_id=user_solution_in.task_id)
+
+    user_solution_in.user_id = current_user.id
+
     if user_solution is not None:
+        user_solution_in.solution_data = []
         crud_user_solution.update(db, db_obj=user_solution, obj_in=UserSolutionUpdate(**user_solution_in.dict()))
 
     else:
@@ -343,11 +357,11 @@ def update_user_solution(*, db: Session = Depends(get_db), task_id: int, user_so
                          current_user: User = Depends(get_current_active_user)) -> Any:
     user_solution_in.user_id = current_user.id
     user_solution_in.solution_data = json.loads(user_solution_in.solution_data)
-    if len(user_solution_in.solution_data) == 0:
-        item = crud_user_solution.remove_by_user_id_and_task_id(db, user_id=current_user.id,
-                                                                task_id=task_id)
-        item.solution_data = user_solution_in.solution_data
-        return item
+    # if len(user_solution_in.solution_data) == 0:
+    #     item = crud_user_solution.remove_by_user_id_and_task_id(db, user_id=current_user.id,
+    #                                                             task_id=task_id)
+    #     item.solution_data = user_solution_in.solution_data
+    #     return item
 
     db_obj = crud_user_solution.get_solution_to_task_and_user(db, task_id=task_id,
                                                               user_id=current_user.id)
@@ -375,10 +389,10 @@ def delete_user_solution_annotation(*, db: Session = Depends(get_db), task_id: i
     if user_solution.solution_data:
         solution_data = [d for d in solution_data if d.get("id") != annotation_id]
 
-    if len(solution_data) == 0:
-        delete_item = crud_user_solution.remove_by_user_id_and_task_id(db, user_id=current_user.id, task_id=task_id)
-        delete_item.solution_data = solution_data
-        return {"Status": "OK"}
+    # if len(solution_data) == 0:
+    #     delete_item = crud_user_solution.remove_by_user_id_and_task_id(db, user_id=current_user.id, task_id=task_id)
+    #     delete_item.solution_data = solution_data
+    #     return {"Status": "OK"}
     crud_user_solution.update(db, db_obj=user_solution, obj_in=UserSolutionUpdate(solution_data=solution_data))
     return {"Status": "OK"}
 
@@ -420,7 +434,11 @@ def solve_task(*, db: Session = Depends(get_db), task_id: int, current_user: Use
     if task_result.task_status == TaskStatus.CORRECT:
         solution_update.percentage_solved = 1.0
     else:
+        crud_user_solution.increment_failed_attempts(db, user_id=current_user.id, task_id=task_id)
         solution_update.percentage_solved = 0.0
+
+    print("INCREMENT")
+
 
     crud_user_solution.update(db, db_obj=user_solution, obj_in=solution_update)
     timer.stop()
@@ -532,7 +550,15 @@ def remove_task_hint(*, db: Session = Depends(get_db), hint_id: int,
 @router.get("/hints/{task_id}", response_model=List[TaskHint])
 def get_task_hints(*, db: Session = Depends(get_db), task_id: int, current_user: User = Depends(get_current_active_user)):
     
-    mistakes = 5
-    hints = crud_task_hint.get_hints_by_task(db, task_id=task_id, mistakes=mistakes)
-    return hints
+    failed_attempts = 99999999
+
+    user_solution = crud_user_solution.get_solution_to_task_and_user(db, task_id=task_id, user_id=current_user.id)
+
+    if not current_user.is_superuser and not user_solution:
+        failed_attempts = 0
     
+    if user_solution:
+        failed_attempts = user_solution.failed_attempts
+
+    hints = crud_task_hint.get_hints_by_task(db, task_id=task_id, mistakes=failed_attempts)
+    return hints
