@@ -20,8 +20,10 @@ export default defineComponent({
       new OpenSeadragon.TileCache({ maxImageCacheCount: 500 });
       const elements = document.getElementsByClassName('openseadragon-container');
 
-      if (elements.length === 4) {
-        elements[0].parentNode?.removeChild(elements[0]);
+      if (elements.length > 1) {
+        for (let i = 0; i < elements.length - 1; i++) {
+          elements[i].parentNode?.removeChild(elements[i]);
+        }
       }
     });
   }
