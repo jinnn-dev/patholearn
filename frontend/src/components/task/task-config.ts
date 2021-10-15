@@ -16,10 +16,10 @@ export const knowledgeLevel = [
 export const taskTypes = [
   {
     index: 0,
-    description: 'Beliebige Anzahl von Annotationen einer Annotationsklasse',
+    description: 'Erstelle Annotationen einer Annotationsklasse',
   },
   {
     index: 1,
-    description: 'Beliebige Anzahl von Annotationen verschiedener Annotationsklassen',
+    description: 'Erstelle Annotationen verschiedener Annotationsklassen',
   },
 ];
