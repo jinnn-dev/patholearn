@@ -379,7 +379,7 @@ export class AnnotationViewer {
       });
       item.coord.viewport = items;
     }
-    if (dataInstance[0]?.innerPoints) {
+    if (dataInstance[0]?.innerPoints || dataInstance[0].outerPoints) {
       for (const item of dataInstance) {
         if (item.innerPoints) {
           const innerPointData: PointData[] = [];
