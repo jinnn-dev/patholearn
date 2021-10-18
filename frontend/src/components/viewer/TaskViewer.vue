@@ -308,6 +308,10 @@ export default defineComponent({
         drawingViewer.value?.stopDrawing();
 
         if (currentTool.value === Tool.LINE_USER_SOLUTION) {
+          if (drawingViewer.value?.drawingAnnotation) {
+            selectedPolygon.value = drawingViewer.value.selectAnnotation(drawingViewer.value?.drawingAnnotation?.id);
+          }
+
           saveUserSolution();
           drawingViewer.value?.unsetDrawingAnnotation();
         } else {
@@ -364,6 +368,10 @@ export default defineComponent({
           drawingViewer.value?.addDrawingAnnotation(TOOL_POLYGON[currentTool.value!]!);
           drawingViewer.value?.updateDrawingAnnotation();
           if (drawingViewer.value?.drawingPolygonIsClosed) {
+            if (drawingViewer.value.drawingAnnotation) {
+              selectedPolygon.value = drawingViewer.value.selectAnnotation(drawingViewer.value.drawingAnnotation.id);
+            }
+
             saveUserSolution();
             drawingViewer.value?.addDrawingAnnotation(TOOL_POLYGON[currentTool.value!]!);
           }
@@ -377,6 +385,10 @@ export default defineComponent({
             event.position.x,
             event.position.y
           );
+          if (annotation) {
+            selectedPolygon.value = drawingViewer.value!.selectAnnotation(annotation.id);
+          }
+
           await saveUserSolution(ANNOTATION_TYPE.USER_SOLUTION_POINT, annotation);
         }
       } else if (currentTool.value === Tool.DELETE_ANNOTATION) {

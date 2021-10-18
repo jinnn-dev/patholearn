@@ -286,6 +286,7 @@ export class AnnotationViewer {
     annotationPoint.setPoint(viewport, POLYGON_VERTICE_RADIUS / this.scale, POLYGON_STROKE_WIDTH / this.scale);
     this._annotationManager.pushAnnotation(annotationPoint);
     await this.saveTaskAnnotation(task, annotationPoint);
+    return annotationPoint;
   }
 
   /**
@@ -695,29 +696,35 @@ export class AnnotationViewer {
   }
 
   get drawingPolygonIsClosed() {
-    if (
-      this._drawingAnnotation?.isClosed &&
-      (this._drawingAnnotation instanceof OffsetAnnotationPolygon ||
-        this._drawingAnnotation instanceof OffsetAnnotationRectangle)
-    ) {
-      const annotation = this._drawingAnnotation as OffsetAnnotationPolygon;
+    if (this._drawingAnnotation?.isClosed) {
+      if (
+        this._drawingAnnotation instanceof OffsetAnnotationPolygon ||
+        this._drawingAnnotation instanceof OffsetAnnotationRectangle
+      ) {
+        const annotation = this._drawingAnnotation as OffsetAnnotationPolygon;
 
-      let size = annotation.getSize();
+        let size = annotation.getSize();
 
-      if (this._drawingAnnotation instanceof OffsetAnnotationRectangle) {
-        size *= 1 / (size * 2) / 100;
+        if (this._drawingAnnotation instanceof OffsetAnnotationRectangle) {
+          size *= 1 / (size * 2) / 100;
+        }
+
+        const offset = POLYGON_INFLATE_OFFSET * size;
+
+        const value = (offset * ANNOTATION_OFFSET_SCALAR) / 80;
+
+        annotation.inflationInnerOffset = value;
+        annotation.inflationOuterOffset = value;
+
+        annotation.createInflation(this.scale);
       }
-
-      const offset = POLYGON_INFLATE_OFFSET * size;
-
-      const value = (offset * ANNOTATION_OFFSET_SCALAR) / 80;
-
-      annotation.inflationInnerOffset = value;
-      annotation.inflationOuterOffset = value;
-
-      annotation.createInflation(this.scale);
     }
+
     return this._drawingAnnotation?.isClosed;
+  }
+
+  get drawingAnnotation() {
+    return this._drawingAnnotation;
   }
 
   get viewer(): Viewer {

@@ -453,7 +453,12 @@ export default defineComponent({
         const annotation = drawingViewer.value?.stopDrawing();
 
         if (currentTool.value === Tool.LINE_SOLUTION) {
+          if (drawingViewer.value?.drawingAnnotation) {
+            selectAnnotation(drawingViewer.value?.drawingAnnotation?.id);
+          }
+
           drawingViewer.value?.unsetDrawingAnnotation();
+
           await drawingViewer.value?.saveTaskAnnotation(props.task!, annotation);
         } else {
           drawingViewer.value?.removeDrawingAnnotation();
@@ -499,20 +504,28 @@ export default defineComponent({
       if (isDrawingTool(currentTool.value!)) {
         if (event.quick) {
           drawingViewer.value?.addDrawingAnnotation(TOOL_POLYGON[currentTool.value!]!);
+
           drawingViewer.value?.updateDrawingAnnotation();
           if (drawingViewer.value?.drawingPolygonIsClosed) {
+            if (drawingViewer.value.drawingAnnotation) {
+              selectAnnotation(drawingViewer.value.drawingAnnotation.id);
+            }
             saveTask();
             drawingViewer.value?.addDrawingAnnotation(TOOL_POLYGON[currentTool.value!]!);
           }
         }
       } else if (currentTool.value === Tool.POINT_SOLUTION) {
         if (event.quick) {
-          await drawingViewer.value?.addOffsetAnnotationPoint(
+          const point = await drawingViewer.value?.addOffsetAnnotationPoint(
             ANNOTATION_TYPE.SOLUTION_POINT,
             event.position.x,
             event.position.y,
             props.task!
           );
+
+          if (point) {
+            selectAnnotation(point.id);
+          }
         }
       } else if (currentTool.value === Tool.DELETE_ANNOTATION) {
         drawingViewer.value?.removeListener();
@@ -540,41 +553,44 @@ export default defineComponent({
                 return;
               }
               // Values need to be reset otherwise select does not work
-              selectedPolygonData.innerOffset = undefined;
-              selectedPolygonData.outerOffset = undefined;
-              selectedPolygonData.offsetRadius = undefined;
-              selectedPolygonData.color = undefined;
-              selectedPolygonData.name = undefined;
-
-              selectedPolygon.value = drawingViewer.value?.selectAnnotation(selectionId);
-              selectedPolygonData.color = selectedPolygon.value!.color;
-              selectedPolygonData.name = selectedPolygon.value!.name;
-
-              if (
-                selectedPolygon.value instanceof OffsetAnnotationPolygon ||
-                selectedPolygon.value instanceof OffsetAnnotationRectangle
-              ) {
-                const annotation = selectedPolygon.value as OffsetAnnotationPolygon;
-
-                const newInnerOffset =
-                  annotation.inflationInnerOffset * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
-                updateInnerOffsetRadius(newInnerOffset);
-                const newOuterOffset =
-                  annotation.inflationOuterOffset * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
-                updateOuterOffsetRadius(newOuterOffset);
-              } else if (selectedPolygon.value instanceof OffsetAnnotationLine) {
-                const annotation = selectedPolygon.value as OffsetAnnotationLine;
-                const newOffset = annotation.offsetRadius * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
-                updateAnnotationLineOffsetRadius(newOffset);
-              } else if (selectedPolygon.value instanceof OffsetAnnotationPoint) {
-                const annotation = selectedPolygon.value as OffsetAnnotationPoint;
-                const newOffset = annotation.offsetRadius * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
-                updateAnnotationPointOffsetRadius(newOffset);
-              }
+              selectAnnotation(selectionId);
             });
         }
       } else {
         drawingViewer.value?.removeListener();
+      }
+    };
+
+    const selectAnnotation = (annotationId: string) => {
+      // Values need to be reset otherwise select does not work
+      selectedPolygonData.innerOffset = undefined;
+      selectedPolygonData.outerOffset = undefined;
+      selectedPolygonData.offsetRadius = undefined;
+      selectedPolygonData.color = undefined;
+      selectedPolygonData.name = undefined;
+
+      selectedPolygon.value = drawingViewer.value?.selectAnnotation(annotationId);
+      selectedPolygonData.color = selectedPolygon.value!.color;
+      selectedPolygonData.name = selectedPolygon.value!.name;
+
+      if (
+        selectedPolygon.value instanceof OffsetAnnotationPolygon ||
+        selectedPolygon.value instanceof OffsetAnnotationRectangle
+      ) {
+        const annotation = selectedPolygon.value as OffsetAnnotationPolygon;
+
+        const newInnerOffset = annotation.inflationInnerOffset * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
+        updateInnerOffsetRadius(newInnerOffset);
+        const newOuterOffset = annotation.inflationOuterOffset * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
+        updateOuterOffsetRadius(newOuterOffset);
+      } else if (selectedPolygon.value instanceof OffsetAnnotationLine) {
+        const annotation = selectedPolygon.value as OffsetAnnotationLine;
+        const newOffset = annotation.offsetRadius * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
+        updateAnnotationLineOffsetRadius(newOffset);
+      } else if (selectedPolygon.value instanceof OffsetAnnotationPoint) {
+        const annotation = selectedPolygon.value as OffsetAnnotationPoint;
+        const newOffset = annotation.offsetRadius * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
+        updateAnnotationPointOffsetRadius(newOffset);
       }
     };
 
