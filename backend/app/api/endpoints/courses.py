@@ -3,6 +3,7 @@ from typing import Any, List, Union
 from app.api.deps import (check_if_user_can_access_course,
                           get_current_active_superuser,
                           get_current_active_user, get_db)
+from app.crud.crud_base_task import crud_base_task
 from app.crud.crud_course import crud_course
 from app.crud.crud_task import crud_task
 from app.crud.crud_user_solution import crud_user_solution
@@ -193,8 +194,15 @@ def delete_course(*, db: Session = Depends(get_db), short_name: str,
                   current_user: User = Depends(get_current_active_superuser)) -> Any:
         
     course = crud_course.get_by_short_name(db, short_name=short_name)
+    print(course.owner)
+    check_if_user_can_access_course(db, user_id=current_user.id, course_id=course.id)
 
-    check_if_user_can_access_course(db, user_id=current_user.id, course_id=course.owner.id)
+    
+
+    for task_group in course.task_groups:
+        for base_task in task_group.tasks:
+            crud_task.remove_all_to_task_id(db, base_task_id=base_task.id)
+            crud_base_task.remove(db, model_id=base_task.id)
 
     crud_user_solution.remove_all_to_course(db, course_id=course.id)
     crud_course.remove(db, model_id=course.id)

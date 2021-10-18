@@ -139,6 +139,10 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
 
     def user_is_course_owner(self, db, *, course_id: int, user_id: int) -> bool:
         course = self.get(db, id=course_id)
+
+        # if not course:
+        #     return False
+
         return course.owner_id == user_id
 
 crud_course = CRUDCourse(Course)
