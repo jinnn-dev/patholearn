@@ -1,7 +1,7 @@
 import { select, Selection } from 'd3-selection';
 import { nanoid } from 'nanoid';
 import OpenSeadragon, { OSDEvent, Viewer } from 'openseadragon';
-import { polygonChanged } from '../../components/viewer/core';
+import { polygonChanged } from '../../components/viewer/core/viewerState';
 import { POLYGON_VERTICE_RADIUS } from '../../model/viewer/config';
 import { ANNOTATION_TYPE } from '../viewer/annotationType';
 import { ANNOTATION_COLOR, COLOR } from '../viewer/colors';

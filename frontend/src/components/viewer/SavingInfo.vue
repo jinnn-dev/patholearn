@@ -34,7 +34,7 @@
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { isTaskSaving } from './core';
+import { isTaskSaving } from './core/viewerState';
 
 export default defineComponent({
   props: {},

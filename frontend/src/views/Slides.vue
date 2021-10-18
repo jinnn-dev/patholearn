@@ -39,7 +39,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue';
-import { SlideService } from '../services';
+import { SlideService } from '../services/slide.service';
 import { getThumbnailUrl } from '../config';
 import { Slide } from '../model/slide';
 

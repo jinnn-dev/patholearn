@@ -4,7 +4,21 @@
     <div class="my-2">
       <form-field label="Ground Thruth" tip="Wähle eine XML- oder PNG-Datei mit der Musterlösung aus">
         <div class="flex items-center">
-          <label for="slide-upload" class="transition cursor-pointer flex justify-center bg-gray-500 hover:bg-gray-300 px-2 w-full rounded-lg py-1">
+          <label
+            for="slide-upload"
+            class="
+              transition
+              cursor-pointer
+              flex
+              justify-center
+              bg-gray-500
+              hover:bg-gray-300
+              px-2
+              w-full
+              rounded-lg
+              py-1
+            "
+          >
             <Icon name="cloud-arrow-up" class="mr-2" />
             <span>Musterlösung auswählen</span>
           </label>
@@ -51,11 +65,12 @@
   </modal-dialog>
 </template>
 <script lang="ts">
-import { SlideService } from '../../services';
+import { SlideService } from '../../services/slide.service';
 import { AnnotationParser, ParseResult } from '../../utils/annotation-parser';
 import { defineComponent, onMounted, PropType, ref } from 'vue';
-import { AnnotationViewer } from './core';
-import { ANNOTATION_TYPE } from '../../model';
+import { AnnotationViewer } from './core/annotationViewer';
+import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
+
 export default defineComponent({
   props: {
     showDialog: Boolean,
@@ -63,8 +78,8 @@ export default defineComponent({
     loading: Boolean,
     isUserSolution: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   emits: ['applyAnnotations', 'closeDialog'],
   setup(props, { emit }) {
@@ -132,9 +147,9 @@ export default defineComponent({
       file,
       convertResult,
       isWrongFormat,
-      conversionLoading,
+      conversionLoading
     };
-  },
+  }
 });
 </script>
 <style></style>

@@ -1,6 +1,6 @@
 import { TaskHint } from './taskHint';
 import { UserSolution } from './userSolution';
-import { AnnotationData } from './viewer';
+import { AnnotationData } from './viewer/export/annotationData';
 
 export interface AnnotationGroup {
   name: string;

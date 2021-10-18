@@ -1,28 +1,25 @@
-import { AnnotationRectangleData } from 'model/viewer/export/annotationRectangleData';
-import { OffsetAnnotationRectangleData } from 'model/viewer/export/offsetAnnotationRectangleData';
 import OpenSeadragon, { Point } from 'openseadragon';
-import {
-  Annotation,
-  AnnotationData,
-  AnnotationLine,
-  AnnotationPoint,
-  AnnotationRectangle,
-  ANNOTATION_TYPE,
-  isSolution,
-  isUserSolution,
-  OffsetAnnotationLine,
-  OffsetAnnotationLineData,
-  OffsetAnnotationPoint,
-  OffsetAnnotationPointData,
-  OffsetAnnotationPolygon,
-  OffsetAnnotationPolygonData,
-  OffsetAnnotationRectangle,
-  Task,
-  UserSolution,
-  UserSolutionCreate
-} from '../../../model';
-import { TaskService } from '../../../services';
+import { Annotation } from '../../../model/svg/annotation';
+import { AnnotationLine } from '../../../model/svg/annotationLine';
+import { AnnotationPoint } from '../../../model/svg/annotationPoint';
+import { AnnotationRectangle } from '../../../model/svg/annotationRect';
+import { OffsetAnnotationLine } from '../../../model/svg/offsetAnnotationLine';
+import { OffsetAnnotationPoint } from '../../../model/svg/offsetAnnotationPoint';
+import { OffsetAnnotationRectangle } from '../../../model/svg/offsetAnnotationRect';
+import { OffsetAnnotationPolygon } from '../../../model/svg/offsetPolygon';
+import { Task } from '../../../model/task';
+import { UserSolution, UserSolutionCreate } from '../../../model/userSolution';
+import { ANNOTATION_TYPE } from '../../../model/viewer/annotationType';
+import { AnnotationData } from '../../../model/viewer/export/annotationData';
+import { AnnotationRectangleData } from '../../../model/viewer/export/annotationRectangleData';
+import { OffsetAnnotationLineData } from '../../../model/viewer/export/offsetAnnotationLineData';
+import { OffsetAnnotationPointData } from '../../../model/viewer/export/offsetAnnotationPointData';
+import { OffsetAnnotationPolygonData } from '../../../model/viewer/export/offsetAnnotationPolygonData';
+import { OffsetAnnotationRectangleData } from '../../../model/viewer/export/offsetAnnotationRectangleData';
+import { isSolution, isUserSolution } from '../../../model/viewer/tools';
+import { TaskService } from '../../../services/task.service';
 import { viewportToImage } from '../../../utils/seadragon.utils';
+
 export class TaskSaver {
   /**
    * Updates the given task and annotations

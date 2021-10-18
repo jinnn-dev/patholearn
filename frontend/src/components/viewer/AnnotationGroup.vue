@@ -67,7 +67,7 @@
 <script lang="ts">
 import { defineComponent, PropType, reactive, ref } from 'vue';
 import { TaskService } from '../../services/task.service';
-import { AnnotationGroup } from '../../model';
+import { AnnotationGroup } from '../../model/task';
 
 export default defineComponent({
   props: {

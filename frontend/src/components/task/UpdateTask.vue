@@ -73,10 +73,12 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, reactive, PropType, watch } from 'vue';
-import { knowledgeLevel, taskTypes } from './task-config';
 import Slider from '@vueform/slider';
+
+import { knowledgeLevel, taskTypes } from './task-config';
 import { TaskService } from '../../services/task.service';
-import { Task } from 'model/task';
+import { Task } from '../../model/task';
+
 export default defineComponent({
   components: { Slider },
   props: {

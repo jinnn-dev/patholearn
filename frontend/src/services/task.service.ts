@@ -1,7 +1,7 @@
-import { TaskResult } from 'model';
-import { TaskHint, TaskHintCreate, TaskHintUpdate } from 'model/taskHint';
 import { BaseTask, CreateBaseTask, UpdateBaseTask } from '../model/baseTask';
+import { TaskResult } from '../model/result';
 import { AnnotationGroup, Task, TaskCreate, TaskUpdate } from '../model/task';
+import { TaskHint, TaskHintCreate, TaskHintUpdate } from '../model/taskHint';
 import { UserSolution, UserSolutionCreate } from '../model/userSolution';
 import { ApiService } from './api.service';
 import { handleError } from './error-handler';

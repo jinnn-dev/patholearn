@@ -30,7 +30,6 @@
 import { Task } from '../../../model/task';
 import { defineComponent, PropType, ref, computed } from 'vue';
 import { TaskHint } from '../../../model/taskHint';
-import { TaskService } from '../../../services/task.service';
 import { getTaskHints, store } from '../../../utils/hint.store';
 
 export default defineComponent({

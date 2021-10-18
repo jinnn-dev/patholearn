@@ -1,8 +1,12 @@
 import { select, Selection } from 'd3-selection';
 import { nanoid } from 'nanoid';
 import OpenSeadragon from 'openseadragon';
-import { AnnotationLine, ANNOTATION_TYPE, Circle, COLOR, VertexElement } from '../';
 import { polygonChanged } from '../../components/viewer/core/viewerState';
+import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
+import { COLOR } from '../../model/viewer/colors';
+import { AnnotationLine } from './annotationLine';
+import { Circle } from './circle';
+import { VertexElement } from './vertice';
 
 export class AnnotationPolygon extends AnnotationLine {
   private _fill_color: string;

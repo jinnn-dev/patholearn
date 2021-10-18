@@ -108,28 +108,24 @@
 import { computed, defineComponent, onMounted, PropType, reactive, ref, watch } from 'vue';
 
 import { getSlideUrl } from '../../config';
-import {
-  AnnotationGroup,
-  ANNOTATION_COLOR,
-  ANNOTATION_TYPE,
-  isDrawingTool,
-  isSolution,
-  OffsetAnnotationRectangle,
-  Task,
-  Tool,
-  TOOL_POLYGON
-} from '../../model';
-import { options } from './core';
-import { AnnotationViewer } from './core';
+
+import { options, SVG_ID } from './core/options';
+import { AnnotationViewer } from './core/annotationViewer';
 import OpenSeadragon from 'openseadragon';
 import { select, selectAll } from 'd3-selection';
-import { SVG_ID, polygonChanged, selectedPolygon, viewerLoadingState, viewerZoom, isTaskSaving } from './core';
-import { OffsetAnnotationPolygon } from '../../model';
 import { ParseResult } from '../../utils/annotation-parser';
-import { OffsetAnnotationPoint, OffsetAnnotationLine, AnnotationLine } from '../../model';
-import { TaskService } from '../../services';
+import { TaskService } from '../../services/task.service';
 import { updateAnnotation } from './taskViewerHelper';
-
+import { AnnotationGroup, Task } from '../../model/task';
+import { isDrawingTool, isSolution, Tool, TOOL_POLYGON } from '../../model/viewer/tools';
+import { AnnotationLine } from '../../model/svg/annotationLine';
+import { OffsetAnnotationPolygon } from '../../model/svg/offsetPolygon';
+import { OffsetAnnotationPoint } from '../../model/svg/offsetAnnotationPoint';
+import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
+import { OffsetAnnotationLine } from '../../model/svg/offsetAnnotationLine';
+import { OffsetAnnotationRectangle } from '../../model/svg/offsetAnnotationRect';
+import { ANNOTATION_COLOR } from '../../model/viewer/colors';
+import { isTaskSaving, polygonChanged, selectedPolygon, viewerLoadingState, viewerZoom } from './core/viewerState';
 export default defineComponent({
   props: {
     slide_name: String,

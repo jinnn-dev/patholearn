@@ -102,8 +102,11 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, PropType, ref } from 'vue';
-import { TaskStatus, Task, BaseTask } from '../../model';
-import { TaskService } from '../../services';
+
+import { Task } from '../../model/task';
+import { TaskStatus } from '../../model/result';
+import { BaseTask } from '../../model/baseTask';
+import { TaskService } from '../../services/task.service';
 
 interface LayeredTasks {
   [key: number]: Task[];

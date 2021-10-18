@@ -25,8 +25,10 @@
 
 <script lang="ts">
 import { defineComponent, PropType, ref } from 'vue';
-import { TaskStatus, UserSolution } from '../../model';
-import { userSolutionLocked, viewerLoadingState } from '../../components/viewer/core';
+
+import { TaskStatus } from '../../model/result';
+import { UserSolution } from '../../model/userSolution';
+import { userSolutionLocked, viewerLoadingState } from '../../components/viewer/core/viewerState';
 
 export default defineComponent({
   props: {

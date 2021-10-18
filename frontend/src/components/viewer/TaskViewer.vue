@@ -39,36 +39,31 @@
 import { computed, defineComponent, onMounted, onUnmounted, PropType, reactive, ref, watch } from 'vue';
 import OpenSeadragon from 'openseadragon';
 import { select, selectAll } from 'd3-selection';
+
 import {
-  options,
-  AnnotationViewer,
-  SVG_ID,
   polygonChanged,
   selectedPolygon,
   showSolution,
   userSolutionLocked,
   viewerLoadingState
-} from './core';
-import {
-  Annotation,
-  AnnotationGroup,
-  ANNOTATION_COLOR,
-  ANNOTATION_TYPE,
-  isDrawingTool,
-  isUserSolution,
-  UserSolution,
-  RESULT_POLYGON_COLOR,
-  Task,
-  TaskResult,
-  TaskStatus,
-  Tool,
-  TOOL_COLORS,
-  TOOL_POLYGON
-} from '../../model';
+} from './core/viewerState';
+
+import { options, SVG_ID } from './core/options';
+import { AnnotationViewer } from './core/annotationViewer';
+
+import { Task } from '../../model/task';
+import { Annotation } from '../../model/svg/annotation';
+import { AnnotationGroup } from '../../model/task';
+import { ANNOTATION_COLOR } from '../../model/viewer/colors';
+import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
+import { isDrawingTool, isUserSolution, Tool, TOOL_COLORS, TOOL_POLYGON } from '../../model/viewer/tools';
+import { UserSolution } from '../../model/userSolution';
+import { RESULT_POLYGON_COLOR, TaskResult, TaskStatus } from '../../model/result';
+
 import { getSlideUrl } from '../../config';
 import { TooltipGenerator } from '../../utils/tooltip-generator';
 import { ParseResult } from '../../utils/annotation-parser';
-import { TaskService } from '../../services';
+import { TaskService } from '../../services/task.service';
 import { updateAnnotation } from './taskViewerHelper';
 
 export default defineComponent({

@@ -51,7 +51,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue';
-import { SlideService } from '../services';
+import { SlideService } from '../services/slide.service';
 
 export default defineComponent({
   setup() {

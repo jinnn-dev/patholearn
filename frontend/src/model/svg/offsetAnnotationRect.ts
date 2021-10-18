@@ -4,7 +4,8 @@ import { geom, operation } from 'jsts';
 import { nanoid } from 'nanoid';
 import OpenSeadragon from 'openseadragon';
 import { polygonChanged } from '../../components/viewer/core/viewerState';
-import { ANNOTATION_TYPE, COLOR } from '../../model';
+import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
+import { COLOR } from '../../model/viewer/colors';
 import { POLYGON_INFLATE_OFFSET, POLYGON_STROKE_WIDTH, POLYGON_VERTICE_RADIUS } from '../viewer/config';
 import { AnnotationRectangle } from './annotationRect';
 import { AnnotationPolygon } from './polygon';
@@ -149,12 +150,14 @@ export class OffsetAnnotationRectangle extends AnnotationRectangle {
       this.createInnerInflation();
       this.createPath(scale);
 
+      let points = this._innerPoints;
+
+      if (points[0].equals(points[points.length - 1])) {
+        points = points.slice(0, -1);
+      }
+
       this._innerPolygon?.unselect();
-      this._innerPolygon?.updatePolygonPoints(
-        this._innerPoints,
-        POLYGON_VERTICE_RADIUS / scale,
-        POLYGON_STROKE_WIDTH / scale
-      );
+      this._innerPolygon?.updatePolygonPoints(points, POLYGON_VERTICE_RADIUS / scale, POLYGON_STROKE_WIDTH / scale);
       this._innerPolygon?.select(viewer, scale);
     }
   }
@@ -173,12 +176,15 @@ export class OffsetAnnotationRectangle extends AnnotationRectangle {
       this.createOuterInflation();
       this.createPath(scale);
     }
+
+    let points = this._outerPoints;
+
+    if (points[0].equals(points[points.length - 1])) {
+      points = points.slice(0, -1);
+    }
+
     this._outerPolygon?.unselect();
-    this._outerPolygon?.updatePolygonPoints(
-      this._outerPoints,
-      POLYGON_VERTICE_RADIUS / scale,
-      POLYGON_STROKE_WIDTH / scale
-    );
+    this._outerPolygon?.updatePolygonPoints(points, POLYGON_VERTICE_RADIUS / scale, POLYGON_STROKE_WIDTH / scale);
     this._outerPolygon?.select(viewer, scale);
   }
 

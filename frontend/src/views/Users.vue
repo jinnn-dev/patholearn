@@ -93,8 +93,8 @@
 import { defineComponent, ref, reactive, watch, onMounted } from 'vue';
 import { required, email, minLength } from '@vuelidate/validators';
 import useVuelidate from '@vuelidate/core';
-import { AuthService } from '../services';
-import { User } from '../model';
+import { AuthService } from '../services/auth.service';
+import { User } from '../model/user';
 
 export default defineComponent({
   props: {},

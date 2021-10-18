@@ -18,15 +18,18 @@
       :task_group_id="baseTask?.task_group_id"
       :course_id="baseTask?.course_id"
     ></task-viewer-admin>
+
+    <!-- <select-images-task></select-images-task> -->
   </div>
 </template>
 
 <script lang="ts">
-import { defineAsyncComponent, defineComponent, onDeactivated, onMounted, onUnmounted, ref } from 'vue';
+import { defineAsyncComponent, defineComponent, onMounted, onUnmounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { BaseTask, Task } from '../model';
+import { BaseTask } from '../model/baseTask';
+import { Task } from '../model/task';
 import { TaskService } from '../services/task.service';
-import { viewerLoadingState } from '../components/viewer/core';
+import { viewerLoadingState } from '../components/viewer/core/viewerState';
 
 const TaskViewerAdmin = defineAsyncComponent({
   loader: () => import('../components/viewer/TaskViewerAdmin.vue')

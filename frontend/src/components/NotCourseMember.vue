@@ -10,8 +10,8 @@
 </template>
 <script lang="ts">
 import { defineComponent, PropType, ref } from 'vue';
-import { CourseService } from '../services';
-import { Course } from '../model';
+import { CourseService } from '../services/course.service';
+import { Course } from '../model/course';
 
 export default defineComponent({
   props: {

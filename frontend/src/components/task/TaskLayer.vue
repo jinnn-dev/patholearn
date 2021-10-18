@@ -46,8 +46,9 @@
 </template>
 <script lang="ts">
 import { defineComponent, PropType, reactive, ref } from 'vue';
-import { Task } from '../../model';
-import { TaskService } from '../../services';
+
+import { Task } from '../../model/task';
+import { TaskService } from '../../services/task.service';
 
 export default defineComponent({
   props: {

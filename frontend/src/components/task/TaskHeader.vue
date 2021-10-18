@@ -6,7 +6,9 @@
 </template>
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-import { Task, TaskResult } from '../../model';
+
+import { Task } from '../../model/task';
+import { TaskResult } from '../../model/result';
 
 export default defineComponent({
   props: {

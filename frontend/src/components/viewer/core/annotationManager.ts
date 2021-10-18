@@ -1,33 +1,31 @@
 import { select } from 'd3-selection';
-import { AnnotationRectangleData } from 'model/viewer/export/annotationRectangleData';
-import { OffsetAnnotationRectangleData } from 'model/viewer/export/offsetAnnotationRectangleData';
 import { Point } from 'openseadragon';
-import {
-  Annotation,
-  AnnotationData,
-  AnnotationLine,
-  AnnotationPoint,
-  AnnotationPolygon,
-  AnnotationRectangle,
-  ANNOTATION_COLOR,
-  ANNOTATION_TYPE,
-  isSolution,
-  isUserSolution,
-  OffsetAnnotationLine,
-  OffsetAnnotationLineData,
-  OffsetAnnotationPoint,
-  OffsetAnnotationPointData,
-  OffsetAnnotationPolygon,
-  OffsetAnnotationPolygonData,
-  OffsetAnnotationRectangle,
-  PointData
-} from '../../../model';
+import { Annotation } from '../../../model/svg/annotation';
+import { AnnotationLine } from '../../../model/svg/annotationLine';
+import { AnnotationPoint } from '../../../model/svg/annotationPoint';
+import { AnnotationRectangle } from '../../../model/svg/annotationRect';
+import { OffsetAnnotationLine } from '../../../model/svg/offsetAnnotationLine';
+import { OffsetAnnotationPoint } from '../../../model/svg/offsetAnnotationPoint';
+import { OffsetAnnotationRectangle } from '../../../model/svg/offsetAnnotationRect';
+import { OffsetAnnotationPolygon } from '../../../model/svg/offsetPolygon';
+import { AnnotationPolygon } from '../../../model/svg/polygon';
+import { ANNOTATION_TYPE } from '../../../model/viewer/annotationType';
+import { ANNOTATION_COLOR } from '../../../model/viewer/colors';
 import {
   ANNOTATION_OFFSET_SCALAR,
   POLYGON_INFLATE_OFFSET,
   POLYGON_STROKE_WIDTH,
   POLYGON_VERTICE_RADIUS
 } from '../../../model/viewer/config';
+import { AnnotationData } from '../../../model/viewer/export/annotationData';
+import { AnnotationRectangleData } from '../../../model/viewer/export/annotationRectangleData';
+import { OffsetAnnotationLineData } from '../../../model/viewer/export/offsetAnnotationLineData';
+import { OffsetAnnotationPointData } from '../../../model/viewer/export/offsetAnnotationPointData';
+import { OffsetAnnotationPolygonData } from '../../../model/viewer/export/offsetAnnotationPolygonData';
+import { OffsetAnnotationRectangleData } from '../../../model/viewer/export/offsetAnnotationRectangleData';
+import { PointData } from '../../../model/viewer/export/pointData';
+import { isSolution, isUserSolution } from '../../../model/viewer/tools';
+
 export class AnnotationManager {
   private _backgroundNode: HTMLElement;
   private _solutionNode: HTMLElement;

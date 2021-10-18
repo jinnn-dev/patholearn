@@ -1,27 +1,19 @@
 import { select } from 'd3-selection';
-import { AnnotationRectangleData } from 'model/viewer/export/annotationRectangleData';
 import OpenSeadragon, { Point, Viewer } from 'openseadragon';
-import {
-  Annotation,
-  AnnotationData,
-  AnnotationLine,
-  AnnotationPoint,
-  AnnotationPolygon,
-  AnnotationRectangle,
-  ANNOTATION_COLOR,
-  ANNOTATION_TYPE,
-  isUserSolution,
-  MouseCircle,
-  OffsetAnnotationLine,
-  OffsetAnnotationPoint,
-  OffsetAnnotationPolygon,
-  OffsetAnnotationPolygonData,
-  OffsetAnnotationRectangle,
-  PointData,
-  Task,
-  UserSolution,
-  UserSolutionCreate
-} from '../../../model';
+import { Annotation } from '../../../model/svg/annotation';
+import { AnnotationLine } from '../../../model/svg/annotationLine';
+import { AnnotationPoint } from '../../../model/svg/annotationPoint';
+import { AnnotationRectangle } from '../../../model/svg/annotationRect';
+import { MouseCircle } from '../../../model/svg/mouseCircle';
+import { OffsetAnnotationLine } from '../../../model/svg/offsetAnnotationLine';
+import { OffsetAnnotationPoint } from '../../../model/svg/offsetAnnotationPoint';
+import { OffsetAnnotationRectangle } from '../../../model/svg/offsetAnnotationRect';
+import { OffsetAnnotationPolygon } from '../../../model/svg/offsetPolygon';
+import { AnnotationPolygon } from '../../../model/svg/polygon';
+import { Task } from '../../../model/task';
+import { UserSolution, UserSolutionCreate } from '../../../model/userSolution';
+import { ANNOTATION_TYPE } from '../../../model/viewer/annotationType';
+import { ANNOTATION_COLOR } from '../../../model/viewer/colors';
 import {
   ANNOTATION_OFFSET_SCALAR,
   POLYGON_INFLATE_OFFSET,
@@ -29,11 +21,17 @@ import {
   POLYGON_STROKE_WIDTH,
   POLYGON_VERTICE_RADIUS
 } from '../../../model/viewer/config';
+import { AnnotationData } from '../../../model/viewer/export/annotationData';
+import { AnnotationRectangleData } from '../../../model/viewer/export/annotationRectangleData';
+import { OffsetAnnotationPolygonData } from '../../../model/viewer/export/offsetAnnotationPolygonData';
+import { PointData } from '../../../model/viewer/export/pointData';
+import { isUserSolution } from '../../../model/viewer/tools';
 import { AnnotationParser } from '../../../utils/annotation-parser';
 import { imageToViewport, pointIsInImage, webToViewport } from '../../../utils/seadragon.utils';
 import { TooltipGenerator } from '../../../utils/tooltip-generator';
+import { SVG_ID } from '../core/options';
 import { AnnotationManager } from './annotationManager';
-import { SvgOverlay, SVG_ID } from './svg-overlay';
+import { SvgOverlay } from './svg-overlay';
 import { TaskSaver } from './taskSaver';
 import { viewerLoadingState, viewerScale, viewerZoom } from './viewerState';
 
@@ -54,7 +52,11 @@ export class AnnotationViewer {
     this._viewer = OpenSeadragon(viewerOptions);
     new OpenSeadragon.TileCache({ maxImageCacheCount: 500 });
 
+    // Needs to be there, so opensedragon knows that the svg overlay exists
+    new SvgOverlay(this._viewer);
+    select('#' + SVG_ID).remove();
     this._overlay = this._viewer.svgOverlay();
+
     this._currentColor = ANNOTATION_COLOR.USER_SOLUTION_COLOR;
     viewerLoadingState.tilesLoaded = false;
 
@@ -328,6 +330,7 @@ export class AnnotationViewer {
    */
   clear(): void {
     this._annotationManager.clear();
+
     select('#' + SVG_ID)
       .selectAll('g > *')
       .remove();

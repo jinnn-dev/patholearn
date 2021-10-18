@@ -93,12 +93,12 @@
 </template>
 
 <script lang="ts">
+import { Course, CreateCourse } from '../model/course';
 import { defineComponent, onMounted, reactive, ref } from 'vue';
-import { AuthService, CourseService } from '../services';
-import { Course, CreateCourse } from '../model';
 import router from '../router';
-
 import { appState } from '../utils/app.state';
+import { CourseService } from '../services/course.service';
+import { AuthService } from '../services/auth.service';
 
 export default defineComponent({
   name: 'Home',

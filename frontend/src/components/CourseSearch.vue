@@ -51,7 +51,7 @@
 <script lang="ts">
 import { onClickOutside } from '@vueuse/core';
 import { defineComponent, ref, watch } from 'vue';
-import { Course } from '../model';
+import { Course } from '../model/course';
 import { CourseService } from '../services/course.service';
 import { debounceRef } from '../utils/debounceRef';
 

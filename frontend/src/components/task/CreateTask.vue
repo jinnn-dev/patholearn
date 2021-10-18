@@ -2,7 +2,13 @@
   <div>
     <h1 class="text-2xl text-center">Füge eine neue Aufgabe der {{ layerIndex }}. Ebene hinzu</h1>
     <form @submit.prevent="onSubmit" class="w-full">
-      <input-field v-model="taskCreationForm.task_question" label="Fragestellung" placeholder="Markiere..." type="text" :required="true">
+      <input-field
+        v-model="taskCreationForm.task_question"
+        label="Fragestellung"
+        placeholder="Markiere..."
+        type="text"
+        :required="true"
+      >
       </input-field>
       <Accordion>
         <AccordionItem title="Aufgabeneinstellungen" :first="true">
@@ -70,15 +76,17 @@
               <div class="h-8 mt-4">
                 <div class="text-gray-200 flex text-sm items-center">
                   <Icon name="info" width="20" height="20" />
-                  <div class="ml-2">Polygon: Die Annotationen können aus Polygonen, Rechtecken und Ellipsen bestehen</div>
+                  <div class="ml-2">
+                    Polygon: Die Annotationen können aus Polygonen, Rechtecken und Ellipsen bestehen
+                  </div>
                 </div>
               </div>
             </div>
             <div class="my-8">
               <div>Welches Vorwissen ist bei den Lernenden vorhanden:</div>
               <div class="my-2 mb-4 break-words text-sm text-gray-200 py-2">
-                Die Vorwissensstufe bestimmt den Schwierigkeitsgrad der Aufgabe. Mit steigender Stufe wird das Feedback weniger unterstützend.
-                Außerdem wird die Aufgabenüberprüfung strenger.
+                Die Vorwissensstufe bestimmt den Schwierigkeitsgrad der Aufgabe. Mit steigender Stufe wird das Feedback
+                weniger unterstützend. Außerdem wird die Aufgabenüberprüfung strenger.
               </div>
               <div class="flex w-full justify-evenly gap-2 my-2">
                 <div
@@ -135,12 +143,13 @@
   </div>
 </template>
 <script lang="ts">
+import { defineComponent, reactive, ref } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 import Slider from '@vueform/slider';
-import { Task, TaskCreate } from 'model/task';
+
+import { Task, TaskCreate } from '../../model/task';
 import { TaskService } from '../../services/task.service';
-import { defineComponent, reactive, ref } from 'vue';
 import { knowledgeLevel, taskTypes } from './task-config';
 
 export default defineComponent({
@@ -149,30 +158,30 @@ export default defineComponent({
   props: {
     layerIndex: {
       type: Number,
-      required: true,
+      required: true
     },
     baseTaskId: {
       type: Number,
-      required: true,
-    },
+      required: true
+    }
   },
   setup(props, { emit }) {
     const typeSelection = [
       {
         index: 0,
         type: 'Punkt',
-        icon: 'push-pin',
+        icon: 'push-pin'
       },
       {
         index: 1,
         type: 'Linie',
-        icon: 'activity',
+        icon: 'activity'
       },
       {
         index: 2,
         type: 'Polygon',
-        icon: 'triangle',
-      },
+        icon: 'triangle'
+      }
     ];
 
     const taskCreationLoading = ref<Boolean>(false);
@@ -183,7 +192,7 @@ export default defineComponent({
       task_type: 0,
       annotation_type: 0,
       knowledge_level: 0,
-      min_correct: 1,
+      min_correct: 1
     };
 
     const taskCreationForm = reactive<{
@@ -194,13 +203,13 @@ export default defineComponent({
       knowledge_level: number;
       min_correct: number;
     }>({
-      ...initialState,
+      ...initialState
     });
 
     const notNull = (value: any) => value != null;
 
     const rules = {
-      task_type: { required, notNull },
+      task_type: { required, notNull }
     };
 
     const validator = useVuelidate(rules, taskCreationForm);
@@ -221,7 +230,7 @@ export default defineComponent({
           knowledge_level: taskCreationForm.knowledge_level,
           min_correct: taskCreationForm.min_correct,
           annotation_groups: [],
-          hints: [],
+          hints: []
         };
         TaskService.createTask(createTask).then((res: Task) => {
           emit('taskCreated', res);
@@ -241,9 +250,9 @@ export default defineComponent({
       taskTypes,
       typeSelection,
       expandTaskSettings,
-      createdTask,
+      createdTask
     };
-  },
+  }
 });
 </script>
 <style></style>

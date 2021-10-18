@@ -3,8 +3,9 @@ import { curveLinearClosed, Line, line } from 'd3-shape';
 import { geom, operation } from 'jsts';
 import { nanoid } from 'nanoid';
 import OpenSeadragon from 'openseadragon';
-import { ANNOTATION_TYPE, COLOR } from '../';
 import { polygonChanged } from '../../components/viewer/core/viewerState';
+import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
+import { COLOR } from '../../model/viewer/colors';
 import { POLYGON_INFLATE_OFFSET, POLYGON_STROKE_WIDTH, POLYGON_VERTICE_RADIUS } from '../../model/viewer/config';
 import { AnnotationPolygon } from './polygon';
 

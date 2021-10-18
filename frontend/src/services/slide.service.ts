@@ -1,6 +1,6 @@
 import { SLIDE_API_URL } from '../config';
-import { ExtractionResult } from '../model';
 import { Slide } from '../model/slide';
+import { ExtractionResult } from '../model/viewer/export/extractionResult';
 import { ApiService } from './api.service';
 import { handleError } from './error-handler';
 

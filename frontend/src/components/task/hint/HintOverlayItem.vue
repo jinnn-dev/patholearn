@@ -6,14 +6,14 @@
       {{ hint.content }}
     </div>
     <div class="my-2 flex gap-2">
-      <div class="h-20 w-20 rounded-lg" v-for="image in hint.images">
+      <div class="h-20 w-20 rounded-lg" v-for="image in hint.images" :key="image">
         <HintImage :preview="true" :imgSrc="SLIDE_IMAGE_URL + '/' + image.image_name" />
       </div>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { TaskHint } from 'model/taskHint';
+import { TaskHint } from '../../../model/taskHint';
 import { defineComponent, PropType } from 'vue';
 import { SLIDE_IMAGE_URL } from '../../../config';
 export default defineComponent({

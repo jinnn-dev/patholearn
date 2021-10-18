@@ -1,4 +1,4 @@
-import { SLIDE_STATUS } from 'model';
+import { SLIDE_STATUS } from './slideStatus';
 
 export interface Slide {
   id: number;

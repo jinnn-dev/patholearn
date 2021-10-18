@@ -24,7 +24,7 @@
 </template>
 <script lang="ts">
 import router from '../router';
-import { AuthService } from '../services';
+import { AuthService } from '../services/auth.service';
 import { defineComponent } from 'vue';
 import { CustomError, errorState } from '../services/error-handler';
 export default defineComponent({

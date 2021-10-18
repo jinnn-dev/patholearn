@@ -1,5 +1,5 @@
-import { AnnotationCoord } from '.';
-import { ANNOTATION_TYPE } from '../..';
+import { ANNOTATION_TYPE } from '../annotationType';
+import { AnnotationCoord } from './annotationCoord';
 
 export interface AnnotationData {
   id: string;

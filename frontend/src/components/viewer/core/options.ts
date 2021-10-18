@@ -1,3 +1,5 @@
+export const SVG_ID = 'drawingSvg';
+
 export const options = (
   id: string,
   tileSources: string = 'http://127.0.0.1:8000/data/Session1_Test1.svs/1024/dzi.dzi'

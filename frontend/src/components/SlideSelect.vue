@@ -48,8 +48,8 @@
 import { onClickOutside } from '@vueuse/core';
 import { getThumbnailUrl } from '../config';
 import { defineComponent, ref, watch } from 'vue';
-import { Slide } from '../model';
-import { SlideService } from '../services';
+import { Slide } from '../model/slide';
+import { SlideService } from '../services/slide.service';
 
 export default defineComponent({
   emits: ['slideChanged'],

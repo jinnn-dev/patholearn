@@ -1,7 +1,11 @@
 import { Simplify } from 'curvereduce';
 import { nanoid } from 'nanoid';
 import OpenSeadragon, { Point } from 'openseadragon';
-import { AnnotationData, ANNOTATION_COLOR, ANNOTATION_TYPE, ExtractionResult, PointData } from '../model';
+import { ANNOTATION_TYPE } from '../model/viewer/annotationType';
+import { ANNOTATION_COLOR } from '../model/viewer/colors';
+import { AnnotationData } from '../model/viewer/export/annotationData';
+import { ExtractionResult } from '../model/viewer/export/extractionResult';
+import { PointData } from '../model/viewer/export/pointData';
 import { imageToViewport } from './seadragon.utils';
 export interface ParseResult {
   name: string | null;

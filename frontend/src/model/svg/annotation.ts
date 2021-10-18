@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid';
 import OpenSeadragon from 'openseadragon';
-import { ANNOTATION_COLOR, ANNOTATION_TYPE } from '../';
+import { ANNOTATION_TYPE } from '../viewer/annotationType';
+import { ANNOTATION_COLOR } from '../viewer/colors';
 
 /**
  * Abstract class representing a annotation

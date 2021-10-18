@@ -49,10 +49,14 @@
 </template>
 
 <script lang="ts">
+import { BaseTask } from '../model/baseTask';
+import { Course } from '../model/course';
+import { Slide } from '../model/slide';
+import { TaskGroup } from '../model/taskGroup';
+import { TaskGroupService } from '../services/task-group.service';
+import { TaskService } from '../services/task.service';
 import { defineComponent, onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { TaskGroupService, TaskService } from '../services';
-import { BaseTask, Course, Slide, TaskGroup } from '../model';
 
 export default defineComponent({
   setup() {
@@ -101,7 +105,7 @@ export default defineComponent({
       taskLoading.value = true;
       TaskService.createBaseTask({
         name: formData.name,
-        slide_id: formData.slide_id,
+        slide_id: formData.slide_id + '',
         course_id: taskGroup.value?.course_id as number,
         task_group_id: taskGroup.value?.id
       })

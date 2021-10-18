@@ -3,9 +3,12 @@ import { curveLinearClosed, Line, line } from 'd3-shape';
 import { geom, operation } from 'jsts';
 import { nanoid } from 'nanoid';
 import OpenSeadragon from 'openseadragon';
-import { AnnotationLine, AnnotationPolygon, ANNOTATION_COLOR, ANNOTATION_TYPE, COLOR } from '../';
 import { polygonChanged } from '../../components/viewer/core/viewerState';
+import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
+import { ANNOTATION_COLOR, COLOR } from '../../model/viewer/colors';
 import { POLYGON_INFLATE_OFFSET, POLYGON_STROKE_WIDTH, POLYGON_VERTICE_RADIUS } from '../../model/viewer/config';
+import { AnnotationLine } from './annotationLine';
+import { AnnotationPolygon } from './polygon';
 
 export class OffsetAnnotationLine extends AnnotationLine {
   private _outerPoints: OpenSeadragon.Point[];
@@ -124,12 +127,15 @@ export class OffsetAnnotationLine extends AnnotationLine {
       this._offsetRadius = newOffset;
       this.inflateLine(this._offsetRadius);
       this.createPath();
+
+      let points = this._outerPoints;
+
+      if (points[0].equals(points[points.length - 1])) {
+        points = points.slice(0, -1);
+      }
+
       this._selectedPolyline?.unselect();
-      this._selectedPolyline?.updatePolygonPoints(
-        this._outerPoints,
-        POLYGON_VERTICE_RADIUS / scale,
-        POLYGON_STROKE_WIDTH / scale
-      );
+      this._selectedPolyline?.updatePolygonPoints(points, POLYGON_VERTICE_RADIUS / scale, POLYGON_STROKE_WIDTH / scale);
       this._selectedPolyline?.select(viewer, scale);
     }
   }

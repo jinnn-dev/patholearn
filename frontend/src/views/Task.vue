@@ -41,11 +41,14 @@
 </template>
 
 <script lang="ts">
+import { showSolution, userSolutionLocked, viewerLoadingState } from '../components/viewer/core/viewerState';
+import { BaseTask } from '../model/baseTask';
+import { Course } from '../model/course';
+import { TaskResult, TaskStatus } from '../model/result';
+import { Task } from '../model/task';
 import { defineComponent, onMounted, ref, onUnmounted, defineAsyncComponent, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { BaseTask, Task, Course, TaskResult, TaskStatus } from '../model';
-import { TaskService } from '../services';
-import { showSolution, userSolutionLocked, viewerLoadingState } from '../components/viewer/core';
+import { TaskService } from '../services/task.service';
 import { getTaskHints } from '../utils/hint.store';
 
 const TaskViewer = defineAsyncComponent({

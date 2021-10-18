@@ -1,9 +1,11 @@
 import { select, Selection } from 'd3-selection';
 import { nanoid } from 'nanoid';
 import OpenSeadragon from 'openseadragon';
-import { Annotation, ANNOTATION_TYPE, COLOR } from '../';
 import { polygonChanged } from '../../components/viewer/core/viewerState';
+import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
+import { COLOR } from '../../model/viewer/colors';
 import { POLYGON_STROKE_WIDTH } from '../../model/viewer/config';
+import { Annotation } from './annotation';
 
 export class AnnotationPoint extends Annotation {
   private _vertex?: OpenSeadragon.Point;
@@ -87,7 +89,7 @@ export class AnnotationPoint extends Annotation {
       this.mouseTracker = new OpenSeadragon.MouseTracker({
         element: self._element?.node() as Element,
         dragHandler: function (event) {
-          self.dragHandler(event, (self._element?.node() as unknown) as HTMLElement, viewer);
+          self.dragHandler(event, self._element?.node() as unknown as HTMLElement, viewer);
         },
         dragEndHandler: function () {
           if (self.reactive) {

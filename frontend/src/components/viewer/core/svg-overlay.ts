@@ -1,5 +1,4 @@
 import { EventHandler, MouseTracker, OSDEvent, Point, Viewer } from 'openseadragon';
-
 export const SVG_ID = 'drawingSvg';
 
 // Adaption of: https://github.com/openseadragon/svg-overlay | License: BSD-3-Clause License

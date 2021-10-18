@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts">
-import { User } from 'model/user';
+import { User } from './model/user';
 import { defineComponent, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 

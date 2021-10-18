@@ -2,8 +2,10 @@ import { select, Selection } from 'd3-selection';
 import { arc } from 'd3-shape';
 import { nanoid } from 'nanoid';
 import OpenSeadragon from 'openseadragon';
-import { AnnotationPoint, ANNOTATION_COLOR, ANNOTATION_TYPE, COLOR } from '../';
+import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
+import { ANNOTATION_COLOR, COLOR } from '../../model/viewer/colors';
 import { POLYGON_INFLATE_OFFSET } from '../../model/viewer/config';
+import { AnnotationPoint } from './annotationPoint';
 
 export class OffsetAnnotationPoint extends AnnotationPoint {
   private _offsetRadius: number;
@@ -44,7 +46,7 @@ export class OffsetAnnotationPoint extends AnnotationPoint {
   }
 
   dragHandler(event: OpenSeadragon.OSDEvent<any>, node: HTMLElement, viewer: OpenSeadragon.Viewer): void {
-    super.dragHandler(event, (this.element as unknown) as HTMLElement, viewer);
+    super.dragHandler(event, this.element as unknown as HTMLElement, viewer);
     this._offsetElement?.attr('transform', 'translate(' + this.vertex!.x + ',' + this.vertex!.y + ')');
   }
 

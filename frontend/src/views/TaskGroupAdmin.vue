@@ -188,8 +188,11 @@
 <script lang="ts">
 import { defineComponent, onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { TaskGroup, Slide, BaseTask } from '../model';
-import { TaskGroupService, TaskService } from '../services';
+import { TaskGroup } from '../model/taskGroup';
+import { Slide } from '../model/slide';
+import { BaseTask } from '../model/baseTask';
+import { TaskService } from '../services/task.service';
+import { TaskGroupService } from '../services/task-group.service';
 import router from '../router';
 
 export default defineComponent({

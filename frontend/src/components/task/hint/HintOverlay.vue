@@ -72,9 +72,8 @@
   </div>
 </template>
 <script lang="ts">
-import { TaskHint } from '../../../model/taskHint';
-import { computed, defineComponent, onMounted, PropType, ref, watch } from 'vue';
-import SwiperCore, { Navigation, Pagination, A11y, Swiper as SwiderType } from 'swiper';
+import { computed, defineComponent, ref, watch } from 'vue';
+import SwiperCore, { Navigation, Pagination, A11y } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
 import 'swiper/css/navigation';

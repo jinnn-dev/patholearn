@@ -1,4 +1,4 @@
-import { AnnotationData } from '.';
+import { AnnotationData } from './annotationData';
 
 export interface OffsetAnnotationPointData extends AnnotationData {
   offsetRadius: number;

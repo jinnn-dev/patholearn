@@ -22,10 +22,10 @@
       tip="Hier muss der Inhalt des Tipps hinterlegt werden den die lernenden Person angezeigt wird "
     />
     <div class="my-2 flex gap-2" v-viewer>
-      <div class="h-20 w-20 bg-gray-500 rounded-lg" v-for="image in hint.images">
+      <div class="h-20 w-20 bg-gray-500 rounded-lg" v-for="image in hint.images" :key="image">
         <HintImage :imgSrc="SLIDE_IMAGE_URL + '/' + image.image_name" @click="deleteImage(image.image_name)" />
       </div>
-      <div class="h-20 w-20 bg-gray-500 rounded-lg" v-for="image in tempPreviewImages">
+      <div class="h-20 w-20 bg-gray-500 rounded-lg" v-for="image in tempPreviewImages" :key="image">
         <HintImage :imgSrc="image" @click="deleteImage(image)" />
       </div>
       <div
@@ -54,8 +54,9 @@
   </div>
 </template>
 <script lang="ts">
-import { TaskService } from '../../../services/task.service';
 import { defineComponent, PropType, reactive, ref } from 'vue';
+
+import { TaskService } from '../../../services/task.service';
 import { HintType, TaskHint } from '../../../model/taskHint';
 import { SLIDE_IMAGE_URL } from '../../../config';
 
