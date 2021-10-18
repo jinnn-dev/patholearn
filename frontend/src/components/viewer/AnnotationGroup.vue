@@ -23,7 +23,7 @@
         </div>
       </div>
     </div>
-    <role-only>
+    <role-only class="pt-2">
       <primary-button
         name="Neue Klasse"
         class="py-1"
