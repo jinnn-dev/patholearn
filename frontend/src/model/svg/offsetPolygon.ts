@@ -148,8 +148,10 @@ export class OffsetAnnotationPolygon extends AnnotationPolygon {
 
       let points = this._innerPoints;
 
-      if (points[0].equals(points[points.length - 1])) {
-        points = points.slice(0, -1);
+      if (points.length > 1) {
+        if (points[0].equals(points[points.length - 1])) {
+          points = points.slice(0, -1);
+        }
       }
 
       this._innerPolygon?.unselect();
@@ -175,8 +177,10 @@ export class OffsetAnnotationPolygon extends AnnotationPolygon {
 
     let points = this._outerPoints;
 
-    if (points[0].equals(points[points.length - 1])) {
-      points = points.slice(0, -1);
+    if (points.length > 1) {
+      if (points[0].equals(points[points.length - 1])) {
+        points = points.slice(0, -1);
+      }
     }
 
     this._outerPolygon?.unselect();

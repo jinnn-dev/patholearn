@@ -130,8 +130,10 @@ export class OffsetAnnotationLine extends AnnotationLine {
 
       let points = this._outerPoints;
 
-      if (points[0].equals(points[points.length - 1])) {
-        points = points.slice(0, -1);
+      if (points.length > 1) {
+        if (points[0].equals(points[points.length - 1])) {
+          points = points.slice(0, -1);
+        }
       }
 
       this._selectedPolyline?.unselect();
