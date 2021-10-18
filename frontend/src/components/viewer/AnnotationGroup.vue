@@ -3,7 +3,7 @@
     <div v-if="!annotationGroups || annotationGroups.length === 0" class="my-2">Keine Klassen vorhanden</div>
     <div v-else>
       <h3 class="text-xl">Vorhandene Klassen</h3>
-      <div class="max-h-42 max-full overflow-auto">
+      <div class="max-h-[11rem] max-full overflow-auto">
         <div
           v-for="group in annotationGroups"
           :key="group.name + group.color"
