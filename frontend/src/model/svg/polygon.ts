@@ -44,7 +44,7 @@ export class AnnotationPolygon extends AnnotationLine {
    * @param strokeWidth Width of the stroke
    */
   addClosedPolygon(points: OpenSeadragon.Point[], r: number, strokeWidth: number): void {
-    for (const point of points) {
+    for (const [index, point] of points.entries()) {
       const circle: Circle = new Circle(
         this.g,
         point.x,
@@ -53,7 +53,7 @@ export class AnnotationPolygon extends AnnotationLine {
         this.color,
         strokeWidth,
         this.color,
-        this.id + '-' + this.vertice.length
+        this.id + '-' + index
       );
 
       if (this.name) {

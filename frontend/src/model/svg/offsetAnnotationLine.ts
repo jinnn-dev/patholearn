@@ -86,7 +86,7 @@ export class OffsetAnnotationLine extends AnnotationLine {
         POLYGON_STROKE_WIDTH / scale
       );
       this._selectedPolyline?.select(viewer, scale);
-      this._selectedPolyline?.select(viewer, scale);
+      // this._selectedPolyline?.select(viewer, scale);
       this.createInflation(scale);
     }
   }

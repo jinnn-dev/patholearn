@@ -366,6 +366,8 @@ export class AnnotationViewer {
    * @param data The serialized annotations
    */
   addAnnotations(data: AnnotationData[]): void {
+    if (data.length === 0) return;
+
     let dataInstance = data as OffsetAnnotationPolygonData[];
     for (const item of data) {
       const items: PointData[] = [];

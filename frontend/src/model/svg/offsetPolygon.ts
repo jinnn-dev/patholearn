@@ -145,12 +145,14 @@ export class OffsetAnnotationPolygon extends AnnotationPolygon {
       this.createInnerInflation();
       this.createPath(scale);
 
+      let points = this._innerPoints;
+
+      if (points[0].equals(points[points.length - 1])) {
+        points = points.slice(0, -1);
+      }
+
       this._innerPolygon?.unselect();
-      this._innerPolygon?.updatePolygonPoints(
-        this._innerPoints,
-        POLYGON_VERTICE_RADIUS / scale,
-        POLYGON_STROKE_WIDTH / scale
-      );
+      this._innerPolygon?.updatePolygonPoints(points, POLYGON_VERTICE_RADIUS / scale, POLYGON_STROKE_WIDTH / scale);
       this._innerPolygon?.select(viewer, scale);
     }
   }
@@ -169,12 +171,15 @@ export class OffsetAnnotationPolygon extends AnnotationPolygon {
       this.createOuterInflation();
       this.createPath(scale);
     }
+
+    let points = this._outerPoints;
+
+    if (points[0].equals(points[points.length - 1])) {
+      points = points.slice(0, -1);
+    }
+
     this._outerPolygon?.unselect();
-    this._outerPolygon?.updatePolygonPoints(
-      this._outerPoints,
-      POLYGON_VERTICE_RADIUS / scale,
-      POLYGON_STROKE_WIDTH / scale
-    );
+    this._outerPolygon?.updatePolygonPoints(points, POLYGON_VERTICE_RADIUS / scale, POLYGON_STROKE_WIDTH / scale);
     this._outerPolygon?.select(viewer, scale);
   }
 
@@ -262,11 +267,13 @@ export class OffsetAnnotationPolygon extends AnnotationPolygon {
 
   private createOuterPolygon(viewer: OpenSeadragon.Viewer, scale: number): void {
     this._outerPolygon = new AnnotationPolygon(this.g, this.type, 'none', this.color, nanoid(), false, this.name);
+
     this._outerPolygon.addClosedPolygon(
       this._outerPoints.slice(0, -1),
       POLYGON_VERTICE_RADIUS / scale,
       POLYGON_STROKE_WIDTH / scale
     );
+
     this._outerPolygon.select(viewer, scale);
     this._outerPolygon.externalDragHandler = (event, index, point) => {
       polygonChanged.changed = false;

@@ -91,7 +91,6 @@ export default defineComponent({
     const selectedTask = ref<Task>();
 
     const editTask = (task: Task) => {
-      console.log(task);
       selectedTask.value = task;
       taskUpdateModal.value = true;
     };

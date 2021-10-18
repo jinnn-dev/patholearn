@@ -193,7 +193,7 @@ export class AnnotationLine extends Annotation {
       this.isSelected = true;
       const self = this;
 
-      this._vertice.forEach((vertice) => {
+      this.vertice.forEach((vertice) => {
         vertice.element.append();
         vertice.element.updateRadius(POLYGON_VERTICE_RADIUS / scale);
         vertice.element.updateStrokeWidth((POLYGON_VERTICE_RADIUS - 2) / scale);
