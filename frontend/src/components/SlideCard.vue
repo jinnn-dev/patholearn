@@ -5,7 +5,7 @@
         <div>
           <Icon
             v-if="slide.status === SLIDE_STATUS.SUCCESS"
-            id="successIcon"
+            :id="'successIcon' + slide.slide_id"
             name="check-circle"
             :width="40"
             :height="40"
@@ -13,7 +13,7 @@
           />
           <Icon
             v-else-if="slide.status === SLIDE_STATUS.RUNNING"
-            id="runningIcon"
+            :id="'runningIcon' + slide.slide_id"
             name="spinner"
             class="animate-spin"
             :width="40"
@@ -21,8 +21,8 @@
             :class="getStatusColor(slide.status)"
           />
           <Icon
-            v-else="slide.status === SLIDE_STATUS.ERROR"
-            id="errorIcon"
+            v-else
+            :id="'errorIcon' + slide.slide_id"
             name="warning"
             :width="40"
             :height="40"
@@ -37,9 +37,9 @@
             class="w-10 h-10"
             ><Icon name="info" :width="30" :height="30" class="text-white" />
           </primary-button>
-          <primary-button @click.stop="$emit('delete')" class="w-10 h-10" bgColor="bg-red-600"
-            ><Icon :width="30" :height="30" name="trash"
-          /></primary-button>
+          <primary-button @click.stop="showDeleteDialog = true" class="w-10 h-10" bgColor="bg-red-600">
+            <Icon :width="30" :height="30" name="trash" />
+          </primary-button>
         </div>
       </div>
 
@@ -70,7 +70,9 @@
   <modal-dialog :show="showInfoDialog" customClasses="w-1/2 mb-8 mt-8">
     <div class="sticky top-0 flex justify-end bg-gray-800 p-2">
       <div class="w-full text-4xl">Metadaten</div>
-      <primary-button class="w-12 bg-gray-500" @click="showInfoDialog = false"><Icon name="x"></Icon></primary-button>
+      <primary-button class="w-12" bgColor="bg-gray-500" @click="showInfoDialog = false"
+        ><Icon name="x"></Icon
+      ></primary-button>
     </div>
     <div class="h-full">
       <div v-for="(metaValue, metaKey) in slide.metadata" :key="metaKey" class="bg-gray-600 my-2 p-2 rounded-md">
@@ -79,12 +81,19 @@
       </div>
     </div>
   </modal-dialog>
+
+  <confirm-dialog
+    header="Bild löschen?"
+    :show="showDeleteDialog"
+    @confirmation="$emit('delete')"
+    @reject="showDeleteDialog = false"
+  ></confirm-dialog>
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, PropType, ref } from 'vue';
 
 import { Slide } from '../model/slide';
-import { SLIDE_STATUS, SLIDE_STATUS_STRING } from '../model/slideStatus';
+import { SLIDE_STATUS } from '../model/slideStatus';
 import { getThumbnailUrl } from '../config';
 import { TooltipGenerator } from '../utils/tooltip-generator';
 
@@ -98,8 +107,10 @@ export default defineComponent({
 
   emits: ['delete'],
 
-  setup() {
+  setup(props) {
     const showInfoDialog = ref(false);
+
+    const showDeleteDialog = ref(false);
 
     const getStatusColor = (status: SLIDE_STATUS) => {
       let color;
@@ -109,7 +120,7 @@ export default defineComponent({
           color = 'green-500';
           break;
         case SLIDE_STATUS.RUNNING:
-          color = 'yellow-500';
+          color = 'highlight-500';
           break;
         case SLIDE_STATUS.ERROR:
           color = 'red-500';
@@ -123,19 +134,23 @@ export default defineComponent({
 
     onMounted(() => {
       TooltipGenerator.addGeneralTooltip({
-        target: '#successIcon',
+        target: '#successIcon' + props.slide.slide_id,
         content: 'Bild erfolgreich konvertiert',
         placement: 'bottom'
       });
-      TooltipGenerator.addGeneralTooltip({ target: '#errorIcon', content: 'Fehlgeschlagen', placement: 'bottom' });
       TooltipGenerator.addGeneralTooltip({
-        target: '#runningIcon',
+        target: '#errorIcon' + props.slide.slide_id,
+        content: 'Fehlgeschlagen',
+        placement: 'bottom'
+      });
+      TooltipGenerator.addGeneralTooltip({
+        target: '#runningIcon' + props.slide.slide_id,
         content: 'Bild wird konvertiert',
         placement: 'bottom'
       });
     });
 
-    return { SLIDE_STATUS, getStatusColor, getThumbnailUrl, showInfoDialog };
+    return { SLIDE_STATUS, getStatusColor, getThumbnailUrl, showInfoDialog, showDeleteDialog };
   }
 });
 </script>
