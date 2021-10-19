@@ -1,6 +1,4 @@
 export default function getEnv(name: string) {
-  console.log(window?.configs);
-  console.log(window?.configs?.[name]);
   return window?.configs?.[name] || import.meta.env['VITE_' + name];
 }
 
