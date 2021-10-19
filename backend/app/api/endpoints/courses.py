@@ -194,10 +194,7 @@ def delete_course(*, db: Session = Depends(get_db), short_name: str,
                   current_user: User = Depends(get_current_active_superuser)) -> Any:
         
     course = crud_course.get_by_short_name(db, short_name=short_name)
-    print(course.owner)
     check_if_user_can_access_course(db, user_id=current_user.id, course_id=course.id)
-
-    
 
     for task_group in course.task_groups:
         for base_task in task_group.tasks:

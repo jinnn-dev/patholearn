@@ -429,4 +429,12 @@ export class TaskService {
 
     return response!.data;
   }
+
+  public static async getMembersolutionSummary(short_name: string): Promise<any> {
+    const [_, response] = await handleError(
+      ApiService.get<any>({ resource: this._apiUrl('/' + short_name + '/membersolutionsummary') }),
+      'Could not load summary'
+    );
+    return response!.data;
+  }
 }

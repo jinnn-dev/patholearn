@@ -20,6 +20,8 @@ from app.models.user import User
 from app.schemas.base_task import (BaseTask, BaseTaskCreate, BaseTaskDetail,
                                    BaseTaskUpdate)
 from app.schemas.hint_image import HintImageCreate
+from app.schemas.membersolution_summary import (MembersolutionSummary,
+                                                SummaryRow, SummaryUser)
 from app.schemas.polygon_data import (AnnotationData, AnnotationType,
                                       OffsetLineData, OffsetPointData,
                                       OffsetPolygonData, OffsetRectangleData,
@@ -35,7 +37,7 @@ from app.utils.timer import Timer
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.datastructures import UploadFile
 from fastapi.params import File
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, base
 
 router = APIRouter()
 
@@ -149,6 +151,39 @@ def create_task(*, db: Session = Depends(get_db), task_create: TaskCreate,
             crud_task.create_new_task(db=db, base_task_id=base_task.id, user_id=member.id)
 
     return task
+
+@router.get('/{short_name}/membersolutionsummary', response_model=MembersolutionSummary)
+def get_membersolution_summary(*, db: Session = Depends(get_db), short_name: str, current_user: User = Depends(get_current_active_superuser)) -> Any:
+    base_task = crud_base_task.get_by_short_name(db, short_name=short_name)
+    
+    check_if_user_can_access_course(db, current_user.id, base_task.course_id)
+
+    course = crud_course.get(db, id=base_task.course_id)
+
+    summary = MembersolutionSummary()
+    summary.tasks = []
+    summary.rows = []
+    for task in base_task.tasks:
+        summary.tasks.append(task.task_question)
+    
+
+    for member in course.members:
+        print(member)
+        row = SummaryRow()
+        row.user = SummaryUser()
+        row.user.firstname = member.firstname
+        row.user.middlename = member.middlename
+        row.user.lastname = member.lastname
+        row.summary = []
+        for task in base_task.tasks:
+            user_solution = crud_user_solution.get_solution_to_task_and_user(db, user_id=member.id, task_id=task.id) 
+            if user_solution:
+                row.summary.append(1 if user_solution.percentage_solved == 1.0 else 0)
+            else:
+                row.summary.append(0)
+        summary.rows.append(row)
+    
+    return summary
 
 
 @router.post('/task/{task_id}/annotationGroup', response_model=AnnotationGroup)

@@ -95,12 +95,90 @@
                   ></span>
                 </button>
               </div>
+              <div class="flex justify-between items-center text-right text-sm font-semibold mt-8">
+                <primary-button
+                  name="Zusammenfassung"
+                  bgColor="bg-gray-300"
+                  @click.prevent="loadSummary(baseTask.short_name)"
+                ></primary-button>
+              </div>
             </skeleton-card>
           </router-link>
         </div>
       </div>
     </template>
   </content-container>
+
+  <modal-dialog :show="showSummaryModal" customClasses="w-2/3 max-h-[70vh]">
+    <div class="flex justify-between items-center">
+      <div class="text-xl mt-4 font-semibold">Zusammenfassung Aufgabenbearbeitung</div>
+      <primary-button class="w-12" bgColor="self-end bg-gray-500" @click="showSummaryModal = false">
+        <Icon name="x"></Icon>
+      </primary-button>
+    </div>
+
+    <div class="mt-8 max-h-[50vh]">
+      <div class="w-full overflow-auto max-h-[50vh] pb-4">
+        <div
+          class="
+            flex
+            items-center
+            justify-between
+            text-center
+            sticky
+            top-0
+            z-20
+            font-bold
+            text-lg text-gray-200
+            bg-gray-800
+          "
+        >
+          <div class="w-48 flex-shrink-0 sticky left-0 top-0 z-10 p-4 bg-gray-800">Name</div>
+          <div
+            class="w-full flex justify-center sticky top-0 min-w-[200px] p-4"
+            v-for="task of summaryData.tasks"
+            :key="task"
+          >
+            {{ task }}
+          </div>
+        </div>
+
+        <div
+          class="flex justify-between items-center text-center rounded-lg"
+          v-for="(row, index) in summaryData.rows"
+          :key="index"
+          :class="index % 2 == 0 ? 'bg-gray-700' : 'bg-gray-800'"
+        >
+          <div
+            class="w-48 flex-shrink-0 sticky left-0 py-2 z-10 font-semibold"
+            :class="index % 2 == 0 ? 'bg-gray-700' : 'bg-gray-800'"
+          >
+            {{ row.user.firstname }} {{ row.user.middlename }} {{ row.user.lastname }}
+          </div>
+          <div
+            class="w-full flex justify-center items-center my-2"
+            v-for="(taskvalue, index) of row.summary"
+            :key="index"
+          >
+            <Icon name="check-circle" width="34" height="34" class="text-green-400" v-if="taskvalue == 1"></Icon>
+            <Icon name="error" width="34" height="34" class="text-red-500" v-else-if="taskvalue == -1"></Icon>
+            <Icon name="circle" width="34" height="34" class="text-gray-500" v-else></Icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- <table class="table-fixed relative w-full">
+        <thead class="relative block">
+          <tr class="w-full">
+            <th class="w-32">Name</th>
+            <th class="w-auto" v-for="task of summaryData.tasks" :key="task">
+              {{ task }}
+            </th>
+          </tr>
+        </thead>
+      </table> -->
+    </div>
+  </modal-dialog>
 
   <modal-dialog :show="showModal">
     <div class="relative">
@@ -203,6 +281,9 @@ export default defineComponent({
 
     const showModal = ref<Boolean>(false);
 
+    const showSummaryModal = ref<Boolean>(false);
+    const summaryData = ref<Boolean>(false);
+
     const taskGroup = ref<TaskGroup>();
 
     const route = useRoute();
@@ -296,8 +377,14 @@ export default defineComponent({
         });
     };
 
+    const loadSummary = async (short_name: string) => {
+      summaryData.value = await TaskService.getMembersolutionSummary(short_name);
+      showSummaryModal.value = true;
+    };
+
     return {
       taskGroup,
+      loadSummary,
       showModal,
       formData,
       taskLoading,
@@ -307,7 +394,9 @@ export default defineComponent({
       onTaskClose,
       deleteTaskGroup,
       onSubmit,
+      showSummaryModal,
       setSlide,
+      summaryData,
       showDeleteBaseTask,
       deleteBaseLoading,
       deleteBaseTaskItem,

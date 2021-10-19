@@ -53,6 +53,14 @@ export default defineComponent({
   setup(props) {
     const showModal = ref<Boolean>(false);
 
+    const handleKeyup = (e: KeyboardEvent) => {
+      console.log('KEY');
+
+      if (e.key === 'Escape') {
+        showModal.value = false;
+      }
+    };
+
     watch(
       () => props.show,
       (show) => {
@@ -60,7 +68,7 @@ export default defineComponent({
       }
     );
 
-    return { showModal };
+    return { showModal, handleKeyup };
   }
 });
 </script>
