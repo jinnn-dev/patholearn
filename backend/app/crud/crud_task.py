@@ -61,7 +61,6 @@ class CRUDTask(CRUDBase[Task, TaskCreate, TaskUpdate]):
         :param base_task_id: ID of the BaseTask
         :return: The deleted entity
         """
-        print(base_task_id, user_id)
         obj = db.query(NewTask).filter(NewTask.base_task_id == base_task_id).filter(NewTask.user_id == user_id).first()
         if obj is not None:
             db.delete(obj)
