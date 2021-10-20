@@ -13,8 +13,8 @@ const icons = [];
 directories.forEach((dir) => {
   const dirPath = iconPath + '/' + dir;
   fs.readdirSync(dirPath).forEach((file) => {
-    const data = fs.readFileSync(dirPath + '/' + file, 'utf-8');
-
+    let data = fs.readFileSync(dirPath + '/' + file, 'utf-8');
+    data = data.replace(/\n/g, '').replace(/\t/g, '');
     const regex = new RegExp(`</?(?!(?:svg)\b)[a-z](?:[^>"']|"[^"]*"|'[^']*')*>`);
     const path = data
       .replace(regex, '')
