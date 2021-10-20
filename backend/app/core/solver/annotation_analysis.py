@@ -177,7 +177,6 @@ class AnnotationAnalysis:
 
                 try:
                     hole_difference = user_polygon.difference(polygon_hole)
-                    print(isinstance(hole_difference, LineString))
                     lines_outside = []
                     if not hole_difference.is_empty:
                         if isinstance(hole_difference, LineString):

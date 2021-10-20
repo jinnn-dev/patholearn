@@ -1,7 +1,6 @@
-from math import hypot
-from typing import List, Dict, Any, Union
-
 import json
+from math import hypot
+from typing import Any, Dict, List, Union
 
 from app.schemas.polygon_data import Point
 from app.schemas.solver_result import LineResult, PointResult, PolygonResult

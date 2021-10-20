@@ -65,10 +65,11 @@ def get_task_group(*, db: Session = Depends(get_db), short_name: str,
 
     task_group_percentage = 0.0
     task_count = 0
-    new_task_count = 0
 
     new_tasks = []
     for task in task_group.tasks:
+        new_task_count = 0
+
         if not task.enabled and not current_user.is_superuser:
             continue
         base_task_percentage = float(
@@ -76,6 +77,7 @@ def get_task_group(*, db: Session = Depends(get_db), short_name: str,
                 db, user_id=current_user.id, base_task_id=task.id
             )[0] or 0.0
         )
+        
 
         if crud_task.has_new_task(db, user_id=current_user.id, base_task_id=task.id):
             new_task_count += 1
@@ -85,7 +87,7 @@ def get_task_group(*, db: Session = Depends(get_db), short_name: str,
         task_count += task_len
         task.task_count = task_len
         task.new_tasks = new_task_count
-
+       
         if task.tasks:
             task.percentage_solved = base_task_percentage / len(task.tasks)
         else:

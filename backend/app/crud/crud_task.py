@@ -1,11 +1,11 @@
 from typing import List
 
-from sqlalchemy.orm import Session
-
 from app.crud.base import CRUDBase
+from app.models import base_task
 from app.models.new_task import NewTask
 from app.models.task import Task
 from app.schemas.task import TaskCreate, TaskUpdate
+from sqlalchemy.orm import Session
 
 
 class CRUDTask(CRUDBase[Task, TaskCreate, TaskUpdate]):
@@ -61,6 +61,7 @@ class CRUDTask(CRUDBase[Task, TaskCreate, TaskUpdate]):
         :param base_task_id: ID of the BaseTask
         :return: The deleted entity
         """
+        print(base_task_id, user_id)
         obj = db.query(NewTask).filter(NewTask.base_task_id == base_task_id).filter(NewTask.user_id == user_id).first()
         if obj is not None:
             db.delete(obj)

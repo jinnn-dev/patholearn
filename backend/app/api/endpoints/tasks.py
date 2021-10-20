@@ -138,7 +138,6 @@ def get_base_tasks_with_no_group(*, db: Session = Depends(get_db), course_id: in
 @router.post('/task', response_model=Task)
 def create_task(*, db: Session = Depends(get_db), task_create: TaskCreate,
                 current_user: User = Depends(get_current_active_superuser)) -> Any:
-    print(task_create)
     check_if_user_can_access_task(db, user_id=current_user.id, base_task_id=task_create.base_task_id)
 
     task = crud_task.create(db, obj_in=task_create)
@@ -168,7 +167,6 @@ def get_membersolution_summary(*, db: Session = Depends(get_db), short_name: str
     
 
     for member in course.members:
-        print(member)
         row = SummaryRow()
         row.user = SummaryUser()
         row.user.firstname = member.firstname
@@ -229,8 +227,6 @@ def delete_task(*, db: Session = Depends(get_db), task_id: int,
                 current_user: User = Depends(get_current_active_superuser)) -> Any:
     try:
         task_to_delete = crud_task.get(db, id=task_id)
-
-        print(task_to_delete)
 
         check_if_user_can_access_task(db, user_id=current_user.id, base_task_id=task_to_delete.base_task_id)
 
@@ -471,9 +467,6 @@ def solve_task(*, db: Session = Depends(get_db), task_id: int, current_user: Use
     else:
         crud_user_solution.increment_failed_attempts(db, user_id=current_user.id, task_id=task_id)
         solution_update.percentage_solved = 0.0
-
-    print("INCREMENT")
-
 
     crud_user_solution.update(db, db_obj=user_solution, obj_in=solution_update)
     timer.stop()

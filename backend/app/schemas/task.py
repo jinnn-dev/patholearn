@@ -6,6 +6,11 @@ from app.schemas.task_hint import TaskHint
 from pydantic import BaseModel
 
 
+class TaskType(IntEnum):
+    DRAWING = 0
+    DRAWING_WITH_CLASS = 1
+    IMAGE_SELECT = 2
+
 class TaskAnnotationType(IntEnum):
     POINT = 0
     LINE = 1
@@ -51,7 +56,7 @@ class TaskFeedback(BaseModel):
 
 class TaskBase(BaseModel):
     layer: int
-    task_type: int
+    task_type: TaskType
     task_question: str
     knowledge_level: int
     min_correct: int
