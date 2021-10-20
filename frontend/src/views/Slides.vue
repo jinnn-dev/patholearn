@@ -2,7 +2,7 @@
   <content-container>
     <template v-slot:header><div class="text-center">Hochgeladene Bilder</div></template>
     <template v-slot:content>
-      <slide-upload class="mb-4" />
+      <slide-upload @slide-uploaded="onUpload($event)" />
 
       <div class="flex justify-end w-full mb-4">
         <primary-button
@@ -15,13 +15,15 @@
 
       <div
         v-if="slideLoading"
-        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 h-32"
       >
         <skeleton-card v-for="i of [1, 2, 3]" :key="i" class="my-4 min-h-42" :loading="slideLoading"></skeleton-card>
       </div>
       <div v-else>
-        <div v-if="slides.length === 0 && !slideError" class="text-4xl">Keine Bilder vorhanden</div>
-        <div v-if="slideError" class="text-4xl">Fehler beim Laden der Bilder</div>
+        <div v-if="slides.length === 0 && !slideError" class="text-4xl">
+          <no-content text="Keine Bilder vorhanden"></no-content>
+        </div>
+        <div v-if="slideError" class="text-4xl text-center">Fehler beim Laden der Bilder</div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           <slide-card
@@ -69,6 +71,10 @@ export default defineComponent({
         });
     };
 
+    const onUpload = (slide: Slide) => {
+      slides.value.push(slide);
+    };
+
     const deleteSlide = (slide: Slide, index: number) => {
       SlideService.deleteSlide(slide.slide_id).then(
         (_) => {
@@ -85,6 +91,7 @@ export default defineComponent({
       deleteSlide,
       loadSlides,
       slideLoading,
+      onUpload,
       slideError
     };
   }

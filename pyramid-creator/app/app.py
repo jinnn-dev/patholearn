@@ -65,6 +65,11 @@ def create_slide(background_tasks: BackgroundTasks, name: str = Form(...), file:
             status_code=500,
             detail="Slide couldn't be saved"
         )
+    return Slide(
+                slide_id=file_id,
+                name=name,
+                status=SlideStatus.RUNNING
+            )
 
 
 @app.get('/slides', response_model=List[Slide])

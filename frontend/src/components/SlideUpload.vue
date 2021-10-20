@@ -11,11 +11,25 @@
         <Icon name="plus" class="mr-2 w-8" :width="24" :height="24" />
       </primary-button>
     </div>
-    <div v-if="showUpload" class="bg-gray-800 p-4 rounded-xl border-2 border-gray-500">
+    <modal-dialog :show="showUpload" customClasses="w-1/3">
+      <h1 class="text-3xl">Bild hochladen</h1>
       <form @submit.prevent="onSubmit" class="flex flex-col">
-        <form-field label="Name" tip="Gebe dem Bild einen eindeutigen Namen.">
-          <input placeholder="Session 1" type="text" v-model="formModel.name" class="bg-gray-800 rounded-lg w-full" />
-        </form-field>
+        <input-field
+          v-model="formModel.name"
+          label="Name"
+          tip="Gebe dem Bild einen eindeutigen Namen."
+          placeholder="Session 1"
+        >
+        </input-field>
+
+        <!-- <form-field label="Name" tip="Gebe dem Bild einen eindeutigen Namen.">
+          <input-field
+            placeholder="Session 1"
+            type="text"
+            v-model="formModel.name"
+            class="bg-gray-800 rounded-lg w-full"
+          />
+        </form-field> -->
 
         <form-field label="Bild" tip="Wähle ein Bild aus, welches hochgeladen werden soll">
           <div class="flex items-center">
@@ -41,11 +55,18 @@
           <!-- <div v-if="progress === 100">Datei wird gespeichert. Dies kann einige Minuten dauern...</div> -->
           {{ errorMessage }}
         </div>
-        <div class="w-full flex justify-end">
+        <div class="w-full flex justify-end gap-4">
+          <primary-button
+            name="Abbrechen"
+            type="button"
+            @click.stop="showUpload = false"
+            bgColor="bg-gray-500"
+            class="w-36"
+          ></primary-button>
           <save-button name="Hochladen" class="w-36" :loading="loading"></save-button>
         </div>
       </form>
-    </div>
+    </modal-dialog>
   </div>
 </template>
 
@@ -54,7 +75,9 @@ import { defineComponent, reactive, ref } from 'vue';
 import { SlideService } from '../services/slide.service';
 
 export default defineComponent({
-  setup() {
+  emits: ['slide-uploaded'],
+
+  setup(_, { emit }) {
     const showUpload = ref(false);
     const loading = ref(false);
 
@@ -91,6 +114,9 @@ export default defineComponent({
         .then((res) => {
           progress.value = 0;
           loading.value = false;
+          showUpload.value = false;
+          emit('slide-uploaded', res);
+          console.log(res);
         })
         .catch((err) => {
           loading.value = false;
