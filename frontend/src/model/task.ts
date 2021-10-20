@@ -7,10 +7,16 @@ export interface AnnotationGroup {
   color: string;
 }
 
+export enum TaskType {
+  DRAWING = 0,
+  DRAWING_WITH_CLASS = 1,
+  IMAGE_SELECT = 2
+}
+
 export interface Task {
   id: number;
   layer: number;
-  task_type: number;
+  task_type: TaskType;
   task_question: string;
   knowledge_level: number;
   task_data?: AnnotationData[];

@@ -10,19 +10,20 @@
     <task-container :baseTask="baseTask" :isOwner="true" @taskSelected="selectTask($event)"></task-container>
 
     <hint-overlay :taskId="selectedTask?.id" />
-<!-- 
-    <task-viewer-admin
-      :slide_name="baseTask?.slide_id"
-      :task="selectedTask"
-      :base_task_id="baseTask?.id"
-      :task_group_id="baseTask?.task_group_id"
-      :course_id="baseTask?.course_id"
-    ></task-viewer-admin> -->
-    <select-images-task></select-images-task>
 
+    <div v-if="selectedTask">
+      <select-images-task v-if="selectedTask.task_type === TaskType.IMAGE_SELECT"></select-images-task>
+
+      <task-viewer-admin
+        v-else
+        :slide_name="baseTask?.slide_id"
+        :task="selectedTask"
+        :base_task_id="baseTask?.id"
+        :task_group_id="baseTask?.task_group_id"
+        :course_id="baseTask?.course_id"
+      ></task-viewer-admin>
+    </div>
   </div>
-
-
 </template>
 
 <script lang="ts">
@@ -32,6 +33,7 @@ import { BaseTask } from '../model/baseTask';
 import { Task } from '../model/task';
 import { TaskService } from '../services/task.service';
 import { viewerLoadingState } from '../components/viewer/core/viewerState';
+import { TaskType } from '../model/task';
 
 const TaskViewerAdmin = defineAsyncComponent({
   loader: () => import('../components/viewer/TaskViewerAdmin.vue')
@@ -73,7 +75,8 @@ export default defineComponent({
       baseTask,
       selectedTask,
       selectTask,
-      viewerLoadingState
+      viewerLoadingState,
+      TaskType
     };
   }
 });

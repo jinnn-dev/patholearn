@@ -116,7 +116,7 @@ import { select, selectAll } from 'd3-selection';
 import { ParseResult } from '../../utils/annotation-parser';
 import { TaskService } from '../../services/task.service';
 import { updateAnnotation } from './taskViewerHelper';
-import { AnnotationGroup, Task } from '../../model/task';
+import { AnnotationGroup, Task, TaskType } from '../../model/task';
 import { isDrawingTool, isSolution, Tool, TOOL_POLYGON } from '../../model/viewer/tools';
 import { AnnotationLine } from '../../model/svg/annotationLine';
 import { OffsetAnnotationPolygon } from '../../model/svg/offsetPolygon';
@@ -317,7 +317,7 @@ export default defineComponent({
       (newVal, _) => {
         if (newVal) {
           if (props.task) {
-            if (props.task.task_type === Tool.UPLOAD && !toolbarTools.value.includes(Tool.UPLOAD)) {
+            if (props.task.task_type === TaskType.DRAWING_WITH_CLASS && !toolbarTools.value.includes(Tool.UPLOAD)) {
               toolbarTools.value.push(Tool.UPLOAD);
             }
 
