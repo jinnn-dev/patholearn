@@ -11,11 +11,11 @@
 
     <hint-overlay :taskId="selectedTask?.id" />
 
-    <div v-if="selectedTask">
-      <select-images-task v-if="selectedTask.task_type === TaskType.IMAGE_SELECT"></select-images-task>
+    <select-images-task v-if="selectedTask?.task_type === TaskType.IMAGE_SELECT"></select-images-task>
 
+    <div v-else>
       <task-viewer-admin
-        v-else
+        v-if="baseTask?.tasks.length === 0"
         :slide_name="baseTask?.slide_id"
         :task="selectedTask"
         :base_task_id="baseTask?.id"
