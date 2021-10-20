@@ -47,7 +47,7 @@ declare module 'vue' {
     RoleOnly: typeof import('./src/components/containers/RoleOnly.vue')['default']
     SaveButton: typeof import('./src/components/SaveButton.vue')['default']
     SavingInfo: typeof import('./src/components/viewer/SavingInfo.vue')['default']
-    SelectImagesTask: typeof import('./src/components/viewer/SelectImagesTask.vue')['default']
+    SelectImagesTask: typeof import('./src/components/SelectImagesTask.vue')['default']
     SkeletonCard: typeof import('./src/components/containers/SkeletonCard.vue')['default']
     SlideCard: typeof import('./src/components/SlideCard.vue')['default']
     SlideSelect: typeof import('./src/components/SlideSelect.vue')['default']

@@ -10,17 +10,19 @@
     <task-container :baseTask="baseTask" :isOwner="true" @taskSelected="selectTask($event)"></task-container>
 
     <hint-overlay :taskId="selectedTask?.id" />
-
+<!-- 
     <task-viewer-admin
       :slide_name="baseTask?.slide_id"
       :task="selectedTask"
       :base_task_id="baseTask?.id"
       :task_group_id="baseTask?.task_group_id"
       :course_id="baseTask?.course_id"
-    ></task-viewer-admin>
+    ></task-viewer-admin> -->
+    <select-images-task></select-images-task>
 
-    <!-- <select-images-task></select-images-task> -->
   </div>
+
+
 </template>
 
 <script lang="ts">
