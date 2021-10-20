@@ -1,4 +1,5 @@
 import { BaseTask, CreateBaseTask, UpdateBaseTask } from '../model/baseTask';
+import { MembersolutionSummary } from '../model/membersolutionSummary';
 import { TaskResult } from '../model/result';
 import { AnnotationGroup, Task, TaskCreate, TaskUpdate } from '../model/task';
 import { TaskHint, TaskHintCreate, TaskHintUpdate } from '../model/taskHint';
@@ -430,9 +431,9 @@ export class TaskService {
     return response!.data;
   }
 
-  public static async getMembersolutionSummary(short_name: string): Promise<any> {
+  public static async getMembersolutionSummary(short_name: string): Promise<MembersolutionSummary> {
     const [_, response] = await handleError(
-      ApiService.get<any>({ resource: this._apiUrl('/' + short_name + '/membersolutionsummary') }),
+      ApiService.get<MembersolutionSummary>({ resource: this._apiUrl('/' + short_name + '/membersolutionsummary') }),
       'Could not load summary'
     );
     return response!.data;

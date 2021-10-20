@@ -5,7 +5,10 @@ module.exports = {
   theme: {
     extend: {
       animation: {
-        skeleton: 'pulse 1.5s ease-in-out infinite',
+        skeleton: 'pulse 1.5s ease-in-out infinite'
+      },
+      width: {
+        'fit-content': 'fit-content'
       },
       colors: {
         gray: {
@@ -17,7 +20,7 @@ module.exports = {
           600: '#262A34', // '#333D4D'
           700: '#242C37',
           800: '#181A20', // '#151A21'
-          900: '#0B0E11',
+          900: '#0B0E11'
         },
 
         highlight: {
@@ -29,10 +32,10 @@ module.exports = {
           600: '#FB8C00',
           700: '#F57C00',
           800: '#EF6C00',
-          900: '#E65100',
-        },
-      },
-    },
+          900: '#E65100'
+        }
+      }
+    }
   },
-  plugins: [require('@tailwindcss/forms')],
+  plugins: [require('@tailwindcss/forms')]
 };

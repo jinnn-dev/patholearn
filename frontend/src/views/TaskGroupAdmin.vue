@@ -117,7 +117,7 @@
       </primary-button>
     </div>
 
-    <div class="mt-8 max-h-[50vh]">
+    <div class="mt-8 max-h-[50vh]" v-if="summaryData">
       <div class="w-full overflow-auto max-h-[50vh] pb-4">
         <div
           class="
@@ -131,20 +131,21 @@
             font-bold
             text-lg text-gray-200
             bg-gray-800
+            flex-1
           "
         >
           <div class="w-48 flex-shrink-0 sticky left-0 top-0 z-10 p-4 bg-gray-800">Name</div>
           <div
             class="w-full flex justify-center sticky top-0 min-w-[200px] p-4"
-            v-for="task of summaryData.tasks"
+            v-for="(task, index) of summaryData.tasks"
             :key="task"
           >
-            {{ task }}
+            <span class="truncate" :id="'task-' + index">{{ task }}</span>
           </div>
         </div>
 
         <div
-          class="flex justify-between items-center text-center rounded-lg"
+          class="flex justify-between items-center text-center rounded-lg min-w-full w-fit-content"
           v-for="(row, index) in summaryData.rows"
           :key="index"
           :class="index % 2 == 0 ? 'bg-gray-700' : 'bg-gray-800'"
@@ -156,7 +157,7 @@
             {{ row.user.firstname }} {{ row.user.middlename }} {{ row.user.lastname }}
           </div>
           <div
-            class="w-full flex justify-center items-center my-2"
+            class="w-full flex justify-center items-center my-2 min-w-[200px]"
             v-for="(taskvalue, index) of row.summary"
             :key="index"
           >
@@ -264,7 +265,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive, ref } from 'vue';
+import { defineComponent, nextTick, onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { TaskGroup } from '../model/taskGroup';
 import { Slide } from '../model/slide';
@@ -272,6 +273,8 @@ import { BaseTask } from '../model/baseTask';
 import { TaskService } from '../services/task.service';
 import { TaskGroupService } from '../services/task-group.service';
 import router from '../router';
+import { TooltipGenerator } from '../utils/tooltip-generator';
+import { MembersolutionSummary } from '../model/membersolutionSummary';
 
 export default defineComponent({
   setup() {
@@ -282,7 +285,7 @@ export default defineComponent({
     const showModal = ref<Boolean>(false);
 
     const showSummaryModal = ref<Boolean>(false);
-    const summaryData = ref<Boolean>(false);
+    const summaryData = ref<MembersolutionSummary>();
 
     const taskGroup = ref<TaskGroup>();
 
@@ -380,6 +383,18 @@ export default defineComponent({
     const loadSummary = async (short_name: string) => {
       summaryData.value = await TaskService.getMembersolutionSummary(short_name);
       showSummaryModal.value = true;
+
+      nextTick(() => {
+        if (summaryData.value) {
+          for (const [index, task] of summaryData.value.tasks.entries()) {
+            TooltipGenerator.addGeneralTooltip({
+              target: '#task-' + index,
+              content: task,
+              placement: 'top'
+            });
+          }
+        }
+      });
     };
 
     return {
