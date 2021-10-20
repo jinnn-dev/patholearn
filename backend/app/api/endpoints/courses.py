@@ -196,12 +196,13 @@ def delete_course(*, db: Session = Depends(get_db), short_name: str,
     course = crud_course.get_by_short_name(db, short_name=short_name)
     check_if_user_can_access_course(db, user_id=current_user.id, course_id=course.id)
 
+    crud_user_solution.remove_all_to_course(db, course_id=course.id)
+
     for task_group in course.task_groups:
         for base_task in task_group.tasks:
             crud_task.remove_all_to_task_id(db, base_task_id=base_task.id)
             crud_base_task.remove(db, model_id=base_task.id)
 
-    crud_user_solution.remove_all_to_course(db, course_id=course.id)
     crud_course.remove(db, model_id=course.id)
     return course
 
