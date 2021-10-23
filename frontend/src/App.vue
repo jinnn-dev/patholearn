@@ -9,6 +9,7 @@
 import { User } from './model/user';
 import { defineComponent, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
+import { getEnv } from './config';
 
 export default defineComponent({
   name: 'App',
@@ -18,8 +19,20 @@ export default defineComponent({
     const route = useRoute();
     onMounted(async () => {});
 
+    const title = getEnv('APP_TITLE');
+    document.title = title || '';
+
+    //set favicon dynamicly
+    var link = document.querySelector("link[rel~='icon']");
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.getElementsByTagName('head')[0].appendChild(link);
+    }
+    link.href = '/' + getEnv('APP_FAVICON_URL') || '';
+
     return { user, route };
-  }
+  },
 });
 </script>
 

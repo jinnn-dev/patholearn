@@ -1,4 +1,4 @@
-export default function getEnv(name: string) {
+export function getEnv(name: string) {
   return window?.configs?.[name] || import.meta.env['VITE_' + name];
 }
 
@@ -15,4 +15,4 @@ const getThumbnailUrl = (slide_id: string) => {
   return `${SLIDE_URL}/${slide_id}/thumbnail.jpeg`;
 };
 
-export { BASE_API_URL, SLIDE_API_URL, SLIDE_IMAGE_URL, SLIDE_URL, getSlideUrl, getThumbnailUrl };
+export { BASE_API_URL, SLIDE_API_URL, SLIDE_IMAGE_URL, SLIDE_URL, getSlideUrl, getThumbnailUrl, APP_LOGO_URL };
