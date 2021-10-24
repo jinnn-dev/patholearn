@@ -21,6 +21,7 @@
     "curvereduce": "0.0.4",
     "d3-selection": "^3.0.0",
     "d3-shape": "^3.0.1",
+    "detect-browser": "^5.2.1",
     "jsts": "^2.6.1",
     "nanoid": "^3.1.22",
     "openseadragon": "^2.4.2",

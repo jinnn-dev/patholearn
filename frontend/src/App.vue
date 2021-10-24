@@ -1,5 +1,9 @@
 <template>
   <div class="w-full bg-gray-800 text-gray-100 min-h-screen">
+    <div v-if="showBrowserWarning" class="absolute right-5 top-5 border-red-500 border-2 px-10 py-5 bg-red-500/20 rounded-lg">
+      <p class="text-lg">Dein Browser wird von dieser Software nicht unterstützt!</p>
+      <p class="text-sm text-gray-200">Bitte wechsel zu einem Chromium-basierten Browser wie Chrome oder Edge</p>
+    </div>
     <router-view />
   </div>
   <error-bar></error-bar>
@@ -10,13 +14,12 @@ import { User } from './model/user';
 import { defineComponent, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { getEnv } from './config';
+import { detect } from 'detect-browser';
 
 export default defineComponent({
   name: 'App',
 
   setup() {
-    const user = ref<User>();
-    const route = useRoute();
     onMounted(async () => {});
 
     const title = getEnv('APP_TITLE');
@@ -31,7 +34,25 @@ export default defineComponent({
     }
     link.href = '/' + getEnv('APP_FAVICON_URL') || '';
 
-    return { user, route };
+    const showBrowserWarning = ref(false);
+
+    const detectedBrowser = detect();
+    if (detectedBrowser) {
+      switch (detectedBrowser.name) {
+        case 'chrome':
+          break;
+        case 'edge-chromium':
+          break;
+        case 'opera':
+          break;
+
+        default:
+          showBrowserWarning.value = true;
+          break;
+      }
+    }
+
+    return { showBrowserWarning };
   },
 });
 </script>
