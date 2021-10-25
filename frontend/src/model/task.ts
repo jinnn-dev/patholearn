@@ -19,9 +19,9 @@ export interface Task {
   task_type: TaskType;
   task_question: string;
   knowledge_level: number;
-  task_data?: AnnotationData[];
+  task_data?: AnnotationData[] | string[];
   user_solution?: UserSolution;
-  solution?: AnnotationData[];
+  solution?: AnnotationData[] | number[];
   annotation_type: number;
   min_correct: number;
   annotation_groups: AnnotationGroup[];

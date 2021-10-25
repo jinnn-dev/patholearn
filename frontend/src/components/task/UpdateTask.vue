@@ -12,7 +12,11 @@
       </input-field>
 
       <Accordion>
-        <AccordionItem title="Aufgabeneinstellungen" :first="true">
+        <AccordionItem
+          title="Aufgabeneinstellungen"
+          :first="true"
+          v-if="taskUpdateForm.task_type !== TaskType.IMAGE_SELECT"
+        >
           <div class="my-8" v-if="taskUpdateForm.task_type === 0">
             <div>Wie viele Annotationen müssen die Lernenden mindestens richtig treffen:</div>
             <div class="pb-4 pt-11">
@@ -77,7 +81,7 @@ import Slider from '@vueform/slider';
 
 import { knowledgeLevel, taskTypes } from './task-config';
 import { TaskService } from '../../services/task.service';
-import { Task } from '../../model/task';
+import { Task, TaskType } from '../../model/task';
 
 export default defineComponent({
   components: { Slider },
@@ -131,7 +135,7 @@ export default defineComponent({
       emit('close');
       emit('taskUpdated', res);
     };
-    return { taskUpdateForm, updateTask, taskUpdateLoading, knowledgeLevel, taskTypes };
+    return { taskUpdateForm, updateTask, taskUpdateLoading, knowledgeLevel, taskTypes, TaskType };
   }
 });
 </script>

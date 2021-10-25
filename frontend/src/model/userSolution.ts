@@ -13,3 +13,8 @@ export interface UserSolutionCreate {
   course_id: number;
   solution_data: any;
 }
+
+export interface UserSolutionUpdate {
+  task_id: number;
+  solution_data: any;
+}

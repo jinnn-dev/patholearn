@@ -3,7 +3,7 @@ import { MembersolutionSummary } from '../model/membersolutionSummary';
 import { TaskResult } from '../model/result';
 import { AnnotationGroup, Task, TaskCreate, TaskUpdate } from '../model/task';
 import { TaskHint, TaskHintCreate, TaskHintUpdate } from '../model/taskHint';
-import { UserSolution, UserSolutionCreate } from '../model/userSolution';
+import { UserSolution, UserSolutionCreate, UserSolutionUpdate } from '../model/userSolution';
 import { ApiService } from './api.service';
 import { handleError } from './error-handler';
 
@@ -124,6 +124,17 @@ export class TaskService {
     const [_, response] = await handleError(
       ApiService.delete<UserSolution>({ resource: this._apiUrl(`/${task_id}/userSolution`) }),
       'User solution could not be deleted'
+    );
+    return response!.data;
+  }
+
+  public static async updateUserSolution(solutionUpdate: UserSolutionUpdate): Promise<UserSolution> {
+    const [_, response] = await handleError(
+      ApiService.put<UserSolution>({
+        resource: this._apiUrl(`/${solutionUpdate.task_id}/userSolution`),
+        data: solutionUpdate
+      }),
+      'User solution could not be updated'
     );
     return response!.data;
   }
@@ -436,6 +447,15 @@ export class TaskService {
       ApiService.get<MembersolutionSummary>({ resource: this._apiUrl('/' + short_name + '/membersolutionsummary') }),
       'Could not load summary'
     );
+    return response!.data;
+  }
+
+  public static async uploadTaskImage(formData: FormData) {
+    const [_, response] = await handleError(
+      ApiService.post<any>({ resource: this._apiUrl(`/task/image`), data: formData }),
+      'Task-Image upload failed'
+    );
+
     return response!.data;
   }
 }

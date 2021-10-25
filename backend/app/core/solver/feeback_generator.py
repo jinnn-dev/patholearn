@@ -3,7 +3,8 @@ from typing import Dict, List, Tuple, Union
 from app.core.solver.feedback_config import FeedbackConfig
 from app.core.solver.task_result_factory import TaskResultFactory
 from app.schemas.solver_result import LineResult, PointResult, PolygonResult
-from app.schemas.task import AnnotationFeedback, TaskFeedback, TaskStatus
+from app.schemas.task import (AnnotationFeedback, SelectImageFeedback,
+                              TaskFeedback, TaskStatus)
 from app.utils.utils import get_max_value_length, print_python_dict
 
 
@@ -324,6 +325,31 @@ class FeedbackGenerator:
                                                        percentage=percentage,
                                                        task_result=task_feedback)
         return False
+
+    @staticmethod
+    def generate_image_select_feedback(*, task_feedback: TaskFeedback, correct_image_indices: List[int], wrong_image_indices: List[int]) -> TaskFeedback:
+        for correct_index in correct_image_indices:
+            select_image_feedback = SelectImageFeedback()
+            select_image_feedback.status = TaskStatus.CORRECT
+            select_image_feedback.index = correct_index
+            task_feedback.result_detail.append(select_image_feedback)
+        if len(wrong_image_indices) == 0 and len(correct_image_indices) != 0:
+            if not task_feedback.task_status:
+                TaskResultFactory.correct_status(task_feedback)
+
+        else:
+            for wrong_index in wrong_image_indices:
+                select_image_feedback = SelectImageFeedback()
+                select_image_feedback.status = TaskStatus.WRONG
+                select_image_feedback.index = wrong_index
+                task_feedback.result_detail.append(select_image_feedback)
+
+            if not task_feedback.task_status:
+                task_feedback.task_status = TaskStatus.WRONG
+                task_feedback.task_status.WRONG
+                task_feedback.response_text = "Du hast noch nicht die richtigen Bilder ausgewählt"
+            
+        return task_feedback
 
     @staticmethod
     def __check_name(matched_ids: Dict[str, List[Union[PointResult, LineResult, PolygonResult]]],

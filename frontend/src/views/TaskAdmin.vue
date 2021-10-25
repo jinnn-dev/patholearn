@@ -11,11 +11,18 @@
 
     <hint-overlay :taskId="selectedTask?.id" />
 
-    <select-images-task v-if="selectedTask?.task_type === TaskType.IMAGE_SELECT"></select-images-task>
+    <select-images-task
+      v-if="selectedTask?.task_type === TaskType.IMAGE_SELECT"
+      :task="selectedTask"
+      :base_task_id="baseTask?.id"
+      :task_group_id="baseTask?.task_group_id"
+      :course_id="baseTask?.course_id"
+      :isAdmin="true"
+    ></select-images-task>
 
     <div v-else>
       <task-viewer-admin
-        v-if="baseTask?.tasks.length === 0"
+        v-if="baseTask?.tasks.length === 0 || selectedTask?.task_type !== TaskType.IMAGE_SELECT"
         :slide_name="baseTask?.slide_id"
         :task="selectedTask"
         :base_task_id="baseTask?.id"
@@ -49,7 +56,14 @@ export default defineComponent({
     const selectedTask = ref<Task>();
 
     const selectTask = (task: Task) => {
-      selectedTask.value = task;
+      if (task !== selectedTask.value) {
+        selectedTask.value = task;
+
+        if (task.task_type === TaskType.IMAGE_SELECT) {
+          viewerLoadingState.tilesLoaded = false;
+          viewerLoadingState.annotationsLoaded = false;
+        }
+      }
     };
 
     onMounted(() => {

@@ -15,7 +15,7 @@
           viewBox="0 0 48 48"
           aria-hidden="true"
         >
-          <circle class="circle" fill="transparent" cx="24" cy="24" r="22" />
+          <circle class="circle circle-correct" fill="transparent" cx="24" cy="24" r="22" />
           <path
             class="tick"
             fill="none"
@@ -26,6 +26,53 @@
             stroke-miterlimit="10"
             d="M14 27l5.917 4.917L34 17"
           />
+        </svg>
+      </div>
+
+      <div class="svg-container" v-if="solveResult?.task_status !== TaskStatus.CORRECT">
+        <svg
+          class="ft-green-tick"
+          xmlns="http://www.w3.org/2000/svg"
+          height="49"
+          width="40"
+          viewBox="0 0 48 48"
+          aria-hidden="true"
+        >
+          <circle class="circle circle-wrong" fill="transparent" cx="24" cy="24" r="22" />
+          <line
+            id="path2"
+            class="cross"
+            fill="none"
+            stroke="#e74c3c"
+            stroke-width="3"
+            stroke-miterlimit="10"
+            x1="15"
+            y1="33"
+            x2="33"
+            y2="15"
+          />
+          <line
+            id="path3"
+            class="cross"
+            fill="none"
+            stroke="#e74c3c"
+            stroke-width="3"
+            stroke-miterlimit="10"
+            x1="33"
+            y1="33"
+            x2="15"
+            y2="15"
+          />
+          <!-- <path
+            class="tick"
+            fill="none"
+            stroke="#E74C3C"
+            stroke-width="4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-miterlimit="10"
+            d="M14 27l5.917 4.917L34 17"
+          /> -->
         </svg>
       </div>
       <h2 class="text-xl text-center">{{ solveResult?.response_text }}</h2>
@@ -52,7 +99,7 @@
       >
       </save-button>
       <save-button
-        v-if="solveResult.task_status === TaskStatus.CORRECT"
+        v-if="solveResult.task_status === TaskStatus.CORRECT && showSolution"
         :loading="viewerLoadingState.solutionLoading"
         class="w-70"
         bgColor="bg-gray-500"
@@ -72,7 +119,8 @@ import { userSolutionLocked, showSolution, viewerLoadingState } from '../../comp
 
 export default defineComponent({
   props: {
-    solveResult: Object as PropType<TaskResult>
+    solveResult: Object as PropType<TaskResult>,
+    showSolution: Boolean
   },
   setup(props) {
     const color = computed(() => RESULT_POLYGON_COLOR[props.solveResult!.task_status!]);
@@ -122,9 +170,28 @@ export default defineComponent({
     animation-delay: 0.6s;
   }
 
+  .cross {
+    stroke-dasharray: 430;
+    stroke-dashoffset: 800;
+    animation: x 0.5s cubic-bezier(0.25, 0.25, 0.25, 1) forwards;
+    animation-fill-mode: forwards;
+    animation-delay: 0.6s;
+  }
+
+  #path3 {
+    animation-delay: 0.8s;
+  }
+
+  .circle-correct {
+    stroke: #2ecc71;
+  }
+
+  .circle-wrong {
+    stroke: #e74c3c;
+  }
+
   .circle {
     fill-opacity: 0;
-    stroke: #2ecc71;
     stroke-width: 16px;
     transform-origin: center;
     transform: scale(0);
@@ -153,6 +220,15 @@ export default defineComponent({
   }
   100% {
     stroke-dashoffset: 0;
+  }
+}
+
+@keyframes x {
+  from {
+    stroke-dasharray: 430;
+  }
+  to {
+    stroke-dasharray: 400;
   }
 }
 </style>

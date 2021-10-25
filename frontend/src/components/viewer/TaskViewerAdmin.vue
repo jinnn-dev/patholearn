@@ -126,6 +126,7 @@ import { OffsetAnnotationLine } from '../../model/svg/offsetAnnotationLine';
 import { OffsetAnnotationRectangle } from '../../model/svg/offsetAnnotationRect';
 import { ANNOTATION_COLOR } from '../../model/viewer/colors';
 import { isTaskSaving, polygonChanged, selectedPolygon, viewerLoadingState, viewerZoom } from './core/viewerState';
+import { AnnotationData } from 'model/viewer/export/annotationData';
 export default defineComponent({
   props: {
     slide_name: String,
@@ -228,11 +229,11 @@ export default defineComponent({
 
         if (viewerLoadingState.tilesLoaded) {
           if (newVal?.task_data) {
-            drawingViewer.value?.addBackgroundPolygons(newVal?.task_data);
+            drawingViewer.value?.addBackgroundPolygons(newVal?.task_data as AnnotationData[]);
           }
 
           if (newVal?.solution) {
-            drawingViewer.value?.addAnnotations(newVal?.solution);
+            drawingViewer.value?.addAnnotations(newVal?.solution as AnnotationData[]);
           }
         }
       }
@@ -322,11 +323,11 @@ export default defineComponent({
             }
 
             if (props.task.task_data) {
-              drawingViewer.value?.addAnnotations(props.task.task_data);
+              drawingViewer.value?.addAnnotations(props.task.task_data as AnnotationData[]);
             }
 
             if (props.task.solution) {
-              drawingViewer.value?.addAnnotations(props.task.solution);
+              drawingViewer.value?.addAnnotations(props.task.solution as AnnotationData[]);
             }
             setToolbarTools();
           } else {
@@ -389,7 +390,7 @@ export default defineComponent({
       const annotationGroups: AnnotationGroup[] = [];
 
       for (const item of result) {
-        props.task!.solution!.push(...item.polygons);
+        (props.task!.solution! as AnnotationData[]).push(...item.polygons);
 
         const found = annotationGroups.some((el) => el.name === item.name);
         if (!found) {
@@ -398,7 +399,7 @@ export default defineComponent({
       }
       props.task!.annotation_groups = annotationGroups;
 
-      drawingViewer.value?.addAnnotations(props.task?.solution!);
+      drawingViewer.value?.addAnnotations(props.task?.solution! as AnnotationData[]);
 
       await saveTask(ANNOTATION_TYPE.SOLUTION);
 
@@ -619,7 +620,7 @@ export default defineComponent({
       deleteAnnotationsLoading.value = true;
       const result = await TaskService.deleteTaskAnnotations(props.task!.id);
       props.task!.solution = result.solution;
-      props.task!.task_data = result.solution;
+      props.task!.task_data = result.solution as AnnotationData[];
       deleteAnnotationsLoading.value = false;
       showConfirmationDialog.value = false;
       drawingViewer.value?.clear();

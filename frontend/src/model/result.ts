@@ -17,11 +17,16 @@ export interface TaskResultDetail {
   lines_outside?: number[][][];
 }
 
+export interface ImageSelectFeedback {
+  index: number;
+  status: TaskStatus;
+}
+
 export interface TaskResult {
   task_id?: number;
   task_status?: TaskStatus;
   response_text?: string;
-  result_detail?: TaskResultDetail[];
+  result_detail?: TaskResultDetail[] | ImageSelectFeedback[];
 }
 
 type TaskStatusStringType = {

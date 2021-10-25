@@ -5,7 +5,7 @@ from starlette.staticfiles import StaticFiles
 
 from app.api.api import api_router
 from app.core.config import settings
-from app.utils.minio_client import minio_client
+from app.utils.minio_client import MinioClient, minio_client
 
 app = FastAPI()
 
@@ -18,8 +18,8 @@ origins = [
 app.add_middleware(GZipMiddleware, minimum_size=500)
 
 
-minio_client.create_bucket("hint-images")
-
+minio_client.create_bucket(MinioClient.hint_bucket)
+minio_client.create_bucket(MinioClient.task_bucket)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
