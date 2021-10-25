@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-700 rounded-lg min-w-56 px-2 max-w-64 max-h-150 overflow-auto">
+  <div class="bg-gray-700 rounded-lg min-w-56 px-2 max-w-64 max-h-[50vh] overflow-auto">
     <h2 class="sticky top-0 text-xl font-medium mb-4 py-2 bg-gray-700">Mitglieder</h2>
     <no-content class="mt-10" v-if="members?.length === 0" text="Keine Mitglieder" iconSize="w-20"></no-content>
 
