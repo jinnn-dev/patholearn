@@ -12,9 +12,61 @@
       </input-field>
       <Accordion>
         <AccordionItem title="Aufgabeneinstellungen" :first="true">
-          <div class="mb-4">
-            <div class="">
-              <div>Wähle einen Aufgabentyp:</div>
+          <div>Wähle einen Aufgabentyp:</div>
+
+          <div class="flex justify-evenly gap-4 mt-4">
+            <div
+              class="
+                transition
+                flex
+                justify-center
+                items-center
+                w-48
+                h-20
+                bg-gray-400
+                hover:bg-gray-300 hover:ring-2
+                ring-highlight-900
+                cursor-pointer
+                rounded-lg
+              "
+              :class="selectedTaskType === 0 && 'bg-gray-500 ring-2 ring-highlight-900'"
+              @click="selectedTaskType = 0"
+            >
+              <div class="flex flex-col justify-center items-center text-center">
+                <Icon name="polygon" size="46" />
+                Annotationen zeichen
+              </div>
+            </div>
+            <div
+              class="
+                transition
+                flex
+                justify-center
+                items-center
+                w-48
+                h-20
+                bg-gray-400
+                hover:bg-gray-300 hover:ring-2
+                ring-highlight-900
+                cursor-pointer
+                rounded-lg
+              "
+              :class="selectedTaskType === 1 && 'bg-gray-500 ring-2 ring-highlight-900'"
+              @click="
+                selectedTaskType = 1;
+                taskCreationForm.task_type = 2;
+              "
+            >
+              <div class="flex flex-col justify-center items-center text-center">
+                <Icon name="squares-four" size="46" />
+                Bilder auswählen
+              </div>
+            </div>
+          </div>
+
+          <div class="my-4" v-if="selectedTaskType === 0">
+            <div>
+              <div>Wähle eine Annotationseigenschaft:</div>
               <div class="flex flex-col w-full justify-evenly gap-2 my-4">
                 <div
                   class="
@@ -120,13 +172,36 @@
               </div>
             </div>
           </div>
-          <!-- <div class="flex justify-end">
-            <save-button name="Speichern" type="submit" class="w-36" :loading="taskCreationLoading"></save-button>
-          </div> -->
+
+          <div v-if="selectedTaskType === 1">
+            <div class="my-2 flex gap-2" v-viewer>
+              <!-- <div class="h-20 w-20 bg-gray-500 rounded-lg" v-for="image in tempPreviewImages" :key="image">
+                <HintImage :imgSrc="SLIDE_IMAGE_URL + '/' + image.image_name" @click="deleteImage(image.image_name)" />
+              </div> -->
+              <div class="h-20 w-20 bg-gray-500 rounded-lg" v-for="image in tempPreviewImages" :key="image">
+                <HintImage :imgSrc="image" @click="deleteImage(image)" />
+              </div>
+              <div
+                class="
+                  h-20
+                  w-20
+                  bg-green-600
+                  rounded-lg
+                  flex
+                  items-center
+                  justify-center
+                  cursor-pointer
+                  hover:bg-green-500
+                  transition
+                "
+                @click="fileRef?.click()"
+              >
+                <Icon name="plus" width="30" height="30" stroke-width="25" />
+              </div>
+            </div>
+            <input type="file" ref="fileRef" v-show="false" @change="onFileChange($event)" />
+          </div>
         </AccordionItem>
-        <!-- <AccordionItem title="Tipps (optional)">
-          <HintList :task="createdTask" />
-        </AccordionItem> -->
       </Accordion>
       <div class="flex justify-end w-full">
         <primary-button
@@ -147,10 +222,11 @@ import { defineComponent, reactive, ref } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 import Slider from '@vueform/slider';
-
-import { Task, TaskCreate } from '../../model/task';
+import { Task, TaskCreate, TaskType } from '../../model/task';
 import { TaskService } from '../../services/task.service';
 import { knowledgeLevel, taskTypes } from './task-config';
+import { create } from 'd3-selection';
+import { SLIDE_IMAGE_URL } from '../../config';
 
 export default defineComponent({
   components: { Slider },
@@ -166,6 +242,9 @@ export default defineComponent({
     }
   },
   setup(props, { emit }) {
+    const fileRef = ref<HTMLInputElement>();
+    const tempPreviewImages = ref<string[]>([]);
+    const tempImages = ref<string[]>([]);
     const typeSelection = [
       {
         index: 0,
@@ -218,28 +297,78 @@ export default defineComponent({
 
     const createdTask = ref<Task>();
 
-    const onSubmit = () => {
+    const selectedTaskType = ref<number>(0);
+
+    const onSubmit = async () => {
       if (!validator.value.$invalid) {
         taskCreationLoading.value = true;
-        const createTask: TaskCreate = {
-          layer: props.layerIndex,
-          task_question: taskCreationForm.task_question!,
-          base_task_id: props.baseTaskId as number,
-          task_type: taskCreationForm.task_type!,
-          annotation_type: taskCreationForm.annotation_type,
-          knowledge_level: taskCreationForm.knowledge_level,
-          min_correct: taskCreationForm.min_correct,
-          annotation_groups: [],
-          hints: []
-        };
-        TaskService.createTask(createTask).then((res: Task) => {
-          emit('taskCreated', res);
+
+        if (taskCreationForm.task_type === TaskType.IMAGE_SELECT) {
+          const imageNames = [];
+          for await (const img of tempImages.value) {
+            const name = await uploadImage(img);
+            imageNames.push(name.path);
+          }
+
+          const createTask: TaskCreate = {
+            layer: props.layerIndex,
+            task_question: taskCreationForm.task_question!,
+            base_task_id: props.baseTaskId as number,
+            task_type: taskCreationForm.task_type!,
+            task_data: imageNames,
+            annotation_type: 0,
+            knowledge_level: 1,
+            min_correct: imageNames.length,
+            hints: []
+          };
+
+          const task = await TaskService.createTask(createTask);
+          emit('taskCreated', task);
           taskCreationLoading.value = false;
-          createdTask.value = res;
+          createdTask.value = task;
           emit('close');
-          // Object.assign(taskCreationForm, initialState);
-        });
+
+          tempImages.value = [];
+          tempPreviewImages.value = [];
+        } else {
+          const createTask: TaskCreate = {
+            layer: props.layerIndex,
+            task_question: taskCreationForm.task_question!,
+            base_task_id: props.baseTaskId as number,
+            task_type: taskCreationForm.task_type!,
+            annotation_type: taskCreationForm.annotation_type,
+            knowledge_level: taskCreationForm.knowledge_level,
+            min_correct: taskCreationForm.min_correct,
+            annotation_groups: [],
+            hints: []
+          };
+          TaskService.createTask(createTask).then((res: Task) => {
+            emit('taskCreated', res);
+            taskCreationLoading.value = false;
+            createdTask.value = res;
+            emit('close');
+            // Object.assign(taskCreationForm, initialState);
+          });
+        }
       }
+    };
+
+    function onFileChange(e: any) {
+      const files = e.target.files || e.dataTransfer.files;
+      if (!files.length) return;
+      tempPreviewImages.value.push(URL.createObjectURL(files[0]));
+      tempImages.value.push(files[0]);
+    }
+
+    function deleteImage(imageName: string) {
+      tempPreviewImages.value = tempPreviewImages.value.filter((image) => image != imageName);
+      tempImages.value = tempImages.value.filter((img) => img != imageName);
+    }
+
+    const uploadImage = async (image: Blob) => {
+      const formData = new FormData();
+      formData.append('image', image);
+      return await TaskService.uploadTaskImage(formData);
     };
 
     return {
@@ -250,7 +379,14 @@ export default defineComponent({
       taskTypes,
       typeSelection,
       expandTaskSettings,
-      createdTask
+      createdTask,
+      selectedTaskType,
+      tempImages,
+      tempPreviewImages,
+      fileRef,
+      onFileChange,
+      deleteImage,
+      SLIDE_IMAGE_URL
     };
   }
 });

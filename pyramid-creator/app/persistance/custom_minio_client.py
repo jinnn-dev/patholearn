@@ -5,7 +5,9 @@ from typing import Any
 from minio import Minio
 from minio.deleteobjects import DeleteObject
 
-policy = {
+
+def policy(bucket_name):
+    return  {
     "Version": "2012-10-17",
     "Statement": [
         {
@@ -14,11 +16,10 @@ policy = {
                 "AWS": ["*"]
             },
             "Action": "s3:GetObject",
-            "Resource": "arn:aws:s3:::pyramids/*"
+            "Resource": "arn:aws:s3:::" + bucket_name + "/*"
         }
     ]
 }
-
 
 class MinioClient:
     def __init__(self):
@@ -34,10 +35,11 @@ class MinioClient:
     def create_bucket(self, bucket_name: str) -> None:
         self.bucket = self.instance.bucket_exists(bucket_name)
         self.bucket_name = bucket_name
+
         if not self.bucket:
-            self.bucket = self.instance.make_bucket(bucket_name, 'eu')
+            self.bucket = self.instance.make_bucket(self.bucket_name, 'eu')
             print("✔️ Bucket created")
-            self.instance.set_bucket_policy(self.bucket_name, json.dumps(policy))
+            self.instance.set_bucket_policy(self.bucket_name, json.dumps(policy(self.bucket_name)))
             print("✔️ Bucket policy created")
         else:
             print("Bucket already exists")

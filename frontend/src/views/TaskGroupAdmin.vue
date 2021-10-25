@@ -117,7 +117,7 @@
       </primary-button>
     </div>
 
-    <div class="mt-8 max-h-[50vh]" v-if="summaryData">
+    <div class="mt-8 max-h-[50vh]" v-if="summaryData?.tasks.length !== 0">
       <div class="w-full overflow-auto max-h-[50vh] pb-4">
         <div
           class="
@@ -137,7 +137,7 @@
           <div class="w-48 flex-shrink-0 sticky left-0 top-0 z-10 p-4 bg-gray-800">Name</div>
           <div
             class="w-full flex justify-center sticky top-0 min-w-[200px] p-4"
-            v-for="(task, index) of summaryData.tasks"
+            v-for="(task, index) of summaryData?.tasks"
             :key="task"
           >
             <span class="truncate" :id="'task-' + index">{{ task }}</span>
@@ -146,7 +146,7 @@
 
         <div
           class="flex justify-between items-center text-center rounded-lg min-w-full w-fit-content"
-          v-for="(row, index) in summaryData.rows"
+          v-for="(row, index) in summaryData?.rows"
           :key="index"
           :class="index % 2 == 0 ? 'bg-gray-700' : 'bg-gray-800'"
         >
@@ -162,7 +162,7 @@
             :key="index"
           >
             <Icon name="check-circle" width="34" height="34" class="text-green-400" v-if="taskvalue == 1"></Icon>
-            <Icon name="error" width="34" height="34" class="text-red-500" v-else-if="taskvalue == -1"></Icon>
+            <Icon name="x-circle" width="34" height="34" class="text-red-500" v-else-if="taskvalue == -1"></Icon>
             <Icon name="circle" width="34" height="34" class="text-gray-500" v-else></Icon>
           </div>
         </div>
@@ -179,6 +179,8 @@
         </thead>
       </table> -->
     </div>
+
+    <div v-else><no-content text="Keine Zusammenfassung verfügbar"></no-content></div>
   </modal-dialog>
 
   <modal-dialog :show="showModal">

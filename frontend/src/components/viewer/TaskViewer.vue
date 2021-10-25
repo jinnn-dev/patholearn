@@ -65,6 +65,7 @@ import { TooltipGenerator } from '../../utils/tooltip-generator';
 import { ParseResult } from '../../utils/annotation-parser';
 import { TaskService } from '../../services/task.service';
 import { updateAnnotation } from './taskViewerHelper';
+import { AnnotationData } from 'model/viewer/export/annotationData';
 
 export default defineComponent({
   props: {
@@ -131,11 +132,11 @@ export default defineComponent({
           }
 
           if (newVal?.task_data) {
-            drawingViewer.value?.addBackgroundPolygons(newVal?.task_data);
+            drawingViewer.value?.addBackgroundPolygons(newVal?.task_data as AnnotationData[]);
           }
 
           if (newVal?.solution && showSolution.value) {
-            drawingViewer.value?.addAnnotations(newVal?.solution);
+            drawingViewer.value?.addAnnotations(newVal?.solution as AnnotationData[]);
           }
 
           drawingViewer.value?.updateColor(TOOL_COLORS[currentTool.value!]!);
@@ -153,7 +154,7 @@ export default defineComponent({
       (newVal, _) => {
         if (newVal) {
           if (props.task?.solution) {
-            drawingViewer.value?.addAnnotations(props.task?.solution);
+            drawingViewer.value?.addAnnotations(props.task?.solution as AnnotationData[]);
           }
         } else {
           drawingViewer.value?.clearSolutionAnnotations();
@@ -213,11 +214,11 @@ export default defineComponent({
               drawingViewer.value?.addAnnotations(props.task.user_solution.solution_data);
             }
             if (props.task.task_data) {
-              drawingViewer.value?.addAnnotations(props.task.task_data);
+              drawingViewer.value?.addAnnotations(props.task.task_data as AnnotationData[]);
             }
 
             if (props.task.solution) {
-              drawingViewer.value?.addAnnotations(props.task.solution);
+              drawingViewer.value?.addAnnotations(props.task.solution as AnnotationData[]);
             }
           }
 

@@ -23,8 +23,8 @@
           ></save-button>
         </div>
 
-        <task-viewer
-          :slide_name="baseTask?.slide_id"
+        <select-images-task
+          v-if="selectedTask?.task_type === TaskType.IMAGE_SELECT"
           :task="selectedTask"
           :base_task_id="baseTask?.id"
           :task_group_id="baseTask?.task_group_id"
@@ -32,9 +32,22 @@
           :solve_result="solve_result || selectedTask?.user_solution?.task_result"
           :show_result="showTaskResult"
           :is_solving="isSolving"
-          :show_solution="show_solution"
-          @userAnnotationChanged="resetTaskResult"
-        ></task-viewer>
+        ></select-images-task>
+
+        <div v-else>
+          <task-viewer
+            v-if="baseTask?.tasks.length === 0 || selectedTask?.task_type !== TaskType.IMAGE_SELECT"
+            :slide_name="baseTask?.slide_id"
+            :task="selectedTask"
+            :base_task_id="baseTask?.id"
+            :task_group_id="baseTask?.task_group_id"
+            :course_id="baseTask?.course_id"
+            :solve_result="solve_result || selectedTask?.user_solution?.task_result"
+            :show_result="showTaskResult"
+            :is_solving="isSolving"
+            @userAnnotationChanged="resetTaskResult"
+          ></task-viewer>
+        </div>
       </div>
     </div>
   </div>
@@ -50,6 +63,7 @@ import { defineComponent, onMounted, ref, onUnmounted, defineAsyncComponent, wat
 import { useRoute } from 'vue-router';
 import { TaskService } from '../services/task.service';
 import { getTaskHints } from '../utils/hint.store';
+import { TaskType } from '../model/task';
 
 const TaskViewer = defineAsyncComponent({
   loader: () => import('../components/viewer/TaskViewer.vue')
@@ -109,16 +123,22 @@ export default defineComponent({
     });
 
     const setSelectedTask = (task: Task) => {
-      selectedTask.value = task;
+      if (task !== selectedTask.value) {
+        selectedTask.value = task;
+        if (task.task_type === TaskType.IMAGE_SELECT) {
+          viewerLoadingState.tilesLoaded = false;
+          viewerLoadingState.annotationsLoaded = false;
+        }
 
-      if (selectedTask.value.user_solution?.task_result) {
-        showTaskResult.value = true;
-        solve_result.value = selectedTask.value.user_solution?.task_result;
-        userSolutionLocked.value = true;
-      } else {
-        showTaskResult.value = false;
-        solve_result.value = undefined;
-        userSolutionLocked.value = false;
+        if (selectedTask.value.user_solution?.task_result) {
+          showTaskResult.value = true;
+          solve_result.value = selectedTask.value.user_solution?.task_result;
+          userSolutionLocked.value = true;
+        } else {
+          showTaskResult.value = false;
+          solve_result.value = undefined;
+          userSolutionLocked.value = false;
+        }
       }
     };
 
@@ -155,7 +175,9 @@ export default defineComponent({
           if (res) showTaskResult.value = true;
         });
 
-        await getTaskHints(selectedTask.value.id);
+        if (selectedTask.value.task_type !== TaskType.IMAGE_SELECT) {
+          await getTaskHints(selectedTask.value.id);
+        }
       }
     };
 
@@ -199,7 +221,8 @@ export default defineComponent({
       resetTaskResult,
       viewerLoadingState,
       loadTaskSolution,
-      show_solution
+      show_solution,
+      TaskType
     };
   }
 });

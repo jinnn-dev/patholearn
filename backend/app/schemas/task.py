@@ -46,12 +46,15 @@ class AnnotationFeedback(BaseModel):
     percentage: Optional[float]
     lines_outside: Optional[List[Any]]
 
+class SelectImageFeedback(BaseModel):
+    index: Optional[int]
+    status: Optional[TaskStatus]
 
 class TaskFeedback(BaseModel):
     task_id: Optional[int]
     task_status: Optional[TaskStatus]
     response_text: Optional[str]
-    result_detail: Optional[List[AnnotationFeedback]]
+    result_detail: Optional[Union[List[SelectImageFeedback], List[AnnotationFeedback]]]
 
 
 class TaskBase(BaseModel):
@@ -67,7 +70,7 @@ class TaskBase(BaseModel):
 
 class TaskCreate(TaskBase):
     solution: Optional[List[Union[AnnotationData, OffsetPolygonData]]]
-    task_data: Optional[List[AnnotationData]]
+    task_data: Optional[Union[List[AnnotationData], List[str]]]
     hints: Optional[List[TaskHint]] = []
     base_task_id: int
 

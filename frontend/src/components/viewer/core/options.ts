@@ -1,18 +1,15 @@
-import {Options} from "openseadragon";
+import { Options } from 'openseadragon';
 
 export const SVG_ID = 'drawingSvg';
 
-export const options: (id: string, tileSource: string) => Options   = (
+export const options: (id: string, tileSource: string) => Options = (
   id: string,
   tileSources: string = 'http://127.0.0.1:8000/data/Session1_Test1.svs/1024/dzi.dzi'
-) => {
+): Options => {
   return {
     id,
     prefixUrl: 'https://openseadragon.github.io/openseadragon/images/',
-    tileSources: {
-      tileSource: tileSources,
-      width: 1
-    },
+    tileSources: tileSources,
     // tileSources: 'https://cg.noxz.dev/big.dzi',
     animationTime: 0.4,
     blendTime: 0.1,

@@ -32,7 +32,7 @@ from app.schemas.task_hint import TaskHint, TaskHintCreate, TaskHintUpdate
 from app.schemas.user_solution import (UserSolution, UserSolutionCreate,
                                        UserSolutionUpdate)
 from app.utils.colored_printer import ColoredPrinter
-from app.utils.minio_client import minio_client
+from app.utils.minio_client import MinioClient, minio_client
 from app.utils.timer import Timer
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.datastructures import UploadFile
@@ -176,7 +176,7 @@ def get_membersolution_summary(*, db: Session = Depends(get_db), short_name: str
         for task in base_task.tasks:
             user_solution = crud_user_solution.get_solution_to_task_and_user(db, user_id=member.id, task_id=task.id) 
             if user_solution:
-                row.summary.append(1 if user_solution.percentage_solved == 1.0 else 0)
+                row.summary.append(1 if user_solution.percentage_solved == 1.0 else -1)
             else:
                 row.summary.append(0)
         summary.rows.append(row)
@@ -393,10 +393,10 @@ def update_user_solution(*, db: Session = Depends(get_db), task_id: int, user_so
     #                                                             task_id=task_id)
     #     item.solution_data = user_solution_in.solution_data
     #     return item
-
     db_obj = crud_user_solution.get_solution_to_task_and_user(db, task_id=task_id,
                                                               user_id=current_user.id)
     solution = crud_user_solution.update(db, db_obj=db_obj, obj_in=user_solution_in)
+
     return solution
 
 
@@ -452,7 +452,7 @@ def update_user_solution_annotation(*, db: Session = Depends(get_db), task_id: i
     return {"Status", "Ok"}
 
 
-@router.get('/{task_id}/solve', response_model=TaskFeedback)
+@router.get('/{task_id}/solve', response_model=Any)
 def solve_task(*, db: Session = Depends(get_db), task_id: int, current_user: User = Depends(get_current_active_user)):
     timer = Timer()
     timer.start()
@@ -557,6 +557,7 @@ def upload_task_hint_image(*, db: Session = Depends(get_db), hint_id: int,
     pyvips_image.jpegsave(final_name, Q=75)
 
     try:
+        minio_client.bucket_name = MinioClient.hint_bucket
         minio_client.create_object(file_name, final_name, "image/jpeg")
         os.remove(final_name)
         return {"path": minio_client.bucket_name + '/' + file_name}
@@ -590,3 +591,30 @@ def get_task_hints(*, db: Session = Depends(get_db), task_id: int, current_user:
 
     hints = crud_task_hint.get_hints_by_task(db, task_id=task_id, mistakes=failed_attempts)
     return hints
+
+
+@router.post('/task/image', response_model=Dict)
+def upload_task_image(*, current_user: User = Depends(get_current_active_superuser), image: UploadFile = File(...)):
+    image_name = uuid.uuid4()
+
+    file_name = f"{image_name}.{image.filename.split('.')[-1]}"
+
+    final_name = f'{image_name}.jpeg'
+
+    pyvips_image = pyvips.Image.new_from_buffer(image.file.read(), options="")
+
+    pyvips_image.jpegsave(final_name, Q=75)
+
+    try:
+        minio_client.bucket_name = MinioClient.task_bucket
+        minio_client.create_object(file_name, final_name, "image/jpeg")
+        os.remove(final_name)
+        return {"path": minio_client.bucket_name + '/' + file_name}
+    except Exception as e:
+        print(e)
+        os.remove(final_name)
+        raise HTTPException(
+            status_code=500,
+            detail="Image could not be saved"
+        )
+

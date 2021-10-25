@@ -65,7 +65,9 @@ export class TaskSaver {
    */
   public static deleteAnnotation(task: Task, annotation: Annotation): Promise<any> {
     if (annotation.type === ANNOTATION_TYPE.BASE) {
-      const index = task.task_data?.findIndex((item: AnnotationData) => item.id === annotation.id);
+      const index = (task.task_data as AnnotationData[])?.findIndex(
+        (item: AnnotationData) => item.id === annotation.id
+      );
       if (index !== undefined && index > -1) {
         task.task_data?.splice(index, 1);
       }
@@ -106,7 +108,7 @@ export class TaskSaver {
     const serializedAnnotation = TaskSaver.serializeAnnotation(annotation, viewer);
     if (annotation.type === ANNOTATION_TYPE.BASE) {
       for (let i = 0; i < task.task_data!.length; i++) {
-        if (task.task_data![i].id === serializedAnnotation.id) {
+        if ((task.task_data![i] as AnnotationData).id === serializedAnnotation.id) {
           task.task_data![i] = serializedAnnotation;
         }
       }
@@ -136,7 +138,7 @@ export class TaskSaver {
       if (!task.task_data) {
         task.task_data = [];
       }
-      task.task_data?.push(serializedTask);
+      (task.task_data as AnnotationData[])?.push(serializedTask);
     } else {
       if (!task.solution) {
         task.solution = [];
