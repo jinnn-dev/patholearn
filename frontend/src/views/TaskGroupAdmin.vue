@@ -132,6 +132,8 @@
             text-lg text-gray-200
             bg-gray-800
             flex-1
+            min-w-full
+            w-fit-content
           "
         >
           <div class="w-48 flex-shrink-0 sticky left-0 top-0 z-10 p-4 bg-gray-800">Name</div>
@@ -140,7 +142,7 @@
             v-for="(task, index) of summaryData?.tasks"
             :key="task"
           >
-            <span class="truncate" :id="'task-' + index">{{ task }}</span>
+            <span :id="'task-' + index">{{ task.substring(0, 12) + '...' }}</span>
           </div>
         </div>
 
