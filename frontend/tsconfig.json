@@ -9,8 +9,9 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "lib": ["esnext", "dom"],
-    "types": ["vite/client"],
-    "baseUrl": "./src"
+    "types": ["vite/client", "@types/jest"],
+    "baseUrl": "./src",
+    
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "src/assets/svg-overlay.js"]
 }
