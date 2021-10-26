@@ -1,6 +1,9 @@
 <template>
   <div class="w-full bg-gray-800 text-gray-100 min-h-screen">
-    <div v-if="showBrowserWarning" class="absolute right-5 top-5 border-red-500 border-2 px-10 py-5 bg-red-500/20 rounded-lg">
+    <div
+      v-if="showBrowserWarning"
+      class="absolute right-5 top-5 border-red-500 border-2 px-10 py-5 bg-red-500/20 rounded-lg"
+    >
       <p class="text-lg">Dein Browser wird von dieser Software nicht unterstützt!</p>
       <p class="text-sm text-gray-200">Bitte wechsel zu einem Chromium-basierten Browser wie Chrome oder Edge</p>
     </div>
@@ -53,7 +56,7 @@ export default defineComponent({
     }
 
     return { showBrowserWarning };
-  },
+  }
 });
 </script>
 
@@ -105,6 +108,15 @@ export default defineComponent({
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100%;
+}
+
+kbd {
+  @apply bg-gray-400;
+  @apply py-1;
+  @apply px-2;
+  @apply border-2;
+  @apply border-gray-500;
+  @apply rounded-lg;
 }
 
 input[type='color'] {

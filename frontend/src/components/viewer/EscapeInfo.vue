@@ -3,11 +3,9 @@
     v-if="show"
     class="fixed bottom-14 p-2 rounded-xl shadow-md bg-gray-800 left-1/2 transform -translate-x-1/2 z-[2]"
   >
-    {{
-      isPolygon
-        ? 'Drücke die ESC-Taste um das Zeichnen des Polygons abzubrechen'
-        : 'Drücke die ESC-Taste um das Zeichnen der Linie zu beenden'
-    }}
+    Drücke die
+    <kbd>ESC</kbd>-Taste um das Zeichnen
+    {{ isPolygon ? `des Polygons abzubrechen` : 'Linie zu beenden' }}
   </div>
 </template>
 <script lang="ts">
