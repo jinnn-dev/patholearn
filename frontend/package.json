@@ -41,6 +41,7 @@
     "@vue/test-utils": "^2.0.0-rc.16",
     "autoprefixer": "^10.3.5",
     "jest": "^26.6.3",
+    "jest-canvas-mock": "^2.3.1",
     "postcss": "^8.3.7",
     "rollup-plugin-visualizer": "^5.5.0",
     "tailwindcss": "^2.2.17",
