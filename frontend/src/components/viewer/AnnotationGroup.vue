@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed right-0 top-6 z-10 bg-gray-700 rounded-l-lg p-2 max-w-72">
+  <div class="fixed right-0 top-6 z-10 bg-gray-700/70 filter backdrop-blur-md rounded-l-lg p-2 max-w-72">
     <div v-if="!annotationGroups || annotationGroups.length === 0" class="my-2">Keine Klassen vorhanden</div>
     <div v-else>
       <h3 class="text-xl">Vorhandene Klassen</h3>
