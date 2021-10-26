@@ -56,6 +56,7 @@ declare module 'vue' {
     Subheader: typeof import('./src/components/Subheader.vue')['default']
     TaskContainer: typeof import('./src/components/task/TaskContainer.vue')['default']
     TaskCountBadge: typeof import('./src/components/TaskCountBadge.vue')['default']
+    TaskGroupAdminCard: typeof import('./src/components/TaskGroupAdminCard.vue')['default']
     TaskHeader: typeof import('./src/components/task/TaskHeader.vue')['default']
     TaskItem: typeof import('./src/components/task/TaskItem.vue')['default']
     TaskLayer: typeof import('./src/components/task/TaskLayer.vue')['default']
