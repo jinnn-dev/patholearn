@@ -165,8 +165,8 @@ def get_membersolution_summary(*, db: Session = Depends(get_db), short_name: str
     for task in base_task.tasks:
         summary.tasks.append(task.task_question)
     
-
-    for member in course.members:
+    members = sorted(course.members, key=lambda x: x.lastname)
+    for member in members:
         row = SummaryRow()
         row.user = SummaryUser()
         row.user.firstname = member.firstname

@@ -76,7 +76,7 @@
 
   <modal-dialog :show="showSummaryModal" customClasses="w-2/3 max-h-[70vh]">
     <div class="flex justify-between items-center">
-      <div class="text-xl mt-4 font-semibold">Zusammenfassung Aufgabenbearbeitung</div>
+      <div class="text-3xl mt-4 font-semibold">Zusammenfassung Aufgabenbearbeitung</div>
       <primary-button class="w-12" bgColor="self-end bg-gray-500" @click="showSummaryModal = false">
         <Icon name="x"></Icon>
       </primary-button>
@@ -107,7 +107,7 @@
             v-for="(task, index) of summaryData?.tasks"
             :key="task"
           >
-            <span :id="'task-' + index">{{ task.substring(0, 12) + '...' }}</span>
+            <span :id="'task-' + index">{{ task.substring(0, 12) + (task.length > 12 ? '...' : '') }}</span>
           </div>
         </div>
 
@@ -121,7 +121,7 @@
             class="w-48 flex-shrink-0 sticky left-0 py-2 z-10 font-semibold"
             :class="index % 2 == 0 ? 'bg-gray-700' : 'bg-gray-800'"
           >
-            {{ row.user.firstname }} {{ row.user.middlename }} {{ row.user.lastname }}
+            {{ row.user.lastname }}, {{ row.user.firstname }} {{ row.user.middlename }}
           </div>
           <div
             class="w-full flex justify-center items-center my-2 min-w-[200px]"
@@ -152,7 +152,7 @@
 </template>
 <script lang="ts">
 import { BaseTask } from '../model/baseTask';
-import { defineComponent, nextTick, PropType, ref } from 'vue';
+import { defineComponent, nextTick, onUnmounted, PropType, ref } from 'vue';
 import { MembersolutionSummary } from '../model/membersolutionSummary';
 import { TooltipGenerator } from '../utils/tooltip-generator';
 import { TaskService } from '../services/task.service';
@@ -194,6 +194,7 @@ export default defineComponent({
         }
       });
     };
+
     return { showSummaryModal, summaryData, summaryDataLoading, loadSummary, toggleEnabledState };
   }
 });

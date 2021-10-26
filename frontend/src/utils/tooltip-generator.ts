@@ -92,8 +92,8 @@ export class TooltipGenerator {
     content: string;
     placement: Placement;
   }) {
-    // this.instances.push(...tippy(target, { content, placement, theme: 'myDark' }));
-    tippy(target, { content, placement, theme: 'myDark' });
+    this.instances.push(...tippy(target, { content, placement, theme: 'myDark' }));
+    // tippy(target, { content, placement, theme: 'myDark' });
   }
 
   public static destroyTooltip(htmlId: string) {
