@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1635275141805" clover="3.2.0">
+  <project timestamp="1635275141805" name="All files">
+    <metrics statements="17" coveredstatements="11" conditionals="4" coveredconditionals="0" methods="4" coveredmethods="2" elements="25" coveredelements="13" complexity="0" loc="17" ncloc="17" packages="1" files="2" classes="2"/>
+    <file name="app.state.ts" path="/home/james/learning-by-annotations/frontend/src/utils/app.state.ts">
+      <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <line num="1" count="1" type="stmt"/>
+      <line num="4" count="1" type="stmt"/>
+    </file>
+    <file name="seadragon.utils.ts" path="/home/james/learning-by-annotations/frontend/src/utils/seadragon.utils.ts">
+      <metrics statements="15" coveredstatements="9" conditionals="4" coveredconditionals="0" methods="4" coveredmethods="2"/>
+      <line num="1" count="1" type="stmt"/>
+      <line num="11" count="1" type="stmt"/>
+      <line num="12" count="1" type="stmt"/>
+      <line num="13" count="1" type="stmt"/>
+      <line num="23" count="1" type="stmt"/>
+      <line num="24" count="1" type="stmt"/>
+      <line num="27" count="1" type="stmt"/>
+      <line num="28" count="0" type="stmt"/>
+      <line num="29" count="0" type="stmt"/>
+      <line num="30" count="0" type="stmt"/>
+      <line num="40" count="1" type="stmt"/>
+      <line num="41" count="0" type="stmt"/>
+      <line num="42" count="0" type="stmt"/>
+      <line num="43" count="0" type="cond" truecount="0" falsecount="4"/>
+      <line num="46" count="1" type="stmt"/>
+    </file>
+  </project>
+</coverage>
