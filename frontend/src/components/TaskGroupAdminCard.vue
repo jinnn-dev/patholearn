@@ -134,20 +134,9 @@
           </div>
         </div>
       </div>
-
-      <!-- <table class="table-fixed relative w-full">
-        <thead class="relative block">
-          <tr class="w-full">
-            <th class="w-32">Name</th>
-            <th class="w-auto" v-for="task of summaryData.tasks" :key="task">
-              {{ task }}
-            </th>
-          </tr>
-        </thead>
-      </table> -->
     </div>
 
-    <div v-else><no-content text="Keine Zusammenfassung verfügbar"></no-content></div>
+    <div v-else class="mt-12"><no-content text="Keine Zusammenfassung verfügbar"></no-content></div>
   </modal-dialog>
 </template>
 <script lang="ts">
