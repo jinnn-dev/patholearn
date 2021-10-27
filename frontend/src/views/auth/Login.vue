@@ -1,6 +1,8 @@
 <template>
-  <div class="w-full min-h-screen flex items-center flex-col pt-[10%]">
-    <img src="/logo-schrift.png" alt="logo" class="h-48 rounded-lg mb-12" />
+  <div class="w-full min-h-screen flex items-center flex-col justify-center">
+    <div class="h-48" v-if="getEnv('APP_LOGO_URL')">
+      <img :src="`/${getEnv('APP_LOGO_URL')}`" alt="logo" class="rounded-lg mb-12" />
+    </div>
 
     <div class="bg-gray-700 rounded-xl p-4 shadow-md w-96 z-[2]">
       <div class="text-4xl font-semibold text-center">Login</div>
@@ -49,6 +51,7 @@ import { AuthService } from '../../services/auth.service';
 import { useRouter } from 'vue-router';
 import useVuelidate from '@vuelidate/core';
 import { required, email } from '@vuelidate/validators';
+import { getEnv } from '../../config';
 
 export default defineComponent({
   setup() {
@@ -88,7 +91,7 @@ export default defineComponent({
 
     const validator = useVuelidate(rules, formData);
 
-    return { onSubmit, formData, validator, error, loginLoading };
+    return { onSubmit, formData, validator, error, loginLoading, getEnv };
   }
 });
 </script>
