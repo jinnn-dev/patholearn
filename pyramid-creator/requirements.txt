@@ -7,4 +7,5 @@ minio==7.1.0
 python-multipart~=0.0.5
 pymongo~=3.12.0
 pydantic~=1.8.2
-starlette~=0.13.6
+starlette>=0.16.0
+
