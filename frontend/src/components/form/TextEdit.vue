@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-center items-center group">
-    <div>
+    <div class="w-full">
       <div v-if="!activeEdit">{{ newValue }}</div>
       <role-only>
         <input-field v-model="newValue" v-if="activeEdit" marginHor="my-0" />

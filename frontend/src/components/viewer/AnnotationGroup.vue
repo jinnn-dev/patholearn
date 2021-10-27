@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed right-0 top-6 z-10 bg-gray-700/70 filter backdrop-blur-md rounded-l-lg p-2 max-w-72">
+  <div class="fixed right-0 top-6 z-10 bg-gray-700/70 filter backdrop-blur-md rounded-l-lg p-2 w-80">
     <div v-if="!annotationGroups || annotationGroups.length === 0" class="my-2">Keine Klassen vorhanden</div>
     <div v-else>
       <h3 class="text-xl">Vorhandene Klassen</h3>
@@ -18,8 +18,8 @@
             />
             <Icon name="eye-slash" v-else class="cursor-pointer" @click.stop="toggleAnnotationGroup(group)" />
           </div>
-          <div class="w-4 h-4 mr-3 rounded-full" :style="`background-color:${group.color}`"></div>
-          <text-edit :value="group.name" @valueChanged="updateGroup($event, group)"></text-edit>
+          <div class="w-4 h-4 mr-3 flex-shrink-0 rounded-full" :style="`background-color:${group.color}`"></div>
+          <text-edit :value="group.name" @valueChanged="updateGroup($event, group)" class="w-full"></text-edit>
         </div>
       </div>
     </div>
