@@ -121,14 +121,8 @@ export class ImageSelectViewer {
   }
 
   resetResultColors() {
-    // for (const feedback of this._imageSelectFeedback) {
-    //   if (this._rects[feedback.index]) {
-    //     this._rects[feedback.index].attr('stroke', this._selectColor);
-    //   }
-    // }
-
-    if (this._selectedImages.value) {
-      for (const index of Array.from(this._selectedImages.value)) {
+    if (this._selectedImages) {
+      for (const index of Array.from(this._selectedImages as Set<number>)) {
         this._rects[index].attr('stroke', this._selectColor);
       }
     }
