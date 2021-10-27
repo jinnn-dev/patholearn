@@ -310,6 +310,10 @@ export default defineComponent({
 
         if (currentTool.value === Tool.LINE_USER_SOLUTION) {
           if (drawingViewer.value?.drawingAnnotation) {
+            if (drawingViewer.value!.drawingAnnotation!.vertice.length < 2) {
+              drawingViewer.value?.removeDrawingAnnotation();
+              return;
+            }
             selectedPolygon.value = drawingViewer.value.selectAnnotation(drawingViewer.value?.drawingAnnotation?.id);
           }
 
@@ -318,6 +322,10 @@ export default defineComponent({
         } else {
           drawingViewer.value?.removeDrawingAnnotation();
         }
+      }
+
+      if (e.key === 'Backspace') {
+        drawingViewer.value?.removeLastVertex();
       }
     };
 

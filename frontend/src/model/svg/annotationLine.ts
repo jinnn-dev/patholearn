@@ -238,6 +238,14 @@ export class AnnotationLine extends Annotation {
     }
   }
 
+  popLastVertex(): void {
+    if (this._vertice.length > 1) {
+      this._vertice.pop();
+      this._polylinePoints.pop();
+      this.redrawPolyline();
+    }
+  }
+
   /**
    * Updates the existing SVG-Polyline and add a new point
    *

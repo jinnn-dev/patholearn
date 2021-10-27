@@ -254,6 +254,13 @@ export class AnnotationViewer {
     this._drawingAnnotation.updatePolyline(this._mouseCircle.cx, this._mouseCircle.cy);
   }
 
+  removeLastVertex() {
+    if (this._drawingAnnotation instanceof AnnotationLine) {
+      this._drawingAnnotation.popLastVertex();
+      this._drawingAnnotation.updatePolyline(this._mouseCircle.cx, this._mouseCircle.cy);
+    }
+  }
+
   /**
    * Adds new annotation point
    */

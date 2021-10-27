@@ -455,6 +455,13 @@ export default defineComponent({
 
         if (currentTool.value === Tool.LINE_SOLUTION) {
           if (drawingViewer.value?.drawingAnnotation) {
+            if (drawingViewer.value!.drawingAnnotation!.vertice.length < 2) {
+              drawingViewer.value?.removeDrawingAnnotation();
+              return;
+            }
+          }
+
+          if (drawingViewer.value?.drawingAnnotation) {
             selectAnnotation(drawingViewer.value?.drawingAnnotation?.id);
           }
 
@@ -464,6 +471,10 @@ export default defineComponent({
         } else {
           drawingViewer.value?.removeDrawingAnnotation();
         }
+      }
+
+      if (e.key === 'Backspace') {
+        drawingViewer.value?.removeLastVertex();
       }
     };
 
@@ -588,7 +599,7 @@ export default defineComponent({
         const annotation = selectedPolygon.value as OffsetAnnotationLine;
         const newOffset = annotation.offsetRadius * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
         updateAnnotationLineOffsetRadius(newOffset);
-      } else if (selectedPolygon.value instanceof OffsetAnnotationPoint) {
+      } else {
         const annotation = selectedPolygon.value as OffsetAnnotationPoint;
         const newOffset = annotation.offsetRadius * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
         updateAnnotationPointOffsetRadius(newOffset);
