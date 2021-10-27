@@ -1,7 +1,7 @@
 <template>
   <div class="w-full min-h-screen flex items-center flex-col justify-center">
-    <div class="h-48" v-if="getEnv('APP_LOGO_URL')">
-      <img :src="`/${getEnv('APP_LOGO_URL')}`" alt="logo" class="rounded-lg mb-12" />
+    <div class="h-48 mb-12" v-if="getEnv('APP_LOGO_URL')">
+      <img :src="`/${getEnv('APP_LOGO_URL')}`" alt="logo" class="rounded-lg h-full" />
     </div>
 
     <div class="bg-gray-700 rounded-xl p-4 shadow-md w-96 z-[2]">
