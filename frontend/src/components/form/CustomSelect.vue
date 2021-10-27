@@ -106,6 +106,13 @@ export default defineComponent({
       }
     );
 
+    watch(
+      () => props.initialData,
+      () => {
+        valueSelected(props.initialData);
+      }
+    );
+
     onMounted(() => {
       if (props.initialData) {
         valueSelected(props.initialData);
