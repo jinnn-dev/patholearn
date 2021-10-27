@@ -48,8 +48,8 @@ import { defineComponent, onMounted, PropType, ref, watch } from 'vue';
 type SELECT_OPTIONS_SIZE = 'small' | 'medium' | 'large';
 
 const MAPPED_OPTION_SIZE: Record<SELECT_OPTIONS_SIZE, string> = {
-  small: 'p-2 h-6 rounded-md my-2',
-  medium: 'my-4 p-2 rounded-md h-14',
+  small: 'p-2 rounded-md my-2',
+  medium: 'my-4 p-2 rounded-md',
   large: ''
 };
 
