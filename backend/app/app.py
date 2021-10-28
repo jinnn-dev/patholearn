@@ -17,7 +17,6 @@ origins = [
 
 app.add_middleware(GZipMiddleware, minimum_size=500)
 
-
 minio_client.create_bucket(MinioClient.hint_bucket)
 minio_client.create_bucket(MinioClient.task_bucket)
 app.add_middleware(
