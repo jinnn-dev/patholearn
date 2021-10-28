@@ -1,12 +1,36 @@
 <template>
   <div class="relative" ref="target">
     <input-field
+      v-if="isSearchable"
       :label="label"
       :tip="tip"
       :placeholder="placeholder"
       v-model="searchString"
       @click="isFocus = true"
     ></input-field>
+
+    <div v-else>
+      <div class="my-2">Annotationsklasse</div>
+      <div
+        @click="isFocus = !isFocus"
+        class="
+          h-10
+          bg-gray-500
+          hover:bg-gray-400 hover:ring-2
+          ring-highlight-800
+          rounded-lg
+          flex
+          items-center
+          p-4
+          cursor-pointer
+          justify-between
+        "
+      >
+        {{ searchString || "Keine Klasse" }}
+        <Icon v-if="isFocus" width="12" name="caret-up" strokeWidth="32"/>
+        <Icon v-else width="12" name="caret-down" strokeWidth="32"/>
+      </div>
+    </div>
 
     <div
       v-if="isFocus"
@@ -30,11 +54,21 @@
         <div
           v-for="value in filteredData"
           :key="isObject(value) && field ? value[field] : value"
-          class="flex transition justify-start items-center hover:bg-gray-400 bg-gray-300 cursor-pointer"
+          class="
+            flex
+            transition
+            justify-start
+            items-center
+            hover:bg-gray-400
+            bg-gray-300
+            cursor-pointer
+          "
           :class="MAPPED_OPTION_SIZE[displayType]"
           @click="valueSelected(value)"
         >
-          <div class="w-full">{{ isObject(value) && field ? value[field] : value }}</div>
+          <div class="w-full">
+            {{ isObject(value) && field ? value[field] : value }}
+          </div>
         </div>
       </div>
     </div>
@@ -42,40 +76,45 @@
 </template>
 
 <script lang="ts">
-import { onClickOutside } from '@vueuse/core';
-import { defineComponent, onMounted, PropType, ref, watch } from 'vue';
+import { onClickOutside } from "@vueuse/core";
+import { defineComponent, onMounted, PropType, ref, watch } from "vue";
 
-type SELECT_OPTIONS_SIZE = 'small' | 'medium' | 'large';
+type SELECT_OPTIONS_SIZE = "small" | "medium" | "large";
 
 const MAPPED_OPTION_SIZE: Record<SELECT_OPTIONS_SIZE, string> = {
-  small: 'p-2 rounded-md my-2',
-  medium: 'my-4 p-2 rounded-md',
-  large: ''
+  small: "p-2 rounded-md my-2",
+  medium: "my-4 p-2 rounded-md",
+  large: "",
 };
 
 export default defineComponent({
-  emits: ['valueChanged'],
+  emits: ["valueChanged"],
 
   props: {
     values: Array,
     field: String,
     required: {
       type: Boolean,
-      default: true
+      default: true,
     },
     label: String,
     tip: String,
     placeholder: String,
     displayType: {
       type: String as PropType<SELECT_OPTIONS_SIZE>,
-      default: 'medium'
+      default: "medium",
     },
-    initialData: String
+    initialData: String,
+
+    isSearchable: {
+      type: Boolean,
+      default: true,
+    },
   },
   setup(props, { emit }) {
     const target = ref(null);
 
-    const searchString = ref<string>('');
+    const searchString = ref<string>("");
 
     const isFocus = ref<boolean>(false);
 
@@ -88,12 +127,19 @@ export default defineComponent({
     watch(
       () => searchString.value,
       (newVal, oldVal) => {
-        if (oldVal !== undefined && newVal !== undefined) {
+        if (
+          oldVal !== undefined &&
+          newVal !== undefined &&
+          props.isSearchable
+        ) {
           if (newVal.length < oldVal.length || newVal.length === 0) {
             filteredData.value = props.values;
           }
           filteredData.value = props.values?.filter((value: any) =>
-            (isObject(value) ? value[props.field as string].toLowerCase() : value).includes(newVal.toLowerCase())
+            (isObject(value)
+              ? value[props.field as string].toLowerCase()
+              : value
+            ).includes(newVal.toLowerCase())
           );
         }
       }
@@ -124,19 +170,29 @@ export default defineComponent({
     const valueSelected = (value: any) => {
       isFocus.value = false;
 
-      searchString.value = isObject(value) ? value[props.field as string] : value;
-      emit('valueChanged', value);
+      searchString.value = isObject(value)
+        ? value[props.field as string]
+        : value;
+      emit("valueChanged", value);
     };
 
     const isObject = (value: object | string): boolean => {
-      if (typeof value === 'object') {
+      if (typeof value === "object") {
         return true;
       }
       return false;
     };
 
-    return { searchString, isFocus, target, valueSelected, filteredData, MAPPED_OPTION_SIZE, isObject };
-  }
+    return {
+      searchString,
+      isFocus,
+      target,
+      valueSelected,
+      filteredData,
+      MAPPED_OPTION_SIZE,
+      isObject,
+    };
+  },
 });
 </script>
 

@@ -10,6 +10,7 @@
 
   <annotation-settings v-if="selectedPolygon && task?.task_type === 1" @saved="updateSelectedAnnotation">
     <custom-select
+      :isSearchable="false"
       displayType="small"
       label="Annotationsklasse:"
       :values="task?.annotation_groups"
