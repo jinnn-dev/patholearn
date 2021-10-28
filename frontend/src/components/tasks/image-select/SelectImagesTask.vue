@@ -48,7 +48,9 @@ export default defineComponent({
       async () => {
         isTaskSaving.value = true;
         if (props.isAdmin) {
-          if (images.value !== props.task?.solution) {
+          console.log(images.value, props.task?.solution);
+
+          if (JSON.stringify(images.value) !== JSON.stringify(props.task?.solution)) {
             const newTask = await TaskService.updateTask({
               task_id: props.task!.id,
               solution: JSON.stringify(images.value)
