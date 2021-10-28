@@ -182,10 +182,10 @@
               <div>
                 <div
                   class="h-20 w-20 bg-gray-500 rounded-lg inline-block mx-2 my-2"
-                  v-for="image in tempPreviewImages"
+                  v-for="(image, index) in tempPreviewImages"
                   :key="image"
                 >
-                  <HintImage :imgSrc="image" @click="deleteImage(image)" />
+                  <HintImage :imgSrc="image" @click="deleteImage(index)" />
                 </div>
                 <div
                   class="
@@ -193,13 +193,13 @@
                     w-20
                     mx-2
                     my-2
-                    bg-green-600
+                    bg-highlight-900
                     rounded-lg
                     flex
                     items-center
                     justify-center
                     cursor-pointer
-                    hover:bg-green-500
+                    hover:bg-highlight-800
                     transition
                   "
                   @click="fileRef?.click()"
@@ -207,6 +207,9 @@
                   <Icon name="plus" width="30" height="30" stroke-width="25" />
                 </div>
               </div>
+            </div>
+            <div v-if="noImageSelectedError" class="text-red-400 font-semibold">
+              Bitte wähle mindestens ein Bild aus
             </div>
             <input type="file" ref="fileRef" v-show="false" @change="onFileChange($event)" multiple="multiple" />
           </div>
@@ -253,7 +256,9 @@ export default defineComponent({
   setup(props, { emit }) {
     const fileRef = ref<HTMLInputElement>();
     const tempPreviewImages = ref<string[]>([]);
-    const tempImages = ref<string[]>([]);
+    const tempImages = ref<File[]>([]);
+    const noImageSelectedError = ref(false);
+
     const typeSelection = [
       {
         index: 0,
@@ -313,32 +318,39 @@ export default defineComponent({
         taskCreationLoading.value = true;
 
         if (taskCreationForm.task_type === TaskType.IMAGE_SELECT) {
-          const imageNames = [];
-          for await (const img of tempImages.value) {
-            const name = await uploadImage(img);
-            imageNames.push(name.path);
+          if (!tempImages.value.length) {
+            taskCreationLoading.value = false;
+            noImageSelectedError.value = true;
+          } else {
+            noImageSelectedError.value = false;
+
+            const imageNames = [];
+            for await (const img of tempImages.value) {
+              const name = await uploadImage(img);
+              imageNames.push(name.path);
+            }
+
+            const createTask: TaskCreate = {
+              layer: props.layerIndex,
+              task_question: taskCreationForm.task_question!,
+              base_task_id: props.baseTaskId as number,
+              task_type: taskCreationForm.task_type!,
+              task_data: imageNames,
+              annotation_type: 0,
+              knowledge_level: 1,
+              min_correct: imageNames.length,
+              hints: []
+            };
+
+            const task = await TaskService.createTask(createTask);
+            emit('taskCreated', task);
+            taskCreationLoading.value = false;
+            createdTask.value = task;
+            emit('close');
+
+            tempImages.value = [];
+            tempPreviewImages.value = [];
           }
-
-          const createTask: TaskCreate = {
-            layer: props.layerIndex,
-            task_question: taskCreationForm.task_question!,
-            base_task_id: props.baseTaskId as number,
-            task_type: taskCreationForm.task_type!,
-            task_data: imageNames,
-            annotation_type: 0,
-            knowledge_level: 1,
-            min_correct: imageNames.length,
-            hints: []
-          };
-
-          const task = await TaskService.createTask(createTask);
-          emit('taskCreated', task);
-          taskCreationLoading.value = false;
-          createdTask.value = task;
-          emit('close');
-
-          tempImages.value = [];
-          tempPreviewImages.value = [];
         } else {
           const createTask: TaskCreate = {
             layer: props.layerIndex,
@@ -364,6 +376,8 @@ export default defineComponent({
 
     function onFileChange(e: any) {
       const files = e.target.files || e.dataTransfer.files;
+      noImageSelectedError.value = false;
+
       if (!files.length) return;
       for (const file of files) {
         tempPreviewImages.value.push(URL.createObjectURL(file));
@@ -371,9 +385,9 @@ export default defineComponent({
       }
     }
 
-    function deleteImage(imageName: string) {
-      tempPreviewImages.value = tempPreviewImages.value.filter((image) => image != imageName);
-      tempImages.value = tempImages.value.filter((img) => img != imageName);
+    function deleteImage(imageIndex: number) {
+      tempPreviewImages.value.splice(imageIndex, 1);
+      tempImages.value.splice(imageIndex, 1);
     }
 
     const uploadImage = async (image: Blob) => {
@@ -397,7 +411,8 @@ export default defineComponent({
       fileRef,
       onFileChange,
       deleteImage,
-      SLIDE_IMAGE_URL
+      SLIDE_IMAGE_URL,
+      noImageSelectedError
     };
   }
 });
