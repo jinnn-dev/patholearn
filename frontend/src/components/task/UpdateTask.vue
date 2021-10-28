@@ -55,6 +55,11 @@
               </div>
             </div>
           </div>
+
+          <div class="my-8">
+            <div>Soll die Aufgabe von Nutzern lösbar sein?</div>
+            <toggle-button :enabled="taskUpdateForm.can_be_solved" @changed="changeCanBeSolved"></toggle-button>
+          </div>
         </AccordionItem>
         <AccordionItem title="Tipps (optional)">
           <HintList :task="task" :isUpdate="true" />
@@ -101,13 +106,15 @@ export default defineComponent({
       min_correct: number;
       task_id: number;
       task_type: number;
+      can_be_solved: boolean;
     }>({
       layer: 0,
       task_question: '',
       knowledge_level: 0,
       min_correct: 0,
       task_id: 0,
-      task_type: 0
+      task_type: 0,
+      can_be_solved: true
     });
 
     watch(
@@ -119,23 +126,31 @@ export default defineComponent({
         taskUpdateForm.min_correct = props.task!.min_correct;
         taskUpdateForm.task_id = props.task!.id;
         taskUpdateForm.task_type = props.task!.task_type;
+        taskUpdateForm.can_be_solved = props.task!.can_be_solved;
       }
     );
 
     const updateTask = async () => {
       taskUpdateLoading.value = true;
+      console.log(taskUpdateForm.can_be_solved);
+      
       const res = await TaskService.updateTask({
         task_id: taskUpdateForm.task_id,
         task_question: taskUpdateForm.task_question!,
         min_correct: taskUpdateForm.min_correct,
-        knowledge_level: taskUpdateForm.knowledge_level
+        knowledge_level: taskUpdateForm.knowledge_level,
+        can_be_solved: taskUpdateForm.can_be_solved
       });
       taskUpdateLoading.value = false;
 
       emit('close');
       emit('taskUpdated', res);
     };
-    return { taskUpdateForm, updateTask, taskUpdateLoading, knowledgeLevel, taskTypes, TaskType };
+
+    const changeCanBeSolved = (value: boolean) => {
+      taskUpdateForm.can_be_solved = value;
+    }
+    return { taskUpdateForm, updateTask, taskUpdateLoading, knowledgeLevel, taskTypes, TaskType, changeCanBeSolved };
   }
 });
 </script>

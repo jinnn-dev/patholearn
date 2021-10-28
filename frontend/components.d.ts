@@ -65,6 +65,7 @@ declare module 'vue' {
     TaskViewer: typeof import('./src/components/viewer/TaskViewer.vue')['default']
     TaskViewerAdmin: typeof import('./src/components/viewer/TaskViewerAdmin.vue')['default']
     TextEdit: typeof import('./src/components/form/TextEdit.vue')['default']
+    ToggleButton: typeof import('./src/components/form/ToggleButton.vue')['default']
     ToolBar: typeof import('./src/components/viewer/ToolBar.vue')['default']
     ToolItem: typeof import('./src/components/viewer/ToolItem.vue')['default']
     UpdateTask: typeof import('./src/components/task/UpdateTask.vue')['default']
