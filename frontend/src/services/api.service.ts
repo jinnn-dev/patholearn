@@ -1,4 +1,4 @@
-import axios, { AxiosPromise, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosPromise, AxiosRequestConfig, AxiosResponse, ResponseType } from 'axios';
 import { BASE_API_URL } from '../config';
 import router from '../router';
 import { TokenService } from './token.service';
@@ -14,6 +14,7 @@ interface Get {
   resource: string;
   data?: object;
   host?: string;
+  confgi?: string;
 }
 
 interface Put {
@@ -60,11 +61,15 @@ export class ApiService {
    * @param data The data to send with the request
    * @returns Thre Promise with the return data
    */
-  public static get<T>({ resource, data, host = BASE_API_URL }: Get): Promise<AxiosResponse<T>> {
+  public static get<T>(
+    { resource, data, host = BASE_API_URL }: Get,
+    responseType?: ResponseType
+  ): Promise<AxiosResponse<T>> {
     return axios.get(host + resource, {
       params: {
         ...(data && data)
-      }
+      },
+      ...(responseType && { responseType: responseType })
     });
   }
 

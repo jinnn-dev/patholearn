@@ -20,3 +20,4 @@ imutils~=0.5.4
 alembic~=1.7.1
 minio~=7.1.0
 pytest~=6.2.5
+XlsxWriter>=3.0.1

@@ -1,9 +1,11 @@
 import json
 import os
 import uuid
+from io import BytesIO
 from typing import Any, Dict, List, Union
 
 import pyvips
+import xlsxwriter
 from app.api.deps import (check_if_user_can_access_course,
                           check_if_user_can_access_task,
                           get_current_active_superuser,
@@ -15,6 +17,7 @@ from app.crud.crud_hint_image import crud_hint_image
 from app.crud.crud_task import crud_task
 from app.crud.crud_task_group import crud_task_group
 from app.crud.crud_task_hint import crud_task_hint
+from app.crud.crud_user import crud_user
 from app.crud.crud_user_solution import crud_user_solution
 from app.models.user import User
 from app.schemas.base_task import (BaseTask, BaseTaskCreate, BaseTaskDetail,
@@ -27,7 +30,8 @@ from app.schemas.polygon_data import (AnnotationData, AnnotationType,
                                       OffsetPolygonData, OffsetRectangleData,
                                       RectangleData)
 from app.schemas.task import (AnnotationGroup, AnnotationGroupUpdate, Task,
-                              TaskCreate, TaskFeedback, TaskStatus, TaskUpdate)
+                              TaskCreate, TaskFeedback, TaskStatus, TaskType,
+                              TaskUpdate)
 from app.schemas.task_hint import TaskHint, TaskHintCreate, TaskHintUpdate
 from app.schemas.user_solution import (UserSolution, UserSolutionCreate,
                                        UserSolutionUpdate)
@@ -37,7 +41,9 @@ from app.utils.timer import Timer
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.datastructures import UploadFile
 from fastapi.params import File
+from pydantic.tools import parse_obj_as
 from sqlalchemy.orm import Session, base
+from starlette.responses import StreamingResponse
 
 router = APIRouter()
 
@@ -353,6 +359,45 @@ def delete_task_result(*, db: Session = Depends(get_db), task_id: int,
                                      obj_in=UserSolutionUpdate(task_result=None, percentage_solved=0.00))
     return temp
 
+@router.get('/task/{task_id}/userSolution/download', response_model=Any, response_description='xlsx')
+def download_usersolutions(*, db: Session = Depends(get_db), task_id: int, current_user: User = Depends(get_current_active_superuser)) -> Any:
+    user_solutions = crud_user_solution.get_solution_to_task(db, task_id=task_id)
+
+    task = crud_task.get(db, id=task_id)
+
+    check_if_user_can_access_task(db, user_id=current_user.id, base_task_id=task.base_task_id)
+
+    output = BytesIO()
+
+    workbook = xlsxwriter.Workbook(output)
+    for user_solution in user_solutions:
+        user = crud_user.get(db, id=user_solution.user_id)
+        sheet_name = str(user.id) + '_'
+        sheet_name += user.lastname + ', ' + user.firstname
+        sheet_name += ' ' + user.middlename if user.middlename else '' 
+        worksheet = workbook.add_worksheet(sheet_name)
+        worksheet.write('A1', 'userId')
+        worksheet.write('B1', 'x')
+        worksheet.write('C1', 'y')
+        worksheet.write('D1', 'label')
+        if task.annotation_type == AnnotationType.SOLUTION_POINT:
+            parsed_data = parse_obj_as(List[AnnotationData], user_solution.solution_data)
+            for index, annotation in enumerate(parsed_data):
+                col_index = str(index + 2)
+                worksheet.write('A' + col_index, user.id)
+                worksheet.write('B' + col_index, annotation.coord.image[0].x)
+                worksheet.write('C' + col_index, annotation.coord.image[0].y)
+                worksheet.write('D' + col_index, annotation.name)
+
+
+    workbook.close()
+    output.seek(0)
+
+    headers = {
+        'Content-Disposition': 'attachment; filename="' + str(task.id) + '"'
+    }
+
+    return StreamingResponse(output, headers=headers)
 
 @router.post('/userSolution', response_model=UserSolution)
 def save_user_solution(*, db: Session = Depends(get_db), user_solution_in: UserSolutionCreate,

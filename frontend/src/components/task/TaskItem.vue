@@ -16,6 +16,7 @@
     <div class="ml-2 w-full mx-2 break-all">{{ question }}</div>
     <role-only v-if="isOwner">
       <div class="flex">
+        <Icon v-if="showDownload" name="download-simple" class="text-xl" @click.stop="downloadUserSolutions" />
         <Icon name="pencil-simple" class="text-xl mx-2" @click.stop="editTask" />
         <Icon name="trash" class="text-red-400 text-xl" @click.stop="deleteTask" />
       </div>
@@ -44,10 +45,15 @@ export default defineComponent({
     question: {
       type: String,
       required: true
+    },
+
+    showDownload: {
+      type: Boolean,
+      default: false
     }
   },
 
-  emits: ['deleteTask', 'editTask'],
+  emits: ['deleteTask', 'editTask', 'downloadUserSolutions'],
 
   setup(_, { emit }) {
     const showDeleteTask = ref<Boolean>(false);
@@ -60,7 +66,19 @@ export default defineComponent({
       emit('editTask');
     };
 
-    return { deleteTask, TaskStatus, showDeleteTask, editTask, userSolutionLocked, viewerLoadingState };
+    const downloadUserSolutions = () => {
+      emit('downloadUserSolutions');
+    };
+
+    return {
+      deleteTask,
+      TaskStatus,
+      showDeleteTask,
+      editTask,
+      userSolutionLocked,
+      viewerLoadingState,
+      downloadUserSolutions
+    };
   }
 });
 </script>

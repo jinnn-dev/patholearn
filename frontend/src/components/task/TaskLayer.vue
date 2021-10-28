@@ -19,9 +19,11 @@
       :question="task.task_question"
       :userSolution="task.user_solution"
       :class="selectedTaskId === task.id ? 'ring-2 ring-highlight-800' : ''"
+      :showDownload="task.annotation_type === ANNOTATION_TYPE.SOLUTION_POINT"
       @click.stop="selectTask(task)"
       @deleteTask="deleteTask(task.id, taskIndex)"
       @editTask="editTask(task)"
+      @downloadUserSolutions="downloadUserSolutions(task)"
     ></task-item>
     <role-only v-if="isOwner"
       ><div class="p-2 px-18 my-2">
@@ -49,6 +51,7 @@ import { defineComponent, PropType, reactive, ref } from 'vue';
 
 import { Task } from '../../model/task';
 import { TaskService } from '../../services/task.service';
+import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
 
 export default defineComponent({
   props: {
@@ -103,6 +106,26 @@ export default defineComponent({
       emit('layerDeleted', props.layerIndex);
     };
 
+    const s2ab = (s: any) => {
+      var buf = new ArrayBuffer(s.length);
+      var view = new Uint8Array(buf);
+      for (var i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) & 0xff;
+      return buf;
+    };
+
+    const downloadUserSolutions = async (task: Task) => {
+      const data = await TaskService.downloadUserSolutions(task.id);
+      const a = document.createElement('a');
+
+      const blob = new Blob([data], { type: 'application/xlsx' });
+
+      a.href = window.URL.createObjectURL(blob);
+      a.download = task.id + '.xlsx';
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+    };
+
     return {
       selectedTask,
       taskCreationModal,
@@ -111,7 +134,9 @@ export default defineComponent({
       deleteTask,
       editTask,
       selectTask,
-      taskUpdateModal
+      taskUpdateModal,
+      downloadUserSolutions,
+      ANNOTATION_TYPE
     };
   }
 });

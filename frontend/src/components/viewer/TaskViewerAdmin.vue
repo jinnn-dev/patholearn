@@ -19,6 +19,7 @@
 
     <custom-select
       v-else
+      :isSearchable="false"
       displayType="small"
       label="Annotationsklasse:"
       :values="task?.annotation_groups"

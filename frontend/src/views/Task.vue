@@ -14,7 +14,7 @@
 
         <hint-overlay :taskId="selectedTask?.id" />
 
-        <div class="fixed z-10 bottom-8 right-8">
+        <div class="fixed z-10 bottom-8 right-8" v-if="selectedTask?.can_be_solved">
           <save-button
             @click="solveTask"
             label="Überprüfe Lösung"

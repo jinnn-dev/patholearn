@@ -66,6 +66,7 @@ class TaskBase(BaseModel):
     annotation_type: TaskAnnotationType
     annotation_groups: Optional[List[AnnotationGroup]]
     hints: Optional[List[TaskHint]]
+    can_be_solved: bool = True
 
 
 class TaskCreate(TaskBase):
@@ -73,6 +74,7 @@ class TaskCreate(TaskBase):
     task_data: Optional[Union[List[AnnotationData], List[str]]]
     hints: Optional[List[TaskHint]] = []
     base_task_id: int
+    can_be_solved: Optional[bool]
 
 
 class TaskUpdate(TaskBase):
@@ -86,6 +88,7 @@ class TaskUpdate(TaskBase):
     task_data: Optional[Any]
     solution: Optional[Any]
     annotation_groups: Optional[List[AnnotationGroup]]
+    can_be_solved: Optional[bool]
 
 
 class TaskInDBBase(TaskBase):
