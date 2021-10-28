@@ -19,7 +19,9 @@
       :question="task.task_question"
       :userSolution="task.user_solution"
       :class="selectedTaskId === task.id ? 'ring-2 ring-highlight-800' : ''"
-      :showDownload="task.annotation_type === ANNOTATION_TYPE.SOLUTION_POINT"
+      :showDownload="
+        task.annotation_type === ANNOTATION_TYPE.SOLUTION_POINT && task.task_type !== TaskType.IMAGE_SELECT
+      "
       @click.stop="selectTask(task)"
       @deleteTask="deleteTask(task.id, taskIndex)"
       @editTask="editTask(task)"
@@ -49,7 +51,7 @@
 <script lang="ts">
 import { defineComponent, PropType, reactive, ref } from 'vue';
 
-import { Task } from '../../model/task';
+import { Task, TaskType } from '../../model/task';
 import { TaskService } from '../../services/task.service';
 import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
 
@@ -136,7 +138,8 @@ export default defineComponent({
       selectTask,
       taskUpdateModal,
       downloadUserSolutions,
-      ANNOTATION_TYPE
+      ANNOTATION_TYPE,
+      TaskType
     };
   }
 });

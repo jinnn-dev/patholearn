@@ -1,4 +1,4 @@
-import { SLIDE_API_URL } from '../config';
+import { BASE_API_URL, SLIDE_API_URL } from '../config';
 import { Slide } from '../model/slide';
 import { ExtractionResult } from '../model/viewer/export/extractionResult';
 import { ApiService } from './api.service';
@@ -62,12 +62,12 @@ export class SlideService {
   public static async convertImage(data: FormData, onUploadProgress?: (event: any) => void): Promise<ExtractionResult> {
     const [_, response] = await handleError(
       ApiService.post<ExtractionResult>({
-        resource: '/slides/convert',
+        resource: '/annotations/convert',
         data,
         config: {
           ...(onUploadProgress && onUploadProgress)
         },
-        host: SLIDE_API_URL
+        host: BASE_API_URL
       }),
       'Image could not be converted'
     );

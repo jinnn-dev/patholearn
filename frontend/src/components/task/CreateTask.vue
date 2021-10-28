@@ -174,32 +174,41 @@
           </div>
 
           <div v-if="selectedTaskType === 1">
-            <div class="my-2 flex gap-2" v-viewer>
+            <div class="my-2 flex gap-2 flex-col">
               <!-- <div class="h-20 w-20 bg-gray-500 rounded-lg" v-for="image in tempPreviewImages" :key="image">
                 <HintImage :imgSrc="SLIDE_IMAGE_URL + '/' + image.image_name" @click="deleteImage(image.image_name)" />
               </div> -->
-              <div class="h-20 w-20 bg-gray-500 rounded-lg" v-for="image in tempPreviewImages" :key="image">
-                <HintImage :imgSrc="image" @click="deleteImage(image)" />
-              </div>
-              <div
-                class="
-                  h-20
-                  w-20
-                  bg-green-600
-                  rounded-lg
-                  flex
-                  items-center
-                  justify-center
-                  cursor-pointer
-                  hover:bg-green-500
-                  transition
-                "
-                @click="fileRef?.click()"
-              >
-                <Icon name="plus" width="30" height="30" stroke-width="25" />
+              <div class="mt-2">Wähle eine Reihe von Bilder:</div>
+              <div>
+                <div
+                  class="h-20 w-20 bg-gray-500 rounded-lg inline-block mx-2 my-2"
+                  v-for="image in tempPreviewImages"
+                  :key="image"
+                >
+                  <HintImage :imgSrc="image" @click="deleteImage(image)" />
+                </div>
+                <div
+                  class="
+                    h-20
+                    w-20
+                    mx-2
+                    my-2
+                    bg-green-600
+                    rounded-lg
+                    flex
+                    items-center
+                    justify-center
+                    cursor-pointer
+                    hover:bg-green-500
+                    transition
+                  "
+                  @click="fileRef?.click()"
+                >
+                  <Icon name="plus" width="30" height="30" stroke-width="25" />
+                </div>
               </div>
             </div>
-            <input type="file" ref="fileRef" v-show="false" @change="onFileChange($event)" />
+            <input type="file" ref="fileRef" v-show="false" @change="onFileChange($event)" multiple="multiple" />
           </div>
         </AccordionItem>
       </Accordion>
@@ -356,8 +365,10 @@ export default defineComponent({
     function onFileChange(e: any) {
       const files = e.target.files || e.dataTransfer.files;
       if (!files.length) return;
-      tempPreviewImages.value.push(URL.createObjectURL(files[0]));
-      tempImages.value.push(files[0]);
+      for (const file of files) {
+        tempPreviewImages.value.push(URL.createObjectURL(file));
+        tempImages.value.push(file);
+      }
     }
 
     function deleteImage(imageName: string) {

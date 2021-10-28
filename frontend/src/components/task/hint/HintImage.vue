@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full w-full relative group">
+  <div class="h-full w-full relative group select-none">
     <div
       v-if="!preview"
       class="
