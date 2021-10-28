@@ -26,9 +26,9 @@
           justify-between
         "
       >
-        {{ searchString || "Keine Klasse" }}
-        <Icon v-if="isFocus" width="12" name="caret-up" strokeWidth="32"/>
-        <Icon v-else width="12" name="caret-down" strokeWidth="32"/>
+        {{ searchString || 'Keine Klasse' }}
+        <Icon v-if="isFocus" width="12" name="caret-up" strokeWidth="32" />
+        <Icon v-else width="12" name="caret-down" strokeWidth="32" />
       </div>
     </div>
 
@@ -54,15 +54,7 @@
         <div
           v-for="value in filteredData"
           :key="isObject(value) && field ? value[field] : value"
-          class="
-            flex
-            transition
-            justify-start
-            items-center
-            hover:bg-gray-400
-            bg-gray-300
-            cursor-pointer
-          "
+          class="flex transition justify-start items-center hover:bg-gray-400 bg-gray-300 cursor-pointer"
           :class="MAPPED_OPTION_SIZE[displayType]"
           @click="valueSelected(value)"
         >
@@ -76,45 +68,45 @@
 </template>
 
 <script lang="ts">
-import { onClickOutside } from "@vueuse/core";
-import { defineComponent, onMounted, PropType, ref, watch } from "vue";
+import { onClickOutside } from '@vueuse/core';
+import { defineComponent, onMounted, PropType, ref, watch } from 'vue';
 
-type SELECT_OPTIONS_SIZE = "small" | "medium" | "large";
+type SELECT_OPTIONS_SIZE = 'small' | 'medium' | 'large';
 
 const MAPPED_OPTION_SIZE: Record<SELECT_OPTIONS_SIZE, string> = {
-  small: "p-2 rounded-md my-2",
-  medium: "my-4 p-2 rounded-md",
-  large: "",
+  small: 'px-2 rounded-md my-2',
+  medium: 'my-4 p-2 rounded-md',
+  large: ''
 };
 
 export default defineComponent({
-  emits: ["valueChanged"],
+  emits: ['valueChanged'],
 
   props: {
     values: Array,
     field: String,
     required: {
       type: Boolean,
-      default: true,
+      default: true
     },
     label: String,
     tip: String,
     placeholder: String,
     displayType: {
       type: String as PropType<SELECT_OPTIONS_SIZE>,
-      default: "medium",
+      default: 'medium'
     },
     initialData: String,
 
     isSearchable: {
       type: Boolean,
-      default: true,
-    },
+      default: true
+    }
   },
   setup(props, { emit }) {
     const target = ref(null);
 
-    const searchString = ref<string>("");
+    const searchString = ref<string>('');
 
     const isFocus = ref<boolean>(false);
 
@@ -127,19 +119,12 @@ export default defineComponent({
     watch(
       () => searchString.value,
       (newVal, oldVal) => {
-        if (
-          oldVal !== undefined &&
-          newVal !== undefined &&
-          props.isSearchable
-        ) {
+        if (oldVal !== undefined && newVal !== undefined && props.isSearchable) {
           if (newVal.length < oldVal.length || newVal.length === 0) {
             filteredData.value = props.values;
           }
           filteredData.value = props.values?.filter((value: any) =>
-            (isObject(value)
-              ? value[props.field as string].toLowerCase()
-              : value
-            ).includes(newVal.toLowerCase())
+            (isObject(value) ? value[props.field as string].toLowerCase() : value).includes(newVal.toLowerCase())
           );
         }
       }
@@ -170,14 +155,12 @@ export default defineComponent({
     const valueSelected = (value: any) => {
       isFocus.value = false;
 
-      searchString.value = isObject(value)
-        ? value[props.field as string]
-        : value;
-      emit("valueChanged", value);
+      searchString.value = isObject(value) ? value[props.field as string] : value;
+      emit('valueChanged', value);
     };
 
     const isObject = (value: object | string): boolean => {
-      if (typeof value === "object") {
+      if (typeof value === 'object') {
         return true;
       }
       return false;
@@ -190,9 +173,9 @@ export default defineComponent({
       valueSelected,
       filteredData,
       MAPPED_OPTION_SIZE,
-      isObject,
+      isObject
     };
-  },
+  }
 });
 </script>
 
