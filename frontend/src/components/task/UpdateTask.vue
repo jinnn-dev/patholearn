@@ -58,7 +58,11 @@
 
           <div class="my-8">
             <div>Soll die Aufgabe von Nutzern lösbar sein?</div>
-            <toggle-button :enabled="taskUpdateForm.can_be_solved" @changed="changeCanBeSolved"></toggle-button>
+            <toggle-button
+              class="my-2"
+              :enabled="taskUpdateForm.can_be_solved"
+              @changed="changeCanBeSolved"
+            ></toggle-button>
           </div>
         </AccordionItem>
         <AccordionItem title="Tipps (optional)">
@@ -133,7 +137,7 @@ export default defineComponent({
     const updateTask = async () => {
       taskUpdateLoading.value = true;
       console.log(taskUpdateForm.can_be_solved);
-      
+
       const res = await TaskService.updateTask({
         task_id: taskUpdateForm.task_id,
         task_question: taskUpdateForm.task_question!,
@@ -149,7 +153,7 @@ export default defineComponent({
 
     const changeCanBeSolved = (value: boolean) => {
       taskUpdateForm.can_be_solved = value;
-    }
+    };
     return { taskUpdateForm, updateTask, taskUpdateLoading, knowledgeLevel, taskTypes, TaskType, changeCanBeSolved };
   }
 });
