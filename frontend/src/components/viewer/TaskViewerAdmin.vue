@@ -584,26 +584,28 @@ export default defineComponent({
 
       selectedPolygon.value = drawingViewer.value?.selectAnnotation(annotationId);
       selectedPolygonData.color = selectedPolygon.value!.color;
-      selectedPolygonData.name = selectedPolygon.value!.name;
+      
+      if (selectedPolygon.value?.type !== ANNOTATION_TYPE.BASE) {
+        selectedPolygonData.name = selectedPolygon.value!.name;
+        if (
+          selectedPolygon.value instanceof OffsetAnnotationPolygon ||
+          selectedPolygon.value instanceof OffsetAnnotationRectangle
+        ) {
+          const annotation = selectedPolygon.value as OffsetAnnotationPolygon;
 
-      if (
-        selectedPolygon.value instanceof OffsetAnnotationPolygon ||
-        selectedPolygon.value instanceof OffsetAnnotationRectangle
-      ) {
-        const annotation = selectedPolygon.value as OffsetAnnotationPolygon;
-
-        const newInnerOffset = annotation.inflationInnerOffset * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
-        updateInnerOffsetRadius(newInnerOffset);
-        const newOuterOffset = annotation.inflationOuterOffset * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
-        updateOuterOffsetRadius(newOuterOffset);
-      } else if (selectedPolygon.value instanceof OffsetAnnotationLine) {
-        const annotation = selectedPolygon.value as OffsetAnnotationLine;
-        const newOffset = annotation.offsetRadius * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
-        updateAnnotationLineOffsetRadius(newOffset);
-      } else {
-        const annotation = selectedPolygon.value as OffsetAnnotationPoint;
-        const newOffset = annotation.offsetRadius * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
-        updateAnnotationPointOffsetRadius(newOffset);
+          const newInnerOffset = annotation.inflationInnerOffset * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
+          updateInnerOffsetRadius(newInnerOffset);
+          const newOuterOffset = annotation.inflationOuterOffset * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
+          updateOuterOffsetRadius(newOuterOffset);
+        } else if (selectedPolygon.value instanceof OffsetAnnotationLine) {
+          const annotation = selectedPolygon.value as OffsetAnnotationLine;
+          const newOffset = annotation.offsetRadius * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
+          updateAnnotationLineOffsetRadius(newOffset);
+        } else {
+          const annotation = selectedPolygon.value as OffsetAnnotationPoint;
+          const newOffset = annotation.offsetRadius * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
+          updateAnnotationPointOffsetRadius(newOffset);
+        }
       }
     };
 
