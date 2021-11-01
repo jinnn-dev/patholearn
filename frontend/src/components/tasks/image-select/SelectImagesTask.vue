@@ -133,7 +133,12 @@ export default defineComponent({
       const solution = props.isAdmin
         ? (props.task?.solution as string[])
         : (props.task?.user_solution?.solution_data as string[]);
-      imageSelectViewer.value = new ImageSelectViewer(props.task?.task_data as string[], solution, selectColor);
+      imageSelectViewer.value = new ImageSelectViewer(
+        props.task?.task_data as string[],
+        solution,
+        selectColor,
+        !props.isAdmin
+      );
     };
 
     onMounted(() => {

@@ -4,6 +4,7 @@ import { ref, Ref } from 'vue';
 import { SLIDE_IMAGE_URL } from '../../../config';
 import { ImageSelectFeedback, RESULT_POLYGON_COLOR } from '../../../model/result';
 import { ANNOTATION_COLOR } from '../../../model/viewer/colors';
+import { shuffle } from '../../../utils/seadragon.utils';
 import { options, SVG_ID } from '../../viewer/core/options';
 import { SvgOverlay } from '../../viewer/core/svg-overlay';
 import { viewerLoadingState } from '../../viewer/core/viewerState';
@@ -25,7 +26,12 @@ export class ImageSelectViewer {
 
   private _clickDisabled: Boolean = false;
 
-  constructor(images: string[], selected: string[], selectColor = ANNOTATION_COLOR.SOLUTION_COLOR) {
+  constructor(
+    images: string[],
+    selected: string[],
+    selectColor = ANNOTATION_COLOR.SOLUTION_COLOR,
+    shuffleImages: boolean = true
+  ) {
     this._selectedImages = ref(new Set(selected));
     this._tilesSources = [];
     this._selectColor = selectColor;
@@ -40,7 +46,11 @@ export class ImageSelectViewer {
     viewerOptions.collectionMode = true;
     viewerOptions.collectionTileMargin = 100;
 
-    this._tilesSources = images;
+    if (shuffleImages) {
+      this._tilesSources = shuffle(images);
+    } else {
+      this._tilesSources = images;
+    }
 
     // for (const image of images) {
     //   this._tilesSources.push(SLIDE_IMAGE_URL + '/' + image);
