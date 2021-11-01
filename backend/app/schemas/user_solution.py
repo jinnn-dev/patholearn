@@ -1,13 +1,14 @@
 from typing import Any, List, Optional, Union
 
+from pydantic import BaseModel
+
 from app.schemas.polygon_data import AnnotationData
 from app.schemas.task import TaskFeedback
-from pydantic import BaseModel
 
 
 class UserSolutionBase(BaseModel):
     percentage_solved: float
-    solution_data: Union[List[AnnotationData], List[int]]
+    solution_data: Union[List[AnnotationData], List[str]]
     task_result: Optional[TaskFeedback] = None
     failed_attempts: Optional[int] = 0
 

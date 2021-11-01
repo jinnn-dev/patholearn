@@ -47,7 +47,7 @@ class AnnotationFeedback(BaseModel):
     lines_outside: Optional[List[Any]]
 
 class SelectImageFeedback(BaseModel):
-    index: Optional[int]
+    image: Optional[int]
     status: Optional[TaskStatus]
 
 class TaskFeedback(BaseModel):

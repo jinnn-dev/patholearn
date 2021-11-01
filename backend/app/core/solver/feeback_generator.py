@@ -5,7 +5,7 @@ from app.core.solver.task_result_factory import TaskResultFactory
 from app.schemas.solver_result import LineResult, PointResult, PolygonResult
 from app.schemas.task import (AnnotationFeedback, SelectImageFeedback,
                               TaskFeedback, TaskStatus)
-from app.utils.utils import get_max_value_length, print_python_dict
+from app.utils.utils import get_max_value_length
 
 
 class FeedbackGenerator:
@@ -144,7 +144,6 @@ class FeedbackGenerator:
 
         matched_ids, no_match_ids, invalid_ids = solve_result
 
-
         FeedbackGenerator.__generate_no_match_feedback(task_result, no_match_ids)
 
         FeedbackGenerator.__generate_invalid_feedback(task_result, invalid_ids)
@@ -181,7 +180,8 @@ class FeedbackGenerator:
                         if check_name:
                             if FeedbackGenerator.__generate_name_feedback(user_annotation=user_annotation,
                                                                           percentage=area_percentage_sum,
-                                                                          task_feedback=task_result, knowledge_level=knowledge_level):
+                                                                          task_feedback=task_result,
+                                                                          knowledge_level=knowledge_level):
                                 correct_count += 1
                         else:
                             TaskResultFactory.append_result_detail(annotation_id=user_annotation.id,
@@ -327,11 +327,12 @@ class FeedbackGenerator:
         return False
 
     @staticmethod
-    def generate_image_select_feedback(*, task_feedback: TaskFeedback, correct_image_indices: List[int], wrong_image_indices: List[int]) -> TaskFeedback:
+    def generate_image_select_feedback(*, task_feedback: TaskFeedback, correct_image_indices: List[str],
+                                       wrong_image_indices: List[str]) -> TaskFeedback:
         for correct_index in correct_image_indices:
             select_image_feedback = SelectImageFeedback()
             select_image_feedback.status = TaskStatus.CORRECT
-            select_image_feedback.index = correct_index
+            select_image_feedback.image = correct_index
             task_feedback.result_detail.append(select_image_feedback)
         if len(wrong_image_indices) == 0 and len(correct_image_indices) != 0:
             if not task_feedback.task_status:
@@ -341,14 +342,13 @@ class FeedbackGenerator:
             for wrong_index in wrong_image_indices:
                 select_image_feedback = SelectImageFeedback()
                 select_image_feedback.status = TaskStatus.WRONG
-                select_image_feedback.index = wrong_index
+                select_image_feedback.image = wrong_index
                 task_feedback.result_detail.append(select_image_feedback)
 
             if not task_feedback.task_status:
                 task_feedback.task_status = TaskStatus.WRONG
-                task_feedback.task_status.WRONG
                 task_feedback.response_text = "Du hast noch nicht die richtigen Bilder ausgewählt"
-            
+
         return task_feedback
 
     @staticmethod

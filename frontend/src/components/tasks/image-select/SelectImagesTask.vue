@@ -41,15 +41,13 @@ export default defineComponent({
   setup(props) {
     const imageSelectViewer = ref<ImageSelectViewer>();
 
-    const images = ref<number[]>([]);
+    const images = ref<string[]>([]);
 
     watch(
       () => images.value,
       async () => {
         isTaskSaving.value = true;
         if (props.isAdmin) {
-          console.log(images.value, props.task?.solution);
-
           if (JSON.stringify(images.value) !== JSON.stringify(props.task?.solution)) {
             const newTask = await TaskService.updateTask({
               task_id: props.task!.id,
@@ -123,8 +121,8 @@ export default defineComponent({
     watch(
       () => imageSelectViewer.value,
       () => {
-        if (images.value !== Array.from(imageSelectViewer.value?.selectedImagesRef as Set<number>)) {
-          images.value = Array.from(imageSelectViewer.value?.selectedImagesRef as Set<number>);
+        if (images.value !== Array.from(imageSelectViewer.value?.selectedImagesRef as Set<string>)) {
+          images.value = Array.from(imageSelectViewer.value?.selectedImagesRef as Set<string>);
         }
       },
       { deep: true }
@@ -133,8 +131,8 @@ export default defineComponent({
     const setImageSelectViewer = () => {
       const selectColor = props.isAdmin ? ANNOTATION_COLOR.SOLUTION_COLOR : ANNOTATION_COLOR.USER_SOLUTION_COLOR;
       const solution = props.isAdmin
-        ? (props.task?.solution as number[])
-        : (props.task?.user_solution?.solution_data as number[]);
+        ? (props.task?.solution as string[])
+        : (props.task?.user_solution?.solution_data as string[]);
       imageSelectViewer.value = new ImageSelectViewer(props.task?.task_data as string[], solution, selectColor);
     };
 

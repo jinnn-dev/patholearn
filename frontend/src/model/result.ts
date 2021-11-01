@@ -18,7 +18,7 @@ export interface TaskResultDetail {
 }
 
 export interface ImageSelectFeedback {
-  index: number;
+  image: string;
   status: TaskStatus;
 }
 

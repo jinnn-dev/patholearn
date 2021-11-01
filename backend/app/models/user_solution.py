@@ -1,5 +1,6 @@
-from app.db.base_class import Base
 from sqlalchemy import JSON, Column, ForeignKey, Integer, Numeric, text
+
+from app.db.base_class import Base
 
 
 class UserSolution(Base):

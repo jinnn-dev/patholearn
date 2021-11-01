@@ -21,7 +21,7 @@ export interface Task {
   knowledge_level: number;
   task_data?: AnnotationData[] | string[];
   user_solution?: UserSolution;
-  solution?: AnnotationData[] | number[];
+  solution?: AnnotationData[] | number[] | string[];
   annotation_type: number;
   min_correct: number;
   annotation_groups: AnnotationGroup[];

@@ -1,5 +1,7 @@
 from typing import List, Union
 
+from pydantic import parse_obj_as
+
 from app.core.solver.annotation_analysis import AnnotationAnalysis
 from app.core.solver.feeback_generator import FeedbackGenerator
 from app.core.solver.select_images_analysis import SelectImagesAnalysis
@@ -10,13 +12,12 @@ from app.schemas.polygon_data import (AnnotationData, AnnotationType,
 from app.schemas.task import Task, TaskFeedback, TaskStatus, TaskType
 from app.utils.colored_printer import ColoredPrinter
 from app.utils.timer import Timer
-from pydantic import parse_obj_as
 
 
 class Solver:
 
     @staticmethod
-    def solve(*, user_solution: Union[List[AnnotationData], List[int]], task: Task) -> TaskFeedback:
+    def solve(*, user_solution: Union[List[AnnotationData], List[str]], task: Task) -> TaskFeedback:
         """
         Solves the given user solution to the task and generates feedback for it
 
@@ -40,19 +41,21 @@ class Solver:
         if task.task_type == TaskType.IMAGE_SELECT:
             solution_data = task.solution
             user_solution_data = user_solution
-            correct_image_indices, wrong_image_indices = SelectImagesAnalysis.check_select_images(task_solution=solution_data, user_solution=user_solution_data)
-            
-            if (len(correct_image_indices) < len(solution_data)):
+            correct_images, wrong_images = SelectImagesAnalysis.check_select_images(task_solution=solution_data,
+                                                                                    user_solution=user_solution_data)
+
+            if len(correct_images) < len(solution_data):
                 task_result.task_status = TaskStatus.PARTIAL
                 task_result.response_text = "Du hast noch nicht alle korrekten Bilder ausgewählt"
-            
-            task_result = FeedbackGenerator.generate_image_select_feedback(task_feedback=task_result, correct_image_indices=correct_image_indices, wrong_image_indices=wrong_image_indices)
+
+            task_result = FeedbackGenerator.generate_image_select_feedback(task_feedback=task_result,
+                                                                           correct_image_indices=correct_images,
+                                                                           wrong_image_indices=wrong_images)
         else:
             min_correct = task.min_correct if task.task_type == 0 else len(task.solution)
             should_check_name = False if task.task_type == 0 else True
 
             if len(user_solution) < min_correct:
-
                 annotation_diff = min_correct - len(user_solution)
                 task_result.task_status = TaskStatus.TOO_LESS_INPUTS
                 task_result.response_text = f"Es {'fehlt noch eine ' if annotation_diff == 1 else f'fehlen noch {annotation_diff}'} " \
@@ -60,14 +63,13 @@ class Solver:
 
             parsed_user_solution = parse_obj_as(List[Union[RectangleData, AnnotationData]], user_solution)
 
-
-
             if task_annotation_type == AnnotationType.SOLUTION_POINT:
                 parsed_task_solution = parse_obj_as(List[OffsetPointData], task_solution)
                 solve_result = AnnotationAnalysis.check_point_in_point(user_annotation_data=parsed_user_solution,
-                                                                    solution_annotation_data=parsed_task_solution)
+                                                                       solution_annotation_data=parsed_task_solution)
 
-                task_result = FeedbackGenerator.generate_point_feedback(solve_result=solve_result, task_result=task_result,
+                task_result = FeedbackGenerator.generate_point_feedback(solve_result=solve_result,
+                                                                        task_result=task_result,
                                                                         min_correct=min_correct,
                                                                         check_name=should_check_name,
                                                                         knowledge_level=task.knowledge_level)
@@ -75,20 +77,22 @@ class Solver:
             if task_annotation_type == AnnotationType.SOLUTION_LINE:
                 parsed_task_solution = parse_obj_as(List[OffsetLineData], task_solution)
                 solve_result = AnnotationAnalysis.check_line_in_line(user_annotation_data=parsed_user_solution,
-                                                                    solution_annotation_data=parsed_task_solution)
-                task_result = FeedbackGenerator.generate_line_feedback(solve_result=solve_result, task_result=task_result,
-                                                                    min_correct=min_correct,
-                                                                    check_name=should_check_name,
-                                                                    knowledge_level=task.knowledge_level)
+                                                                     solution_annotation_data=parsed_task_solution)
+                task_result = FeedbackGenerator.generate_line_feedback(solve_result=solve_result,
+                                                                       task_result=task_result,
+                                                                       min_correct=min_correct,
+                                                                       check_name=should_check_name,
+                                                                       knowledge_level=task.knowledge_level)
 
             if task_annotation_type == AnnotationType.SOLUTION:
                 parsed_task_solution = parse_obj_as(List[Union[OffsetRectangleData, OffsetPolygonData]], task_solution)
                 solve_result = AnnotationAnalysis.check_polygon_in_polygon(user_annotation_data=parsed_user_solution,
-                                                                        solution_annotation_data=parsed_task_solution)
+                                                                           solution_annotation_data=parsed_task_solution)
                 task_result = FeedbackGenerator.generate_polygon_feedback(solve_result=solve_result,
-                                                                        task_result=task_result, min_correct=min_correct,
-                                                                        check_name=should_check_name,
-                                                                        knowledge_level=task.knowledge_level)
+                                                                          task_result=task_result,
+                                                                          min_correct=min_correct,
+                                                                          check_name=should_check_name,
+                                                                          knowledge_level=task.knowledge_level)
 
         current_timer.stop()
         ColoredPrinter.print_lined_info(f"Solver needed {current_timer.total_run_time * 1000}ms")
