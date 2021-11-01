@@ -1,5 +1,8 @@
 <template>
-  <div class="transition flex items-center my-2 mx-2 p-2 bg-gray-500 rounded-xl hover:bg-gray-400" :title="question">
+  <div
+    class="transition flex flex-col items-center my-2 mx-2 p-2 bg-gray-500 rounded-xl hover:bg-gray-400"
+    :title="question"
+  >
     <div v-if="!isOwner">
       <Icon
         name="circle"
@@ -18,9 +21,18 @@
       <div class="flex">
         <Icon v-if="showDownload" name="download-simple" class="text-xl" @click.stop="downloadUserSolutions" />
         <Icon name="pencil-simple" class="text-xl mx-2" @click.stop="editTask" />
-        <Icon name="trash" class="text-red-400 text-xl" @click.stop="deleteTask" />
+        <Icon name="trash" class="text-red-400 text-xl" @click.stop="showDeleteTask = true" />
       </div>
     </role-only>
+
+    <confirm-dialog
+      :show="showDeleteTask"
+      header="Aufgabe löschen"
+      detail="Alle Lösungen der Nutzer werden ebenfalls gelöscht"
+      @confirmation="deleteTask"
+      @reject="showDeleteTask = false"
+    >
+    </confirm-dialog>
   </div>
 </template>
 

@@ -1,8 +1,8 @@
 <template>
   <modal-dialog :show="show">
     <div class="relative">
-      <h1 class="text-2xl mb-4">{{ header }}</h1>
-      <h2 v-if="detail">{{ detail }}</h2>
+      <h1 class="text-2xl">{{ header }}</h1>
+      <h2 v-if="detail" class="my-4">{{ detail }}</h2>
       <div class="flex justify-end">
         <primary-button
           @click.prevent="reject"
