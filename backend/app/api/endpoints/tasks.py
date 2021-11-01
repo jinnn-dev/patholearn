@@ -236,9 +236,10 @@ def delete_task(*, db: Session = Depends(get_db), task_id: int,
 
         check_if_user_can_access_task(db, user_id=current_user.id, base_task_id=task_to_delete.base_task_id)
 
+        crud_user_solution.remove_all_by_task_id(db, task_id=task_id)
+
         task = crud_task.remove(db, model_id=task_id)
 
-        crud_user_solution.remove_all_by_task_id(db, task_id=task_id)
 
     except Exception as e:
         print(e)
