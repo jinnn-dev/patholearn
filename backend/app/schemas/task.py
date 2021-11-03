@@ -70,7 +70,7 @@ class TaskBase(BaseModel):
 
 
 class TaskCreate(TaskBase):
-    solution: Optional[List[Union[AnnotationData, OffsetPolygonData]]]
+    solution: Optional[List[Union[AnnotationData, OffsetPolygonData, str]]]
     task_data: Optional[Union[List[AnnotationData], List[str]]]
     hints: Optional[List[TaskHint]] = []
     base_task_id: int

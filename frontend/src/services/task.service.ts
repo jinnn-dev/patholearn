@@ -53,6 +53,31 @@ export class TaskService {
   }
 
   /**
+   * Creates a new base task from csv File
+   *
+   * @param createTask The content to create the base task
+   * @returns Promise with the created base task
+   */
+  public static async createBaseTaskFromCsv(
+    createTask: CreateBaseTask,
+    csv_file: File,
+    images: any[]
+  ): Promise<BaseTask> {
+    const formData = new FormData();
+    formData.append('csv_file', csv_file);
+
+    formData.append('base_task_in', JSON.stringify(createTask));
+
+    formData.append('image_dicts', JSON.stringify(images));
+
+    const [_, response] = await handleError(
+      ApiService.post<BaseTask>({ resource: this._apiUrl() + '/imageselect/csv', data: formData }),
+      'Base task could not be created'
+    );
+    return response!.data;
+  }
+
+  /**
    * Updates a base task
    *
    * @param updateTask The content to update the base task
@@ -454,6 +479,15 @@ export class TaskService {
     const [_, response] = await handleError(
       ApiService.post<any>({ resource: this._apiUrl(`/task/image`), data: formData }),
       'Task-Image upload failed'
+    );
+
+    return response!.data;
+  }
+
+  public static async deleteTaskImage(imageName: string) {
+    const [_, response] = await handleError(
+      ApiService.delete<any>({ resource: this._apiUrl(`/task/image/minio/${imageName}`) }),
+      'Task-Image delete failed'
     );
 
     return response!.data;
