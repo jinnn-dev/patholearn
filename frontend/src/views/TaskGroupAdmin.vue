@@ -104,6 +104,19 @@
           </div>
           <input type="file" ref="fileRef" v-show="false" @change="onFileChange($event)" multiple="multiple" />
         </div>
+        <div v-if="taskLoading">
+          <div class="flex gap-3 mb-3 items-center">
+            <div class="flex-1">
+              <div
+                class="animate-pulse bg-green-500 my-2 rounded-lg transition duration-10 h-3"
+                :style="{ width: uploadProgress + '%' }"
+              ></div>
+            </div>
+            <div>{{ uploadProgress }}%</div>
+          </div>
+          <div v-if="uploadProgress == 100.0" class="font-semibold">Aufgaben werden erstellt...</div>
+        </div>
+
         <div class="flex justify-end w-full">
           <primary-button
             @click.prevent="onTaskClose"
@@ -203,6 +216,8 @@ export default defineComponent({
       slide_id: '',
       csv_file: undefined
     });
+
+    const uploadProgress = ref(0.0);
 
     const taskLoading = ref<Boolean>(false);
     const taskError = ref<Boolean>(false);
@@ -346,7 +361,9 @@ export default defineComponent({
       for (const image of images) {
         formData.append('images', image);
       }
-      return await TaskService.uploadMultipleTaskImages(formData);
+      return await TaskService.uploadMultipleTaskImages(formData, (event) => {
+        uploadProgress.value = Math.round((100 * event.loaded) / event.total);
+      });
     };
 
     return {
@@ -370,7 +387,8 @@ export default defineComponent({
       deleteBaseLoading,
       deleteBaseTaskItem,
       onFileUpload,
-      deleteBaseTask
+      deleteBaseTask,
+      uploadProgress
     };
   }
 });

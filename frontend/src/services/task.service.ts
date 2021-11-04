@@ -484,9 +484,9 @@ export class TaskService {
     return response!.data;
   }
 
-  public static async uploadMultipleTaskImages(formData: FormData) {
+  public static async uploadMultipleTaskImages(formData: FormData, onUploadProgress: (event: any) => void) {
     const [_, response] = await handleError(
-      ApiService.post<any>({ resource: this._apiUrl(`/task/images`), data: formData }),
+      ApiService.post<any>({ resource: this._apiUrl(`/task/images`), data: formData, config: { onUploadProgress } }),
       'Task-Images upload failed'
     );
 
