@@ -98,6 +98,8 @@ def get_task_group(*, db: Session = Depends(get_db), short_name: str,
         task.wrong_tasks = crud_user_solution.get_amount_of_wrong_solutions_to_base_task(db,
                                                                                              user_id=current_user.id,
                                                                                              base_task_id=task.id)
+
+        del task.tasks
         new_tasks.append(task)
 
     if task_count != 0:

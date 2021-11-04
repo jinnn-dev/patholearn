@@ -43,6 +43,7 @@ export class ImageSelectViewer {
       'https://cdn.pixabay.com/photo/2021/01/01/21/09/challenger-5880009_960_720.jpg'
     );
 
+    viewerOptions.zoomPerScroll = 1.2;
     viewerOptions.collectionMode = true;
     viewerOptions.collectionTileMargin = 100;
 

@@ -484,6 +484,15 @@ export class TaskService {
     return response!.data;
   }
 
+  public static async uploadMultipleTaskImages(formData: FormData) {
+    const [_, response] = await handleError(
+      ApiService.post<any>({ resource: this._apiUrl(`/task/images`), data: formData }),
+      'Task-Images upload failed'
+    );
+
+    return response!.data;
+  }
+
   public static async deleteTaskImage(imageName: string) {
     const [_, response] = await handleError(
       ApiService.delete<any>({ resource: this._apiUrl(`/task/image/minio/${imageName}`) }),

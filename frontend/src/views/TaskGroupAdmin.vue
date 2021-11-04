@@ -73,7 +73,7 @@
           <div v-if="formData.csv_file">
             <div>Füge die entsprechenden Bilder der CSV-Datei hinzu:</div>
 
-            <div>
+            <div class="max-h-[300px] overflow-auto mb-4">
               <div
                 class="h-20 w-20 bg-gray-500 rounded-lg inline-block mx-2 my-2"
                 v-for="(image, index) in tempPreviewImages"
@@ -229,11 +229,8 @@ export default defineComponent({
     const onSubmit = async () => {
       taskLoading.value = true;
       if (formData.csv_file && tempImages.value.length !== 0) {
-        const images: any[] = [];
-        for await (const img of tempImages.value) {
-          const result = await uploadImage(img);
-          images.push(result);
-        }
+        const images = await uploadMultipleImages(tempImages.value);
+
         try {
           const response = await TaskService.createBaseTaskFromCsv(
             {
@@ -342,6 +339,14 @@ export default defineComponent({
       const formData = new FormData();
       formData.append('image', image);
       return await TaskService.uploadTaskImage(formData);
+    };
+
+    const uploadMultipleImages = async (images: Blob[]) => {
+      const formData = new FormData();
+      for (const image of images) {
+        formData.append('images', image);
+      }
+      return await TaskService.uploadMultipleTaskImages(formData);
     };
 
     return {

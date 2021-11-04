@@ -91,6 +91,7 @@ def create_base_task_from_csv(*, db: Session = Depends(get_db), base_task_in: st
 
     tasks = []
 
+
     try:
         tab = pd.read_csv(StringIO(str(csv_file.file.read(), 'utf-8')), nrows=1, sep='\t').shape[1]
         csv_file.file.seek(0)
@@ -104,7 +105,8 @@ def create_base_task_from_csv(*, db: Session = Depends(get_db), base_task_in: st
         divider_options = [9, 12]
 
         labels = df['class'].unique()
-
+        print("LABELS", labels)
+        print("SIZE", len(df.index))
         index = 0
         curr_divider = divider_options[0]
         task_index = 0
@@ -119,8 +121,10 @@ def create_base_task_from_csv(*, db: Session = Depends(get_db), base_task_in: st
                     path_item = None
                     if len(path) > 0:
                         path_item = path[0]["path"]
-                    if path_item:
-                        replace[name] = path_item
+                        if path_item:
+                            replace[name] = path_item
+                    else:
+                        sub_df = sub_df[sub_df["name"] != name]
 
                 sub_df.replace({"name": replace}, inplace=True)
                 correct_rows = sub_df.loc[df['class'] == task_label]['name'].to_list()
@@ -146,21 +150,25 @@ def create_base_task_from_csv(*, db: Session = Depends(get_db), base_task_in: st
         db.refresh(base_task)
         base_task.task_count = len(tasks)
         return base_task
+
     except Exception as e:
-        if base_task:
-            crud_base_task.remove(db, model_id=base_task.id)
-        if tasks:
-            for task in tasks:
-                crud_task.remove(db, model_id=task.id)
+        print(e)
         if image_dicts:
             for image in image_dicts:
                 minio_client.bucket_name = MinioClient.task_bucket
                 minio_client.delete_object(image["path"])
-        print(e)
+        if tasks:
+            for task in tasks:
+                if task.id:
+                    crud_task.remove(db, model_id=task.id)
+        if base_task and base_task.id:
+            crud_base_task.remove(db, model_id=base_task.id)
+
         raise HTTPException(
             status_code=500,
             detail="BaseTask could not be created"
         )
+
 
 
 @router.put('', response_model=BaseTask)
@@ -227,6 +235,13 @@ def delete_base_task(*, db: Session = Depends(get_db), short_name: str,
 
     crud_task.remove_all_to_task_id(db, base_task_id=base_task.id)
     crud_user_solution.remove_all_to_base_task(db, base_task_id=base_task.id)
+
+    for task in base_task.tasks:
+        if task.task_type == TaskType.IMAGE_SELECT:
+            for image in task.task_data:
+                minio_client.bucket_name = MinioClient.task_bucket
+                minio_client.delete_object(image)
+
     crud_base_task.remove(db, model_id=base_task.id)
     return base_task
 
@@ -336,6 +351,11 @@ def delete_task(*, db: Session = Depends(get_db), task_id: int,
         check_if_user_can_access_task(db, user_id=current_user.id, base_task_id=task_to_delete.base_task_id)
 
         crud_user_solution.remove_all_by_task_id(db, task_id=task_id)
+
+        if task_to_delete.task_type == TaskType.IMAGE_SELECT:
+            for image in task_to_delete.task_data:
+                minio_client.bucket_name = MinioClient.task_bucket
+                minio_client.delete_object(image)
 
         task = crud_task.remove(db, model_id=task_id)
 
@@ -739,6 +759,35 @@ def get_task_hints(*, db: Session = Depends(get_db), task_id: int,
     hints = crud_task_hint.get_hints_by_task(db, task_id=task_id, mistakes=failed_attempts)
     return hints
 
+
+@router.post('/task/images', response_model=List[Dict])
+def upload_task_image(*, current_user: User = Depends(get_current_active_superuser), images: List[UploadFile] = File(...)):
+    results = []
+
+    for image in images:
+        image_name = uuid.uuid4()
+
+        file_name = f"{image_name}.{image.filename.split('.')[-1]}"
+
+        final_name = f'{image_name}.jpeg'
+
+        pyvips_image = pyvips.Image.new_from_buffer(image.file.read(), options="")
+
+        pyvips_image.jpegsave(final_name, Q=75)
+
+        try:
+            minio_client.bucket_name = MinioClient.task_bucket
+            minio_client.create_object(file_name, final_name, "image/jpeg")
+            os.remove(final_name)
+            results.append({"path": minio_client.bucket_name + '/' + file_name, "old_name": image.filename})
+        except Exception as e:
+            print(e)
+            os.remove(final_name)
+            raise HTTPException(
+                status_code=500,
+                detail="Image could not be saved"
+            )
+    return results
 
 @router.post('/task/image', response_model=Dict)
 def upload_task_image(*, current_user: User = Depends(get_current_active_superuser), image: UploadFile = File(...)):
