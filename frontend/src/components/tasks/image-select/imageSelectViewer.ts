@@ -4,6 +4,7 @@ import { ref, Ref } from 'vue';
 import { SLIDE_IMAGE_URL } from '../../../config';
 import { ImageSelectFeedback, RESULT_POLYGON_COLOR } from '../../../model/result';
 import { ANNOTATION_COLOR } from '../../../model/viewer/colors';
+import { shuffle } from '../../../utils/seadragon.utils';
 import { options, SVG_ID } from '../../viewer/core/options';
 import { SvgOverlay } from '../../viewer/core/svg-overlay';
 import { viewerLoadingState } from '../../viewer/core/viewerState';
@@ -13,7 +14,7 @@ export class ImageSelectViewer {
 
   private _overlay: SvgOverlay;
 
-  private _selectedImages: Ref<Set<number>>;
+  private _selectedImages: Ref<Set<string>>;
 
   private _tilesSources: string[];
 
@@ -25,7 +26,12 @@ export class ImageSelectViewer {
 
   private _clickDisabled: Boolean = false;
 
-  constructor(images: string[], selected: number[], selectColor = ANNOTATION_COLOR.SOLUTION_COLOR) {
+  constructor(
+    images: string[],
+    selected: string[],
+    selectColor = ANNOTATION_COLOR.SOLUTION_COLOR,
+    shuffleImages: boolean = true
+  ) {
     this._selectedImages = ref(new Set(selected));
     this._tilesSources = [];
     this._selectColor = selectColor;
@@ -37,17 +43,24 @@ export class ImageSelectViewer {
       'https://cdn.pixabay.com/photo/2021/01/01/21/09/challenger-5880009_960_720.jpg'
     );
 
+    viewerOptions.zoomPerScroll = 1.2;
     viewerOptions.collectionMode = true;
     viewerOptions.collectionTileMargin = 100;
 
-    for (const image of images) {
-      this._tilesSources.push(SLIDE_IMAGE_URL + '/' + image);
+    if (shuffleImages) {
+      this._tilesSources = shuffle(images);
+    } else {
+      this._tilesSources = images;
     }
 
-    viewerOptions.tileSources = this._tilesSources.map((item) => {
+    // for (const image of images) {
+    //   this._tilesSources.push(SLIDE_IMAGE_URL + '/' + image);
+    // }
+
+    viewerOptions.tileSources = this._tilesSources.map((image) => {
       return {
         type: 'image',
-        url: item
+        url: SLIDE_IMAGE_URL + '/' + image
       };
     });
 
@@ -68,6 +81,8 @@ export class ImageSelectViewer {
         const tiledImage = this._viewer.world.getItemAt(i);
         const box = tiledImage.getBounds(true);
 
+        const imageId = this._tilesSources[i].split('/')[1].split('.')[0];
+
         this._rects[i] = select('#background')
           .append('rect')
           .attr('x', box.x)
@@ -76,8 +91,8 @@ export class ImageSelectViewer {
           .attr('height', box.height)
           .attr('fill', 'transparent')
           .attr('stroke-width', 10)
-          .attr('stroke', this._selectedImages.value.has(i) ? this._selectColor : 'none ')
-          .attr('index', i);
+          .attr('stroke', this._selectedImages.value.has(imageId) ? this._selectColor : 'none')
+          .attr('id', imageId);
       }
 
       viewerLoadingState.tilesLoaded = true;
@@ -97,7 +112,7 @@ export class ImageSelectViewer {
             .on('click', function () {
               if (!self._clickDisabled) {
                 const rect = select(this);
-                const index = +rect.attr('index');
+                const index = rect.attr('id');
 
                 if (self._selectedImages.value.has(index)) {
                   self._selectedImages.value.delete(index);
@@ -122,8 +137,10 @@ export class ImageSelectViewer {
 
   resetResultColors() {
     if (this._selectedImages) {
-      for (const index of Array.from(this._selectedImages as Set<number>)) {
-        this._rects[index].attr('stroke', this._selectColor);
+      for (const rect of this._rects) {
+        if (rect.attr('stroke') !== 'none') {
+          rect.attr('stroke', this._selectColor);
+        }
       }
     }
   }
@@ -134,13 +151,14 @@ export class ImageSelectViewer {
 
   private _setRectColors() {
     for (const feedback of this._imageSelectFeedback) {
-      if (this._rects[feedback.index]) {
-        this._rects[feedback.index].attr('stroke', RESULT_POLYGON_COLOR[feedback.status]!);
+      const rect = this._rects.find((rect) => rect.attr('id') === feedback.image);
+      if (rect) {
+        rect.attr('stroke', RESULT_POLYGON_COLOR[feedback.status]!);
       }
     }
   }
 
-  get selectedImagesRef(): Ref<Set<number>> {
+  get selectedImagesRef(): Ref<Set<string>> {
     return this._selectedImages;
   }
 

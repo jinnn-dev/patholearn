@@ -47,7 +47,7 @@ class AnnotationFeedback(BaseModel):
     lines_outside: Optional[List[Any]]
 
 class SelectImageFeedback(BaseModel):
-    index: Optional[int]
+    image: Optional[int]
     status: Optional[TaskStatus]
 
 class TaskFeedback(BaseModel):
@@ -70,7 +70,7 @@ class TaskBase(BaseModel):
 
 
 class TaskCreate(TaskBase):
-    solution: Optional[List[Union[AnnotationData, OffsetPolygonData]]]
+    solution: Optional[List[Union[AnnotationData, OffsetPolygonData, str]]]
     task_data: Optional[Union[List[AnnotationData], List[str]]]
     hints: Optional[List[TaskHint]] = []
     base_task_id: int

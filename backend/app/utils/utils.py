@@ -1,6 +1,10 @@
+import csv
 import json
+from io import StringIO
 from math import hypot
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Union, Iterator
+
+from fastapi import UploadFile, File
 
 from app.schemas.polygon_data import Point
 from app.schemas.solver_result import LineResult, PointResult, PolygonResult
@@ -39,3 +43,20 @@ def print_python_dict(matched_ids: Dict[str, List[Union[PointResult, LineResult,
         for annotation_result in matched_ids[key]:
             result[key].append(annotation_result.dict())
     print(json.dumps(result))
+
+
+def get_csv_iterator(csv_file: UploadFile = File(...), skip_headers=False) -> [Iterator, str]:
+    csv_file.file.seek(0)
+    csv_reader = csv.reader(StringIO(str(csv_file.file.read(), 'utf-8')))
+    headers = next(csv_reader)
+
+    delimiter = ';'
+    if '\t' in headers[0]:
+        delimiter = '\t'
+
+    csv_file.file.seek(0)
+    csv_reader = csv.reader(StringIO(str(csv_file.file.read(), 'utf-8')))
+
+    if skip_headers:
+        next(csv_reader)
+    return csv_reader, delimiter

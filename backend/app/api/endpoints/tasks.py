@@ -1,11 +1,19 @@
 import json
 import os
 import uuid
-from io import BytesIO
+from io import BytesIO, StringIO
 from typing import Any, Dict, List, Union
 
+import pandas as pd
 import pyvips
 import xlsxwriter
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.datastructures import UploadFile
+from fastapi.params import File, Form
+from pydantic.tools import parse_obj_as
+from sqlalchemy.orm import Session
+from starlette.responses import StreamingResponse
+
 from app.api.deps import (check_if_user_can_access_course,
                           check_if_user_can_access_task,
                           get_current_active_superuser,
@@ -30,20 +38,13 @@ from app.schemas.polygon_data import (AnnotationData, AnnotationType,
                                       OffsetPolygonData, OffsetRectangleData,
                                       RectangleData)
 from app.schemas.task import (AnnotationGroup, AnnotationGroupUpdate, Task,
-                              TaskCreate, TaskFeedback, TaskStatus, TaskType,
-                              TaskUpdate)
+                              TaskCreate, TaskStatus, TaskUpdate, TaskType, TaskAnnotationType)
 from app.schemas.task_hint import TaskHint, TaskHintCreate, TaskHintUpdate
 from app.schemas.user_solution import (UserSolution, UserSolutionCreate,
                                        UserSolutionUpdate)
 from app.utils.colored_printer import ColoredPrinter
 from app.utils.minio_client import MinioClient, minio_client
 from app.utils.timer import Timer
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.datastructures import UploadFile
-from fastapi.params import File
-from pydantic.tools import parse_obj_as
-from sqlalchemy.orm import Session, base
-from starlette.responses import StreamingResponse
 
 router = APIRouter()
 
@@ -64,6 +65,110 @@ def create_base_task(*, db: Session = Depends(get_db), base_task_in: BaseTaskCre
 
     base_task = crud_base_task.create(db, obj_in=base_task_in)
     return base_task
+
+
+@router.post('/imageselect/csv')
+def create_base_task_from_csv(*, db: Session = Depends(get_db), base_task_in: str = Form(...),
+                              csv_file: UploadFile = File(...),
+                              image_dicts: str = Form(...)) -> Any:
+    base_task_in = parse_obj_as(BaseTaskCreate, json.loads(base_task_in))
+    image_dicts = json.loads(image_dicts)
+
+    duplicate_base_task = crud_base_task.get_by_name(db, name=base_task_in.name,
+                                                     task_group_id=base_task_in.task_group_id)
+    if duplicate_base_task:
+        if image_dicts:
+            for image in image_dicts:
+                minio_client.bucket_name = MinioClient.task_bucket
+                minio_client.delete_object(image["path"])
+
+        raise HTTPException(
+            status_code=400,
+            detail="BaseTask name already exists"
+        )
+
+    base_task = crud_base_task.create(db, obj_in=base_task_in)
+
+    tasks = []
+
+
+    try:
+        tab = pd.read_csv(StringIO(str(csv_file.file.read(), 'utf-8')), nrows=1, sep='\t').shape[1]
+        csv_file.file.seek(0)
+        com = pd.read_csv(StringIO(str(csv_file.file.read(), 'utf-8')), nrows=1, sep=';').shape[1]
+        csv_file.file.seek(0)
+        if tab > com:
+            df = pd.read_csv(StringIO(str(csv_file.file.read(), 'utf-8')), sep='\t')
+        else:
+            df = pd.read_csv(StringIO(str(csv_file.file.read(), 'utf-8')), sep=';')
+
+        divider_options = [9, 12]
+
+        labels = df['class'].unique()
+        print("LABELS", labels)
+        print("SIZE", len(df.index))
+        index = 0
+        curr_divider = divider_options[0]
+        task_index = 0
+        for i in range(0, len(df.index)):
+            if index == curr_divider or i == len(df.index) - 1:
+                task_label = labels[task_index % len(labels)]
+                sub_df = df[i - curr_divider:i].copy()
+                image_names = sub_df['name'].unique()
+                replace = {}
+                for name in image_names:
+                    path = [image for image in image_dicts if image['old_name'] == name]
+                    path_item = None
+                    if len(path) > 0:
+                        path_item = path[0]["path"]
+                        if path_item:
+                            replace[name] = path_item
+                    else:
+                        sub_df = sub_df[sub_df["name"] != name]
+
+                sub_df.replace({"name": replace}, inplace=True)
+                correct_rows = sub_df.loc[df['class'] == task_label]['name'].to_list()
+                correct_rows = [row.split('/')[1].split('.')[0] for row in correct_rows]
+                task_create = TaskCreate(
+                    layer=1,
+                    base_task_id=base_task.id,
+                    task_type=TaskType.IMAGE_SELECT,
+                    task_question=str(task_label),
+                    knowledge_level=0,
+                    min_correct=0,
+                    annotation_type=TaskAnnotationType.POINT,
+                    solution=json.loads(json.dumps(correct_rows)),
+                    task_data=sub_df['name'].to_list()
+                )
+                tasks.append(crud_task.create(db, obj_in=task_create))
+
+                curr_divider = divider_options[index % len(divider_options)]
+                index = 0
+                task_index += 1
+            else:
+                index += 1
+        db.refresh(base_task)
+        base_task.task_count = len(tasks)
+        return base_task
+
+    except Exception as e:
+        print(e)
+        if image_dicts:
+            for image in image_dicts:
+                minio_client.bucket_name = MinioClient.task_bucket
+                minio_client.delete_object(image["path"])
+        if tasks:
+            for task in tasks:
+                if task.id:
+                    crud_task.remove(db, model_id=task.id)
+        if base_task and base_task.id:
+            crud_base_task.remove(db, model_id=base_task.id)
+
+        raise HTTPException(
+            status_code=500,
+            detail="BaseTask could not be created"
+        )
+
 
 
 @router.put('', response_model=BaseTask)
@@ -130,6 +235,13 @@ def delete_base_task(*, db: Session = Depends(get_db), short_name: str,
 
     crud_task.remove_all_to_task_id(db, base_task_id=base_task.id)
     crud_user_solution.remove_all_to_base_task(db, base_task_id=base_task.id)
+
+    for task in base_task.tasks:
+        if task.task_type == TaskType.IMAGE_SELECT:
+            for image in task.task_data:
+                minio_client.bucket_name = MinioClient.task_bucket
+                minio_client.delete_object(image)
+
     crud_base_task.remove(db, model_id=base_task.id)
     return base_task
 
@@ -157,10 +269,12 @@ def create_task(*, db: Session = Depends(get_db), task_create: TaskCreate,
 
     return task
 
+
 @router.get('/{short_name}/membersolutionsummary', response_model=MembersolutionSummary)
-def get_membersolution_summary(*, db: Session = Depends(get_db), short_name: str, current_user: User = Depends(get_current_active_superuser)) -> Any:
+def get_membersolution_summary(*, db: Session = Depends(get_db), short_name: str,
+                               current_user: User = Depends(get_current_active_superuser)) -> Any:
     base_task = crud_base_task.get_by_short_name(db, short_name=short_name)
-    
+
     check_if_user_can_access_course(db, current_user.id, base_task.course_id)
 
     course = crud_course.get(db, id=base_task.course_id)
@@ -170,7 +284,7 @@ def get_membersolution_summary(*, db: Session = Depends(get_db), short_name: str
     summary.rows = []
     for task in base_task.tasks:
         summary.tasks.append(task.task_question)
-    
+
     members = sorted(course.members, key=lambda x: x.lastname)
     for member in members:
         row = SummaryRow()
@@ -180,13 +294,13 @@ def get_membersolution_summary(*, db: Session = Depends(get_db), short_name: str
         row.user.lastname = member.lastname
         row.summary = []
         for task in base_task.tasks:
-            user_solution = crud_user_solution.get_solution_to_task_and_user(db, user_id=member.id, task_id=task.id) 
+            user_solution = crud_user_solution.get_solution_to_task_and_user(db, user_id=member.id, task_id=task.id)
             if user_solution:
                 row.summary.append(1 if user_solution.percentage_solved == 1.0 else -1)
             else:
                 row.summary.append(0)
         summary.rows.append(row)
-    
+
     return summary
 
 
@@ -237,6 +351,11 @@ def delete_task(*, db: Session = Depends(get_db), task_id: int,
         check_if_user_can_access_task(db, user_id=current_user.id, base_task_id=task_to_delete.base_task_id)
 
         crud_user_solution.remove_all_by_task_id(db, task_id=task_id)
+
+        if task_to_delete.task_type == TaskType.IMAGE_SELECT:
+            for image in task_to_delete.task_data:
+                minio_client.bucket_name = MinioClient.task_bucket
+                minio_client.delete_object(image)
 
         task = crud_task.remove(db, model_id=task_id)
 
@@ -360,8 +479,10 @@ def delete_task_result(*, db: Session = Depends(get_db), task_id: int,
                                      obj_in=UserSolutionUpdate(task_result=None, percentage_solved=0.00))
     return temp
 
+
 @router.get('/task/{task_id}/userSolution/download', response_model=Any, response_description='xlsx')
-def download_usersolutions(*, db: Session = Depends(get_db), task_id: int, current_user: User = Depends(get_current_active_superuser)) -> Any:
+def download_usersolutions(*, db: Session = Depends(get_db), task_id: int,
+                           current_user: User = Depends(get_current_active_superuser)) -> Any:
     user_solutions = crud_user_solution.get_solution_to_task(db, task_id=task_id)
 
     task = crud_task.get(db, id=task_id)
@@ -375,7 +496,7 @@ def download_usersolutions(*, db: Session = Depends(get_db), task_id: int, curre
         user = crud_user.get(db, id=user_solution.user_id)
         sheet_name = str(user.id) + '_'
         sheet_name += user.lastname + ', ' + user.firstname
-        sheet_name += ' ' + user.middlename if user.middlename else '' 
+        sheet_name += ' ' + user.middlename if user.middlename else ''
         worksheet = workbook.add_worksheet(sheet_name)
         worksheet.write('A1', 'userId')
         worksheet.write('B1', 'x')
@@ -390,7 +511,6 @@ def download_usersolutions(*, db: Session = Depends(get_db), task_id: int, curre
                 worksheet.write('C' + col_index, annotation.coord.image[0].y)
                 worksheet.write('D' + col_index, annotation.name)
 
-
     workbook.close()
     output.seek(0)
 
@@ -399,6 +519,7 @@ def download_usersolutions(*, db: Session = Depends(get_db), task_id: int, curre
     }
 
     return StreamingResponse(output, headers=headers)
+
 
 @router.post('/userSolution', response_model=UserSolution)
 def save_user_solution(*, db: Session = Depends(get_db), user_solution_in: UserSolutionCreate,
@@ -623,21 +744,50 @@ def remove_task_hint(*, db: Session = Depends(get_db), hint_id: int,
 
 
 @router.get("/hints/{task_id}", response_model=List[TaskHint])
-def get_task_hints(*, db: Session = Depends(get_db), task_id: int, current_user: User = Depends(get_current_active_user)):
-    
+def get_task_hints(*, db: Session = Depends(get_db), task_id: int,
+                   current_user: User = Depends(get_current_active_user)):
     failed_attempts = 99999999
 
     user_solution = crud_user_solution.get_solution_to_task_and_user(db, task_id=task_id, user_id=current_user.id)
 
     if not current_user.is_superuser and not user_solution:
         failed_attempts = 0
-    
+
     if user_solution:
         failed_attempts = user_solution.failed_attempts
 
     hints = crud_task_hint.get_hints_by_task(db, task_id=task_id, mistakes=failed_attempts)
     return hints
 
+
+@router.post('/task/images', response_model=List[Dict])
+def upload_task_image(*, current_user: User = Depends(get_current_active_superuser), images: List[UploadFile] = File(...)):
+    results = []
+
+    for image in images:
+        image_name = uuid.uuid4()
+
+        file_name = f"{image_name}.{image.filename.split('.')[-1]}"
+
+        final_name = f'{image_name}.jpeg'
+
+        pyvips_image = pyvips.Image.new_from_buffer(image.file.read(), options="")
+
+        pyvips_image.jpegsave(final_name, Q=75)
+
+        try:
+            minio_client.bucket_name = MinioClient.task_bucket
+            minio_client.create_object(file_name, final_name, "image/jpeg")
+            os.remove(final_name)
+            results.append({"path": minio_client.bucket_name + '/' + file_name, "old_name": image.filename})
+        except Exception as e:
+            print(e)
+            os.remove(final_name)
+            raise HTTPException(
+                status_code=500,
+                detail="Image could not be saved"
+            )
+    return results
 
 @router.post('/task/image', response_model=Dict)
 def upload_task_image(*, current_user: User = Depends(get_current_active_superuser), image: UploadFile = File(...)):
@@ -655,7 +805,7 @@ def upload_task_image(*, current_user: User = Depends(get_current_active_superus
         minio_client.bucket_name = MinioClient.task_bucket
         minio_client.create_object(file_name, final_name, "image/jpeg")
         os.remove(final_name)
-        return {"path": minio_client.bucket_name + '/' + file_name}
+        return {"path": minio_client.bucket_name + '/' + file_name, "old_name": image.filename}
     except Exception as e:
         print(e)
         os.remove(final_name)
@@ -664,3 +814,16 @@ def upload_task_image(*, current_user: User = Depends(get_current_active_superus
             detail="Image could not be saved"
         )
 
+
+@router.delete('/task/image/minio/{image_path}', response_model=Dict)
+def delete_task_image(*, current_user: User = Depends(get_current_active_superuser), image_path: str):
+    try:
+        minio_client.bucket_name = MinioClient.task_bucket
+        minio_client.delete_object('/task-images/' + image_path)
+        return {"Status": "Ok"}
+    except Exception as e:
+        print(e)
+        raise HTTPException(
+            status_code=500,
+            detail="Image could not be deleted"
+        )

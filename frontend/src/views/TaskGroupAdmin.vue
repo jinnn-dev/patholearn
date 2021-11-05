@@ -40,7 +40,7 @@
     </template>
   </content-container>
 
-  <modal-dialog :show="showModal">
+  <modal-dialog :show="showModal" customClasses="max-w-[50%]">
     <div class="relative">
       <h1 class="text-2xl text-center">Erstelle eine neue Aufgabe</h1>
       <form @submit.prevent="onSubmit" class="w-full">
@@ -51,22 +51,82 @@
           tip="Gebe der Aufgabe einen eindeutigen Namen"
           type="text"
           :required="true"
-          class="w-96"
+          class="w-full"
           :errorMessage="taskError ? 'Es gibt bereits eine Aufgabe mit diesem Namen' : ''"
         >
         </input-field>
         <slide-select @slideChanged="setSlide($event)"></slide-select>
 
-        <div class="flex flex-end">
+        <div>
+          <div>
+            <div>Aufgaben aus einer CSV-Datei generieren (optional):</div>
+            <div class="flex items-center my-4">
+              <label for="slide-upload" class="cursor-pointer flex justify-center bg-gray-500 w-56 rounded-lg py-1">
+                <Icon name="cloud-arrow-up" class="mr-2" />
+                <span>CSV-Datei auswählen</span>
+              </label>
+              <div v-if="formData.csv_file" class="ml-4">{{ formData.csv_file.name }}</div>
+            </div>
+            <input class="hidden" id="slide-upload" type="file" accept=".csv" @change="onFileUpload" />
+          </div>
+
+          <div v-if="formData.csv_file">
+            <div>Füge die entsprechenden Bilder der CSV-Datei hinzu:</div>
+
+            <div class="max-h-[300px] overflow-auto mb-4">
+              <div
+                class="h-20 w-20 bg-gray-500 rounded-lg inline-block mx-2 my-2"
+                v-for="(image, index) in tempPreviewImages"
+                :key="image"
+              >
+                <HintImage :imgSrc="image" @click="deleteImage(index)" />
+              </div>
+              <div
+                class="
+                  h-20
+                  w-20
+                  mx-2
+                  my-2
+                  bg-highlight-900
+                  rounded-lg
+                  flex
+                  items-center
+                  justify-center
+                  cursor-pointer
+                  hover:bg-highlight-800
+                  transition
+                "
+                @click="fileRef?.click()"
+              >
+                <Icon name="plus" width="30" height="30" stroke-width="25" />
+              </div>
+            </div>
+          </div>
+          <input type="file" ref="fileRef" v-show="false" @change="onFileChange($event)" multiple="multiple" />
+        </div>
+        <div v-if="taskLoading">
+          <div class="flex gap-3 mb-3 items-center">
+            <div class="flex-1">
+              <div
+                class="animate-pulse bg-green-500 my-2 rounded-lg transition duration-10 h-3"
+                :style="{ width: uploadProgress + '%' }"
+              ></div>
+            </div>
+            <div>{{ uploadProgress }}%</div>
+          </div>
+          <div v-if="uploadProgress == 100.0" class="font-semibold">Aufgaben werden erstellt...</div>
+        </div>
+
+        <div class="flex justify-end w-full">
           <primary-button
             @click.prevent="onTaskClose"
-            class="mr-2"
+            class="mr-2 w-32"
             name="Abbrechen"
             bgColor="bg-gray-500"
             bgHoverColor="bg-gray-700"
             fontWeight="font-normal"
           ></primary-button>
-          <save-button name="Speichern" type="submit" :loading="taskLoading"></save-button>
+          <save-button class="w-48" name="Speichern" type="submit" :loading="taskLoading"></save-button>
         </div>
       </form>
     </div>
@@ -132,9 +192,15 @@ import { BaseTask } from '../model/baseTask';
 import { TaskService } from '../services/task.service';
 import { TaskGroupService } from '../services/task-group.service';
 import router from '../router';
+import { showSolution } from 'components/viewer/core/viewerState';
 
 export default defineComponent({
   setup() {
+    const fileRef = ref<HTMLInputElement>();
+    const tempPreviewImages = ref<string[]>([]);
+    const tempImages = ref<File[]>([]);
+    const noImageSelectedError = ref(false);
+
     const showDeleteBaseTask = ref<Boolean>(false);
     const deleteBaseLoading = ref<Boolean>(false);
     const deleteBaseTaskItem = ref<BaseTask>();
@@ -145,10 +211,13 @@ export default defineComponent({
 
     const route = useRoute();
 
-    const formData = reactive({
+    const formData = reactive<{ name: string; slide_id: string; csv_file: File | undefined }>({
       name: '',
-      slide_id: ''
+      slide_id: '',
+      csv_file: undefined
     });
+
+    const uploadProgress = ref(0.0);
 
     const taskLoading = ref<Boolean>(false);
     const taskError = ref<Boolean>(false);
@@ -161,32 +230,66 @@ export default defineComponent({
         taskGroup.value = res;
       });
     });
+
     const setSlide = (slide: Slide) => {
       formData.slide_id = slide.slide_id;
     };
 
-    const onSubmit = () => {
+    const onFileUpload = (event) => {
+      console.log(event.target.files[0]);
+
+      formData.csv_file = event.target.files[0];
+    };
+
+    const onSubmit = async () => {
       taskLoading.value = true;
-      TaskService.createBaseTask({
-        name: formData.name,
-        slide_id: formData.slide_id,
-        course_id: taskGroup.value?.course_id as number,
-        task_group_id: taskGroup.value?.id
-      })
-        .then((res: BaseTask) => {
-          res.task_count = 0;
-          taskGroup.value?.tasks.push(res);
+      if (formData.csv_file && tempImages.value.length !== 0) {
+        const images = await uploadMultipleImages(tempImages.value);
+
+        try {
+          const response = await TaskService.createBaseTaskFromCsv(
+            {
+              name: formData.name,
+              slide_id: formData.slide_id,
+              course_id: taskGroup.value?.course_id as number,
+              task_group_id: taskGroup.value?.id
+            },
+            formData.csv_file,
+            images
+          );
+
+          taskGroup.value?.tasks.push(response);
+
           taskLoading.value = false;
           showModal.value = false;
+        } catch (e) {
+          // for await (const img of images) {
+          //   await TaskService.deleteTaskImage(img.path.split('/')[1]);
+          // }
+          taskLoading.value = false;
+        }
+      } else {
+        TaskService.createBaseTask({
+          name: formData.name,
+          slide_id: formData.slide_id,
+          course_id: taskGroup.value?.course_id as number,
+          task_group_id: taskGroup.value?.id
         })
-        .catch((error) => {
-          if (error.response) {
-            if (error.response.status === 400) {
-              taskError.value = true;
-              taskLoading.value = false;
+          .then((res: BaseTask) => {
+            res.task_count = 0;
+            taskGroup.value?.tasks.push(res);
+            taskLoading.value = false;
+            showModal.value = false;
+          })
+          .catch((error) => {
+            if (error.response) {
+              if (error.response.status === 400) {
+                taskError.value = true;
+                taskLoading.value = false;
+              }
             }
-          }
-        });
+          });
+      }
     };
 
     const onTaskClose = () => {
@@ -228,22 +331,64 @@ export default defineComponent({
         });
     };
 
+    function deleteImage(imageIndex: number) {
+      tempPreviewImages.value.splice(imageIndex, 1);
+      tempImages.value.splice(imageIndex, 1);
+    }
+
+    function onFileChange(e: any) {
+      const files = e.target.files || e.dataTransfer.files;
+      noImageSelectedError.value = false;
+
+      if (!files.length) return;
+      const names = [];
+      for (const file of files) {
+        tempPreviewImages.value.push(URL.createObjectURL(file));
+        tempImages.value.push(file);
+        names.push(file.name);
+      }
+      console.log(names.sort());
+    }
+
+    const uploadImage = async (image: Blob) => {
+      const formData = new FormData();
+      formData.append('image', image);
+      return await TaskService.uploadTaskImage(formData);
+    };
+
+    const uploadMultipleImages = async (images: Blob[]) => {
+      const formData = new FormData();
+      for (const image of images) {
+        formData.append('images', image);
+      }
+      return await TaskService.uploadMultipleTaskImages(formData, (event) => {
+        uploadProgress.value = Math.round((100 * event.loaded) / event.total);
+      });
+    };
+
     return {
       taskGroup,
       showModal,
       formData,
       taskLoading,
+      fileRef,
       taskError,
       showTaskgroupDelete,
       deleteLoading,
+      deleteImage,
+      tempPreviewImages,
       onTaskClose,
       deleteTaskGroup,
       onSubmit,
+      onFileChange,
+      tempImages,
       setSlide,
       showDeleteBaseTask,
       deleteBaseLoading,
       deleteBaseTaskItem,
-      deleteBaseTask
+      onFileUpload,
+      deleteBaseTask,
+      uploadProgress
     };
   }
 });

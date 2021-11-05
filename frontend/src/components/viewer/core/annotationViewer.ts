@@ -324,6 +324,35 @@ export class AnnotationViewer {
    */
   addBackgroundPolygons(data: AnnotationData[]) {
     this.addAnnotations(data);
+
+    // if (this._annotationManager.backgroundAnnotations[0]) {
+    //   const annotation = this._annotationManager.backgroundAnnotations[0] as AnnotationPolygon;
+
+    //   let minX = Number.MAX_SAFE_INTEGER;
+    //   let maxX = Number.MIN_SAFE_INTEGER;
+    //   let minY = Number.MAX_SAFE_INTEGER;
+    //   let maxY = Number.MIN_SAFE_INTEGER;
+
+    //   const points = annotation.vertice.map((vertice) => vertice.viewport);
+
+    //   points.forEach((point) => {
+    //     const x = point.x;
+    //     const y = point.y;
+    //     minX = Math.min(minX, x);
+    //     maxX = Math.max(maxX, x);
+    //     minY = Math.min(minY, y);
+    //     maxY = Math.max(maxY, y);
+    //   });
+
+    //   const width = maxX - minX;
+    //   const height = maxY - minY;
+
+    //   console.log(minX, minY, width * 2, height * 2);
+
+    //   this._viewer.viewport.fitBounds(
+    //     new OpenSeadragon.Rect(minX - width / 2, minY - height / 2, width * 2, height * 2)
+    //   );
+    // }
   }
 
   /**

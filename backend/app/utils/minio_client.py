@@ -62,6 +62,8 @@ class MinioClient:
 
     def delete_object(self, file_name: str):
         self.instance.remove_object(self.bucket_name, file_name)
+        print(f"❌ {file_name} has ben deleted")
+
 
     def delete_slide(self, slide_id: str):
         # self.instance.remove_object(self.bucket_name, slide_id + '/')

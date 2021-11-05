@@ -3,20 +3,22 @@
     class="transition flex flex-col items-center my-2 mx-2 p-2 bg-gray-500 rounded-xl hover:bg-gray-400"
     :title="question"
   >
-    <div v-if="!isOwner">
-      <Icon
-        name="circle"
-        v-if="!userSolution || userSolution?.solution_data?.length === 0 || !userSolution.task_result"
-        class="text-gray-200"
-      ></Icon>
-      <Icon
-        name="check-circle"
-        v-else-if="userSolution.task_result.task_status === TaskStatus.CORRECT"
-        class="text-green-400"
-      ></Icon>
-      <Icon name="x-circle" v-else class="text-red-500" />
+    <div class="flex w-full">
+      <div v-if="!isOwner">
+        <Icon
+          name="circle"
+          v-if="!userSolution || userSolution?.solution_data?.length === 0 || !userSolution.task_result"
+          class="text-gray-200"
+        ></Icon>
+        <Icon
+          name="check-circle"
+          v-else-if="userSolution.task_result.task_status === TaskStatus.CORRECT"
+          class="text-green-400"
+        ></Icon>
+        <Icon name="x-circle" v-else class="text-red-500" />
+      </div>
+      <div class="ml-2 w-full mx-2 break-all">{{ question }}</div>
     </div>
-    <div class="ml-2 w-full mx-2 break-all">{{ question }}</div>
     <role-only v-if="isOwner">
       <div class="flex">
         <Icon v-if="showDownload" name="download-simple" class="text-xl" @click.stop="downloadUserSolutions" />
