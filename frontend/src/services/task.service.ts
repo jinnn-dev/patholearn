@@ -502,6 +502,15 @@ export class TaskService {
     return response!.data;
   }
 
+  public static async downloadUserSolutionsToBaseTask(short_name: string): Promise<any> {
+    const [_, response] = await handleError(
+      ApiService.get<any>({ resource: this._apiUrl('/' + short_name + '/userSolution/download') }, 'arraybuffer'),
+      'Usersolutions could not be downloaded'
+    );
+
+    return response!.data;
+  }
+
   public static async downloadUserSolutions(task_id: number): Promise<any> {
     const [_, response] = await handleError(
       ApiService.get<any>({ resource: this._apiUrl('/task/' + task_id + '/userSolution/download') }, 'arraybuffer'),

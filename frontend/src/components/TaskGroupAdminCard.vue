@@ -1,78 +1,70 @@
 <template>
-  <router-link :to="'/task/' + baseTask.short_name + '/admin'">
-    <skeleton-card class="min-w-40">
-      <div class="text-xl flex justify-between items-center">
-        <div>
-          {{ baseTask.name }}
-        </div>
-        <div>
-          <Icon
-            name="trash"
-            class="text-red-400 cursor-pointer ml-4 hover:text-red-500"
-            weight="bold"
-            @click.prevent="$emit('deleteBaseTask')"
-          ></Icon>
-        </div>
+  <skeleton-card class="min-w-40" :shouldHover="false">
+    <div class="flex justify-end">
+      <primary-button
+        name="Öffnen"
+        class="text-sm w-24"
+        bgColor="bg-gray-400"
+        @click="$router.push('/task/' + baseTask.short_name + '/admin')"
+      >
+        <template v-slot:rightIcon>
+          <Icon name="caret-right" strokeWidth="24"></Icon>
+        </template>
+      </primary-button>
+    </div>
+    <div class="text-xl flex justify-between items-center">
+      <div>
+        {{ baseTask.name }}
       </div>
+    </div>
 
-      <task-count-badge :count="baseTask.task_count"></task-count-badge>
-      <div class="flex mt-2 items-center">
-        <div class="w-24 text-sm font-medium">
-          <div v-if="baseTask.enabled" class="text-green-500">Aktiviert</div>
+    <task-count-badge :count="baseTask.task_count"></task-count-badge>
+    <div class="flex mt-2 items-center">
+      <div class="flex w-full">
+        <div class="text-sm font-medium mr-4 w-20">
+          <div v-if="baseTask.enabled" class="text-green-500 inline-block">Aktiviert</div>
           <div v-else class="text-red-400">Deaktiviert</div>
         </div>
-        <button
-          @click.prevent="toggleEnabledState(baseTask)"
-          type="button"
-          class="
-            bg-gray-300
-            relative
-            inline-flex
-            flex-shrink-0
-            h-6
-            w-11
-            border-2 border-transparent
-            rounded-full
-            cursor-pointer
-            transition-colors
-            ease-in-out
-            duration-200
-            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500
-          "
-          role="switch"
-          aria-checked="false"
-          :class="baseTask.enabled ? 'bg-green-500' : 'bg-gray-400'"
-        >
-          <span
-            aria-hidden="true"
-            class="
-              pointer-events-none
-              inline-block
-              h-5
-              w-5
-              rounded-full
-              bg-gray-100
-              shadow
-              transform
-              ring-0
-              transition
-              ease-in-out
-              duration-200
-            "
-            :class="baseTask.enabled ? 'translate-x-5' : 'translate-x-0'"
-          ></span>
-        </button>
+
+        <toggle-button @changed="toggleEnabledState(baseTask)" :enabled="baseTask.enabled"> </toggle-button>
       </div>
-      <div class="flex justify-between items-center text-right text-sm font-semibold mt-8">
-        <save-button
-          name="Zusammenfassung"
-          bgColor="bg-gray-300"
-          @click.prevent="loadSummary(baseTask.short_name)"
-          :loading="summaryDataLoading"
-        ></save-button>
+
+      <div>
+        <Icon
+          name="trash"
+          class="text-red-400 cursor-pointer ml-4 hover:text-red-500"
+          weight="bold"
+          @click.stop="$emit('deleteBaseTask')"
+        ></Icon>
       </div>
-    </skeleton-card>
-  </router-link>
+    </div>
+
+    <div class="flex justify-between items-center text-right text-sm font-semibold gap-4 mt-6">
+      <save-button
+        name="Zusammenfassung"
+        bgColor="bg-gray-300"
+        @click.stop="loadSummary(baseTask.short_name)"
+        :loading="summaryDataLoading"
+      ></save-button>
+
+      <div
+        class="
+          transition
+          hover:ring-2
+          ring-white
+          bg-gray-500
+          hover:bg-gray-400
+          p-2
+          rounded-lg
+          cursor-pointer
+          inline-block
+        "
+        @click.stop="downloadUserSolutions(baseTask.short_name)"
+      >
+        <Icon name="download-simple" />
+      </div>
+    </div>
+  </skeleton-card>
 
   <modal-dialog :show="showSummaryModal" customClasses="w-2/3 max-h-[70vh]">
     <div class="flex justify-between items-center">
@@ -164,6 +156,19 @@ export default defineComponent({
       await TaskService.updateBaseTask({ base_task_id: baseTask.id, enabled: baseTask.enabled });
     };
 
+    const downloadUserSolutions = async (short_name: string) => {
+      const data = await TaskService.downloadUserSolutionsToBaseTask(short_name);
+      const a = document.createElement('a');
+
+      const blob = new Blob([data], { type: 'application/xlsx' });
+
+      a.href = window.URL.createObjectURL(blob);
+      a.download = short_name + '.xlsx';
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+    };
+
     const loadSummary = async (short_name: string) => {
       summaryDataLoading.value = true;
       summaryData.value = await TaskService.getMembersolutionSummary(short_name);
@@ -184,7 +189,14 @@ export default defineComponent({
       });
     };
 
-    return { showSummaryModal, summaryData, summaryDataLoading, loadSummary, toggleEnabledState };
+    return {
+      showSummaryModal,
+      summaryData,
+      summaryDataLoading,
+      loadSummary,
+      toggleEnabledState,
+      downloadUserSolutions
+    };
   }
 });
 </script>

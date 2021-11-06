@@ -11,10 +11,12 @@ from fastapi.datastructures import UploadFile
 from fastapi.params import File, Form
 from pydantic.tools import parse_obj_as
 from sqlalchemy.orm import Session
+from starlette.responses import StreamingResponse
 
 from app.api.deps import (check_if_user_can_access_course,
                           get_current_active_superuser,
                           get_current_active_user, get_db)
+from app.core.export.task_exporter import TaskExporter
 from app.core.solver.solver import Solver
 from app.crud.crud_base_task import crud_base_task
 from app.crud.crud_course import crud_course
@@ -211,6 +213,22 @@ def read_task_details_admin(*, db: Session = Depends(get_db), short_name: str,
     base_task.task_group_short_name = task_group.short_name
 
     return base_task
+
+
+@router.get('/{short_name}/userSolution/download', response_model=Any, response_description='xlsx')
+def download_usersolutions(*, db: Session = Depends(get_db), short_name: str,
+                           current_user: User = Depends(get_current_active_superuser)) -> Any:
+    base_task = crud_base_task.get_by_short_name(db, short_name=short_name)
+
+    check_if_user_can_access_course(db, user_id=current_user.id, course_id=base_task.course_id)
+
+    output = TaskExporter.export_point_base_task_as_xlsx(db, base_task)
+
+    headers = {
+        'Content-Disposition': 'attachment; filename="' + base_task.short_name + '"'
+    }
+
+    return StreamingResponse(output, headers=headers)
 
 
 @router.delete('/{short_name}', response_model=BaseTask)

@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     # 60 minutes * 24 hours * 8 days = 8 days
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
 
+    SLIDE_URL = os.environ["SLIDE_URL"] if "SLIDE_URL" in os.environ else "http://127.0.0.1:8001"
+
     # DATABASE_IP = os.environ["DATABASE_URL"] if "DATABASE_URL" in os.environ else "127.0.0.1"
     # RABBIT_IP = os.environ["RABBIT_URL"] if "RABBIT_URL" in os.environ else "127.0.0.1"
 

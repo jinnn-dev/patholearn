@@ -59,6 +59,25 @@
                     </div>
 
                     <task-count-badge :count="taskgroup.task_count"></task-count-badge>
+
+                    <div class="flex justify-end mt-4">
+                      <div
+                        class="
+                          transition
+                          hover:ring-2
+                          ring-white
+                          bg-gray-500
+                          hover:bg-gray-400
+                          p-2
+                          rounded-lg
+                          cursor-pointer
+                          inline-block
+                        "
+                        @click.prevent="downloadUserSolutions(taskgroup.short_name)"
+                      >
+                        <Icon name="download-simple" />
+                      </div>
+                    </div>
                   </skeleton-card>
                 </router-link>
               </div>
@@ -291,9 +310,24 @@ export default defineComponent({
         deleteTaskGroupLoading.value = false;
       });
     };
+
+    const downloadUserSolutions = async (short_name: string) => {
+      const data = await TaskGroupService.downloadUserSolutionsToTaskGroup(short_name);
+
+      const a = document.createElement('a');
+
+      const blob = new Blob([data], { type: 'application/xlsx' });
+
+      a.href = window.URL.createObjectURL(blob);
+      a.download = short_name + '.xlsx';
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+    };
     return {
       course,
       loading,
+      downloadUserSolutions,
       showModal,
       onSubmit,
       formData,

@@ -32,6 +32,7 @@ class UserSolutionUpdate(BaseModel):
 
 
 class UserSolutionInDB(UserSolutionBase):
+    user_id: Optional[int]
     task_id: int
     base_task_id: int
     task_group_id: int
