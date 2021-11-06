@@ -39,47 +39,7 @@
             </div>
             <div v-else class="flex flex-wrap">
               <div v-for="taskgroup in course?.task_groups" :key="taskgroup.short_name" class="ml-4 mb-4">
-                <router-link :to="'/group/' + taskgroup.short_name + '/admin'">
-                  <skeleton-card>
-                    <div class="text-xl flex justify-between items-center">
-                      <div>
-                        {{ taskgroup.name }}
-                      </div>
-                      <div>
-                        <Icon
-                          name="trash"
-                          class="text-red-400 cursor-pointer ml-4 hover:text-red-500"
-                          weight="bold"
-                          @click.prevent="
-                            showDeleteTaskGroup = true;
-                            deleteTaskGroupItem = taskgroup;
-                          "
-                        ></Icon>
-                      </div>
-                    </div>
-
-                    <task-count-badge :count="taskgroup.task_count"></task-count-badge>
-
-                    <div class="flex justify-end mt-4">
-                      <div
-                        class="
-                          transition
-                          hover:ring-2
-                          ring-white
-                          bg-gray-500
-                          hover:bg-gray-400
-                          p-2
-                          rounded-lg
-                          cursor-pointer
-                          inline-block
-                        "
-                        @click.prevent="downloadUserSolutions(taskgroup.short_name)"
-                      >
-                        <Icon name="download-simple" />
-                      </div>
-                    </div>
-                  </skeleton-card>
-                </router-link>
+                <course-admin-card :taskgroup="taskgroup" @deleteTaskgroup="deleteTaskgroup"></course-admin-card>
               </div>
               <no-content v-if="course?.task_groups?.length === 0" text="Keine Aufgabengrupppen erstellt"></no-content>
             </div>
@@ -138,32 +98,6 @@
       </div>
     </div>
   </modal-dialog>
-
-  <role-only>
-    <modal-dialog :show="showDeleteTaskGroup">
-      <div class="relative">
-        <h1 class="text-2xl">Möchtest du die Aufgabengruppe löschen?</h1>
-        <div class="my-4">Alle Aufgaben und Lösungen werden gelöscht.</div>
-        <div class="flex justify-end">
-          <primary-button
-            @click.prevent="showDeleteTaskGroup = false"
-            class="mr-2 w-28"
-            name="Nein"
-            bgColor="bg-gray-500"
-            bgHoverColor="bg-gray-700"
-            fontWeight="font-normal"
-          ></primary-button>
-          <save-button
-            name="Ja"
-            type="submit"
-            :loading="deleteTaskGroupLoading"
-            @click="deleteTaskGroup"
-            class="w-28"
-          ></save-button>
-        </div>
-      </div>
-    </modal-dialog>
-  </role-only>
 </template>
 
 <script lang="ts">
@@ -205,6 +139,8 @@ export default defineComponent({
     const showDeleteTaskGroup = ref<Boolean>(false);
     const deleteTaskGroupLoading = ref<Boolean>(false);
     const deleteTaskGroupItem = ref<TaskGroup>();
+
+    const downloadUserSolutionsLoading = ref(false);
 
     onMounted(async () => {
       course.value = await CourseService.getCourseDetails(route.params.id as string);
@@ -299,35 +235,14 @@ export default defineComponent({
         });
     };
 
-    const deleteTaskGroup = () => {
-      deleteTaskGroupLoading.value = true;
-
-      TaskGroupService.removeTaskGroup(deleteTaskGroupItem.value!.short_name).finally(() => {
-        course.value!.task_groups = course.value?.task_groups.filter(
-          (item) => item.short_name != deleteTaskGroupItem.value!.short_name
-        )!;
-        showDeleteTaskGroup.value = false;
-        deleteTaskGroupLoading.value = false;
-      });
-    };
-
-    const downloadUserSolutions = async (short_name: string) => {
-      const data = await TaskGroupService.downloadUserSolutionsToTaskGroup(short_name);
-
-      const a = document.createElement('a');
-
-      const blob = new Blob([data], { type: 'application/xlsx' });
-
-      a.href = window.URL.createObjectURL(blob);
-      a.download = short_name + '.xlsx';
-      a.style.display = 'none';
-      document.body.appendChild(a);
-      a.click();
+    const deleteTaskgroup = (taskgroup: TaskGroup) => {
+      course.value!.task_groups = course.value?.task_groups.filter((item) => item.short_name != taskgroup.short_name)!;
     };
     return {
       course,
       loading,
-      downloadUserSolutions,
+      deleteTaskgroup,
+      downloadUserSolutionsLoading,
       showModal,
       onSubmit,
       formData,
@@ -350,7 +265,6 @@ export default defineComponent({
       deleteCourse,
       showDeleteTaskGroup,
       deleteTaskGroupLoading,
-      deleteTaskGroup,
       deleteTaskGroupItem
     };
   }

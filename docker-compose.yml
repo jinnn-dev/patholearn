@@ -20,7 +20,7 @@ services:
     volumes:
       - ./backend/app:/app
     environment:
-      - DATABASE_URL=mysql+mysqlconnector://user:password@lern_db/db?charset=utf8mb4
+      - DATABASE_URL=mysql+mysqlconnector://user:password@lern_db/backup_06_11_21?charset=utf8mb4
       - RABBIT_URL=amqp://guest:guest@rabbit:5672//
       - SLIDE_URL=http://slide_api:8000
     ports:

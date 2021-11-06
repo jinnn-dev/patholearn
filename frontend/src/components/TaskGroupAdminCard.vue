@@ -61,7 +61,8 @@
         "
         @click.stop="downloadUserSolutions(baseTask.short_name)"
       >
-        <Icon name="download-simple" />
+        <Icon name="download-simple" v-if="!downloadUserSolutionsLoading" />
+        <spinner v-else></spinner>
       </div>
     </div>
   </skeleton-card>
@@ -150,6 +151,8 @@ export default defineComponent({
     const summaryData = ref<MembersolutionSummary>();
     const summaryDataLoading = ref<Boolean>(false);
 
+    const downloadUserSolutionsLoading = ref(false);
+
     const toggleEnabledState = async (baseTask: BaseTask) => {
       props.baseTask!.enabled = !props.baseTask!.enabled;
 
@@ -157,10 +160,13 @@ export default defineComponent({
     };
 
     const downloadUserSolutions = async (short_name: string) => {
+      downloadUserSolutionsLoading.value = true;
       const data = await TaskService.downloadUserSolutionsToBaseTask(short_name);
       const a = document.createElement('a');
 
       const blob = new Blob([data], { type: 'application/xlsx' });
+
+      downloadUserSolutionsLoading.value = false;
 
       a.href = window.URL.createObjectURL(blob);
       a.download = short_name + '.xlsx';
@@ -195,7 +201,8 @@ export default defineComponent({
       summaryDataLoading,
       loadSummary,
       toggleEnabledState,
-      downloadUserSolutions
+      downloadUserSolutions,
+      downloadUserSolutionsLoading
     };
   }
 });

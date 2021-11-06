@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from xlsxwriter import Workbook
 from xlsxwriter.worksheet import Worksheet
 
-from app.core.config import Settings, settings
+from app.core.config import settings
 from app.crud.crud_base_task import crud_base_task
 from app.crud.crud_task_group import crud_task_group
 from app.crud.crud_user import crud_user
@@ -60,8 +60,7 @@ class TaskExporter:
             except Exception as e:
                 print(e)
                 image = {"name": "Not Found"}
-
-            start_row = TaskExporter.write_rows_for_base_task(db, worksheet, base_task, task_group, image, start_row )
+            start_row = TaskExporter.write_rows_for_base_task(db, worksheet, base_task, task_group, image, start_row)
 
         workbook.close()
         output.seek(0)
@@ -80,7 +79,6 @@ class TaskExporter:
         except Exception as e:
             print(e)
             image = {"name": "Not Found"}
-        print(image)
 
         TaskExporter.write_xlsx_header(worksheet, TaskPointRow)
 
@@ -129,11 +127,13 @@ class TaskExporter:
         for user_solution in user_solutions:
             user = crud_user.get(db, id=user_solution.user_id)
             user_solution_rows = TaskExporter.get_point_row(user_solution, user, task, base_task, task_group, image)
+
             for index, row in enumerate(user_solution_rows):
-                row_num += 1
                 for col_index, item in enumerate(TaskPointRow.__fields__):
                     json_row = row.dict()
-                    worksheet.write(chr(ord(char[0]) + col_index) + str(index + start_row), json_row[item])
+                    worksheet.write(chr(ord(char[0]) + col_index) + str(start_row + row_num), json_row[item])
+                row_num += 1
+
         return row_num
 
     @staticmethod
