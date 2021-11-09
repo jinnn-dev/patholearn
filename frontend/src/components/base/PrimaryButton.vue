@@ -9,6 +9,7 @@
   >
     <slot></slot>
     {{ name }}
+    <slot class="self-end" name="rightIcon"></slot>
   </button>
 </template>
 

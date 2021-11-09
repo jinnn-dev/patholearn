@@ -110,6 +110,9 @@ class SlideDatabase:
         """
         return parse_obj_as(List[DatabaseSlide], list(self.collection.find({}, {'_id': False})))
 
+    def get_slide_with_slide_id(self, slide_id: str) -> Slide:
+        return self.collection.find_one({"slide_id": slide_id})
+
     def slide_with_name_exists(self, name: str) -> bool:
         """
         Checks if slide with the given name already exists

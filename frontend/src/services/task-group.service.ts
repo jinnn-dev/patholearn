@@ -61,4 +61,13 @@ export class TaskGroupService {
     );
     return response!.data;
   }
+
+  public static async downloadUserSolutionsToTaskGroup(short_name: string): Promise<any> {
+    const [_, response] = await handleError(
+      ApiService.get<any>({ resource: this._apiUrl + '/' + short_name + '/userSolution/download' }, 'arraybuffer'),
+      'Usersolutions could not be downloaded'
+    );
+
+    return response!.data;
+  }
 }

@@ -22,6 +22,7 @@ minio_client.create_bucket("pyramids")
 origins = [
     "http://10.168.2.105:3000",
     "http://localhost:3000",
+    "http://localhost:8000"
     "*"
 ]
 
@@ -78,6 +79,10 @@ def read_slides() -> List[Slide]:
     slides_without_binary_metadata = convert_binary_metadata_to_base64(slides)
     return slides_without_binary_metadata
 
+@app.get('/slides/{slide_id}/name')
+def get_slide(slide_id: str):
+    slide = slide_db.get_slide_with_slide_id(slide_id)
+    return {"name": slide["name"]}
 
 @app.delete('/slides/{slide_id}')
 def delete_slide(slide_id: str):
