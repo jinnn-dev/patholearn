@@ -413,7 +413,7 @@ def upload_task_image(*, current_user: User = Depends(get_current_active_superus
         minio_client.bucket_name = MinioClient.task_bucket
         minio_client.create_object(final_name, final_name, "image/jpeg")
         os.remove(final_name)
-        return {"path": minio_client.bucket_name + '/' + file_name, "old_name": image.filename}
+        return {"path": minio_client.bucket_name + '/' + final_name, "old_name": image.filename}
     except Exception as e:
         print(e)
         os.remove(final_name)
