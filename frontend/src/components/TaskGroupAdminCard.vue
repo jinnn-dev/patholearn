@@ -64,6 +64,24 @@
         <Icon name="download-simple" v-if="!downloadUserSolutionsLoading" />
         <spinner v-else></spinner>
       </div>
+
+      <div
+        class="
+          transition
+          hover:ring-2
+          ring-white
+          bg-gray-500
+          hover:bg-gray-400
+          p-2
+          rounded-lg
+          cursor-pointer
+          inline-block
+        "
+        @click.stop="loadTaskDetails(baseTask?.short_name)"
+      >
+        <Icon name="chart-bar" v-if="!taskDetailLoading" />
+        <spinner v-else></spinner>
+      </div>
     </div>
   </skeleton-card>
 
@@ -131,6 +149,34 @@
 
     <div v-else class="mt-12"><no-content text="Keine Zusammenfassung verfügbar"></no-content></div>
   </modal-dialog>
+
+  <modal-dialog :show="showStatisticSummary" customClasses="max-w-full">
+    <div class="mb-6">
+      <div class="text-lg font-semibold mb-4">Die Top 5 der am meisten falsch klassifizierten Bilder:</div>
+
+      <div class="flex justify-begin items-center gap-4">
+        <div
+          v-for="(amount, imageUuid) in tasks"
+          :key="imageUuid"
+          class="flex flex-col justify-center items-center gap-2"
+        >
+          <lazy-image class="w-32" :imageUrl="SLIDE_IMAGE_URL + '/task-images/' + imageUuid + '.png'"></lazy-image>
+          <div class="text-lg font-bold">{{ amount }}x</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-end">
+      <primary-button
+        class="mr-2 w-28"
+        name="Schließen"
+        bgColor="bg-gray-500"
+        bgHoverColor="bg-gray-700"
+        fontWeight="font-normal"
+        @click.stop="closeStatisticModal"
+      ></primary-button>
+    </div>
+  </modal-dialog>
 </template>
 <script lang="ts">
 import { BaseTask } from '../model/baseTask';
@@ -138,7 +184,8 @@ import { defineComponent, nextTick, onUnmounted, PropType, ref } from 'vue';
 import { MembersolutionSummary } from '../model/membersolutionSummary';
 import { TooltipGenerator } from '../utils/tooltip-generator';
 import { TaskService } from '../services/task.service';
-
+import { Task } from '../model/task';
+import { SLIDE_IMAGE_URL } from '../config';
 export default defineComponent({
   props: {
     baseTask: Object as PropType<BaseTask>
@@ -152,6 +199,12 @@ export default defineComponent({
     const summaryDataLoading = ref<Boolean>(false);
 
     const downloadUserSolutionsLoading = ref(false);
+
+    const showStatisticSummary = ref(false);
+    const statisticData = ref();
+    const tasks = ref<Task[]>([]);
+    const statisticDataLoading = ref(false);
+    const taskDetailLoading = ref(false);
 
     const toggleEnabledState = async (baseTask: BaseTask) => {
       props.baseTask!.enabled = !props.baseTask!.enabled;
@@ -179,7 +232,6 @@ export default defineComponent({
       summaryDataLoading.value = true;
       summaryData.value = await TaskService.getMembersolutionSummary(short_name);
       summaryDataLoading.value = false;
-
       showSummaryModal.value = true;
 
       nextTick(() => {
@@ -195,12 +247,34 @@ export default defineComponent({
       });
     };
 
+    const loadTaskDetails = async (short_name: string) => {
+      statisticDataLoading.value = true;
+      showStatisticSummary.value = true;
+      taskDetailLoading.value = true;
+      const tasksPromise = await TaskService.getBaseTaskStatistics(short_name);
+      tasks.value = tasksPromise;
+      taskDetailLoading.value = false;
+    };
+
+    const loadStatisticSummary = async (short_name: string) => {};
+
+    const closeStatisticModal = () => {
+      showStatisticSummary.value = false;
+    };
+
     return {
       showSummaryModal,
       summaryData,
+      closeStatisticModal,
+      loadTaskDetails,
+      loadStatisticSummary,
       summaryDataLoading,
+      taskDetailLoading,
       loadSummary,
+      tasks,
+      SLIDE_IMAGE_URL,
       toggleEnabledState,
+      showStatisticSummary,
       downloadUserSolutions,
       downloadUserSolutionsLoading
     };

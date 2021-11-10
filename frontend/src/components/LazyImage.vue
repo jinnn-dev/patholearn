@@ -16,11 +16,11 @@
     </svg>
     <div v-if="!imageLoadError" class="w-full h-full overflow-hidden flex justify-center items-center">
       <img
-        :src="imageUrl"
+        :src="url"
         @load="onLoaded"
         :class="loaded ? 'show ' + imageClasses : ''"
         class="rounded-lg"
-        @error="imageLoadError = true"
+        @error="handleError"
       />
     </div>
     <div v-else class="bg-gray-300 p-2 rounded-lg"><Icon name="filex" :width="32" :height="32" /></div>
@@ -37,16 +37,45 @@ export default defineComponent({
     alt: String,
     imageClasses: String
   },
-  setup() {
+  setup(props) {
     const loaded = ref<Boolean>(false);
+
+    const url = ref(props.imageUrl);
+    let tries = 0;
+
+    const FILE_ENDINGS = ['png', 'jpg'];
 
     const onLoaded = () => {
       loaded.value = true;
     };
 
+    const handleError = () => {
+      if (tries > 0) {
+        imageLoadError.value = true;
+        loaded.value = true;
+      }
+
+      const splittedUrl = url.value.split('.');
+
+      const fileEnding = splittedUrl[splittedUrl.length - 1];
+
+      const newUrl = splittedUrl.slice(0, splittedUrl.length - 1);
+
+      if (fileEnding === 'png') {
+        newUrl.push('jpg');
+      } else {
+        newUrl.push('png');
+      }
+      tries++;
+      url.value = newUrl.join('.');
+      loaded.value = false;
+
+      console.log(url.value);
+    };
+
     const imageLoadError = ref(false);
 
-    return { loaded, onLoaded, imageLoadError };
+    return { loaded, onLoaded, imageLoadError, url, handleError };
   }
 });
 </script>

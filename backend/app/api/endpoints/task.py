@@ -19,6 +19,7 @@ from app.crud.crud_course import crud_course
 from app.crud.crud_hint_image import crud_hint_image
 from app.crud.crud_task import crud_task
 from app.crud.crud_task_hint import crud_task_hint
+from app.crud.crud_task_statistic import crud_task_statistic
 from app.crud.crud_user_solution import crud_user_solution
 from app.models.user import User
 from app.schemas.hint_image import HintImageCreate
@@ -115,6 +116,8 @@ def delete_task(*, db: Session = Depends(get_db), task_id: int,
         check_if_user_can_access_task(db, user_id=current_user.id, base_task_id=task_to_delete.base_task_id)
 
         crud_user_solution.remove_all_by_task_id(db, task_id=task_id)
+
+        crud_task_statistic.remove_all_by_task_id(db, task_id=task_id)
 
         if task_to_delete.task_type == TaskType.IMAGE_SELECT:
             for image in task_to_delete.task_data:
@@ -278,6 +281,7 @@ def update_user_solution_annotation(*, db: Session = Depends(get_db), task_id: i
 
     return {"Status", "Ok"}
 
+
 @router.delete('/{task_id}/userSolution/{annotation_id}', response_model=Any)
 def delete_user_solution_annotation(*, db: Session = Depends(get_db), task_id: int, annotation_id: str,
                                     current_user: User = Depends(get_current_active_user)) -> Any:
@@ -292,6 +296,7 @@ def delete_user_solution_annotation(*, db: Session = Depends(get_db), task_id: i
     #     return {"Status": "OK"}
     crud_user_solution.update(db, db_obj=user_solution, obj_in=UserSolutionUpdate(solution_data=solution_data))
     return {"Status": "OK"}
+
 
 @router.get('/{task_id}/solution', response_model=List[Union[OffsetPolygonData, OffsetLineData, OffsetPointData]])
 def get_task_solution(*, db: Session = Depends(get_db), task_id: int,
@@ -406,7 +411,7 @@ def upload_task_image(*, current_user: User = Depends(get_current_active_superus
 
     try:
         minio_client.bucket_name = MinioClient.task_bucket
-        minio_client.create_object(file_name, final_name, "image/jpeg")
+        minio_client.create_object(final_name, final_name, "image/jpeg")
         os.remove(final_name)
         return {"path": minio_client.bucket_name + '/' + file_name, "old_name": image.filename}
     except Exception as e:

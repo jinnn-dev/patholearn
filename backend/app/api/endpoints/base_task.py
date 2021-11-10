@@ -1,3 +1,4 @@
+import datetime
 import json
 import os
 import uuid
@@ -9,6 +10,7 @@ import pyvips
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.datastructures import UploadFile
 from fastapi.params import File, Form
+from numpy import take
 from pydantic.tools import parse_obj_as
 from sqlalchemy.orm import Session
 from starlette.responses import StreamingResponse
@@ -23,6 +25,7 @@ from app.crud.crud_course import crud_course
 from app.crud.crud_task import crud_task
 from app.crud.crud_task_group import crud_task_group
 from app.crud.crud_task_hint import crud_task_hint
+from app.crud.crud_task_statistic import crud_task_statistic
 from app.crud.crud_user_solution import crud_user_solution
 from app.models.user import User
 from app.schemas.base_task import (BaseTask, BaseTaskCreate, BaseTaskDetail,
@@ -31,6 +34,7 @@ from app.schemas.membersolution_summary import (MembersolutionSummary,
                                                 SummaryRow, SummaryUser)
 from app.schemas.task import (TaskCreate, TaskStatus, TaskType, TaskAnnotationType)
 from app.schemas.task_hint import TaskHint
+from app.schemas.task_statistic import TaskStatisticCreate
 from app.schemas.user_solution import (UserSolution, UserSolutionCreate,
                                        UserSolutionUpdate)
 from app.utils.colored_printer import ColoredPrinter
@@ -240,6 +244,7 @@ def delete_base_task(*, db: Session = Depends(get_db), short_name: str,
 
     crud_task.remove_all_to_task_id(db, base_task_id=base_task.id)
     crud_user_solution.remove_all_to_base_task(db, base_task_id=base_task.id)
+    crud_task_statistic.remove_all_by_base_task_id(db, base_task_id=base_task.id)
 
     for task in base_task.tasks:
         if task.task_type == TaskType.IMAGE_SELECT:
@@ -355,6 +360,17 @@ def solve_task(*, db: Session = Depends(get_db), task_id: int, current_user: Use
         solution_update.percentage_solved = 0.0
 
     crud_user_solution.update(db, db_obj=user_solution, obj_in=solution_update)
+
+    crud_task_statistic.create(db, obj_in=TaskStatisticCreate(
+        user_id=current_user.id,
+        task_id=task.id,
+        base_task_id=user_solution.base_task_id,
+        solved_date=datetime.datetime.now(),
+        percentage_solved=solution_update.percentage_solved,
+        solution_data=user_solution.solution_data,
+        task_result=task_result
+    ))
+
     timer.stop()
     ColoredPrinter.print_lined_info(f"Completet in {timer.total_run_time * 1000}ms")
     return task_result
@@ -409,3 +425,34 @@ def get_task_hints(*, db: Session = Depends(get_db), task_id: int,
 
     hints = crud_task_hint.get_hints_by_task(db, task_id=task_id, mistakes=failed_attempts)
     return hints
+
+
+@router.get("/{short_name}/statistic", response_model=Dict[str, int])
+def get_statistic_to_base_task(*, db: Session = Depends(get_db), short_name: str):
+    base_task = crud_base_task.get_by_short_name(db, short_name=short_name)
+
+    task_statistics, task_ids = crud_task_statistic.get_oldest_task_statistics_to_base_task_id(db, base_task_id=base_task.id)
+
+    mapped_tasks = {}
+    image_select_statistic = {}
+
+    for task_id in task_ids:
+        if task_id not in mapped_tasks:
+            mapped_tasks[task_id] = crud_task.get(db, id=task_id)
+
+    for task_statistic in task_statistics:
+        task = mapped_tasks[task_statistic.task_id]
+        if task.task_type == TaskType.IMAGE_SELECT:
+            for image_uuid in task_statistic.solution_data:
+                if not image_uuid in task.solution:
+                    if image_uuid in image_select_statistic:
+                        image_select_statistic[image_uuid] += 1
+                    else:
+                        image_select_statistic[image_uuid] = 1
+
+    print(image_select_statistic)
+
+    image_select_statistic = dict(sorted(image_select_statistic.items(), key=lambda item: item[1]))
+
+
+    return {key: image_select_statistic[key] for key in list(image_select_statistic)[0:2]}

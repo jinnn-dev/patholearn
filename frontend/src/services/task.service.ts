@@ -24,6 +24,14 @@ export class TaskService {
     return response!.data;
   }
 
+  public static async getBaseTaskStatistics(shortName: string): Promise<any> {
+    const [_, response] = await handleError(
+      ApiService.get<BaseTask>({ resource: this._apiUrl('/' + shortName + '/statistic') }),
+      'Base task statistic could not be loaded'
+    );
+    return response!.data;
+  }
+
   /**
    * Returns the base task content for the admin
    *
