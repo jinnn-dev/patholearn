@@ -278,6 +278,20 @@ def update_user_solution_annotation(*, db: Session = Depends(get_db), task_id: i
 
     return {"Status", "Ok"}
 
+@router.delete('/{task_id}/userSolution/{annotation_id}', response_model=Any)
+def delete_user_solution_annotation(*, db: Session = Depends(get_db), task_id: int, annotation_id: str,
+                                    current_user: User = Depends(get_current_active_user)) -> Any:
+    user_solution = crud_user_solution.get_solution_to_task_and_user(db, task_id=task_id, user_id=current_user.id)
+    solution_data = user_solution.solution_data
+    if user_solution.solution_data:
+        solution_data = [d for d in solution_data if d.get("id") != annotation_id]
+
+    # if len(solution_data) == 0:
+    #     delete_item = crud_user_solution.remove_by_user_id_and_task_id(db, user_id=current_user.id, task_id=task_id)
+    #     delete_item.solution_data = solution_data
+    #     return {"Status": "OK"}
+    crud_user_solution.update(db, db_obj=user_solution, obj_in=UserSolutionUpdate(solution_data=solution_data))
+    return {"Status": "OK"}
 
 @router.get('/{task_id}/solution', response_model=List[Union[OffsetPolygonData, OffsetLineData, OffsetPointData]])
 def get_task_solution(*, db: Session = Depends(get_db), task_id: int,
