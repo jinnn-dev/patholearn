@@ -150,11 +150,11 @@
     <div v-else class="mt-12"><no-content text="Keine Zusammenfassung verfügbar"></no-content></div>
   </modal-dialog>
 
-  <modal-dialog :show="showStatisticSummary" customClasses="max-w-full">
-    <div class="mb-6">
+  <modal-dialog :show="showStatisticSummary" customClasses="max-w-[50%]">
+    <div class="mb-6 w-full" v-if="Object.keys(tasks).length">
       <div class="text-lg font-semibold mb-4">Die Top 5 der am meisten falsch klassifizierten Bilder:</div>
 
-      <div class="flex justify-begin items-center gap-4">
+      <div class="flex justify-center items-center gap-4 w-full flex-wrap">
         <div
           v-for="(amount, imageUuid) in tasks"
           :key="imageUuid"
@@ -164,6 +164,10 @@
           <div class="text-lg font-bold">{{ amount }}x</div>
         </div>
       </div>
+    </div>
+
+    <div v-else class="mb-6">
+      <no-content text="Keine Statistik vorhanden"></no-content>
     </div>
 
     <div class="flex justify-end">
