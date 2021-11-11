@@ -3,11 +3,12 @@ import os
 from enum import IntEnum
 from typing import Dict, List, Optional
 
-from app.db.pydantic_objectid import PydanticObjectId
 from bson import ObjectId
 from pydantic import BaseModel, Field, parse_obj_as
 from pymongo import MongoClient
 from pymongo.results import DeleteResult, UpdateResult
+
+from app.db.pydantic_objectid import PydanticObjectId
 
 
 class SlideStatus(IntEnum):
@@ -31,6 +32,25 @@ class DatabaseSlide(Slide):
         json_encoders = {
             ObjectId: str
         }
+
+
+class DatabaseSlideNoMetadata(BaseModel):
+    id: Optional[PydanticObjectId] = Field(alias='_id')
+    name: str
+    slide_id: str
+    status: SlideStatus
+
+    class Config:
+        arbitrary_types_allowed = True
+        json_encoders = {
+            ObjectId: str
+        }
+
+
+class SlideNoMetadata(BaseModel):
+    name: str
+    slide_id: str
+    status: SlideStatus
 
 
 class CreateSlide(BaseModel):
@@ -102,13 +122,30 @@ class SlideDatabase:
         values_to_update = {"$set": slide_update.dict(skip_defaults=True)}
         return self.collection.update_one(slide_query, values_to_update)
 
-    def get_all_slides(self) -> List[DatabaseSlide]:
+    def get_all_slides(self, metadata: bool) -> List[DatabaseSlide]:
         """
         Returns all slides stored in the database
 
         :return: All database entries
         """
-        return parse_obj_as(List[DatabaseSlide], list(self.collection.find({}, {'_id': False})))
+        if metadata:
+            result = parse_obj_as(List[DatabaseSlide], list(self.collection.find({}, {'_id': False})))
+        else:
+            result = parse_obj_as(List[DatabaseSlideNoMetadata],
+                                  list(self.collection.find({}, {'_id': False, 'metadata': False})))
+        return result
+
+    def get_all_slides_to_ids(self, slide_ids: List[str], metadata: bool) -> List[Slide]:
+        if metadata:
+            result = parse_obj_as(List[DatabaseSlide],
+                                  list(self.collection.find({'slide_id': {'$in': slide_ids}}, {'_id': False})))
+
+        else:
+            result = parse_obj_as(List[DatabaseSlideNoMetadata],
+                                  list(self.collection.find({'slide_id': {'$in': slide_ids}},
+                                                            {'_id': False, 'metadata': False})))
+
+        return result
 
     def get_slide_with_slide_id(self, slide_id: str) -> Slide:
         return self.collection.find_one({"slide_id": slide_id})
@@ -124,5 +161,6 @@ class SlideDatabase:
 
     def delete_slide(self, slide_id: str) -> DeleteResult:
         return self.collection.delete_one({'slide_id': slide_id})
+
 
 slide_db = SlideDatabase()

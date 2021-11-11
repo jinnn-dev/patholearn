@@ -1,17 +1,14 @@
-import os
 import uuid
 from typing import List
 
-import aiofiles
 from fastapi import BackgroundTasks, FastAPI, HTTPException, UploadFile
-from fastapi.params import File, Form
+from fastapi.params import File, Form, Query
 from starlette.middleware.cors import CORSMiddleware
 
-from app.db.database import (CreateSlide, DatabaseSlide, Slide, SlideStatus,
+from app.db.database import (CreateSlide, Slide, SlideStatus,
                              slide_db)
 from app.persistance.custom_minio_client import MinioClient
 from app.utils.util import (convert_binary_metadata_to_base64,
-                            convert_binary_to_base64, is_byte_data,
                             write_slide_to_disk)
 
 app = FastAPI()
@@ -67,22 +64,28 @@ def create_slide(background_tasks: BackgroundTasks, name: str = Form(...), file:
             detail="Slide couldn't be saved"
         )
     return Slide(
-                slide_id=file_id,
-                name=name,
-                status=SlideStatus.RUNNING
-            )
+        slide_id=file_id,
+        name=name,
+        status=SlideStatus.RUNNING
+    )
 
 
 @app.get('/slides', response_model=List[Slide])
-def read_slides() -> List[Slide]:
-    slides = slide_db.get_all_slides()
-    slides_without_binary_metadata = convert_binary_metadata_to_base64(slides)
-    return slides_without_binary_metadata
+def read_slides(slideid: List[str] = Query(None), metadata: bool = Query(True)) -> List[Slide]:
+    if slideid:
+        slides = slide_db.get_all_slides_to_ids(slideid, metadata)
+    else:
+        slides = slide_db.get_all_slides(metadata)
+    if metadata:
+        slides = convert_binary_metadata_to_base64(slides)
+    return slides
+
 
 @app.get('/slides/{slide_id}/name')
 def get_slide(slide_id: str):
     slide = slide_db.get_slide_with_slide_id(slide_id)
     return {"name": slide["name"]}
+
 
 @app.delete('/slides/{slide_id}')
 def delete_slide(slide_id: str):
