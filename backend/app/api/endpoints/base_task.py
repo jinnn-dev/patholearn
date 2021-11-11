@@ -10,7 +10,6 @@ import pyvips
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.datastructures import UploadFile
 from fastapi.params import File, Form
-from numpy import take
 from pydantic.tools import parse_obj_as
 from sqlalchemy.orm import Session
 from starlette.responses import StreamingResponse
@@ -431,7 +430,8 @@ def get_task_hints(*, db: Session = Depends(get_db), task_id: int,
 def get_statistic_to_base_task(*, db: Session = Depends(get_db), short_name: str):
     base_task = crud_base_task.get_by_short_name(db, short_name=short_name)
 
-    task_statistics, task_ids = crud_task_statistic.get_oldest_task_statistics_to_base_task_id(db, base_task_id=base_task.id)
+    task_statistics, task_ids = \
+        crud_task_statistic.get_oldest_task_statistics_to_base_task_id(db, base_task_id=base_task.id)
 
     mapped_tasks = {}
     image_select_statistic = {}
@@ -450,9 +450,8 @@ def get_statistic_to_base_task(*, db: Session = Depends(get_db), short_name: str
                     else:
                         image_select_statistic[image_uuid] = 1
 
-    print(image_select_statistic)
+    image_select_statistic = dict(sorted(image_select_statistic.items(), key=lambda item: item[1], reverse=True))
 
-    image_select_statistic = dict(sorted(image_select_statistic.items(), key=lambda item: item[1]))
+    sorted_images = {key: image_select_statistic[key] for key in list(image_select_statistic)[0:5]}
 
-
-    return {key: image_select_statistic[key] for key in list(image_select_statistic)[0:2]}
+    return sorted_images
