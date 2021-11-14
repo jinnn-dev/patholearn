@@ -151,19 +151,56 @@
   </modal-dialog>
 
   <modal-dialog :show="showStatisticSummary" customClasses="max-w-[50%]">
-    <div class="mb-6 w-full" v-if="Object.keys(tasks).length">
-      <div class="text-lg font-semibold mb-4">Die Top 5 der am meisten falsch klassifizierten Bilder:</div>
+    <div
+      class="mb-6 w-full"
+      v-if="
+        imageSelectStatistic &&
+        (imageSelectStatistic?.wrong_image_statistics?.length != 0 ||
+          imageSelectStatistic?.wrong_label_statistics?.length != 0)
+      "
+    >
+      <div>
+        <div class="text-lg font-semibold mb-4">Die Top 5 der am meisten falsch klassifizierten Bilder:</div>
 
-      <div class="flex justify-center items-center gap-4 w-full flex-wrap">
-        <div
-          v-for="(amount, imageUuid) in tasks"
-          :key="imageUuid"
-          class="flex flex-col justify-center items-center gap-2"
-        >
-          <lazy-image class="w-32" :imageUrl="SLIDE_IMAGE_URL + '/task-images/' + imageUuid + '.png'"></lazy-image>
-          <div class="text-lg font-bold">{{ amount }}x</div>
+        <div class="flex justify-center items-center gap-4 w-full flex-wrap">
+          <div
+            v-for="statistic in imageSelectStatistic?.wrong_image_statistics"
+            :key="statistic.task_image_id"
+            class="flex flex-col justify-center items-center gap-2"
+          >
+            <lazy-image
+              class="w-32"
+              :imageUrl="SLIDE_IMAGE_URL + '/task-images/' + statistic.task_image_id + '.png'"
+            ></lazy-image>
+            <div class="text-center">
+              <div class="text-lg font-bold">{{ statistic.amount }}x</div>
+              <div>{{ statistic.name }}</div>
+              <div class="font-semibold text-gray-400">{{ statistic.label }}</div>
+            </div>
+          </div>
         </div>
       </div>
+
+      <!-- <div class="mt-8">
+        <div class="text-lg font-semibold mb-4">Die Top 5 der am meisten falsch erkannten Klassen:</div>
+
+        <div class="flex justify-center items-center gap-4 w-full flex-wrap">
+          <div
+            v-for="statistic in imageSelectStatistic?.wrong_label_statistics"
+            :key="statistic.task_image_id"
+            class="flex flex-col justify-center items-center gap-2"
+          >
+            <lazy-image
+              class="w-32"
+              :imageUrl="SLIDE_IMAGE_URL + '/task-images/' + statistic.task_image_id + '.png'"
+            ></lazy-image>
+            <div class="text-center">
+              <div class="text-lg font-bold">{{ statistic.amount }}x</div>
+              <div>{{ statistic.name }}</div>
+            </div>
+          </div>
+        </div>
+      </div> -->
     </div>
 
     <div v-else class="mb-6">
@@ -188,8 +225,8 @@ import { defineComponent, nextTick, onUnmounted, PropType, ref } from 'vue';
 import { MembersolutionSummary } from '../model/membersolutionSummary';
 import { TooltipGenerator } from '../utils/tooltip-generator';
 import { TaskService } from '../services/task.service';
-import { Task } from '../model/task';
 import { SLIDE_IMAGE_URL } from '../config';
+import { ImageSelectStatistic } from '../model/imageSelectStatistic';
 export default defineComponent({
   props: {
     baseTask: Object as PropType<BaseTask>
@@ -206,7 +243,7 @@ export default defineComponent({
 
     const showStatisticSummary = ref(false);
     const statisticData = ref();
-    const tasks = ref<Task[]>([]);
+    const imageSelectStatistic = ref<ImageSelectStatistic>();
     const statisticDataLoading = ref(false);
     const taskDetailLoading = ref(false);
 
@@ -256,7 +293,7 @@ export default defineComponent({
       showStatisticSummary.value = true;
       taskDetailLoading.value = true;
       const tasksPromise = await TaskService.getBaseTaskStatistics(short_name);
-      tasks.value = tasksPromise;
+      imageSelectStatistic.value = tasksPromise;
       taskDetailLoading.value = false;
     };
 
@@ -275,7 +312,7 @@ export default defineComponent({
       summaryDataLoading,
       taskDetailLoading,
       loadSummary,
-      tasks,
+      imageSelectStatistic,
       SLIDE_IMAGE_URL,
       toggleEnabledState,
       showStatisticSummary,

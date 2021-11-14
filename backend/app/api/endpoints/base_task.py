@@ -1,12 +1,14 @@
 import datetime
 import json
 import os
+import traceback
 import uuid
 from io import StringIO
 from typing import Any, Dict, List
 
 import pandas as pd
 import pyvips
+import requests
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.datastructures import UploadFile
 from fastapi.params import File, Form
@@ -17,6 +19,7 @@ from starlette.responses import StreamingResponse
 from app.api.deps import (check_if_user_can_access_course,
                           get_current_active_superuser,
                           get_current_active_user, get_db)
+from app.core.config import settings
 from app.core.export.task_exporter import TaskExporter
 from app.core.solver.solver import Solver
 from app.crud.crud_base_task import crud_base_task
@@ -31,6 +34,7 @@ from app.schemas.base_task import (BaseTask, BaseTaskCreate, BaseTaskDetail,
                                    BaseTaskUpdate)
 from app.schemas.membersolution_summary import (MembersolutionSummary,
                                                 SummaryRow, SummaryUser)
+from app.schemas.statistic import ImageSelectStatistic, WrongImageStatistic
 from app.schemas.task import (TaskCreate, TaskStatus, TaskType, TaskAnnotationType)
 from app.schemas.task_hint import TaskHint
 from app.schemas.task_statistic import TaskStatisticCreate
@@ -74,7 +78,7 @@ def create_base_task_from_csv(*, db: Session = Depends(get_db), base_task_in: st
         if image_dicts:
             for image in image_dicts:
                 minio_client.bucket_name = MinioClient.task_bucket
-                minio_client.delete_object(image["path"])
+                minio_client.delete_object(image["task_image_id"])
 
         raise HTTPException(
             status_code=400,
@@ -103,6 +107,9 @@ def create_base_task_from_csv(*, db: Session = Depends(get_db), base_task_in: st
         index = 0
         curr_divider = divider_options[0]
         task_index = 0
+
+        label_update_dict = []
+
         for i in range(0, len(df.index)):
             if index == curr_divider or i == len(df.index) - 1:
                 task_label = labels[task_index % len(labels)]
@@ -110,18 +117,19 @@ def create_base_task_from_csv(*, db: Session = Depends(get_db), base_task_in: st
                 image_names = sub_df['name'].unique()
                 replace = {}
                 for name in image_names:
-                    path = [image for image in image_dicts if image['old_name'] == name]
+                    path = [image for image in image_dicts if image['name'] == name]
                     path_item = None
                     if len(path) > 0:
-                        path_item = path[0]["path"]
+                        path_item = path[0]["task_image_id"]
                         if path_item:
                             replace[name] = path_item
+                        label_update_dict.append({"task_image_id": path[0]["task_image_id"],
+                                                  "label": sub_df[sub_df["name"] == name]["class"].values[0]})
                     else:
                         sub_df = sub_df[sub_df["name"] != name]
 
                 sub_df.replace({"name": replace}, inplace=True)
                 correct_rows = sub_df.loc[df['class'] == task_label]['name'].to_list()
-                correct_rows = [row.split('/')[1].split('.')[0] for row in correct_rows]
                 task_create = TaskCreate(
                     layer=1,
                     base_task_id=base_task.id,
@@ -142,14 +150,18 @@ def create_base_task_from_csv(*, db: Session = Depends(get_db), base_task_in: st
                 index += 1
         db.refresh(base_task)
         base_task.task_count = len(tasks)
+        print(label_update_dict)
+        response = requests.put(settings.SLIDE_URL + '/task-images', json=label_update_dict)
+        print(response.json())
         return base_task
 
     except Exception as e:
         print(e)
+        print(traceback.format_exc())
         if image_dicts:
             for image in image_dicts:
                 minio_client.bucket_name = MinioClient.task_bucket
-                minio_client.delete_object(image["path"])
+                minio_client.delete_object(image["task_image_id"])
         if tasks:
             for task in tasks:
                 if task.id:
@@ -426,7 +438,7 @@ def get_task_hints(*, db: Session = Depends(get_db), task_id: int,
     return hints
 
 
-@router.get("/{short_name}/statistic", response_model=Dict[str, int])
+@router.get("/{short_name}/statistic", response_model=Any)
 def get_statistic_to_base_task(*, db: Session = Depends(get_db), short_name: str):
     base_task = crud_base_task.get_by_short_name(db, short_name=short_name)
 
@@ -434,8 +446,9 @@ def get_statistic_to_base_task(*, db: Session = Depends(get_db), short_name: str
         crud_task_statistic.get_oldest_task_statistics_to_base_task_id(db, base_task_id=base_task.id)
 
     mapped_tasks = {}
-    image_select_statistic = {}
-
+    most_wrong_picked_images = {}
+    most_wrong_classified_images = {}
+    loaded_images = []
     for task_id in task_ids:
         if task_id not in mapped_tasks:
             mapped_tasks[task_id] = crud_task.get(db, id=task_id)
@@ -443,15 +456,44 @@ def get_statistic_to_base_task(*, db: Session = Depends(get_db), short_name: str
     for task_statistic in task_statistics:
         task = mapped_tasks[task_statistic.task_id]
         if task.task_type == TaskType.IMAGE_SELECT:
+            image_query = '&taskimageid='.join(task.task_data)
+            loaded_images = requests.get(settings.SLIDE_URL + '/task-images?taskimageid=' + image_query).json()
+
             for image_uuid in task_statistic.solution_data:
                 if not image_uuid in task.solution:
-                    if image_uuid in image_select_statistic:
-                        image_select_statistic[image_uuid] += 1
+                    image = next((image for image in loaded_images if image["task_image_id"] == image_uuid), None)
+                    # print(image)
+                    if image_uuid in most_wrong_classified_images:
+                        if task.task_question in most_wrong_classified_images[image_uuid]:
+                            most_wrong_classified_images[image_uuid][task.task_question] += 1
+                        else:
+                            most_wrong_classified_images[image_uuid][task.task_question] = 1
                     else:
-                        image_select_statistic[image_uuid] = 1
+                        most_wrong_classified_images[image_uuid] = {}
+                        most_wrong_classified_images[image_uuid][task.task_question] = 1
+                    if image_uuid in most_wrong_picked_images:
+                        most_wrong_picked_images[image_uuid] += 1
+                    else:
+                        most_wrong_picked_images[image_uuid] = 1
 
-    image_select_statistic = dict(sorted(image_select_statistic.items(), key=lambda item: item[1], reverse=True))
+    most_wrong_picked_images = dict(sorted(most_wrong_picked_images.items(), key=lambda item: item[1], reverse=True))
 
-    sorted_images = {key: image_select_statistic[key] for key in list(image_select_statistic)[0:5]}
+    sorted_images = {key: most_wrong_picked_images[key] for key in list(most_wrong_picked_images)[0:5]}
 
-    return sorted_images
+    result_images = []
+
+    # print(most_wrong_classified_images)
+
+    if len(sorted_images.keys()) > 0:
+        for image in loaded_images:
+            if image["task_image_id"] in sorted_images.keys():
+                result_images.append(image)
+                image["amount"] = sorted_images[image["task_image_id"]]
+                print(image)
+
+        return ImageSelectStatistic(
+            wrong_image_statistics=parse_obj_as(List[WrongImageStatistic], result_images),
+            wrong_label_statistics=[]
+        )
+
+    return None

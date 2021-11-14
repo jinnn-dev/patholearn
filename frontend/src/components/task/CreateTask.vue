@@ -239,6 +239,7 @@ import { TaskService } from '../../services/task.service';
 import { knowledgeLevel, taskTypes } from './task-config';
 import { create } from 'd3-selection';
 import { SLIDE_IMAGE_URL } from '../../config';
+import { TaskImageService } from '../../services/task-image.service';
 
 export default defineComponent({
   components: { Slider },
@@ -327,7 +328,7 @@ export default defineComponent({
             const imageNames = [];
             for await (const img of tempImages.value) {
               const name = await uploadImage(img);
-              imageNames.push(name.path);
+              imageNames.push(name.task_image_id);
             }
 
             const createTask: TaskCreate = {
@@ -390,10 +391,11 @@ export default defineComponent({
       tempImages.value.splice(imageIndex, 1);
     }
 
-    const uploadImage = async (image: Blob) => {
+    const uploadImage = async (image: File) => {
       const formData = new FormData();
-      formData.append('image', image);
-      return await TaskService.uploadTaskImage(formData);
+      formData.append('images', image);
+      formData.append('names', image.name);
+      return await TaskImageService.uploadTaskImage(formData);
     };
 
     return {

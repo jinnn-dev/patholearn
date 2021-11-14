@@ -43,14 +43,14 @@ export default defineComponent({
     const url = ref(props.imageUrl);
     let tries = 0;
 
-    const FILE_ENDINGS = ['png', 'jpg'];
+    const FILE_ENDINGS = ['png', 'jpg', 'jpeg'];
 
     const onLoaded = () => {
       loaded.value = true;
     };
 
     const handleError = () => {
-      if (tries > 0) {
+      if (tries > 1) {
         imageLoadError.value = true;
         loaded.value = true;
       }
@@ -62,6 +62,8 @@ export default defineComponent({
       const newUrl = splittedUrl.slice(0, splittedUrl.length - 1);
 
       if (fileEnding === 'png') {
+        newUrl.push('jpeg');
+      } else if (fileEnding === 'jpeg') {
         newUrl.push('jpg');
       } else {
         newUrl.push('png');

@@ -397,41 +397,41 @@ def upload_task_image(*, current_user: User = Depends(get_current_active_superus
     return results
 
 
-@router.post('/image', response_model=Dict)
-def upload_task_image(*, current_user: User = Depends(get_current_active_superuser), image: UploadFile = File(...)):
-    image_name = uuid.uuid4()
-
-    file_name = f"{image_name}.{image.filename.split('.')[-1]}"
-
-    final_name = f'{image_name}.jpeg'
-
-    pyvips_image = pyvips.Image.new_from_buffer(image.file.read(), options="")
-
-    pyvips_image.jpegsave(final_name, Q=75)
-
-    try:
-        minio_client.bucket_name = MinioClient.task_bucket
-        minio_client.create_object(final_name, final_name, "image/jpeg")
-        os.remove(final_name)
-        return {"path": minio_client.bucket_name + '/' + final_name, "old_name": image.filename}
-    except Exception as e:
-        print(e)
-        os.remove(final_name)
-        raise HTTPException(
-            status_code=500,
-            detail="Image could not be saved"
-        )
-
-
-@router.delete('/image/minio/{image_path}', response_model=Dict)
-def delete_task_image(*, current_user: User = Depends(get_current_active_superuser), image_path: str):
-    try:
-        minio_client.bucket_name = MinioClient.task_bucket
-        minio_client.delete_object('/task-images/' + image_path)
-        return {"Status": "Ok"}
-    except Exception as e:
-        print(e)
-        raise HTTPException(
-            status_code=500,
-            detail="Image could not be deleted"
-        )
+# @router.post('/image', response_model=Dict)
+# def upload_task_image(*, current_user: User = Depends(get_current_active_superuser), image: UploadFile = File(...)):
+#     image_name = uuid.uuid4()
+#
+#     file_name = f"{image_name}.{image.filename.split('.')[-1]}"
+#
+#     final_name = f'{image_name}.jpeg'
+#
+#     pyvips_image = pyvips.Image.new_from_buffer(image.file.read(), options="")
+#
+#     pyvips_image.jpegsave(final_name, Q=75)
+#
+#     try:
+#         minio_client.bucket_name = MinioClient.task_bucket
+#         minio_client.create_object(final_name, final_name, "image/jpeg")
+#         os.remove(final_name)
+#         return {"path": minio_client.bucket_name + '/' + final_name, "old_name": image.filename}
+#     except Exception as e:
+#         print(e)
+#         os.remove(final_name)
+#         raise HTTPException(
+#             status_code=500,
+#             detail="Image could not be saved"
+#         )
+#
+#
+# @router.delete('/image/minio/{image_path}', response_model=Dict)
+# def delete_task_image(*, current_user: User = Depends(get_current_active_superuser), image_path: str):
+#     try:
+#         minio_client.bucket_name = MinioClient.task_bucket
+#         minio_client.delete_object('/task-images/' + image_path)
+#         return {"Status": "Ok"}
+#     except Exception as e:
+#         print(e)
+#         raise HTTPException(
+#             status_code=500,
+#             detail="Image could not be deleted"
+#         )
