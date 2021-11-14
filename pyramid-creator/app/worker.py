@@ -1,15 +1,17 @@
 import glob
 import os
 import shutil
-from pprint import pprint
 
 import pyvips
 from celery import Celery
 from celery.utils.log import get_task_logger
 
 # from app.db.database import update_slide
-from app.db.database import UpdateSlide, SlideStatus, slide_db
+from app.crud import crud_slide
+from app.db.deps import get_slide_collection
 from app.persistance.custom_minio_client import MinioClient
+from app.persistance.minio_wrapper import MinioWrapper
+from app.schemas.slide import SlideStatus, UpdateSlide
 
 celery_app = Celery(__name__)
 celery_app.conf.broker_url = os.environ.get("CELERY_BROKER_URL", "amqp://guest:guest@rabbit:5673//")
@@ -69,21 +71,29 @@ def convert_slide(file_name: str):
         files = [f for f in glob.glob(fr"./data/{file_id}/" + "**/*.jpeg", recursive=True)]
 
         for f in files:
+            print(f)
             file = f.removeprefix("./data/")
-            minio_client.create_object(str(file), f, "image/jpeg")
-        minio_client.create_object(f"{file_id}/dzi.dzi", fr"./data/{file_id}/dzi.dzi", "text/xml")
+            minio_client.create_object(bucket_name=MinioWrapper.pyramid_bucket, file_name=str(file), file_content=f,
+                                       content_type="image/jpeg")
+        minio_client.create_object(bucket_name=MinioWrapper.pyramid_bucket, file_name=f"{file_id}/dzi.dzi",
+                                   file_content=fr"./data/{file_id}/dzi.dzi", content_type="text/xml")
 
-        slide_db.update_slide(slide_id=file_id, slide_update=UpdateSlide(
-            status=SlideStatus.SUCCESS,
-            metadata=extracted_meta_data
-        ))
+        for connection in get_slide_collection():
+            crud_slide.crud_slide.update(connection, entity_id_value=file_id, obj_in=UpdateSlide(
+                status=SlideStatus.SUCCESS,
+                metadata=extracted_meta_data
+            ))
 
         return {"status": "success"}
     except Exception as exc:
         # minio_client.delete_folder(f"{file_id}")
-        slide_db.update_slide(slide_id=file_id, slide_update=UpdateSlide(
-            status=SlideStatus.ERROR
-        ))
+        for connection in get_slide_collection():
+            crud_slide.crud_slide.update(connection, entity_id_value=file_id, obj_in=UpdateSlide(
+                status=SlideStatus.ERROR
+            ))
+        # crud_slide.update_slide(slide_id=file_id, slide_update=UpdateSlide(
+        #     status=SlideStatus.ERROR
+        # ))
         logger.error(exc)
 
         return {"status": "error"}

@@ -7,21 +7,23 @@ from minio.deleteobjects import DeleteObject
 
 
 def policy(bucket_name):
-    return  {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Principal": {
-                "AWS": ["*"]
-            },
-            "Action": "s3:GetObject",
-            "Resource": "arn:aws:s3:::" + bucket_name + "/*"
-        }
-    ]
-}
+    return {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Principal": {
+                    "AWS": ["*"]
+                },
+                "Action": "s3:GetObject",
+                "Resource": "arn:aws:s3:::" + bucket_name + "/*"
+            }
+        ]
+    }
+
 
 class MinioClient:
+
     def __init__(self):
         self.instance = Minio(
             endpoint="minio:9000",
@@ -29,56 +31,46 @@ class MinioClient:
             secret_key=os.environ.get("MINIO_ROOT_PASSWORD", "minioKey1234"),
             secure=False
         )
-        self.bucket = None
-        self.bucket_name = None
 
     def create_bucket(self, bucket_name: str) -> None:
-        self.bucket = self.instance.bucket_exists(bucket_name)
-        self.bucket_name = bucket_name
+        bucket = self.instance.bucket_exists(bucket_name)
 
-        if not self.bucket:
-            self.bucket = self.instance.make_bucket(self.bucket_name, 'eu')
+        if not bucket:
+            bucket = self.instance.make_bucket(bucket_name, 'eu')
             print("✔️ Bucket created")
-            self.instance.set_bucket_policy(self.bucket_name, json.dumps(policy(self.bucket_name)))
+            self.instance.set_bucket_policy(bucket_name, json.dumps(policy(bucket_name)))
             print("✔️ Bucket policy created")
         else:
             print("Bucket already exists")
 
-    def create_object(self, file_name: str, file_content: Any, content_type: Any):
+    def create_object(self, *, bucket_name: str, file_name: str, file_content: Any, content_type: Any):
         try:
-            self.instance.fput_object(self.bucket_name, file_name, file_content,
+            self.instance.fput_object(bucket_name, file_name, file_content,
                                       metadata={'Content-type': content_type})
             print(f"✔️ {file_name} has been created")
         except Exception as exc:
             print(f"❌ {file_name} couldn't be created")
             print(exc)
 
-    def delete_object(self, file_name: str):
-        self.instance.remove_object(self.bucket_name, file_name)
+    def delete_object(self, *, bucket_name: str, file_name: str):
+        print(f"🚮 {file_name} has been deleted")
+        self.instance.remove_object(bucket_name, file_name)
 
-    def delete_slide(self, slide_id: str):
-        # self.instance.remove_object(self.bucket_name, slide_id + '/')
-
-        self.delete_folder(slide_id)
-
-    def delete_folder(self, folder_path: str):
-        # objects_to_delete = self.instance.list_objects(self.bucket_name, prefix=folder_path, recursive=True)
+    def delete_folder(self, *, bucket_name: str, folder_path: str):
         delete_object_list = map(
             lambda x: DeleteObject(x.object_name),
-            self.instance.list_objects(self.bucket_name, prefix=folder_path, recursive=True)
+            self.instance.list_objects(bucket_name, prefix=folder_path, recursive=True)
         )
-        errors = self.instance.remove_objects(self.bucket_name, delete_object_list)
+        errors = self.instance.remove_objects(bucket_name, delete_object_list)
 
         for error in errors:
             print(error)
-        # for obj in objects_to_delete:
-        #     self.instance.remove_object(self.bucket_name, obj.object_name)
 
-    def delete_all_objects(self):
-        objects = self.instance.list_objects(self.bucket_name)
+    def delete_all_objects(self, *, bucket_name: str):
+        objects = self.instance.list_objects(bucket_name)
         for item in objects:
-            self.instance.remove_object(self.bucket_name, item.object_name)
+            self.instance.remove_object(bucket_name, item.object_name)
         print("✔️ All Objects deleted")
 
-    def get_object(self, file_name: str):
-        return self.instance.get_object(self.bucket_name, object_name=file_name)
+    def get_object(self, *, bucket_name: str, file_name: str):
+        return self.instance.get_object(bucket_name, object_name=file_name)

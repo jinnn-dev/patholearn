@@ -1,11 +1,11 @@
 import base64
 import os
-from typing import Any, List
+from typing import Any, List, Dict
 
 import aiofiles
 from fastapi import UploadFile, File
 
-from app.db.database import Slide
+from app.schemas.slide import Slide
 from app.worker import convert_slide
 
 
@@ -72,3 +72,13 @@ async def write_slide_to_disk(folder_name: str, file_name: str, file: UploadFile
     os.mkdir(f"/data/{folder_name}")
     await write_file(folder_name, file_name, file)
     convert_slide.delay(file_name)
+
+
+def remove_truth_values_from_dict(dict_to_be_filtered: Dict[Any, Any]) -> Dict[Any, Any]:
+    query = {}
+    if dict_to_be_filtered:
+        for key in dict_to_be_filtered:
+            if not dict_to_be_filtered[key]:
+                query[key] = dict_to_be_filtered[key]
+
+    return query
