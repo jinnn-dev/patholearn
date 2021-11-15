@@ -35,7 +35,7 @@ export class SlideService {
       }),
       'Slide could not be uploaded'
     );
-    return response!.data[0];
+    return response!.data;
   }
 
   /**

@@ -115,8 +115,8 @@ export default defineComponent({
           progress.value = 0;
           loading.value = false;
           showUpload.value = false;
+
           emit('slide-uploaded', res);
-          console.log(res);
         })
         .catch((err) => {
           loading.value = false;

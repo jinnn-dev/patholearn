@@ -453,16 +453,21 @@ def get_statistic_to_base_task(*, db: Session = Depends(get_db), short_name: str
         if task_id not in mapped_tasks:
             mapped_tasks[task_id] = crud_task.get(db, id=task_id)
 
+
+    task_data = []
+    for task in mapped_tasks.values():
+        task_data.extend(task.task_data)
+
+    image_query = '&taskimageid='.join(task_data)
+    loaded_images = requests.get(settings.SLIDE_URL + '/task-images?taskimageid=' + image_query).json()
+
     for task_statistic in task_statistics:
         task = mapped_tasks[task_statistic.task_id]
         if task.task_type == TaskType.IMAGE_SELECT:
-            image_query = '&taskimageid='.join(task.task_data)
-            loaded_images = requests.get(settings.SLIDE_URL + '/task-images?taskimageid=' + image_query).json()
 
             for image_uuid in task_statistic.solution_data:
                 if not image_uuid in task.solution:
                     image = next((image for image in loaded_images if image["task_image_id"] == image_uuid), None)
-                    # print(image)
                     if image_uuid in most_wrong_classified_images:
                         if task.task_question in most_wrong_classified_images[image_uuid]:
                             most_wrong_classified_images[image_uuid][task.task_question] += 1
@@ -478,18 +483,28 @@ def get_statistic_to_base_task(*, db: Session = Depends(get_db), short_name: str
 
     most_wrong_picked_images = dict(sorted(most_wrong_picked_images.items(), key=lambda item: item[1], reverse=True))
 
+
     sorted_images = {key: most_wrong_picked_images[key] for key in list(most_wrong_picked_images)[0:5]}
+
+
 
     result_images = []
 
     # print(most_wrong_classified_images)
+    print("SORTED", sorted_images)
 
     if len(sorted_images.keys()) > 0:
-        for image in loaded_images:
-            if image["task_image_id"] in sorted_images.keys():
+
+        for key in sorted_images.keys():
+            image = next((image for image in loaded_images if image["task_image_id"] == key))
+            if image:
                 result_images.append(image)
                 image["amount"] = sorted_images[image["task_image_id"]]
-                print(image)
+        # for image in loaded_images:
+        #     if image["task_image_id"] in list(sorted_images.keys()):
+        #         result_images.append(image)
+        #         image["amount"] = sorted_images[image["task_image_id"]]
+        #         print(image)
 
         return ImageSelectStatistic(
             wrong_image_statistics=parse_obj_as(List[WrongImageStatistic], result_images),
