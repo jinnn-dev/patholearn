@@ -87,7 +87,6 @@ export default defineComponent({
     };
     return {
       slides,
-      getThumbnailUrl,
       deleteSlide,
       loadSlides,
       slideLoading,

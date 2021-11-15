@@ -20,3 +20,5 @@ from app.models.new_task import NewTask
 from app.models.task_hint import TaskHint
 # noinspection PyUnresolvedReferences
 from app.models.hint_image import HintImage
+# noinspection PyUnresolvedReferences
+from app.models.task_statistic import TaskStatistic

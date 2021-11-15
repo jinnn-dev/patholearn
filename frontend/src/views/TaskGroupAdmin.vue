@@ -193,6 +193,7 @@ import { TaskService } from '../services/task.service';
 import { TaskGroupService } from '../services/task-group.service';
 import router from '../router';
 import { showSolution } from 'components/viewer/core/viewerState';
+import { TaskImageService } from '../services/task-image.service';
 
 export default defineComponent({
   setup() {
@@ -356,12 +357,13 @@ export default defineComponent({
       return await TaskService.uploadTaskImage(formData);
     };
 
-    const uploadMultipleImages = async (images: Blob[]) => {
+    const uploadMultipleImages = async (images: File[]) => {
       const formData = new FormData();
       for (const image of images) {
         formData.append('images', image);
+        formData.append('names', image.name);
       }
-      return await TaskService.uploadMultipleTaskImages(formData, (event) => {
+      return await TaskImageService.uploadMultipleTaskImages(formData, (event) => {
         uploadProgress.value = Math.round((100 * event.loaded) / event.total);
       });
     };

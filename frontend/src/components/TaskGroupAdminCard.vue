@@ -64,6 +64,24 @@
         <Icon name="download-simple" v-if="!downloadUserSolutionsLoading" />
         <spinner v-else></spinner>
       </div>
+
+      <div
+        class="
+          transition
+          hover:ring-2
+          ring-white
+          bg-gray-500
+          hover:bg-gray-400
+          p-2
+          rounded-lg
+          cursor-pointer
+          inline-block
+        "
+        @click.stop="loadTaskDetails(baseTask?.short_name)"
+      >
+        <Icon name="chart-bar" v-if="!taskDetailLoading" />
+        <spinner v-else></spinner>
+      </div>
     </div>
   </skeleton-card>
 
@@ -131,6 +149,78 @@
 
     <div v-else class="mt-12"><no-content text="Keine Zusammenfassung verfügbar"></no-content></div>
   </modal-dialog>
+
+  <modal-dialog :show="showStatisticSummary" customClasses="max-w-[50%]">
+    <div
+      class="mb-6 w-full"
+      v-if="
+        imageSelectStatistic &&
+        (imageSelectStatistic?.wrong_image_statistics?.length != 0 ||
+          imageSelectStatistic?.wrong_label_statistics?.length != 0)
+      "
+    >
+      <div>
+        <div class="text-lg font-semibold mb-4">Die Top 5 der am meisten falsch klassifizierten Bilder:</div>
+
+        <div class="flex justify-center items-center gap-4 w-full flex-wrap">
+          <div
+            v-for="statistic in imageSelectStatistic?.wrong_image_statistics"
+            :key="statistic.task_image_id"
+            class="flex flex-col justify-center items-center gap-2"
+          >
+            <lazy-image
+              class="w-32"
+              :imageUrl="SLIDE_IMAGE_URL + '/task-images/' + statistic.task_image_id + '.png'"
+            ></lazy-image>
+            <div class="text-center">
+              <div class="text-lg font-bold">{{ statistic.amount }}x</div>
+              <div>{{ statistic.name }}</div>
+              <div class="font-semibold text-gray-300">{{ statistic.label }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8">
+        <div class="text-lg font-semibold mb-4">Die Top 5 der am meisten falsch erkannten Klassen:</div>
+
+        <div v-if="Object.keys(imageSelectStatistic?.wrong_label_statistics).length != 0">
+          <div class="flex justify-center gap-4 w-full flex-wrap">
+            <div
+              v-for="statistic in imageSelectStatistic?.wrong_label_statistics"
+              :key="statistic.label"
+              class="flex flex-col items-center gap-2 bg-gray-700 p-2 rounded-lg"
+            >
+              <div class="font-semibold text-lg">{{ statistic.label }}</div>
+              <div class="w-full">
+                <div v-for="detail in statistic.detail" :key="detail.label" class="flex justify-between">
+                  <div class="mr-2">{{ detail.label }}</div>
+                  <div>{{ detail.amount }}x</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-else><no-content text="Keine Statistik vorhanden"></no-content></div>
+      </div>
+    </div>
+
+    <div v-else class="mb-6">
+      <no-content text="Keine Statistik vorhanden"></no-content>
+    </div>
+
+    <div class="flex justify-end">
+      <primary-button
+        class="mr-2 w-28"
+        name="Schließen"
+        bgColor="bg-gray-500"
+        bgHoverColor="bg-gray-700"
+        fontWeight="font-normal"
+        @click.stop="closeStatisticModal"
+      ></primary-button>
+    </div>
+  </modal-dialog>
 </template>
 <script lang="ts">
 import { BaseTask } from '../model/baseTask';
@@ -138,7 +228,8 @@ import { defineComponent, nextTick, onUnmounted, PropType, ref } from 'vue';
 import { MembersolutionSummary } from '../model/membersolutionSummary';
 import { TooltipGenerator } from '../utils/tooltip-generator';
 import { TaskService } from '../services/task.service';
-
+import { SLIDE_IMAGE_URL } from '../config';
+import { ImageSelectStatistic } from '../model/imageSelectStatistic';
 export default defineComponent({
   props: {
     baseTask: Object as PropType<BaseTask>
@@ -152,6 +243,12 @@ export default defineComponent({
     const summaryDataLoading = ref<Boolean>(false);
 
     const downloadUserSolutionsLoading = ref(false);
+
+    const showStatisticSummary = ref(false);
+    const statisticData = ref();
+    const imageSelectStatistic = ref<ImageSelectStatistic>();
+    const statisticDataLoading = ref(false);
+    const taskDetailLoading = ref(false);
 
     const toggleEnabledState = async (baseTask: BaseTask) => {
       props.baseTask!.enabled = !props.baseTask!.enabled;
@@ -179,7 +276,6 @@ export default defineComponent({
       summaryDataLoading.value = true;
       summaryData.value = await TaskService.getMembersolutionSummary(short_name);
       summaryDataLoading.value = false;
-
       showSummaryModal.value = true;
 
       nextTick(() => {
@@ -195,12 +291,34 @@ export default defineComponent({
       });
     };
 
+    const loadTaskDetails = async (short_name: string) => {
+      statisticDataLoading.value = true;
+      showStatisticSummary.value = true;
+      taskDetailLoading.value = true;
+      const tasksPromise = await TaskService.getBaseTaskStatistics(short_name);
+      imageSelectStatistic.value = tasksPromise;
+      taskDetailLoading.value = false;
+    };
+
+    const loadStatisticSummary = async (short_name: string) => {};
+
+    const closeStatisticModal = () => {
+      showStatisticSummary.value = false;
+    };
+
     return {
       showSummaryModal,
       summaryData,
+      closeStatisticModal,
+      loadTaskDetails,
+      loadStatisticSummary,
       summaryDataLoading,
+      taskDetailLoading,
       loadSummary,
+      imageSelectStatistic,
+      SLIDE_IMAGE_URL,
       toggleEnabledState,
+      showStatisticSummary,
       downloadUserSolutions,
       downloadUserSolutionsLoading
     };

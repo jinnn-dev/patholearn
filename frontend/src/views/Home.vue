@@ -18,7 +18,12 @@
         </div>
         <div class="my-8">
           <div v-if="loading" class="flex">
-            <skeleton-card v-for="i in 4" :loading="loading" :key="i" skeletonClasses="h-24 w-44 ml-4 mb-4"></skeleton-card>
+            <skeleton-card
+              v-for="i in 4"
+              :loading="loading"
+              :key="i"
+              skeletonClasses="h-24 w-44 ml-4 mb-4"
+            ></skeleton-card>
           </div>
           <div v-else class="flex flex-wrap">
             <div v-for="course in ownerCourses" :key="course.id" class="ml-4 mb-4">
@@ -30,13 +35,15 @@
       </role-only>
 
       <div>
-        <div class="text-xl font-bold text-gray-200 uppercase">Deine {{ appState.user?.is_superuser ? 'beigetretenen' : '' }} Kurse</div>
+        <div class="text-xl font-bold text-gray-200 uppercase">
+          Deine {{ appState.user?.is_superuser ? 'beigetretenen' : '' }} Kurse
+        </div>
         <div class="my-8">
           <div v-if="loading" class="flex">
             <skeleton-card v-for="i in 4" :loading="loading" :key="i" skeletonClasses="h-24 w-44 ml-4"></skeleton-card>
           </div>
-          <div v-else class="flex flex-wrap">
-            <div v-for="course in courses" :key="course.id" class="ml-4">
+          <div v-else class="flex flex-wrap gap-4">
+            <div v-for="course in courses" :key="course.id">
               <course-card :course="course" :isCourseOwner="false" />
             </div>
             <no-content v-if="courses.length === 0" text="Noch keinem Kurs beigetreten"></no-content>
@@ -71,7 +78,13 @@
         ></input-area>
 
         <div class="flex flex-end">
-          <primary-button @click.prevent="hideModal" class="mr-2" name="Abbrechen" bgColor="bg-gray-500" fontWeight="font-normal"></primary-button>
+          <primary-button
+            @click.prevent="hideModal"
+            class="mr-2"
+            name="Abbrechen"
+            bgColor="bg-gray-500"
+            fontWeight="font-normal"
+          ></primary-button>
           <save-button name="Speichern" type="submit" :loading="courseIsCreating"></save-button>
         </div>
       </form>
@@ -105,7 +118,7 @@ export default defineComponent({
       description: string | undefined;
     }>({
       name: '',
-      description: undefined,
+      description: undefined
     });
 
     onMounted(async () => {
@@ -126,7 +139,7 @@ export default defineComponent({
 
       const createCourse: CreateCourse = {
         name: formData.name,
-        ...(formData.description && { description: formData.description }),
+        ...(formData.description && { description: formData.description })
       };
 
       CourseService.createCourse(createCourse)
@@ -167,9 +180,9 @@ export default defineComponent({
       onCourseJoin,
       courseIsCreating,
       hideModal,
-      courseAlreadyExists,
+      courseAlreadyExists
     };
-  },
+  }
 });
 </script>
 

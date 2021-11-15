@@ -1,11 +1,11 @@
 from typing import List
 
+from sqlalchemy.orm import Session
+
 from app.crud.base import CRUDBase
-from app.models import base_task
 from app.models.new_task import NewTask
 from app.models.task import Task
 from app.schemas.task import TaskCreate, TaskUpdate
-from sqlalchemy.orm import Session
 
 
 class CRUDTask(CRUDBase[Task, TaskCreate, TaskUpdate]):
@@ -32,9 +32,9 @@ class CRUDTask(CRUDBase[Task, TaskCreate, TaskUpdate]):
         :param base_task_ids: Id of the BaseTask
         :return: Whether there are new tasks or not
         """
-        result = db.query(NewTask).filter(NewTask.base_task_id.in_(base_task_ids)).filter(NewTask.user_id == user_id).first()
+        result = db.query(NewTask).filter(NewTask.base_task_id.in_(base_task_ids)).filter(
+            NewTask.user_id == user_id).first()
         return True if result is not None else False
-
 
     def create_new_task(self, db: Session, user_id: int, base_task_id: int) -> NewTask:
         """
@@ -79,7 +79,6 @@ class CRUDTask(CRUDBase[Task, TaskCreate, TaskUpdate]):
             db.delete(obj)
         db.commit()
         return db_objs
-
 
 
 crud_task = CRUDTask(Task)

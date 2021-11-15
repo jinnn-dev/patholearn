@@ -40,7 +40,7 @@ export class ImageSelectViewer {
 
     const viewerOptions = options(
       'viewerImage',
-      'https://cdn.pixabay.com/photo/2021/01/01/21/09/challenger-5880009_960_720.jpg'
+      'https://images.unsplash.com/photo-1634546703473-d8809bba39b2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1587&q=80'
     );
 
     viewerOptions.zoomPerScroll = 1.2;
@@ -60,7 +60,11 @@ export class ImageSelectViewer {
     viewerOptions.tileSources = this._tilesSources.map((image) => {
       return {
         type: 'image',
-        url: SLIDE_IMAGE_URL + '/' + image
+        url:
+          SLIDE_IMAGE_URL +
+          (image.includes('task-image') ? '/' : '/task-images/') +
+          image +
+          (image.includes('task-image') ? '' : '.jpeg')
       };
     });
 
@@ -81,7 +85,9 @@ export class ImageSelectViewer {
         const tiledImage = this._viewer.world.getItemAt(i);
         const box = tiledImage.getBounds(true);
 
-        const imageId = this._tilesSources[i].split('/')[1].split('.')[0];
+        const imageId = this._tilesSources[i].includes('task-image')
+          ? this._tilesSources[i].split('/')[1].split('.')[0]
+          : this._tilesSources[i];
 
         this._rects[i] = select('#background')
           .append('rect')

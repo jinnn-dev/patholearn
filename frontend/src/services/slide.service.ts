@@ -27,7 +27,7 @@ export class SlideService {
    */
   public static async uploadSlide(data: FormData, onUploadProgress: (event: any) => void): Promise<any> {
     const [_, response] = await handleError(
-      ApiService.post({
+      ApiService.post<any[]>({
         resource: '/slides',
         data,
         config: { onUploadProgress },

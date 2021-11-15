@@ -1,3 +1,4 @@
+import { ImageSelectStatistic } from 'model/imageSelectStatistic';
 import { BaseTask, CreateBaseTask, UpdateBaseTask } from '../model/baseTask';
 import { MembersolutionSummary } from '../model/membersolutionSummary';
 import { TaskResult } from '../model/result';
@@ -20,6 +21,14 @@ export class TaskService {
     const [_, response] = await handleError(
       ApiService.get<BaseTask>({ resource: this._apiUrl('/' + shortName) }),
       'Base task could not be loaded'
+    );
+    return response!.data;
+  }
+
+  public static async getBaseTaskStatistics(shortName: string): Promise<ImageSelectStatistic> {
+    const [_, response] = await handleError(
+      ApiService.get<ImageSelectStatistic>({ resource: this._apiUrl('/' + shortName + '/statistic') }),
+      'Base task statistic could not be loaded'
     );
     return response!.data;
   }
@@ -472,33 +481,6 @@ export class TaskService {
       ApiService.get<MembersolutionSummary>({ resource: this._apiUrl('/' + short_name + '/membersolutionsummary') }),
       'Could not load summary'
     );
-    return response!.data;
-  }
-
-  public static async uploadTaskImage(formData: FormData) {
-    const [_, response] = await handleError(
-      ApiService.post<any>({ resource: this._apiUrl(`/task/image`), data: formData }),
-      'Task-Image upload failed'
-    );
-
-    return response!.data;
-  }
-
-  public static async uploadMultipleTaskImages(formData: FormData, onUploadProgress: (event: any) => void) {
-    const [_, response] = await handleError(
-      ApiService.post<any>({ resource: this._apiUrl(`/task/images`), data: formData, config: { onUploadProgress } }),
-      'Task-Images upload failed'
-    );
-
-    return response!.data;
-  }
-
-  public static async deleteTaskImage(imageName: string) {
-    const [_, response] = await handleError(
-      ApiService.delete<any>({ resource: this._apiUrl(`/task/image/minio/${imageName}`) }),
-      'Task-Image delete failed'
-    );
-
     return response!.data;
   }
 

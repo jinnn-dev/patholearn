@@ -1,36 +1,43 @@
 from typing import Generator
 
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from jose import jwt
+from pydantic import ValidationError
+from sqlalchemy.orm import Session
+from starlette.background import BackgroundTasks
+
 from app.core import security
 from app.core.config import settings
 from app.crud.crud_base_task import crud_base_task
 from app.crud.crud_course import crud_course
 from app.crud.crud_user import crud_user
-from app.db.session import SessionLocal
+from app.db.session import SessionLocal, SessionManager, close_session
 from app.models.user import User
 from app.schemas.token import TokenPayload
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-from jose import jwt
-from pydantic import ValidationError
-from sqlalchemy.orm import Session, base
 
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_STR}/login/access-token"
 )
 
 
-def get_db() -> Generator:
-    """
-    Creates a new DB Session.
+# def get_db() -> Generator:
+#     """
+#     Creates a new DB Session.
+#
+#     :return: DB Session
+#     """
+#     global db
+#     try:
+#         db = SessionLocal()
+#         yield db
+#     finally:
+#         db.close()
 
-    :return: DB Session
-    """
-    global db
-    try:
-        db = SessionLocal()
+def get_db(background_tasks: BackgroundTasks):
+    with SessionManager() as db:
+        background_tasks.add_task(close_session, db)
         yield db
-    finally:
-        db.close()
 
 
 def get_current_user(
@@ -93,9 +100,10 @@ def get_current_active_superuser(
 def check_if_user_can_access_course(db: Session, user_id: int, course_id: int) -> None:
     if not crud_course.user_is_course_owner(db, user_id=user_id, course_id=course_id):
         raise HTTPException(
-            status_code=403, 
+            status_code=403,
             detail="The user doesn't have enough privileges"
         )
+
 
 def check_if_user_can_access_task(db: Session, *, user_id: int, base_task_id: int) -> None:
     base_task = crud_base_task.get(db, id=base_task_id);
