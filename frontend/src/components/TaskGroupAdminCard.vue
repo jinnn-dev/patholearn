@@ -175,32 +175,35 @@
             <div class="text-center">
               <div class="text-lg font-bold">{{ statistic.amount }}x</div>
               <div>{{ statistic.name }}</div>
-              <div class="font-semibold text-gray-400">{{ statistic.label }}</div>
+              <div class="font-semibold text-gray-300">{{ statistic.label }}</div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- <div class="mt-8">
+      <div class="mt-8">
         <div class="text-lg font-semibold mb-4">Die Top 5 der am meisten falsch erkannten Klassen:</div>
 
-        <div class="flex justify-center items-center gap-4 w-full flex-wrap">
-          <div
-            v-for="statistic in imageSelectStatistic?.wrong_label_statistics"
-            :key="statistic.task_image_id"
-            class="flex flex-col justify-center items-center gap-2"
-          >
-            <lazy-image
-              class="w-32"
-              :imageUrl="SLIDE_IMAGE_URL + '/task-images/' + statistic.task_image_id + '.png'"
-            ></lazy-image>
-            <div class="text-center">
-              <div class="text-lg font-bold">{{ statistic.amount }}x</div>
-              <div>{{ statistic.name }}</div>
+        <div v-if="Object.keys(imageSelectStatistic?.wrong_label_statistics).length != 0">
+          <div class="flex justify-center gap-4 w-full flex-wrap">
+            <div
+              v-for="statistic in imageSelectStatistic?.wrong_label_statistics"
+              :key="statistic.label"
+              class="flex flex-col items-center gap-2 bg-gray-700 p-2 rounded-lg"
+            >
+              <div class="font-semibold text-lg">{{ statistic.label }}</div>
+              <div class="w-full">
+                <div v-for="detail in statistic.detail" :key="detail.label" class="flex justify-between">
+                  <div class="mr-2">{{ detail.label }}</div>
+                  <div>{{ detail.amount }}x</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div> -->
+
+        <div v-else><no-content text="Keine Statistik vorhanden"></no-content></div>
+      </div>
     </div>
 
     <div v-else class="mb-6">

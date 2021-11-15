@@ -1,7 +1,9 @@
-export interface WrongLabelStatistic {
-  task_image_id: string;
-  name: string;
+export interface WrongLabelDetailStatistic {
+  label: string;
   amount: number;
+}
+export interface WrongLabelStatistic {
+  detail: WrongLabelDetailStatistic[];
   label: string;
 }
 

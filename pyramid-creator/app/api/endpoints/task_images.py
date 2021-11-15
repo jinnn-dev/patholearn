@@ -18,7 +18,6 @@ router = APIRouter()
 @router.get('')
 def get_task_images_by_id(*, collection: Collection = Depends(get_task_image_collection),
                           taskimageid: List[str] = Query(None)) -> List[TaskImage]:
-    print(taskimageid)
     if taskimageid:
         task_images = crud_task_image.get_multi_by_ids(collection=collection, ids=taskimageid,
                                                        filter_query={'_id': False})

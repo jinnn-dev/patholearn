@@ -9,13 +9,13 @@ class WrongImageStatistic(BaseModel):
     amount: int
     label: Optional[str]
 
+class WrongLabelDetailStatistic(BaseModel):
+    label:str
+    amount: int
 
 class WrongLabelStatistic(BaseModel):
-    task_image_id: str
-    name: str
-    amount: int
     label: str
-
+    detail: List[WrongLabelDetailStatistic]
 
 class ImageSelectStatistic(BaseModel):
     wrong_image_statistics: List[WrongImageStatistic]

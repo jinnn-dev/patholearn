@@ -34,7 +34,8 @@ from app.schemas.base_task import (BaseTask, BaseTaskCreate, BaseTaskDetail,
                                    BaseTaskUpdate)
 from app.schemas.membersolution_summary import (MembersolutionSummary,
                                                 SummaryRow, SummaryUser)
-from app.schemas.statistic import ImageSelectStatistic, WrongImageStatistic
+from app.schemas.statistic import ImageSelectStatistic, WrongImageStatistic, WrongLabelStatistic, \
+    WrongLabelDetailStatistic
 from app.schemas.task import (TaskCreate, TaskStatus, TaskType, TaskAnnotationType)
 from app.schemas.task_hint import TaskHint
 from app.schemas.task_statistic import TaskStatisticCreate
@@ -150,7 +151,6 @@ def create_base_task_from_csv(*, db: Session = Depends(get_db), base_task_in: st
                 index += 1
         db.refresh(base_task)
         base_task.task_count = len(tasks)
-        print(label_update_dict)
         response = requests.put(settings.SLIDE_URL + '/task-images', json=label_update_dict)
         print(response.json())
         return base_task
@@ -446,13 +446,10 @@ def get_statistic_to_base_task(*, db: Session = Depends(get_db), short_name: str
         crud_task_statistic.get_oldest_task_statistics_to_base_task_id(db, base_task_id=base_task.id)
 
     mapped_tasks = {}
-    most_wrong_picked_images = {}
-    most_wrong_classified_images = {}
-    loaded_images = []
+
     for task_id in task_ids:
         if task_id not in mapped_tasks:
             mapped_tasks[task_id] = crud_task.get(db, id=task_id)
-
 
     task_data = []
     for task in mapped_tasks.values():
@@ -461,6 +458,9 @@ def get_statistic_to_base_task(*, db: Session = Depends(get_db), short_name: str
     image_query = '&taskimageid='.join(task_data)
     loaded_images = requests.get(settings.SLIDE_URL + '/task-images?taskimageid=' + image_query).json()
 
+    most_wrong_picked_images = {}
+    most_wrong_classified_images = {}
+
     for task_statistic in task_statistics:
         task = mapped_tasks[task_statistic.task_id]
         if task.task_type == TaskType.IMAGE_SELECT:
@@ -468,47 +468,61 @@ def get_statistic_to_base_task(*, db: Session = Depends(get_db), short_name: str
             for image_uuid in task_statistic.solution_data:
                 if not image_uuid in task.solution:
                     image = next((image for image in loaded_images if image["task_image_id"] == image_uuid), None)
-                    if image_uuid in most_wrong_classified_images:
-                        if task.task_question in most_wrong_classified_images[image_uuid]:
-                            most_wrong_classified_images[image_uuid][task.task_question] += 1
+                    if image["label"]:
+                        if task.task_question in most_wrong_classified_images:
+
+                            if image["label"] in most_wrong_classified_images[task.task_question]:
+                                most_wrong_classified_images[task.task_question][image["label"]] += 1
+                            else:
+                                most_wrong_classified_images[task.task_question][image["label"]] = 1
                         else:
-                            most_wrong_classified_images[image_uuid][task.task_question] = 1
-                    else:
-                        most_wrong_classified_images[image_uuid] = {}
-                        most_wrong_classified_images[image_uuid][task.task_question] = 1
+                            most_wrong_classified_images[task.task_question] = {}
+                            most_wrong_classified_images[task.task_question][image["label"]] = 1
                     if image_uuid in most_wrong_picked_images:
                         most_wrong_picked_images[image_uuid] += 1
                     else:
                         most_wrong_picked_images[image_uuid] = 1
 
-    most_wrong_picked_images = dict(sorted(most_wrong_picked_images.items(), key=lambda item: item[1], reverse=True))
-
-
-    sorted_images = {key: most_wrong_picked_images[key] for key in list(most_wrong_picked_images)[0:5]}
-
-
+    most_wrong_picked_images = dict(sorted(most_wrong_picked_images.items(), key=lambda elem: elem[1], reverse=True))
+    most_wrong_picked_images_sorted = {key: most_wrong_picked_images[key] for key in
+                                       list(most_wrong_picked_images)[0:5]}
 
     result_images = []
-
-    # print(most_wrong_classified_images)
-    print("SORTED", sorted_images)
-
-    if len(sorted_images.keys()) > 0:
-
-        for key in sorted_images.keys():
+    if len(most_wrong_picked_images_sorted.keys()) > 0:
+        for key in most_wrong_picked_images_sorted.keys():
             image = next((image for image in loaded_images if image["task_image_id"] == key))
             if image:
                 result_images.append(image)
-                image["amount"] = sorted_images[image["task_image_id"]]
-        # for image in loaded_images:
-        #     if image["task_image_id"] in list(sorted_images.keys()):
-        #         result_images.append(image)
-        #         image["amount"] = sorted_images[image["task_image_id"]]
-        #         print(image)
+                image["amount"] = most_wrong_picked_images_sorted[image["task_image_id"]]
 
-        return ImageSelectStatistic(
-            wrong_image_statistics=parse_obj_as(List[WrongImageStatistic], result_images),
-            wrong_label_statistics=[]
+    for item in most_wrong_classified_images:
+        most_wrong_classified_images[item] = dict(
+            sorted(most_wrong_classified_images[item].items(), key=lambda elem: elem[1], reverse=True))
+
+    most_wrong_classified_images = dict(
+            sorted(most_wrong_classified_images.items(), key=lambda elem: list(elem[1].values())[0], reverse=True))
+
+    most_wrong_classified_images = {key: most_wrong_classified_images[key] for key in
+                                       list(most_wrong_classified_images)[0:5]}
+
+    result_wrong_classified = []
+    for key, value in most_wrong_classified_images.items():
+        detail = []
+
+        for detail_key, detail_value in value.items():
+            detail.append(
+                WrongLabelDetailStatistic(
+                    label=detail_key,
+                    amount=detail_value
+                )
+            )
+        wrong_label_statistic = WrongLabelStatistic(
+            label=key,
+            detail=detail
         )
+        result_wrong_classified.append(wrong_label_statistic)
 
-    return None
+    return ImageSelectStatistic(
+        wrong_image_statistics=parse_obj_as(List[WrongImageStatistic], result_images),
+        wrong_label_statistics=result_wrong_classified
+    )
