@@ -4,10 +4,10 @@ services:
     image: mysql:8.0
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: 'lernsoftware'
-      MYSQL_USER: 'user'
-      MYSQL_PASSWORD: 'password'
-      MYSQL_ROOT_PASSWORD: 'password'
+      MYSQL_DATABASE: ${DATABASE_DB}
+      MYSQL_USER: ${DATABASE_USER}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
     ports:
       - '3306:3306'
     expose:
@@ -25,8 +25,8 @@ services:
     image: hub.noxz.dev/lernsoftware-backend:0.2.0
 
     environment:
-      - DATABASE_URL=mysql+mysqlconnector://user:password@lernsoftware/lernsoftware?charset=utf8mb4
-      - RABBIT_URL=amqp://guest:guest@rabbit:5672//
+      - DATABASE_URL=mysql+mysqlconnector://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_IP}/${DATABASE_DB}?charset=utf8mb4
+      - RABBIT_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
 
     volumes:
       - ./app:/app
@@ -43,8 +43,8 @@ services:
     image: hub.noxz.dev/lernsoftware-celery:0.2.0
     entrypoint: celery
     environment:
-      - DATABASE_URL=mysql+mysqlconnector://user:password@lernsoftware/lernsoftware?charset=utf8mb4
-      - RABBIT_URL=amqp://guest:guest@rabbit:5672//
+      - DATABASE_URL=mysql+mysqlconnector://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_IP}/${DATABASE_DB}?charset=utf8mb4
+      - RABBIT_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
     command: -A app.worker.tasks worker -c 2 --loglevel=DEBUG --without-gossip --without-mingle --without-heartbeat -Ofair
     volumes:
       - ./app:/app

@@ -3,8 +3,8 @@ services:
   db:
     image: mongo:latest
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
     ports:
       - "27017:27017"
     volumes:
@@ -18,8 +18,8 @@ services:
       - ./data:/data
     command: uvicorn  app.app:app --reload --host 0.0.0.0 --port 8000
     environment:
-      - CELERY_BROKER_URL=amqp://guest:guest@rabbit:5672//
-      - DATABASE_URL=mongodb://root:password@db:27017
+      - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
+      - DATABASE_URL=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:${MONGO_PORT}
 
 
   worker:
@@ -29,8 +29,8 @@ services:
       - ./app:/app
       - ./data:/data
     environment:
-      - CELERY_BROKER_URL=amqp://guest:guest@rabbit:5672//
-      - DATABASE_URL=mongodb://root:password@db:27017
+      - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
+      - DATABASE_URL=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:${MONGO_PORT}
 
   minio:
     image: minio/minio
@@ -40,8 +40,8 @@ services:
     volumes:
       - ./minio_data:/data
     environment:
-      - MINIO_ROOT_USER=minio
-      - MINIO_ROOT_PASSWORD=minioKey1234
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
     command: server --console-address :9001 /data
 
   rabbit:
