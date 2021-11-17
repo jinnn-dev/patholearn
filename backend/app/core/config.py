@@ -15,14 +15,13 @@ class Settings(BaseSettings):
 
     SLIDE_URL = os.environ["SLIDE_URL"] if "SLIDE_URL" in os.environ else "http://127.0.0.1:8001"
 
-    # DATABASE_IP = os.environ["DATABASE_URL"] if "DATABASE_URL" in os.environ else "127.0.0.1"
-    # RABBIT_IP = os.environ["RABBIT_URL"] if "RABBIT_URL" in os.environ else "127.0.0.1"
-
     DATABASE_URL = os.environ[
         "DATABASE_URL"] if "DATABASE_URL" in os.environ else "mysql+mysqlconnector://user:password@127.0.0.1/db?charset=utf8mb4"
 
-    # REDIS_URL = os.environ["REDIS_URL"] if "REDIS_URL" in os.environ else 'redis://127.0.0.1:6379/0'
     RABBIT_URL = os.environ["RABBIT_URL"] if "RABBIT_URL" in os.environ else "amqp://guest:guest@127.0.0.1:5672//"
+
+    MINIO_ROOT_USER = os.environ["MINIO_ROOT_USER"]
+    MINIO_ROOT_PASSWORD = os.environ["MINIO_ROOT_PASSWORD"]
 
     FIRST_SUPERUSER_EMAIL: EmailStr = "admin@admin.de"
     FIRST_SUPERUSER_PASSWORD: str = "admin"

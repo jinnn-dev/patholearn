@@ -5,6 +5,8 @@ from typing import Any
 from minio import Minio
 from minio.deleteobjects import DeleteObject
 
+from app.core.config import settings
+
 
 def policy(bucket_name):
     return  {
@@ -30,8 +32,8 @@ class MinioClient:
 
         self.instance = Minio(
             endpoint="minio:9000",
-            access_key=os.environ.get("MINIO_ROOT_USER", ""),
-            secret_key=os.environ.get("MINIO_ROOT_PASSWORD", ""),
+            access_key=settings.MINIO_ROOT_USER,
+            secret_key=settings.MINIO_ROOT_PASSWORD,
             secure=False
         )
         self.bucket = None
