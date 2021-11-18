@@ -9,6 +9,7 @@ declare module 'vue' {
     AnnotationGroup: typeof import('./src/components/viewer/AnnotationGroup.vue')['default']
     AnnotationSettings: typeof import('./src/components/viewer/annotation-settings/AnnotationSettings.vue')['default']
     AuthInput: typeof import('./src/components/auth/AuthInput.vue')['default']
+    BackgroundAnnotationSwitcher: typeof import('./src/components/viewer/BackgroundAnnotationSwitcher.vue')['default']
     CardLoading: typeof import('./src/components/CardLoading.vue')['default']
     CollapseTransition: typeof import('./src/components/containers/CollapseTransition.vue')['default']
     ColorPicker: typeof import('./src/components/ColorPicker.vue')['default']

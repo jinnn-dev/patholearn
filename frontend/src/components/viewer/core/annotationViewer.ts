@@ -29,8 +29,8 @@ import { isUserSolution } from '../../../model/viewer/tools';
 import { AnnotationParser } from '../../../utils/annotation-parser';
 import { imageToViewport, pointIsInImage, webToViewport } from '../../../utils/seadragon.utils';
 import { TooltipGenerator } from '../../../utils/tooltip-generator';
-import { SVG_ID } from '../core/options';
 import { AnnotationManager } from './annotationManager';
+import { SVG_ID } from './options';
 import { SvgOverlay } from './svg-overlay';
 import { TaskSaver } from './taskSaver';
 import { viewerLoadingState, viewerScale, viewerZoom } from './viewerState';
@@ -186,7 +186,8 @@ export class AnnotationViewer {
           );
           break;
         case ANNOTATION_TYPE.BASE:
-          this._drawingAnnotation = new AnnotationPolygon(node, type, 'none', this._currentColor);
+          // this._drawingAnnotation = new AnnotationPolygon(node, type, 'none', this._currentColor);
+          this._drawingAnnotation = new AnnotationRectangle(node, type, 'none', this._currentColor);
           break;
 
         default:
@@ -324,35 +325,6 @@ export class AnnotationViewer {
    */
   addBackgroundPolygons(data: AnnotationData[]) {
     this.addAnnotations(data);
-
-    // if (this._annotationManager.backgroundAnnotations[0]) {
-    //   const annotation = this._annotationManager.backgroundAnnotations[0] as AnnotationPolygon;
-
-    //   let minX = Number.MAX_SAFE_INTEGER;
-    //   let maxX = Number.MIN_SAFE_INTEGER;
-    //   let minY = Number.MAX_SAFE_INTEGER;
-    //   let maxY = Number.MIN_SAFE_INTEGER;
-
-    //   const points = annotation.vertice.map((vertice) => vertice.viewport);
-
-    //   points.forEach((point) => {
-    //     const x = point.x;
-    //     const y = point.y;
-    //     minX = Math.min(minX, x);
-    //     maxX = Math.max(maxX, x);
-    //     minY = Math.min(minY, y);
-    //     maxY = Math.max(maxY, y);
-    //   });
-
-    //   const width = maxX - minX;
-    //   const height = maxY - minY;
-
-    //   console.log(minX, minY, width * 2, height * 2);
-
-    //   this._viewer.viewport.fitBounds(
-    //     new OpenSeadragon.Rect(minX - width / 2, minY - height / 2, width * 2, height * 2)
-    //   );
-    // }
   }
 
   /**
@@ -721,6 +693,73 @@ export class AnnotationViewer {
         (annotation as AnnotationLine).addResultPolyline(resultPoints, POLYGON_STROKE_WIDTH / this.scale);
       }
     }
+  }
+
+  focusBackgroundAnnotation(index: number): void {
+    if (
+      this._annotationManager.backgroundAnnotations.length == 0 ||
+      index > this._annotationManager.backgroundAnnotations.length
+    ) {
+      return;
+    }
+
+    const OFFSET = 2;
+
+    const annotation = this._annotationManager.backgroundAnnotations[index];
+
+    if (annotation instanceof AnnotationRectangle) {
+      const rectangle = annotation as AnnotationRectangle;
+      const x = rectangle.vertice[0].viewport.x;
+      const y = rectangle.vertice[0].viewport.y;
+      const width = annotation.width;
+      const height = annotation.height;
+      this._viewer.viewport.fitBounds(
+        new OpenSeadragon.Rect(x - width / OFFSET, y - height / OFFSET, width * OFFSET, height * OFFSET)
+      );
+    } else {
+      const polygon = annotation as AnnotationPolygon;
+      let minX = Number.MAX_SAFE_INTEGER;
+      let maxX = Number.MIN_SAFE_INTEGER;
+      let minY = Number.MAX_SAFE_INTEGER;
+      let maxY = Number.MIN_SAFE_INTEGER;
+      const points = polygon.vertice.map((vertice) => vertice.viewport);
+      points.forEach((point) => {
+        const x = point.x;
+        const y = point.y;
+        minX = Math.min(minX, x);
+        maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y);
+        maxY = Math.max(maxY, y);
+      });
+      const width = maxX - minX;
+      const height = maxY - minY;
+      this._viewer.viewport.fitBounds(
+        new OpenSeadragon.Rect(minX - width / OFFSET, minY - height / OFFSET, width * OFFSET, height * OFFSET)
+      );
+    }
+
+    // if (this._annotationManager.backgroundAnnotations[0]) {
+    //   const annotation = this._annotationManager.backgroundAnnotations[0] as AnnotationPolygon;
+    //   let minX = Number.MAX_SAFE_INTEGER;
+    //   let maxX = Number.MIN_SAFE_INTEGER;
+    //   let minY = Number.MAX_SAFE_INTEGER;
+    //   let maxY = Number.MIN_SAFE_INTEGER;
+    //   const points = annotation.vertice.map((vertice) => vertice.viewport);
+    //   points.forEach((point) => {
+    //     const x = point.x;
+    //     const y = point.y;
+    //     minX = Math.min(minX, x);
+    //     maxX = Math.max(maxX, x);
+    //     minY = Math.min(minY, y);
+    //     maxY = Math.max(maxY, y);
+    //   });
+    //   const width = maxX - minX;
+    //   const height = maxY - minY;
+    //   console.log(minX, minY, width * 2, height * 2);
+    //   this._viewer.viewport.fitBounds(
+    //     new OpenSeadragon.Rect(minX - width / 2, minY - height / 2, width * 2, height * 2)
+    //   );
+    // }
   }
 
   get isLineDrawing() {
