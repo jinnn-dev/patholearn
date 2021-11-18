@@ -97,14 +97,19 @@ export function generateAnnotation(
       break;
 
     case ANNOTATION_TYPE.BASE:
-      generatedAnnotation = RectangleFactory.getInstance().create({
+      const annotationData = {
         data: data,
         node: node,
         radius: radius,
         strokeWidth: strokeWidth,
         strokeColor: strokeColor,
         fillColor: fillColor
-      });
+      };
+      if (data.coord.viewport!.length > 2) {
+        generatedAnnotation = PolygonFactory.getInstance().create(annotationData);
+      } else {
+        generatedAnnotation = RectangleFactory.getInstance().create(annotationData);
+      }
       break;
     default:
       generatedAnnotation = PolygonFactory.getInstance().create({

@@ -1,6 +1,18 @@
 <template>
   <div
-    class="fixed bottom-[10%] right-0 p-2 rounded-lg shadow-md bg-gray-700/70 filter backdrop-blur-md z-[2] select-none"
+    class="
+      fixed
+      bottom-[10%]
+      right-0
+      p-2
+      rounded-l-lg
+      shadow-md
+      bg-gray-700/70
+      filter
+      backdrop-blur-md
+      z-[2]
+      select-none
+    "
   >
     <div>Hintergrundannotationen</div>
     <div class="flex justify-between my-2">
@@ -16,7 +28,8 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, watch } from 'vue';
+import { viewerLoadingState } from './core/viewerState';
 export default defineComponent({
   props: {
     backgroundAnnotations: {
@@ -30,10 +43,15 @@ export default defineComponent({
   setup(props, { emit }) {
     const selectedIndex = ref(0);
 
+    watch(
+      () => viewerLoadingState.tilesLoaded,
+      () => {
+        selectedIndex.value = 0;
+      }
+    );
+
     const changeIndex = (value: number) => {
       selectedIndex.value += value;
-
-      console.log('New value index');
 
       if (selectedIndex.value >= props.backgroundAnnotations) {
         selectedIndex.value = 0;

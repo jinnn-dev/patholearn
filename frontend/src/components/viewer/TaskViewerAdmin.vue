@@ -103,7 +103,7 @@
   ></confirm-dialog>
 
   <background-annotation-switcher
-    v-if="task?.task_data?.length != 0"
+    v-if="task?.task_data"
     :backgroundAnnotations="task?.task_data?.length"
     @focus="focusAnnotation"
   ></background-annotation-switcher>
@@ -235,10 +235,9 @@ export default defineComponent({
         }
 
         if (viewerLoadingState.tilesLoaded) {
-          console.log(newVal?.task_data);
-
           if (newVal?.task_data) {
             drawingViewer.value?.addBackgroundPolygons(newVal?.task_data as AnnotationData[]);
+            focusAnnotation(0);
           }
 
           if (newVal?.solution) {
@@ -333,6 +332,7 @@ export default defineComponent({
 
             if (props.task.task_data) {
               drawingViewer.value?.addAnnotations(props.task.task_data as AnnotationData[]);
+              focusAnnotation(0);
             }
 
             if (props.task.solution) {
@@ -651,8 +651,6 @@ export default defineComponent({
     };
 
     const focusAnnotation = (index: number) => {
-      console.log(index);
-
       focusBackgroundAnnotation(index, drawingViewer.value!);
     };
 

@@ -34,6 +34,12 @@
 
   <saving-info></saving-info>
 
+  <background-annotation-switcher
+    v-if="task?.task_data"
+    :backgroundAnnotations="task?.task_data?.length"
+    @focus="focusAnnotation"
+  ></background-annotation-switcher>
+
   <div ref="viewerRef" id="viewerImage" class="h-screen bg-gray-900" @keyup="handleKeyup"></div>
 </template>
 <script lang="ts">
@@ -65,7 +71,7 @@ import { getSlideUrl } from '../../config';
 import { TooltipGenerator } from '../../utils/tooltip-generator';
 import { ParseResult } from '../../utils/annotation-parser';
 import { TaskService } from '../../services/task.service';
-import { updateAnnotation } from './taskViewerHelper';
+import { focusBackgroundAnnotation, updateAnnotation } from './taskViewerHelper';
 import { AnnotationData } from 'model/viewer/export/annotationData';
 
 export default defineComponent({
@@ -134,6 +140,7 @@ export default defineComponent({
 
           if (newVal?.task_data) {
             drawingViewer.value?.addBackgroundPolygons(newVal?.task_data as AnnotationData[]);
+            focusAnnotation(0);
           }
 
           if (newVal?.solution && showSolution.value) {
@@ -216,6 +223,7 @@ export default defineComponent({
             }
             if (props.task.task_data) {
               drawingViewer.value?.addAnnotations(props.task.task_data as AnnotationData[]);
+              focusAnnotation(0);
             }
 
             if (props.task.solution) {
@@ -506,6 +514,10 @@ export default defineComponent({
       }
     };
 
+    const focusAnnotation = (index: number) => {
+      focusBackgroundAnnotation(index, drawingViewer.value!);
+    };
+
     onUnmounted(() => {
       TooltipGenerator.destoyAll();
     });
@@ -513,6 +525,7 @@ export default defineComponent({
       toolbarTools,
       handleKeyup,
       setTool,
+      focusAnnotation,
       viewerRef,
       showUploadDialog,
       drawingViewer,

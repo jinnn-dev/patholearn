@@ -254,14 +254,10 @@ export class TaskSaver {
       }
 
       if (annotation instanceof AnnotationRectangle) {
-        console.log('NEW ANNOATTION', annotation);
-
         const rectangle = annotation as AnnotationRectangle;
         const data = elem as AnnotationRectangleData;
         data.width = rectangle.width;
         data.height = rectangle.height;
-
-        console.log('DATA', data);
       }
 
       if (annotation instanceof OffsetAnnotationLine) {
