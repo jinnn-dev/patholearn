@@ -546,65 +546,6 @@ export default defineComponent({
           showDeleteAnnotationDialog.value = true;
         }
       );
-
-      // if (isDrawingTool(currentTool.value!)) {
-      //   if (event.quick) {
-      //     drawingViewer.value?.addDrawingAnnotation(TOOL_POLYGON[currentTool.value!]!);
-
-      //     drawingViewer.value?.updateDrawingAnnotation();
-      //     if (drawingViewer.value?.drawingPolygonIsClosed) {
-      //       if (drawingViewer.value.drawingAnnotation) {
-      //         selectAnnotation(drawingViewer.value.drawingAnnotation.id);
-      //       }
-      //       saveTask();
-      //       drawingViewer.value?.addDrawingAnnotation(TOOL_POLYGON[currentTool.value!]!);
-      //     }
-      //   }
-      // } else if (currentTool.value === Tool.POINT_SOLUTION) {
-      //   if (event.quick) {
-      //     const point = await drawingViewer.value?.addOffsetAnnotationPoint(
-      //       ANNOTATION_TYPE.SOLUTION_POINT,
-      //       event.position.x,
-      //       event.position.y,
-      //       props.task!
-      //     );
-
-      //     if (point) {
-      //       selectAnnotation(point.id);
-      //     }
-      //   }
-      // } else if (currentTool.value === Tool.DELETE_ANNOTATION) {
-      //   drawingViewer.value?.removeListener();
-      //   if (event.quick) {
-      //     select('#' + SVG_ID)
-      //       .selectAll('*')
-      //       .selectAll('polyline, path, circle, rect')
-      //       .on('click', async function () {
-      //         const selectionId = select(this).attr('id');
-      //         select(this).remove();
-      //         select('[id ="' + selectionId + '"]').remove();
-
-      //         await drawingViewer.value!.deleteAnnotationByID(props.task!, selectionId);
-      //       });
-      //   }
-      // } else if (currentTool.value === Tool.SELECT) {
-      //   if (event.quick) {
-      //     select('#' + SVG_ID)
-      //       .selectAll('*')
-      //       .selectAll('polyline, path, circle, rect')
-      //       .on('click', function () {
-      //         const selectionId = select(this).attr('id');
-
-      //         if (selectedPolygon.value !== undefined && selectedPolygon.value?.id === selectionId) {
-      //           return;
-      //         }
-      //         // Values need to be reset otherwise select does not work
-      //         selectAnnotation(selectionId);
-      //       });
-      //   }
-      // } else {
-      //   drawingViewer.value?.removeListener();
-      // }
     };
 
     const deleteAnnotation = async () => {
