@@ -136,7 +136,6 @@ export default defineComponent({
 
     const updateTask = async () => {
       taskUpdateLoading.value = true;
-      console.log(taskUpdateForm.can_be_solved);
 
       const res = await TaskService.updateTask({
         task_id: taskUpdateForm.task_id,

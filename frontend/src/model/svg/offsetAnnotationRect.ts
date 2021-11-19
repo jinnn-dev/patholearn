@@ -295,6 +295,13 @@ export class OffsetAnnotationRectangle extends AnnotationRectangle {
     };
   }
 
+  remove() {
+    super.remove();
+    this._outerPolygon?.remove();
+    this._innerPolygon?.remove();
+    this._pathElement?.remove();
+  }
+
   private createOuterPolygon(viewer: OpenSeadragon.Viewer, scale: number): void {
     this._outerPolygon = new AnnotationPolygon(this.g, this.type, 'none', this.color, nanoid(), false, this.name);
     this._outerPolygon.addClosedPolygon(

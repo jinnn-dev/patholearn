@@ -78,6 +78,11 @@ export class OffsetAnnotationPoint extends AnnotationPoint {
     //   .style('fill', this.color + ANNOTATION_COLOR.FILL_OPACITY);
   }
 
+  remove() {
+    super.remove();
+    this._offsetElement?.remove();
+  }
+
   updateColor(fillColor: string, strokeColor: string): void {
     super.updateColor(fillColor, strokeColor);
     this._offsetElement?.style('fill', fillColor);

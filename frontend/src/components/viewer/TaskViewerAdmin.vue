@@ -108,6 +108,14 @@
     @focus="focusAnnotation"
   ></background-annotation-switcher>
 
+  <confirm-dialog
+    :show="showDeleteAnnotationDialog"
+    header="Soll die Annotation gelöscht werden?"
+    :loading="isTaskSaving"
+    @confirmation="deleteAnnotation"
+    @reject="showDeleteAnnotationDialog = false"
+  ></confirm-dialog>
+
   <div ref="viewerRef" id="viewerImage" class="h-screen bg-gray-900" @keyup="handleKeyup"></div>
 </template>
 
@@ -134,6 +142,7 @@ import { OffsetAnnotationRectangle } from '../../model/svg/offsetAnnotationRect'
 import { ANNOTATION_COLOR } from '../../model/viewer/colors';
 import { isTaskSaving, polygonChanged, selectedPolygon, viewerLoadingState, viewerZoom } from './core/viewerState';
 import { AnnotationData } from 'model/viewer/export/annotationData';
+import { adminMouseClickHandler } from './core/adminMouseClickHandler';
 export default defineComponent({
   props: {
     slide_name: String,
@@ -208,6 +217,9 @@ export default defineComponent({
     const maxRadius = 100;
 
     const setMoving = ref<Boolean>(false);
+
+    const showDeleteAnnotationDialog = ref(false);
+    const deleteAnnoatationId = ref('');
 
     watch(
       () => props.task,
@@ -522,64 +534,84 @@ export default defineComponent({
     };
 
     const clickHandler = async (event: any) => {
-      if (isDrawingTool(currentTool.value!)) {
-        if (event.quick) {
-          drawingViewer.value?.addDrawingAnnotation(TOOL_POLYGON[currentTool.value!]!);
-
-          drawingViewer.value?.updateDrawingAnnotation();
-          if (drawingViewer.value?.drawingPolygonIsClosed) {
-            if (drawingViewer.value.drawingAnnotation) {
-              selectAnnotation(drawingViewer.value.drawingAnnotation.id);
-            }
-            saveTask();
-            drawingViewer.value?.addDrawingAnnotation(TOOL_POLYGON[currentTool.value!]!);
-          }
+      adminMouseClickHandler(
+        event,
+        currentTool.value!,
+        drawingViewer.value!,
+        props.task!,
+        selectAnnotation,
+        saveTask,
+        (selectionId: string) => {
+          deleteAnnoatationId.value = selectionId;
+          showDeleteAnnotationDialog.value = true;
         }
-      } else if (currentTool.value === Tool.POINT_SOLUTION) {
-        if (event.quick) {
-          const point = await drawingViewer.value?.addOffsetAnnotationPoint(
-            ANNOTATION_TYPE.SOLUTION_POINT,
-            event.position.x,
-            event.position.y,
-            props.task!
-          );
+      );
 
-          if (point) {
-            selectAnnotation(point.id);
-          }
-        }
-      } else if (currentTool.value === Tool.DELETE_ANNOTATION) {
-        drawingViewer.value?.removeListener();
-        if (event.quick) {
-          select('#' + SVG_ID)
-            .selectAll('*')
-            .selectAll('polyline, path, circle, rect')
-            .on('click', async function () {
-              const selectionId = select(this).attr('id');
-              select(this).remove();
-              select('[id ="' + selectionId + '"]').remove();
+      // if (isDrawingTool(currentTool.value!)) {
+      //   if (event.quick) {
+      //     drawingViewer.value?.addDrawingAnnotation(TOOL_POLYGON[currentTool.value!]!);
 
-              await drawingViewer.value!.deleteAnnotationByID(props.task!, selectionId);
-            });
-        }
-      } else if (currentTool.value === Tool.SELECT) {
-        if (event.quick) {
-          select('#' + SVG_ID)
-            .selectAll('*')
-            .selectAll('polyline, path, circle, rect')
-            .on('click', function () {
-              const selectionId = select(this).attr('id');
+      //     drawingViewer.value?.updateDrawingAnnotation();
+      //     if (drawingViewer.value?.drawingPolygonIsClosed) {
+      //       if (drawingViewer.value.drawingAnnotation) {
+      //         selectAnnotation(drawingViewer.value.drawingAnnotation.id);
+      //       }
+      //       saveTask();
+      //       drawingViewer.value?.addDrawingAnnotation(TOOL_POLYGON[currentTool.value!]!);
+      //     }
+      //   }
+      // } else if (currentTool.value === Tool.POINT_SOLUTION) {
+      //   if (event.quick) {
+      //     const point = await drawingViewer.value?.addOffsetAnnotationPoint(
+      //       ANNOTATION_TYPE.SOLUTION_POINT,
+      //       event.position.x,
+      //       event.position.y,
+      //       props.task!
+      //     );
 
-              if (selectedPolygon.value !== undefined && selectedPolygon.value?.id === selectionId) {
-                return;
-              }
-              // Values need to be reset otherwise select does not work
-              selectAnnotation(selectionId);
-            });
-        }
-      } else {
-        drawingViewer.value?.removeListener();
-      }
+      //     if (point) {
+      //       selectAnnotation(point.id);
+      //     }
+      //   }
+      // } else if (currentTool.value === Tool.DELETE_ANNOTATION) {
+      //   drawingViewer.value?.removeListener();
+      //   if (event.quick) {
+      //     select('#' + SVG_ID)
+      //       .selectAll('*')
+      //       .selectAll('polyline, path, circle, rect')
+      //       .on('click', async function () {
+      //         const selectionId = select(this).attr('id');
+      //         select(this).remove();
+      //         select('[id ="' + selectionId + '"]').remove();
+
+      //         await drawingViewer.value!.deleteAnnotationByID(props.task!, selectionId);
+      //       });
+      //   }
+      // } else if (currentTool.value === Tool.SELECT) {
+      //   if (event.quick) {
+      //     select('#' + SVG_ID)
+      //       .selectAll('*')
+      //       .selectAll('polyline, path, circle, rect')
+      //       .on('click', function () {
+      //         const selectionId = select(this).attr('id');
+
+      //         if (selectedPolygon.value !== undefined && selectedPolygon.value?.id === selectionId) {
+      //           return;
+      //         }
+      //         // Values need to be reset otherwise select does not work
+      //         selectAnnotation(selectionId);
+      //       });
+      //   }
+      // } else {
+      //   drawingViewer.value?.removeListener();
+      // }
+    };
+
+    const deleteAnnotation = async () => {
+      isTaskSaving.value = true;
+      await drawingViewer.value?.deleteAnnotationByID(props.task!, deleteAnnoatationId.value);
+      isTaskSaving.value = false;
+      showDeleteAnnotationDialog.value = false;
     };
 
     const selectAnnotation = (annotationId: string) => {
@@ -693,7 +725,10 @@ export default defineComponent({
       updateInnerOffsetRadius,
       updateOuterOffsetRadius,
       polygonChanged,
-      updateAnnotationColor
+      updateAnnotationColor,
+      showDeleteAnnotationDialog,
+      isTaskSaving,
+      deleteAnnotation
     };
   }
 });

@@ -237,6 +237,12 @@ export class OffsetAnnotationLine extends AnnotationLine {
     }
   }
 
+  remove() {
+    super.remove();
+    this._pathElement?.remove();
+    this._selectedPolyline?.remove();
+  }
+
   get outerPoints() {
     return this._outerPoints;
   }

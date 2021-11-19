@@ -348,14 +348,7 @@ export default defineComponent({
         tempImages.value.push(file);
         names.push(file.name);
       }
-      console.log(names.sort());
     }
-
-    const uploadImage = async (image: Blob) => {
-      const formData = new FormData();
-      formData.append('image', image);
-      return await TaskService.uploadTaskImage(formData);
-    };
 
     const uploadMultipleImages = async (images: File[]) => {
       const formData = new FormData();
