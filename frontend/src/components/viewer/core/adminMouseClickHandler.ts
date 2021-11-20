@@ -4,7 +4,7 @@ import { ANNOTATION_TYPE } from '../../../model/viewer/annotationType';
 import { isDrawingTool, Tool, TOOL_POLYGON } from '../../../model/viewer/tools';
 import { AnnotationViewer } from './annotationViewer';
 import { SVG_ID } from './options';
-import { selectedPolygon } from './viewerState';
+import { isTaskSaving, selectedPolygon } from './viewerState';
 
 export async function adminMouseClickHandler(
   event: any,
@@ -30,6 +30,7 @@ export async function adminMouseClickHandler(
     }
   } else if (currentTool === Tool.POINT_SOLUTION) {
     if (event.quick) {
+      isTaskSaving.value = true;
       const point = await annotationViewer.addOffsetAnnotationPoint(
         ANNOTATION_TYPE.SOLUTION_POINT,
         event.position.x,
@@ -40,6 +41,7 @@ export async function adminMouseClickHandler(
       if (point) {
         selectionCallback(point.id);
       }
+      isTaskSaving.value = false;
     }
   } else if (currentTool === Tool.DELETE_ANNOTATION) {
     annotationViewer.removeListener();

@@ -481,6 +481,9 @@ export default defineComponent({
               return;
             }
           }
+          isTaskSaving.value = true;
+          drawingViewer.value!.stopDraggingIndicator = true;
+          await drawingViewer.value?.saveTaskAnnotation(props.task!, annotation);
 
           if (drawingViewer.value?.drawingAnnotation) {
             selectAnnotation(drawingViewer.value?.drawingAnnotation?.id);
@@ -488,7 +491,8 @@ export default defineComponent({
 
           drawingViewer.value?.unsetDrawingAnnotation();
 
-          await drawingViewer.value?.saveTaskAnnotation(props.task!, annotation);
+          isTaskSaving.value = false;
+          drawingViewer.value!.stopDraggingIndicator = false;
         } else {
           drawingViewer.value?.removeDrawingAnnotation();
         }

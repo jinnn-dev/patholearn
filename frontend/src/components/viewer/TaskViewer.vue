@@ -205,10 +205,8 @@ export default defineComponent({
     watch(
       () => polygonChanged.changed,
       async (newVal, oldVal) => {
-        if (newVal) {
-          await updateSelectedAnnotation();
-          emit('userAnnotationChanged');
-        }
+        updateSelectedAnnotation();
+        emit('userAnnotationChanged');
       }
     );
 
@@ -291,6 +289,7 @@ export default defineComponent({
 
     const setTool = (data: { tool: Tool; event: any }) => {
       drawingViewer.value?.removeDrawingAnnotation();
+      polygonChanged.polygon?.unselect();
 
       currentTool.value = data.tool;
       selectedPolygon.value = null;
@@ -327,7 +326,7 @@ export default defineComponent({
       }
     };
 
-    const handleKeyup = (e: KeyboardEvent) => {
+    const handleKeyup = async (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         drawingViewer.value?.stopDrawing();
 
@@ -340,7 +339,10 @@ export default defineComponent({
             selectedPolygon.value = drawingViewer.value.selectAnnotation(drawingViewer.value?.drawingAnnotation?.id);
           }
 
-          saveUserSolution();
+          drawingViewer.value!.stopDraggingIndicator = true;
+          await saveUserSolution();
+          drawingViewer.value!.stopDraggingIndicator = false;
+
           drawingViewer.value?.unsetDrawingAnnotation();
         } else {
           drawingViewer.value?.removeDrawingAnnotation();
@@ -358,20 +360,18 @@ export default defineComponent({
         isUserSolution(TOOL_POLYGON[currentTool.value!]!) &&
         (props.task?.user_solution === undefined || props.task?.user_solution?.solution_data === undefined)
       ) {
-        drawingViewer
-          .value!.saveUserSolution(
-            {
-              task_id: props.task!.id,
-              base_task_id: props.base_task_id!,
-              task_group_id: props.task_group_id!,
-              course_id: props.course_id!,
-              solution_data: ''
-            },
-            type && type
-          )
-          .then((res: UserSolution) => {
-            props.task!.user_solution = res;
-          });
+        const res = await drawingViewer.value!.saveUserSolution(
+          {
+            task_id: props.task!.id,
+            base_task_id: props.base_task_id!,
+            task_group_id: props.task_group_id!,
+            course_id: props.course_id!,
+            solution_data: ''
+          },
+          type && type
+        );
+
+        props.task!.user_solution = res;
       } else {
         await drawingViewer.value?.saveUserAnnotation(props.task!, annotation);
       }

@@ -48,6 +48,8 @@ export class AnnotationViewer {
 
   private _currentColor: ANNOTATION_COLOR;
 
+  private _stopDraggingIndicator: boolean = false;
+
   constructor(viewerOptions: OpenSeadragon.Options) {
     this._viewer = OpenSeadragon(viewerOptions);
     new OpenSeadragon.TileCache({ maxImageCacheCount: 500 });
@@ -240,7 +242,7 @@ export class AnnotationViewer {
    * Updates the drawing annotation indicator
    */
   updateDrawingAnnotationIndicator(): void {
-    if (!this._drawingAnnotation || this._drawingAnnotation.vertice.length < 1) return;
+    if (!this._drawingAnnotation || this._drawingAnnotation.vertice.length < 1 || this._stopDraggingIndicator) return;
 
     if (this._drawingAnnotation instanceof AnnotationPolygon) {
       const firstPoint = this._drawingAnnotation.vertice[0];
@@ -777,6 +779,10 @@ export class AnnotationViewer {
     }
 
     return this._drawingAnnotation?.isClosed;
+  }
+
+  set stopDraggingIndicator(value: boolean) {
+    this._stopDraggingIndicator = value;
   }
 
   get drawingAnnotation() {

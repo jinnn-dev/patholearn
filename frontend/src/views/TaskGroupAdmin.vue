@@ -237,8 +237,6 @@ export default defineComponent({
     };
 
     const onFileUpload = (event) => {
-      console.log(event.target.files[0]);
-
       formData.csv_file = event.target.files[0];
     };
 
