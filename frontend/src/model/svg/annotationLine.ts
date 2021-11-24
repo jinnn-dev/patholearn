@@ -173,6 +173,7 @@ export class AnnotationLine extends Annotation {
     if (this.reactive) {
       polygonChanged.changed = false;
     }
+
     const viewportDelta = viewer.viewport.deltaPointsFromPixels(event.delta);
     const selected = select(node);
     selected.attr('cx', Number(selected.attr('cx')) + Number(viewportDelta.x));

@@ -155,7 +155,7 @@ def delete_task_annotations(*, db: Session = Depends(get_db), task_id: int,
 @router.post('/{task_id}/annotations', response_model=Any)
 def add_task_annotation(*, db: Session = Depends(get_db), task_id: int,
                         annotation: Union[
-                            OffsetRectangleData, OffsetPolygonData, OffsetLineData, OffsetPointData, AnnotationData],
+                            OffsetRectangleData, OffsetPolygonData, OffsetLineData, OffsetPointData, RectangleData, AnnotationData],
                         current_user: User = Depends(get_current_active_superuser)) -> Any:
     task = crud_task.get(db, id=task_id)
 
@@ -181,7 +181,7 @@ def add_task_annotation(*, db: Session = Depends(get_db), task_id: int,
 @router.put('/{task_id}/{annotation_id}', response_model=Any)
 def update_task_annotation(*, db: Session = Depends(get_db), task_id: int, annotation_id: str,
                            annotation: Union[
-                               OffsetRectangleData, OffsetPolygonData, OffsetLineData, OffsetPointData, AnnotationData],
+                               OffsetRectangleData, OffsetPolygonData, OffsetLineData, OffsetPointData, RectangleData, AnnotationData],
                            current_user: User = Depends(get_current_active_superuser)) -> Any:
     task = crud_task.get(db, id=task_id)
 
@@ -395,7 +395,6 @@ def upload_task_image(*, current_user: User = Depends(get_current_active_superus
                 detail="Image could not be saved"
             )
     return results
-
 
 # @router.post('/image', response_model=Dict)
 # def upload_task_image(*, current_user: User = Depends(get_current_active_superuser), image: UploadFile = File(...)):

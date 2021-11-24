@@ -28,7 +28,7 @@ export const TOOL_COMPONENTS: ToolComponent = {
   [Tool.DELETE_ANNOTATION]: 'eraser',
   [Tool.SOLUTION_DRAWING]: 'pen-nib',
   [Tool.USER_SOLUTION_DRAWING]: 'pen-nib',
-  [Tool.BASE_DRAWING]: 'pencil',
+  [Tool.BASE_DRAWING]: 'selection-all',
   [Tool.POINT_SOLUTION]: 'push-pin',
   [Tool.POINT_USER_SOLUTION]: 'push-pin',
   [Tool.LINE_SOLUTION]: 'activity',

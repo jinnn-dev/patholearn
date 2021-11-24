@@ -71,8 +71,6 @@ export default defineComponent({
       tries++;
       url.value = newUrl.join('.');
       loaded.value = false;
-
-      console.log(url.value);
     };
 
     const imageLoadError = ref(false);

@@ -100,6 +100,10 @@ export class AnnotationPoint extends Annotation {
     }
   }
 
+  remove(): void {
+    this._element?.remove();
+  }
+
   update(r: number, strokeWidth: number): void {
     this._element?.attr('stroke-width', strokeWidth).attr('r', r);
   }

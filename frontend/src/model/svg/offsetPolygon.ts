@@ -319,6 +319,13 @@ export class OffsetAnnotationPolygon extends AnnotationPolygon {
     };
   }
 
+  remove() {
+    super.remove();
+    this._outerPolygon?.remove();
+    this._innerPolygon?.remove();
+    this._pathElement?.remove();
+  }
+
   get innerPolygon() {
     return this._innerPoints;
   }

@@ -17,7 +17,6 @@ describe('Openseadragon utils should correctly work', () => {
       }
     });
     await new Promise((r) => setTimeout(r, 2000));
-    console.log(viewer.world);
     // while (!loaded) {}
   });
 
@@ -37,7 +36,6 @@ describe('Openseadragon utils should correctly work', () => {
 
   it('imageToViewport should correctly return image point', () => {
     const expectedPoint = new Point(50, 50);
-    console.log(viewer.world.getItemCount());
 
     // const myViewer = expect(imageToViewport(new Point(50, 50), viewer)).toEqual(expectedPoint);
   });

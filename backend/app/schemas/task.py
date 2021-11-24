@@ -1,15 +1,17 @@
 from enum import IntEnum
 from typing import Any, List, Optional, Union
 
-from app.schemas.polygon_data import AnnotationData, OffsetPolygonData
-from app.schemas.task_hint import TaskHint
 from pydantic import BaseModel
+
+from app.schemas.polygon_data import AnnotationData, OffsetPolygonData, RectangleData
+from app.schemas.task_hint import TaskHint
 
 
 class TaskType(IntEnum):
     DRAWING = 0
     DRAWING_WITH_CLASS = 1
     IMAGE_SELECT = 2
+
 
 class TaskAnnotationType(IntEnum):
     POINT = 0
@@ -46,9 +48,11 @@ class AnnotationFeedback(BaseModel):
     percentage: Optional[float]
     lines_outside: Optional[List[Any]]
 
+
 class SelectImageFeedback(BaseModel):
     image: Optional[int]
     status: Optional[TaskStatus]
+
 
 class TaskFeedback(BaseModel):
     task_id: Optional[int]
@@ -71,7 +75,7 @@ class TaskBase(BaseModel):
 
 class TaskCreate(TaskBase):
     solution: Optional[List[Union[AnnotationData, OffsetPolygonData, str]]]
-    task_data: Optional[Union[List[AnnotationData], List[str]]]
+    task_data: Optional[Union[List[RectangleData], List[AnnotationData], List[str]]]
     hints: Optional[List[TaskHint]] = []
     base_task_id: int
     can_be_solved: Optional[bool]

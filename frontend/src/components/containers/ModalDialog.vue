@@ -54,8 +54,6 @@ export default defineComponent({
     const showModal = ref<Boolean>(false);
 
     const handleKeyup = (e: KeyboardEvent) => {
-      console.log('KEY');
-
       if (e.key === 'Escape') {
         showModal.value = false;
       }

@@ -237,8 +237,6 @@ export default defineComponent({
     };
 
     const onFileUpload = (event) => {
-      console.log(event.target.files[0]);
-
       formData.csv_file = event.target.files[0];
     };
 
@@ -348,14 +346,7 @@ export default defineComponent({
         tempImages.value.push(file);
         names.push(file.name);
       }
-      console.log(names.sort());
     }
-
-    const uploadImage = async (image: Blob) => {
-      const formData = new FormData();
-      formData.append('image', image);
-      return await TaskService.uploadTaskImage(formData);
-    };
 
     const uploadMultipleImages = async (images: File[]) => {
       const formData = new FormData();

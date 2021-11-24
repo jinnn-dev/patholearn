@@ -86,6 +86,11 @@ export abstract class Annotation {
   abstract changeRenderColor(fillColor: string, stroke: string): void;
 
   /**
+   * Removes annotation
+   */
+  abstract remove(): void;
+
+  /**
    * Updates the annotation Class of the annotation
    *
    * @param name Name of the annotation class

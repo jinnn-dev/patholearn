@@ -30,7 +30,7 @@ export default defineComponent({
     onMounted(() => {
       setTimeout(() => {
         emit('expired', props.index);
-      }, 1000);
+      }, 10000);
     });
 
     const getDate = computed(() =>

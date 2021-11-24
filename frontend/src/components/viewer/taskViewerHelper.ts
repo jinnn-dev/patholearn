@@ -24,3 +24,7 @@ export const updateAnnotation = async ({
     polygonChanged.changed = false;
   }
 };
+
+export const focusBackgroundAnnotation = (index: number, annotationViewer: AnnotationViewer) => {
+  annotationViewer.focusBackgroundAnnotation(index);
+};
