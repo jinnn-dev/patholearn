@@ -104,7 +104,13 @@ export default defineComponent({
   setup(props, { emit }) {
     const viewerRef = ref();
 
-    const toolbarTools = ref<Tool[]>([Tool.MOVE, Tool.SELECT, Tool.DELETE, Tool.DELETE_ANNOTATION]);
+    const toolbarTools = ref<Tool[]>([
+      Tool.MOVE,
+      Tool.SELECT,
+      Tool.DELETE,
+      Tool.DELETE_ANNOTATION,
+      Tool.ADD_POINT_USER_SOLUTION
+    ]);
     const currentTool = ref<Tool>();
 
     const selectedPolygonData = reactive({
@@ -270,7 +276,7 @@ export default defineComponent({
     });
 
     const setToolbarTools = () => {
-      toolbarTools.value = toolbarTools.value.slice(0, 4);
+      toolbarTools.value = toolbarTools.value.slice(0, 5);
       let tool;
 
       if (props.task?.annotation_type === 0) {
@@ -303,7 +309,7 @@ export default defineComponent({
         drawingViewer.value?.removeMouseCircle();
       }
 
-      if (isUserSolution(TOOL_POLYGON[currentTool.value!]!)) {
+      if (isUserSolution(TOOL_POLYGON[currentTool.value!]!) || currentTool.value! === Tool.ADD_POINT_USER_SOLUTION) {
         drawingViewer.value?.updateColor(ANNOTATION_COLOR.USER_SOLUTION_COLOR);
       }
 
@@ -417,7 +423,7 @@ export default defineComponent({
 
     const moveHandler = (event: any) => {
       drawingViewer.value?.update(event.position.x, event.position.y);
-      drawingViewer.value?.updateDrawingAnnotationIndicator();
+      drawingViewer.value?.updateDrawingAnnotationIndicator(currentTool.value === Tool.ADD_POINT_USER_SOLUTION);
     };
 
     const setColors = (taskResult: TaskResult) => {

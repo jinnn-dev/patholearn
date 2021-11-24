@@ -1,6 +1,6 @@
 import { select, Selection } from 'd3-selection';
 import { nanoid } from 'nanoid';
-import OpenSeadragon from 'openseadragon';
+import OpenSeadragon, { Point } from 'openseadragon';
 import { polygonChanged } from '../../components/viewer/core/viewerState';
 import { POLYGON_VERTICE_RADIUS } from '../../model/viewer/config';
 import { ANNOTATION_TYPE } from '../viewer/annotationType';
@@ -260,6 +260,17 @@ export class AnnotationLine extends Annotation {
         this.polylinePoints.toString().replace('[', '').replace(']', '') + ',' + x + ',' + y
       );
     }
+  }
+
+  updateVertex(point: Point, index: number) {
+    this._vertice[index].viewport.x = point.x;
+    this._vertice[index].viewport.y = point.y;
+    this._vertice[index].element.cx = point.x;
+    this._vertice[index].element.cy = point.y;
+
+    this._polylinePoints[index] = this._vertice[index].viewport.x + ',' + this._vertice[index].viewport.y;
+
+    this.redrawPolyline();
   }
 
   resetColors(): void {
