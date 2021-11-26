@@ -9,10 +9,17 @@
     </template>
     <template v-slot:content>
       <div class="flex justify-between items-center">
-        <div class="w-full text-xl font-bold text-gray-200 uppercase">Deine Aufgaben</div>
+        <div class="w-full text-xl font-bold text-gray-200 uppercase">
+          Deine Aufgaben
+        </div>
       </div>
       <div class="my-4 flex justify-between">
-        <primary-button class="w-48 h-10" name="Neue Aufgabe" bgColor="bg-gray-400" @click="showModal = !showModal">
+        <primary-button
+          class="w-48 h-10"
+          name="Neue Aufgabe"
+          bgColor="bg-gray-400"
+          @click="showModal = !showModal"
+        >
           <Icon name="plus" class="mr-2" weight="bold" />
         </primary-button>
         <primary-button
@@ -26,14 +33,22 @@
       </div>
 
       <div class="flex flex-wrap my-8">
-        <no-content v-if="taskGroup?.tasks.length === 0" text="Noch keine Aufgaben erstellt"></no-content>
-        <div v-for="baseTask in taskGroup?.tasks" :key="baseTask.id" class="ml-4 mb-4">
+        <no-content
+          v-if="taskGroup?.tasks.length === 0"
+          text="Noch keine Aufgaben erstellt"
+        ></no-content>
+        <div
+          v-for="baseTask in taskGroup?.tasks"
+          :key="baseTask.id"
+          class="ml-4 mb-4"
+        >
           <task-group-admin-card
             :baseTask="baseTask"
             @deleteBaseTask="
               showDeleteBaseTask = true;
               deleteBaseTaskItem = baseTask;
             "
+            @editBaseTask="editTask"
           ></task-group-admin-card>
         </div>
       </div>
@@ -52,7 +67,9 @@
           type="text"
           :required="true"
           class="w-full"
-          :errorMessage="taskError ? 'Es gibt bereits eine Aufgabe mit diesem Namen' : ''"
+          :errorMessage="
+            taskError ? 'Es gibt bereits eine Aufgabe mit diesem Namen' : ''
+          "
         >
         </input-field>
         <slide-select @slideChanged="setSlide($event)"></slide-select>
@@ -61,13 +78,32 @@
           <div>
             <div>Aufgaben aus einer CSV-Datei generieren (optional):</div>
             <div class="flex items-center my-4">
-              <label for="slide-upload" class="cursor-pointer flex justify-center bg-gray-500 w-56 rounded-lg py-1">
+              <label
+                for="slide-upload"
+                class="
+                  cursor-pointer
+                  flex
+                  justify-center
+                  bg-gray-500
+                  w-56
+                  rounded-lg
+                  py-1
+                "
+              >
                 <Icon name="cloud-arrow-up" class="mr-2" />
                 <span>CSV-Datei auswählen</span>
               </label>
-              <div v-if="formData.csv_file" class="ml-4">{{ formData.csv_file.name }}</div>
+              <div v-if="formData.csv_file" class="ml-4">
+                {{ formData.csv_file.name }}
+              </div>
             </div>
-            <input class="hidden" id="slide-upload" type="file" accept=".csv" @change="onFileUpload" />
+            <input
+              class="hidden"
+              id="slide-upload"
+              type="file"
+              accept=".csv"
+              @change="onFileUpload"
+            />
           </div>
 
           <div v-if="formData.csv_file">
@@ -102,19 +138,35 @@
               </div>
             </div>
           </div>
-          <input type="file" ref="fileRef" v-show="false" @change="onFileChange($event)" multiple="multiple" />
+          <input
+            type="file"
+            ref="fileRef"
+            v-show="false"
+            @change="onFileChange($event)"
+            multiple="multiple"
+          />
         </div>
         <div v-if="taskLoading">
           <div class="flex gap-3 mb-3 items-center">
             <div class="flex-1">
               <div
-                class="animate-pulse bg-green-500 my-2 rounded-lg transition duration-10 h-3"
+                class="
+                  animate-pulse
+                  bg-green-500
+                  my-2
+                  rounded-lg
+                  transition
+                  duration-10
+                  h-3
+                "
                 :style="{ width: uploadProgress + '%' }"
               ></div>
             </div>
             <div>{{ uploadProgress }}%</div>
           </div>
-          <div v-if="uploadProgress == 100.0" class="font-semibold">Aufgaben werden erstellt...</div>
+          <div v-if="uploadProgress == 100.0" class="font-semibold">
+            Aufgaben werden erstellt...
+          </div>
         </div>
 
         <div class="flex justify-end w-full">
@@ -126,7 +178,12 @@
             bgHoverColor="bg-gray-700"
             fontWeight="font-normal"
           ></primary-button>
-          <save-button class="w-48" name="Speichern" type="submit" :loading="taskLoading"></save-button>
+          <save-button
+            class="w-48"
+            name="Speichern"
+            type="submit"
+            :loading="taskLoading"
+          ></save-button>
         </div>
       </form>
     </div>
@@ -135,7 +192,9 @@
   <modal-dialog :show="showTaskgroupDelete">
     <div class="relative">
       <h1 class="text-2xl">Möchtest du die Aufgabengruppe löschen?</h1>
-      <div class="my-4">Alle zugehörigen Aufgaben und Lösungen werden gelöscht.</div>
+      <div class="my-4">
+        Alle zugehörigen Aufgaben und Lösungen werden gelöscht.
+      </div>
       <div class="flex justify-end">
         <primary-button
           @click.prevent="showTaskgroupDelete = false"
@@ -184,16 +243,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, nextTick, onMounted, reactive, ref } from 'vue';
-import { useRoute } from 'vue-router';
-import { TaskGroup } from '../model/taskGroup';
-import { Slide } from '../model/slide';
-import { BaseTask } from '../model/baseTask';
-import { TaskService } from '../services/task.service';
-import { TaskGroupService } from '../services/task-group.service';
-import router from '../router';
-import { showSolution } from 'components/viewer/core/viewerState';
-import { TaskImageService } from '../services/task-image.service';
+import { defineComponent, nextTick, onMounted, reactive, ref } from "vue";
+import { useRoute } from "vue-router";
+import { TaskGroup } from "../model/taskGroup";
+import { Slide } from "../model/slide";
+import { BaseTask } from "../model/baseTask";
+import { TaskService } from "../services/task.service";
+import { TaskGroupService } from "../services/task-group.service";
+import router from "../router";
+import { showSolution } from "components/viewer/core/viewerState";
+import { TaskImageService } from "../services/task-image.service";
 
 export default defineComponent({
   setup() {
@@ -212,10 +271,14 @@ export default defineComponent({
 
     const route = useRoute();
 
-    const formData = reactive<{ name: string; slide_id: string; csv_file: File | undefined }>({
-      name: '',
-      slide_id: '',
-      csv_file: undefined
+    const formData = reactive<{
+      name: string;
+      slide_id: string;
+      csv_file: File | undefined;
+    }>({
+      name: "",
+      slide_id: "",
+      csv_file: undefined,
     });
 
     const uploadProgress = ref(0.0);
@@ -227,9 +290,11 @@ export default defineComponent({
     const deleteLoading = ref<Boolean>(false);
 
     onMounted(() => {
-      TaskGroupService.getTaskGroup(route.params.id as string).then((res: TaskGroup) => {
-        taskGroup.value = res;
-      });
+      TaskGroupService.getTaskGroup(route.params.id as string).then(
+        (res: TaskGroup) => {
+          taskGroup.value = res;
+        }
+      );
     });
 
     const setSlide = (slide: Slide) => {
@@ -251,7 +316,7 @@ export default defineComponent({
               name: formData.name,
               slide_id: formData.slide_id,
               course_id: taskGroup.value?.course_id as number,
-              task_group_id: taskGroup.value?.id
+              task_group_id: taskGroup.value?.id,
             },
             formData.csv_file,
             images
@@ -272,7 +337,7 @@ export default defineComponent({
           name: formData.name,
           slide_id: formData.slide_id,
           course_id: taskGroup.value?.course_id as number,
-          task_group_id: taskGroup.value?.id
+          task_group_id: taskGroup.value?.id,
         })
           .then((res: BaseTask) => {
             res.task_count = 0;
@@ -293,7 +358,7 @@ export default defineComponent({
 
     const onTaskClose = () => {
       showModal.value = false;
-      formData.name = '';
+      formData.name = "";
       taskError.value = false;
     };
 
@@ -303,7 +368,7 @@ export default defineComponent({
           if (res) {
             showTaskgroupDelete.value = false;
             deleteLoading.value = false;
-            router.push('/home');
+            router.push("/home");
           }
         })
         .catch((err) => {
@@ -351,15 +416,28 @@ export default defineComponent({
     const uploadMultipleImages = async (images: File[]) => {
       const formData = new FormData();
       for (const image of images) {
-        formData.append('images', image);
-        formData.append('names', image.name);
+        formData.append("images", image);
+        formData.append("names", image.name);
       }
-      return await TaskImageService.uploadMultipleTaskImages(formData, (event) => {
-        uploadProgress.value = Math.round((100 * event.loaded) / event.total);
+      return await TaskImageService.uploadMultipleTaskImages(
+        formData,
+        (event) => {
+          uploadProgress.value = Math.round((100 * event.loaded) / event.total);
+        }
+      );
+    };
+
+    const editTask = (task: BaseTask) => {
+      taskGroup.value!.tasks = taskGroup.value!.tasks.map((baseTask) => {
+        if (baseTask.id === task.id) {
+          baseTask.name = task.name;
+        }
+        return baseTask;
       });
     };
 
     return {
+      editTask,
       taskGroup,
       showModal,
       formData,
@@ -381,9 +459,9 @@ export default defineComponent({
       deleteBaseTaskItem,
       onFileUpload,
       deleteBaseTask,
-      uploadProgress
+      uploadProgress,
     };
-  }
+  },
 });
 </script>
 
