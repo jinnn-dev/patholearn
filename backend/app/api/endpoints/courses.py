@@ -11,6 +11,7 @@ from app.models.user import User
 from app.schemas.course import Course as CourseSchema
 from app.schemas.course import (CourseAdmin, CourseAll, CourseCreate,
                                 CourseDetail)
+from app.schemas.course import CourseUpdate
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.functions import user
@@ -217,4 +218,15 @@ def create_course(*, db: Session = Depends(get_db), course_in: CourseCreate,
             detail="The Course with this name already exists"
         )
     course = crud_course.create_with_owner(db=db, obj_in=course_in, owner_id=current_user.id)
+    return course
+
+
+@router.put('', response_model=CourseSchema)
+def update_course(*, db: Session = Depends(get_db), current_user: User = Depends(get_current_active_superuser),
+                     obj_in: CourseUpdate) -> CourseSchema:
+    course = crud_course.get(db, id=obj_in.course_id)
+
+    check_if_user_can_access_course(db, user_id=current_user.id, course_id=course.id)
+
+    course = crud_course.update(db, db_obj=course, obj_in=obj_in)
     return course

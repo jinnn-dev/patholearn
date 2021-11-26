@@ -1,30 +1,36 @@
 <template>
-  <router-link :to="'/group/' + taskgroup.short_name + '/admin'">
-    <skeleton-card>
+  <router-link :to="'/group/' + taskgroup.short_name + '/admin'" class="">
+    <skeleton-card class="group relative">
       <div class="text-xl flex justify-between items-center">
         <div>
           {{ taskgroup.name }}
         </div>
         <div>
           <Icon
-            name="trash"
-            class="text-red-400 cursor-pointer ml-4 hover:text-red-500"
+            name="dots-three-vertical"
+            class="cursor-pointer ml-4 hover:text-gray-200 rounded-md"
             weight="bold"
-            @click.prevent="showDeleteTaskGroup = true"
+            @click.prevent.stop="dotMenuOpen = !dotMenuOpen"
           ></Icon>
+
+          <DotMenu
+            :optionsOpen="dotMenuOpen"
+            @edit="showEditTaskGroup = true"
+            @delete="showDeleteTaskGroup = true"
+          />
         </div>
       </div>
 
       <task-count-badge :count="taskgroup?.task_count"></task-count-badge>
 
-      <div class="flex justify-end mt-4">
+      <div class="flex justify-end mt-4 items-center gap-4">
         <div
           class="
             transition
             hover:ring-2
             ring-white
             bg-gray-500
-            hover:bg-gray-400
+            group-hover:bg-gray-300
             p-2
             rounded-lg
             cursor-pointer
@@ -63,22 +69,58 @@
         </div>
       </div>
     </modal-dialog>
+    <modal-dialog :show="showEditTaskGroup">
+      <div class="relative">
+        <h1 class="text-2xl">Aufgabengruppe bearbeiten</h1>
+        <InputField label="Neuer Name" v-model="newTaskGroupName"></InputField>
+
+        <div class="flex justify-end">
+          <primary-button
+            @click.prevent="showEditTaskGroup = false"
+            class="mr-2 w-28"
+            name="Abbrechen"
+            bgColor="bg-gray-500"
+            bgHoverColor="bg-gray-700"
+            fontWeight="font-normal"
+          ></primary-button>
+          <save-button
+            name="Speichern"
+            type="submit"
+            :loading="editTaskGroupLoading"
+            @click="editTaskGroup"
+            class="w-28"
+          ></save-button>
+        </div>
+      </div>
+    </modal-dialog>
   </role-only>
 </template>
 <script lang="ts">
-import { TaskGroup } from '../model/taskGroup';
-import { defineComponent, PropType, ref } from 'vue';
-import { TaskGroupService } from '../services/task-group.service';
-
+import { TaskGroup, UpdateTaskGroup } from "../model/taskGroup";
+import { defineComponent, PropType, ref } from "vue";
+import { TaskGroupService } from "../services/task-group.service";
+import Icon from "./Icon.vue";
 export default defineComponent({
   props: {
-    taskgroup: Object as PropType<TaskGroup>
+    taskgroup: {
+      type: Object as PropType<TaskGroup>,
+      required: true,
+    },
+  },
+  components: {
+    Icon,
   },
 
-  emits: ['deleteTaskgroup'],
+  emits: ["deleteTaskgroup", "editTaskgroup"],
 
   setup(props, { emit }) {
     const downloadUserSolutionsLoading = ref(false);
+    const dotMenuOpen = ref(false);
+
+    const showEditTaskGroup = ref<Boolean>(false);
+    const editTaskGroupLoading = ref(false);
+
+    const newTaskGroupName = ref(props.taskgroup.name);
 
     const showDeleteTaskGroup = ref<Boolean>(false);
     const deleteTaskGroupLoading = ref<Boolean>(false);
@@ -86,39 +128,57 @@ export default defineComponent({
     const deleteTaskGroup = async () => {
       deleteTaskGroupLoading.value = true;
       await TaskGroupService.removeTaskGroup(props.taskgroup!.short_name);
-      emit('deleteTaskgroup', props.taskgroup);
+      emit("deleteTaskgroup", props.taskgroup);
       showDeleteTaskGroup.value = false;
       deleteTaskGroupLoading.value = false;
-      //   TaskGroupService.removeTaskGroup(deleteTaskGroupItem.value!.short_name).finally(() => {
-      //     course.value!.task_groups = course.value?.task_groups.filter(
-      //       (item) => item.short_name != deleteTaskGroupItem.value!.short_name
-      //     )!;
+    };
+
+    const editTaskGroup = async () => {
+      editTaskGroupLoading.value = true;
+
+      const update: UpdateTaskGroup = {
+        name: props.taskgroup.name,
+        task_group_id: props.taskgroup.id,
+        short_name: props.taskgroup.short_name,
+      };
+      await TaskGroupService.editTaskGroup(update);
+      props.taskgroup.name = newTaskGroupName.value;
+      emit("editTaskgroup", props.taskgroup);
+      showEditTaskGroup.value = false;
+      editTaskGroupLoading.value = false;
     };
 
     const downloadUserSolutions = async (short_name: string) => {
       downloadUserSolutionsLoading.value = true;
-      const data = await TaskGroupService.downloadUserSolutionsToTaskGroup(short_name);
+      const data = await TaskGroupService.downloadUserSolutionsToTaskGroup(
+        short_name
+      );
       downloadUserSolutionsLoading.value = false;
 
-      const a = document.createElement('a');
+      const a = document.createElement("a");
 
-      const blob = new Blob([data], { type: 'application/xlsx' });
+      const blob = new Blob([data], { type: "application/xlsx" });
 
       a.href = window.URL.createObjectURL(blob);
-      a.download = short_name + '.xlsx';
-      a.style.display = 'none';
+      a.download = short_name + ".xlsx";
+      a.style.display = "none";
       document.body.appendChild(a);
       a.click();
     };
 
     return {
+      newTaskGroupName,
+      editTaskGroup,
+      editTaskGroupLoading,
+      showEditTaskGroup,
+      dotMenuOpen,
       deleteTaskGroup,
       deleteTaskGroupLoading,
       showDeleteTaskGroup,
       downloadUserSolutions,
-      downloadUserSolutionsLoading
+      downloadUserSolutionsLoading,
     };
-  }
+  },
 });
 </script>
 <style></style>

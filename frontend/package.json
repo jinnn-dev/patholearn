@@ -2,7 +2,7 @@
   "name": "frontend",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite --force",
+    "dev": "vite --force --host=0.0.0.0",
     "build": "vite build",
     "serve": "vite preview",
     "test": "jest test --coverage",

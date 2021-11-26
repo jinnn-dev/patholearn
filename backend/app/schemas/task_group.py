@@ -15,6 +15,7 @@ class TaskGroupCreate(TaskGroupBase):
 
 
 class TaskGroupUpdate(TaskGroupBase):
+    task_group_id: Optional[int] = None
     name: Optional[str] = None
 
 

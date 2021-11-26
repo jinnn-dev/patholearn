@@ -24,6 +24,7 @@ declare module 'vue' {
     CustomSelect: typeof import('./src/components/form/CustomSelect.vue')['default']
     CustomSlider: typeof import('./src/components/form/CustomSlider.vue')['default']
     DangerButton: typeof import('./src/components/base/DangerButton.vue')['default']
+    DotMenu: typeof import('./src/components/DotMenu.vue')['default']
     ErrorBar: typeof import('./src/components/ErrorBar.vue')['default']
     ErrorNotification: typeof import('./src/components/ErrorNotification.vue')['default']
     EscapeInfo: typeof import('./src/components/viewer/EscapeInfo.vue')['default']
