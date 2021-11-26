@@ -96,7 +96,7 @@
   </role-only>
 </template>
 <script lang="ts">
-import { TaskGroup } from "../model/taskGroup";
+import { TaskGroup, UpdateTaskGroup } from "../model/taskGroup";
 import { defineComponent, PropType, ref } from "vue";
 import { TaskGroupService } from "../services/task-group.service";
 import Icon from "./Icon.vue";
@@ -135,7 +135,13 @@ export default defineComponent({
 
     const editTaskGroup = async () => {
       editTaskGroupLoading.value = true;
-      await TaskGroupService.editTaskGroup(props.taskgroup);
+
+      const update: UpdateTaskGroup = {
+        name: props.taskgroup.name,
+        task_group_id: props.taskgroup.id,
+        short_name: props.taskgroup.short_name,
+      };
+      await TaskGroupService.editTaskGroup(update);
       props.taskgroup.name = newTaskGroupName.value;
       emit("editTaskgroup", props.taskgroup);
       showEditTaskGroup.value = false;

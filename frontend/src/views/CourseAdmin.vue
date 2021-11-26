@@ -187,7 +187,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, reactive, ref, watchEffect } from "vue";
 import { useRoute } from "vue-router";
-import { Course } from "../model/course";
+import { Course, UpdateCourse } from "../model/course";
 import { CourseService } from "../services/course.service";
 import { TaskService } from "../services/task.service";
 import { Slide } from "../model/slide";
@@ -353,13 +353,17 @@ export default defineComponent({
 
     const editCourse = async () => {
       editCourseLoading.value = true;
-      await CourseService.updateCourse(course.value!.short_name!).catch(
-        (err: any) => {
-          console.log(err);
-          deleteLoading.value = false;
-          showDeleteCourse.value = false;
-        }
-      );
+
+      const courseUpdate: UpdateCourse = {
+        course_id: course.value.id,
+        name: newCourseName.value,
+      };
+      await CourseService.updateCourse(courseUpdate).catch((err: any) => {
+        console.log(err);
+        deleteLoading.value = false;
+        showDeleteCourse.value = false;
+      });
+      course.value!.name = newCourseName.value!;
       editCourseLoading.value = false;
       showEditCourse.value = false;
     };

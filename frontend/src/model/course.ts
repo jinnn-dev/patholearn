@@ -23,7 +23,7 @@ export interface CreateCourse {
 }
 
 export interface UpdateCourse {
-  id: number;
+  course_id: number;
   name?: string;
   description?: string;
 }

@@ -19,7 +19,8 @@ class CourseCreate(CourseBase):
 
 
 class CourseUpdate(CourseBase):
-    pass
+    course_id: int
+    name: Optional[str] = None
 
 
 class CourseInDBBase(CourseBase):

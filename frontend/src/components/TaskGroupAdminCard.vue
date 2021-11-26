@@ -427,6 +427,8 @@ export default defineComponent({
         name: props.baseTask!.name,
       };
 
+      console.log(updateBaseTask);
+
       await TaskService.updateBaseTask(updateBaseTask);
       props.baseTask.name = newTaskName.value;
       emit("editBaseTask", props.baseTask);

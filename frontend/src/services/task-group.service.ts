@@ -1,4 +1,4 @@
-import { TaskGroup } from "../model/taskGroup";
+import { TaskGroup, UpdateTaskGroup } from "../model/taskGroup";
 import { ApiService } from "./api.service";
 import { handleError } from "./error-handler";
 
@@ -73,14 +73,15 @@ export class TaskGroupService {
     return response!.data;
   }
 
-  public static async editTaskGroup(taskGroup: TaskGroup): Promise<TaskGroup> {
-    const { short_name } = taskGroup;
+  public static async editTaskGroup(
+    updateTaskGroup: UpdateTaskGroup
+  ): Promise<TaskGroup> {
     const [_, response] = await handleError(
       ApiService.put<TaskGroup>({
-        resource: this._apiUrl + "/" + short_name,
-        data: taskGroup,
+        resource: this._apiUrl + "/",
+        data: updateTaskGroup,
       }),
-      "Task group could not be removed"
+      "Task group could not be updated"
     );
     return response!.data;
   }

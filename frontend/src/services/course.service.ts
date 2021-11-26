@@ -126,10 +126,10 @@ export class CourseService {
   ): Promise<Course> {
     const [_, response] = await handleError(
       ApiService.put<Course>({
-        resource: this.apiURL("/" + courseUpdate.id),
+        resource: this.apiURL("/"),
         data: courseUpdate,
       }),
-      "Course could not be deleted"
+      "Course could not be updated"
     );
     return response!.data;
   }

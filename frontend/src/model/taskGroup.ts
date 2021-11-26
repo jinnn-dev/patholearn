@@ -1,4 +1,4 @@
-import { BaseTask } from './baseTask';
+import { BaseTask } from "./baseTask";
 
 export interface TaskGroup {
   id: number;
@@ -12,4 +12,10 @@ export interface TaskGroup {
   new_tasks?: number;
   correct_tasks?: number;
   wrong_tasks?: number;
+}
+
+export interface UpdateTaskGroup {
+  task_group_id: number;
+  short_name: string;
+  name?: string;
 }
