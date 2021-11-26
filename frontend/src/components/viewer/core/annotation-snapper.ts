@@ -1,74 +1,67 @@
-import { AnnotationLine } from 'model/svg/annotationLine';
 import { Point } from 'openseadragon';
 import { Annotation } from '../../../model/svg/annotation';
+import { AnnotationLine } from '../../../model/svg/annotationLine';
 import { ANNOTATION_TYPE } from '../../../model/viewer/annotationType';
 
 export interface SnapResult {
   snapPoint: Point;
   distance: number | undefined;
-  firstVertex: Point;
-  secondVertex: Point;
+  indexToInsertAfter: number;
+  selectedAnnotation: Annotation;
 }
 
-export function snapAnnotation(annotations: Annotation[], mousePosition: Point, snapRadius: number): SnapResult {
+export function snapAnnotation(
+  annotations: Annotation[],
+  mousePosition: Point,
+  snapRadius: number
+): SnapResult | undefined {
   const snapValue = 30 / snapRadius;
 
-  let firstVertex: Point = new Point(0, 0);
-  let secondVertex: Point = new Point(0, 0);
+  let indexToInsertAfter = 0;
+  let selectedAnnotation: Annotation | undefined;
   let annotationPoint: Point = new Point(0, 0);
   let minimum: number = Number.MAX_SAFE_INTEGER;
 
   annotations.forEach((annotation) => {
-    if (annotation.type === ANNOTATION_TYPE.SOLUTION_POINT || annotation.type === ANNOTATION_TYPE.USER_SOLUTION_POINT) {
+    if (
+      annotation.type === ANNOTATION_TYPE.SOLUTION_POINT ||
+      annotation.type === ANNOTATION_TYPE.USER_SOLUTION_POINT ||
+      annotation.type === ANNOTATION_TYPE.USER_SOLUTION_RECT ||
+      annotation.type === ANNOTATION_TYPE.SOLUTION_RECT
+    ) {
       return;
     }
 
-    const vertices = Array.from((annotation as AnnotationLine).vertice);
+    const vertices = (annotation as AnnotationLine).vertice.map((vertex) => vertex.viewport);
 
     if (annotation.type === ANNOTATION_TYPE.SOLUTION || annotation.type === ANNOTATION_TYPE.USER_SOLUTION) {
       vertices.push(vertices[0]);
     }
 
     for (let i = 0; i < vertices.length - 1; i++) {
-      const tempFirstVertex = vertices[i].viewport;
-      const tempSecondVertex = vertices[i + 1].viewport;
-
-      // const distance = getDistanceToPoint(vertices[i].viewport, vertices[i + 1].viewport, mousePosition);
-      // const pointDistance = getDistanceToPoint(tempFirstVertex, mousePosition);
+      const tempFirstVertex = vertices[i];
+      const tempSecondVertex = vertices[i + 1];
       const distance = getDistanceToLine(tempFirstVertex, tempSecondVertex, mousePosition);
-
       const between = isBetweenPoints(tempFirstVertex, tempSecondVertex, mousePosition);
 
       if (distance < minimum && between) {
         minimum = distance;
         annotationPoint = projection(tempFirstVertex, tempSecondVertex, mousePosition);
-        firstVertex = tempFirstVertex;
-        secondVertex = tempSecondVertex;
-        // annotationPoint = new Point(
-        //   (vertices[i].viewport.x + vertices[i + 1].viewport.x) / 2,
-        //   (vertices[i].viewport.y + vertices[i + 1].viewport.y) / 2
-        // );
-        // const s = vertices[i + 1].viewport.minus(vertices[i].viewport);
-        // annotationPoint = orthogonalProjection(s, mousePosition);
+        indexToInsertAfter = i;
+        selectedAnnotation = annotation;
       }
-
-      // if (pointDistance < snapValue) {
-      //   annotationPoint = vertices[i].viewport;
-      //   minimum = pointDistance;
-      // }
     }
   });
 
-  // console.log('SnapValue', snapValue);
-
-  const min = minimum < snapValue ? minimum : undefined;
-  // console.log(minimum);
+  if (minimum > snapValue) {
+    return undefined;
+  }
 
   return {
     snapPoint: annotationPoint,
-    distance: min,
-    firstVertex: firstVertex,
-    secondVertex: secondVertex
+    distance: minimum,
+    indexToInsertAfter: indexToInsertAfter,
+    selectedAnnotation: selectedAnnotation!
   };
 }
 
@@ -80,15 +73,8 @@ function projection(a: Point, b: Point, p: Point) {
   return a.plus(new Point(ab.x * quotient, ab.y * quotient));
 }
 
-function orthogonalProjection(s: Point, v: Point) {
-  const quotient = dotProduct(s, v) / dotProduct(s, s);
-
-  return new Point(s.x * quotient, s.y * quotient);
-}
-
 function isBetweenPoints(p1: Point, p2: Point, pointToCheck: Point) {
   const diff0 = p2.minus(p1);
-  // const norm = Math.sqrt(dotProduct(p1, p2));
   const norm = euclideanNorm(diff0);
   const direction = diff0.divide(norm);
 
@@ -100,11 +86,6 @@ function isBetweenPoints(p1: Point, p2: Point, pointToCheck: Point) {
 
 function dotProduct(p1: Point, p2: Point) {
   return p1.x * p2.x + p1.y * p2.y;
-}
-
-function getDistanceToPoint(p1: Point, p2: Point): number {
-  const squareRoot = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
-  return squareRoot;
 }
 
 function euclideanNorm(p: Point) {

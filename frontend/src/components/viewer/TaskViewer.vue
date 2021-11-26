@@ -20,7 +20,12 @@
     />
   </annotation-settings>
 
-  <tool-bar :tools="toolbarTools" @toolUpdate="setTool" :setMoving="is_solving || setMoving"></tool-bar>
+  <tool-bar
+    :tools="toolbarTools"
+    @toolUpdate="setTool"
+    :setMoving="is_solving || setMoving"
+    :changeToolTo="changeToolTo"
+  ></tool-bar>
 
   <confirm-dialog
     :show="showDeleteAnnotationsModal"
@@ -132,6 +137,8 @@ export default defineComponent({
     const showDeleteAnnotationDialog = ref(false);
 
     const annotationToBeDeleted = ref('');
+
+    const changeToolTo = ref<Tool>();
 
     watch(
       () => selectedPolygonData.name,
@@ -295,10 +302,8 @@ export default defineComponent({
 
     const setTool = (data: { tool: Tool; event: any }) => {
       drawingViewer.value?.removeDrawingAnnotation();
-      polygonChanged.polygon?.unselect();
-
+      changeToolTo.value = undefined;
       currentTool.value = data.tool;
-      selectedPolygon.value = null;
 
       setMoving.value = false;
 
@@ -348,6 +353,7 @@ export default defineComponent({
           drawingViewer.value!.stopDraggingIndicator = true;
           await saveUserSolution();
           drawingViewer.value!.stopDraggingIndicator = false;
+          changeToolTo.value = Tool.SELECT;
 
           drawingViewer.value?.unsetDrawingAnnotation();
         } else {
@@ -401,7 +407,7 @@ export default defineComponent({
     };
 
     const clickHandler = async (event: any) => {
-      userMouseClickHandler(
+      const tool = await userMouseClickHandler(
         event,
         currentTool.value!,
         drawingViewer.value!,
@@ -412,6 +418,10 @@ export default defineComponent({
           annotationToBeDeleted.value = annotationId;
         }
       );
+
+      if (tool !== undefined) {
+        changeToolTo.value = tool;
+      }
     };
 
     const deleteAnnotation = async () => {
@@ -526,7 +536,8 @@ export default defineComponent({
       deleteAnnotationsLoading,
       updateAnnotationName,
       showDeleteAnnotationDialog,
-      isTaskSaving
+      isTaskSaving,
+      changeToolTo
     };
   }
 });

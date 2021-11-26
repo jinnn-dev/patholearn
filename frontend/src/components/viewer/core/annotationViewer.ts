@@ -252,9 +252,11 @@ export class AnnotationViewer {
         this.scale
       );
 
-      if (this._snapResult.distance) {
-        this._mouseCircle.updateCx(this._snapResult.snapPoint.x);
-        this._mouseCircle.updateCy(this._snapResult.snapPoint.y);
+      if (this._snapResult) {
+        if (this._snapResult.distance) {
+          this._mouseCircle.updateCx(this._snapResult.snapPoint.x);
+          this._mouseCircle.updateCy(this._snapResult.snapPoint.y);
+        }
       }
     }
 
@@ -717,6 +719,21 @@ export class AnnotationViewer {
     }
   }
 
+  addVertexToAnnotation(): Annotation | undefined {
+    if (this._snapResult) {
+      const { snapPoint, indexToInsertAfter, selectedAnnotation } = this._snapResult;
+      (selectedAnnotation as AnnotationLine).addVertexInBetween(
+        snapPoint,
+        indexToInsertAfter + 1,
+        POLYGON_VERTICE_RADIUS / this.scale,
+        POLYGON_STROKE_WIDTH / this.scale
+      );
+
+      return selectedAnnotation;
+    }
+    return undefined;
+  }
+
   focusBackgroundAnnotation(index: number): void {
     if (
       this._annotationManager.backgroundAnnotations.length == 0 ||
@@ -795,6 +812,10 @@ export class AnnotationViewer {
     }
 
     return this._drawingAnnotation?.isClosed;
+  }
+
+  get snapResult() {
+    return this._snapResult;
   }
 
   set stopDraggingIndicator(value: boolean) {

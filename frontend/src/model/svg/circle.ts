@@ -99,6 +99,12 @@ export class Circle {
     this._d3circle = null;
   }
 
+  updateId(id: string) {
+    this._d3circle?.attr('id', id);
+    this._id = id;
+    return this;
+  }
+
   /**
    * Updates the center x coordinate
    *
@@ -131,6 +137,7 @@ export class Circle {
    */
   updateRadius(r: number): Circle {
     this._d3circle?.attr('r', r);
+    this._r = r;
     return this;
   }
 

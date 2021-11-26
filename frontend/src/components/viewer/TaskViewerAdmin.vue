@@ -375,9 +375,23 @@ export default defineComponent({
     });
 
     const setToolbarTools = () => {
-      const tools = [Tool.MOVE, Tool.SELECT, Tool.DELETE, Tool.DELETE_ANNOTATION, Tool.BASE_DRAWING];
+      const tools = [
+        Tool.MOVE,
+        Tool.SELECT,
+        Tool.DELETE,
+        Tool.DELETE_ANNOTATION,
+        Tool.BASE_DRAWING,
+        Tool.ADD_POINT_SOLUTION
+      ];
       if (toolbarTools.value.length === 0) {
-        toolbarTools.value = [Tool.MOVE, Tool.SELECT, Tool.DELETE, Tool.DELETE_ANNOTATION, Tool.BASE_DRAWING];
+        toolbarTools.value = [
+          Tool.MOVE,
+          Tool.SELECT,
+          Tool.DELETE,
+          Tool.DELETE_ANNOTATION,
+          Tool.BASE_DRAWING,
+          Tool.ADD_POINT_SOLUTION
+        ];
       }
 
       toolbarTools.value = toolbarTools.value.slice(0, tools.length);

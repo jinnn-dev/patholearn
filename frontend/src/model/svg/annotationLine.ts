@@ -80,6 +80,38 @@ export class AnnotationLine extends Annotation {
     }
   }
 
+  addVertexInBetween(point: OpenSeadragon.Point, indexToInsertAt: number, r: number, strokeWidth: number) {
+    const circle = new Circle(
+      this.g,
+      point.x,
+      point.y,
+      r,
+      this.color,
+      strokeWidth,
+      this.color,
+      this.id + '-' + this._vertice.length
+    );
+
+    if (this.name) {
+      circle.updateName(this.name);
+    }
+
+    const vertex: VertexElement = {
+      viewport: point,
+      element: circle
+    };
+
+    this._vertice.splice(indexToInsertAt, 0, vertex);
+
+    for (let i = 0; i < this._vertice.length; i++) {
+      this._vertice[i].element.updateId(this.id + '-' + i);
+    }
+
+    this._polylinePoints.splice(indexToInsertAt, 0, vertex.viewport.x + ',' + vertex.viewport.y);
+
+    this.redrawPolyline();
+  }
+
   /**
    * Creates a SVG-Polyline and appends it
    *
@@ -180,6 +212,7 @@ export class AnnotationLine extends Annotation {
     selected.attr('cy', Number(selected.attr('cy')) + Number(viewportDelta.y));
 
     const selectedId = selected.attr('id');
+
     const ids = selectedId.split('-');
     const circleId = +ids[ids.length - 1];
 
