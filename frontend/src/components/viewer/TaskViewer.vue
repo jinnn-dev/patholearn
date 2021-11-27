@@ -433,7 +433,10 @@ export default defineComponent({
 
     const moveHandler = (event: any) => {
       drawingViewer.value?.update(event.position.x, event.position.y);
-      drawingViewer.value?.updateDrawingAnnotationIndicator(currentTool.value === Tool.ADD_POINT_USER_SOLUTION);
+      drawingViewer.value?.updateDrawingAnnotationIndicator(
+        ANNOTATION_TYPE.USER_SOLUTION,
+        currentTool.value === Tool.ADD_POINT_USER_SOLUTION
+      );
     };
 
     const setColors = (taskResult: TaskResult) => {

@@ -244,10 +244,10 @@ export class AnnotationViewer {
   /**
    * Updates the drawing annotation indicator
    */
-  updateDrawingAnnotationIndicator(snap: boolean = false): void {
+  updateDrawingAnnotationIndicator(annotationType: ANNOTATION_TYPE, snap: boolean = false): void {
     if (snap) {
       this._snapResult = snapAnnotation(
-        this._annotationManager.userSolutionAnnotations,
+        this._annotationManager.getAnnotations(annotationType),
         new Point(this._mouseCircle.cx, this._mouseCircle.cy),
         this.scale
       );
