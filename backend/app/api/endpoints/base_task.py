@@ -182,6 +182,14 @@ def update_base_task(*, db: Session = Depends(get_db), current_user: User = Depe
 
     check_if_user_can_access_course(db, user_id=current_user.id, course_id=base_task.course_id)
 
+    duplicate_base_task = crud_base_task.get_by_name(db, name=obj_in.name, task_group_id=base_task.task_group_id)
+
+    if duplicate_base_task:
+        raise HTTPException(
+            status_code=400,
+            detail="BaseTask name already exists"
+        )
+
     base_task = crud_base_task.update(db, db_obj=base_task, obj_in=obj_in)
     return base_task
 

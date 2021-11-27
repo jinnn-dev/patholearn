@@ -89,20 +89,23 @@
     <div class="relative">
       <h1 class="text-2xl">Kurs bearbeiten</h1>
 
-      <InputField label="Kursname" v-model="newCourseName" />
+      <input-field label="Kursname" v-model="newCourseName" />
 
-      <div class="my-4 text-gray-200">
-        ACHTUNG - Alle zugehörigen Aufgabengruppen, Aufgaben und Lösungen werden gelöscht.
+      <div class="border-2 m-2 px-4 rounded-lg border-red-800">
+        <div class="my-4 text-gray-200 font-bold text-red-400">
+          ACHTUNG - Alle zugehörigen Aufgabengruppen, Aufgaben und Lösungen werden gelöscht.
+        </div>
+        <input-field tip="Bitte den Namen des Kurses eingeben um ihn zu löschen" v-model="delteCourseVerification" />
+
+        <primary-button
+          @click.prevent="deleteCourse"
+          class="mr-2 w-full my-5"
+          name="Kurs Löschen"
+          bgColor="bg-red-500"
+          bgHoverColor="bg-red-700"
+          fontWeight="font-normal"
+        ></primary-button>
       </div>
-
-      <primary-button
-        @click.prevent="deleteCourse"
-        class="mr-2 w-full my-5"
-        name="Kurs Löschen"
-        bgColor="bg-red-500"
-        bgHoverColor="bg-red-700"
-        fontWeight="font-normal"
-      ></primary-button>
       <div class="flex justify-end">
         <primary-button
           @click.prevent="showEditCourse = false"
@@ -209,6 +212,8 @@ export default defineComponent({
 
     const downloadUserSolutionsLoading = ref(false);
 
+    const delteCourseVerification = ref('');
+
     onMounted(async () => {
       course.value = await CourseService.getCourseDetails(route.params.id as string);
       loading.value = false;
@@ -288,20 +293,22 @@ export default defineComponent({
     };
 
     const deleteCourse = () => {
-      deleteLoading.value = true;
-      CourseService.deleteCourse(course.value!.short_name!)
-        .then((res: Course) => {
-          if (res) {
-            router.push('/home');
-          }
-          deleteLoading.value = false;
-          showDeleteCourse.value = false;
-        })
-        .catch((err) => {
-          console.log(err);
-          deleteLoading.value = false;
-          showDeleteCourse.value = false;
-        });
+      if (delteCourseVerification.value === course.value?.name) {
+        deleteLoading.value = true;
+        CourseService.deleteCourse(course.value!.short_name!)
+          .then((res: Course) => {
+            if (res) {
+              router.push('/home');
+            }
+            deleteLoading.value = false;
+            showDeleteCourse.value = false;
+          })
+          .catch((err) => {
+            console.log(err);
+            deleteLoading.value = false;
+            showDeleteCourse.value = false;
+          });
+      }
     };
 
     const deleteTaskgroup = (taskgroup: TaskGroup) => {
@@ -342,31 +349,16 @@ export default defineComponent({
       loading,
       newCourseName,
       deleteTaskgroup,
-      downloadUserSolutionsLoading,
-      showModal,
-      onSubmit,
-      formData,
-      setSlide,
       showGroupModal,
       fromGroupData,
       onGroupSubmit,
-      setGroup,
-      loadTaskGroups,
-      taskGroups,
       taskGroupExists,
-      baseTasksWithoutGroups,
       taskGroupLoading,
       onTaskGroupClose,
       editCourseLoading,
-      taskError,
-      taskLoading,
-      deleteLoading,
-      showDeleteCourse,
-      onTaskClose,
       deleteCourse,
-      deleteTaskGroupLoading,
-      deleteTaskGroupItem,
-      showEditCourse
+      showEditCourse,
+      delteCourseVerification
     };
   }
 });

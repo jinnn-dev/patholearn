@@ -89,7 +89,7 @@
             type="submit"
             :loading="editTaskGroupLoading"
             @click="editTaskGroup"
-            class="w-28"
+            class="w-32"
           ></save-button>
         </div>
       </div>

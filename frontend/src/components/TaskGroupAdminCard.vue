@@ -241,7 +241,7 @@
           type="submit"
           :loading="editTaskLoading"
           @click="editBaseTask"
-          class="w-28"
+          class="w-32"
         ></save-button>
       </div>
     </div>
@@ -335,7 +335,9 @@ export default defineComponent({
         name: newTaskName.value
       };
 
-      await TaskService.updateBaseTask(updateBaseTask);
+      if (updateBaseTask.name !== props.baseTask?.name) {
+        await TaskService.updateBaseTask(updateBaseTask);
+      }
       props.baseTask!.name = newTaskName.value;
       emit('editBaseTask', props.baseTask);
       showEditTask.value = false;

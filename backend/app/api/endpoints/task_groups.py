@@ -151,6 +151,13 @@ def update_task_group(*, db: Session = Depends(get_db), current_user: User = Dep
 
     check_if_user_can_access_course(db, user_id=current_user.id, course_id=task_group.course_id)
 
+    task_group_duplicate = crud_task_group.get_by_name(db, name=obj_in.name, course_id=task_group.course_id)
+    if task_group_duplicate:
+        raise HTTPException(
+            status_code=400,
+            detail="TaskGroup name already exists"
+        )
+
     task_group = crud_task_group.update(db, db_obj=task_group, obj_in=obj_in)
     return task_group
 
