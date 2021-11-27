@@ -1,4 +1,5 @@
 from typing import Any, List
+from app.schemas.task_group import TaskGroupUpdate
 
 from starlette.responses import StreamingResponse
 
@@ -142,3 +143,14 @@ def download_usersolutions(*, db: Session = Depends(get_db), short_name: str,
     }
 
     return StreamingResponse(output, headers=headers)
+
+@router.put('/', response_model=TaskGroup)
+def update_task_group(*, db: Session = Depends(get_db), current_user: User = Depends(get_current_active_superuser),
+                     obj_in: TaskGroupUpdate) -> TaskGroup:
+    task_group = crud_task_group.get(db, id=obj_in.task_group_id)
+
+    check_if_user_can_access_course(db, user_id=current_user.id, course_id=task_group.course_id)
+
+    task_group = crud_task_group.update(db, db_obj=task_group, obj_in=obj_in)
+    return task_group
+
