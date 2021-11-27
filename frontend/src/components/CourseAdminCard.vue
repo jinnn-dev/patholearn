@@ -1,6 +1,6 @@
 <template>
   <router-link :to="'/group/' + taskgroup.short_name + '/admin'" class="">
-    <skeleton-card class="group relative">
+    <skeleton-card class="group relative min-w-[15rem]">
       <div class="text-xl flex justify-between items-center">
         <div>
           {{ taskgroup.name }}

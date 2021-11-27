@@ -40,7 +40,7 @@
             <div v-else class="flex flex-wrap">
               <div v-for="taskgroup in course?.task_groups" :key="taskgroup.short_name" class="ml-4 mb-4">
                 <router-link :to="'/group/' + taskgroup.short_name">
-                  <skeleton-card>
+                  <skeleton-card class="min-w-[15rem]">
                     <div class="text-xl">{{ taskgroup.name }}</div>
                     <progress-bar
                       :id="taskgroup.short_name"

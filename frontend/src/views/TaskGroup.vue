@@ -20,7 +20,7 @@
           <div v-else class="flex flex-wrap my-8">
             <div v-for="baseTask in taskGroup?.tasks" :key="baseTask.id" class="ml-4 mb-4">
               <skeleton-card
-                class="min-w-40 cursor-pointer relative"
+                class="min-w-[15rem] cursor-pointer relative"
                 @click="baseTask.task_count && baseTask.task_count > 0 && $router.push('/task/' + baseTask.short_name)"
               >
                 <div class="flex justify-between">
