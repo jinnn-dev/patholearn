@@ -144,7 +144,7 @@ def download_usersolutions(*, db: Session = Depends(get_db), short_name: str,
 
     return StreamingResponse(output, headers=headers)
 
-@router.put('/', response_model=TaskGroup)
+@router.put('', response_model=TaskGroup)
 def update_task_group(*, db: Session = Depends(get_db), current_user: User = Depends(get_current_active_superuser),
                      obj_in: TaskGroupUpdate) -> TaskGroup:
     task_group = crud_task_group.get(db, id=obj_in.task_group_id)

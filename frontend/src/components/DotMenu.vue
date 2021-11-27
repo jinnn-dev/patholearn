@@ -8,6 +8,7 @@
       top-0
       w-56
       -right-52
+      z-10
       rounded-md
       shadow-lg
       bg-gray-600
@@ -67,15 +68,15 @@
     </div>
   </div>
 </template>
+<script lang="ts">
+import { defineComponent, ref } from 'vue';
 
-<script setup lang="ts">
-import Icon from "./Icon.vue";
-
-defineEmits(["delete", "edit"]);
-
-const { optionsOpen } = defineProps({
-  optionsOpen: {
-    type: Boolean,
+export default defineComponent({
+  props: {
+    optionsOpen: Boolean
   },
+
+  emits: ['delete', 'edit']
 });
 </script>
+<style></style>

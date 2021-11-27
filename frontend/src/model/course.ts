@@ -1,5 +1,5 @@
-import { TaskGroup } from "./taskGroup";
-import { User } from "./user";
+import { TaskGroup } from './taskGroup';
+import { User } from './user';
 
 export interface Course {
   id: number;

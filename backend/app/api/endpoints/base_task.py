@@ -452,8 +452,10 @@ def get_statistic_to_base_task(*, db: Session = Depends(get_db), short_name: str
             mapped_tasks[task_id] = crud_task.get(db, id=task_id)
 
     task_data = []
+
     for task in mapped_tasks.values():
-        task_data.extend(task.task_data)
+        if task.task_data:
+            task_data.extend(task.task_data)
 
     image_query = '&taskimageid='.join(task_data)
     loaded_images = requests.get(settings.SLIDE_URL + '/task-images?taskimageid=' + image_query).json()
@@ -464,20 +466,20 @@ def get_statistic_to_base_task(*, db: Session = Depends(get_db), short_name: str
     for task_statistic in task_statistics:
         task = mapped_tasks[task_statistic.task_id]
         if task.task_type == TaskType.IMAGE_SELECT:
-
             for image_uuid in task_statistic.solution_data:
                 if not image_uuid in task.solution:
                     image = next((image for image in loaded_images if image["task_image_id"] == image_uuid), None)
-                    if image["label"]:
-                        if task.task_question in most_wrong_classified_images:
+                    if image:
+                        if image["label"]:
+                            if task.task_question in most_wrong_classified_images:
 
-                            if image["label"] in most_wrong_classified_images[task.task_question]:
-                                most_wrong_classified_images[task.task_question][image["label"]] += 1
+                                if image["label"] in most_wrong_classified_images[task.task_question]:
+                                    most_wrong_classified_images[task.task_question][image["label"]] += 1
+                                else:
+                                    most_wrong_classified_images[task.task_question][image["label"]] = 1
                             else:
+                                most_wrong_classified_images[task.task_question] = {}
                                 most_wrong_classified_images[task.task_question][image["label"]] = 1
-                        else:
-                            most_wrong_classified_images[task.task_question] = {}
-                            most_wrong_classified_images[task.task_question][image["label"]] = 1
                     if image_uuid in most_wrong_picked_images:
                         most_wrong_picked_images[image_uuid] += 1
                     else:
@@ -490,7 +492,7 @@ def get_statistic_to_base_task(*, db: Session = Depends(get_db), short_name: str
     result_images = []
     if len(most_wrong_picked_images_sorted.keys()) > 0:
         for key in most_wrong_picked_images_sorted.keys():
-            image = next((image for image in loaded_images if image["task_image_id"] == key))
+            image = next((image for image in loaded_images if image["task_image_id"] == key), None)
             if image:
                 result_images.append(image)
                 image["amount"] = most_wrong_picked_images_sorted[image["task_image_id"]]

@@ -13,7 +13,8 @@
             @click.prevent.stop="dotMenuOpen = !dotMenuOpen"
           ></Icon>
 
-          <DotMenu
+          <dot-menu
+            ref="target"
             :optionsOpen="dotMenuOpen"
             @edit="showEditTaskGroup = true"
             @delete="showDeleteTaskGroup = true"
@@ -96,22 +97,23 @@
   </role-only>
 </template>
 <script lang="ts">
-import { TaskGroup, UpdateTaskGroup } from "../model/taskGroup";
-import { defineComponent, PropType, ref } from "vue";
-import { TaskGroupService } from "../services/task-group.service";
-import Icon from "./Icon.vue";
+import { TaskGroup, UpdateTaskGroup } from '../model/taskGroup';
+import { defineComponent, PropType, ref } from 'vue';
+import { TaskGroupService } from '../services/task-group.service';
+import Icon from './Icon.vue';
+import { onClickOutside } from '@vueuse/core';
 export default defineComponent({
   props: {
     taskgroup: {
       type: Object as PropType<TaskGroup>,
-      required: true,
-    },
+      required: true
+    }
   },
   components: {
-    Icon,
+    Icon
   },
 
-  emits: ["deleteTaskgroup", "editTaskgroup"],
+  emits: ['deleteTaskgroup', 'editTaskgroup'],
 
   setup(props, { emit }) {
     const downloadUserSolutionsLoading = ref(false);
@@ -128,7 +130,7 @@ export default defineComponent({
     const deleteTaskGroup = async () => {
       deleteTaskGroupLoading.value = true;
       await TaskGroupService.removeTaskGroup(props.taskgroup!.short_name);
-      emit("deleteTaskgroup", props.taskgroup);
+      emit('deleteTaskgroup', props.taskgroup);
       showDeleteTaskGroup.value = false;
       deleteTaskGroupLoading.value = false;
     };
@@ -137,48 +139,52 @@ export default defineComponent({
       editTaskGroupLoading.value = true;
 
       const update: UpdateTaskGroup = {
-        name: props.taskgroup.name,
+        name: newTaskGroupName.value,
         task_group_id: props.taskgroup.id,
-        short_name: props.taskgroup.short_name,
+        short_name: props.taskgroup.short_name
       };
       await TaskGroupService.editTaskGroup(update);
       props.taskgroup.name = newTaskGroupName.value;
-      emit("editTaskgroup", props.taskgroup);
+      emit('editTaskgroup', props.taskgroup);
       showEditTaskGroup.value = false;
       editTaskGroupLoading.value = false;
+      dotMenuOpen.value = false;
     };
 
     const downloadUserSolutions = async (short_name: string) => {
       downloadUserSolutionsLoading.value = true;
-      const data = await TaskGroupService.downloadUserSolutionsToTaskGroup(
-        short_name
-      );
+      const data = await TaskGroupService.downloadUserSolutionsToTaskGroup(short_name);
       downloadUserSolutionsLoading.value = false;
 
-      const a = document.createElement("a");
+      const a = document.createElement('a');
 
-      const blob = new Blob([data], { type: "application/xlsx" });
+      const blob = new Blob([data], { type: 'application/xlsx' });
 
       a.href = window.URL.createObjectURL(blob);
-      a.download = short_name + ".xlsx";
-      a.style.display = "none";
+      a.download = short_name + '.xlsx';
+      a.style.display = 'none';
       document.body.appendChild(a);
       a.click();
     };
+
+    const target = ref(null);
+
+    onClickOutside(target, (event) => (dotMenuOpen.value = false));
 
     return {
       newTaskGroupName,
       editTaskGroup,
       editTaskGroupLoading,
       showEditTaskGroup,
+      target,
       dotMenuOpen,
       deleteTaskGroup,
       deleteTaskGroupLoading,
       showDeleteTaskGroup,
       downloadUserSolutions,
-      downloadUserSolutionsLoading,
+      downloadUserSolutionsLoading
     };
-  },
+  }
 });
 </script>
 <style></style>

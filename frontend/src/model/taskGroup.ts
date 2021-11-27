@@ -1,4 +1,4 @@
-import { BaseTask } from "./baseTask";
+import { BaseTask } from './baseTask';
 
 export interface TaskGroup {
   id: number;

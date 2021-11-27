@@ -1,9 +1,9 @@
-import { Course, CreateCourse, UpdateCourse } from "../model/course";
-import { ApiService } from "./api.service";
-import { handleError } from "./error-handler";
+import { Course, CreateCourse, UpdateCourse } from '../model/course';
+import { ApiService } from './api.service';
+import { handleError } from './error-handler';
 
 export class CourseService {
-  private static apiURL = (path: string = "") => "/courses" + path;
+  private static apiURL = (path: string = '') => '/courses' + path;
 
   /**
    * Searches for courses containing the search string
@@ -11,12 +11,12 @@ export class CourseService {
    * @param searchString Part of course name
    * @returns Promise with the found courses
    */
-  public static async getCourses(searchString: string = ""): Promise<Course[]> {
+  public static async getCourses(searchString: string = ''): Promise<Course[]> {
     const [_, response] = await handleError(
       ApiService.get<Course[]>({
-        resource: this.apiURL("?search=" + searchString),
+        resource: this.apiURL('?search=' + searchString)
       }),
-      "Courses could not be loaded"
+      'Courses could not be loaded'
     );
     return response!.data;
   }
@@ -28,8 +28,8 @@ export class CourseService {
    */
   public static async getMemberCourses(): Promise<Course[]> {
     const [_, response] = await handleError(
-      ApiService.get<Course[]>({ resource: this.apiURL("/member") }),
-      "Courses could not be loaded"
+      ApiService.get<Course[]>({ resource: this.apiURL('/member') }),
+      'Courses could not be loaded'
     );
     return response!.data;
   }
@@ -41,8 +41,8 @@ export class CourseService {
    */
   public static async getMyCourses(): Promise<Course[]> {
     const [_, response] = await handleError(
-      ApiService.get<Course[]>({ resource: this.apiURL("/owner") }),
-      "Courses could not be loaded"
+      ApiService.get<Course[]>({ resource: this.apiURL('/owner') }),
+      'Courses could not be loaded'
     );
     return response!.data;
   }
@@ -55,8 +55,8 @@ export class CourseService {
    */
   public static async getCourseDetails(courseName: string): Promise<Course> {
     const [_, response] = await handleError(
-      ApiService.get<Course>({ resource: this.apiURL("/" + courseName) }),
-      "Course details could not be loaded"
+      ApiService.get<Course>({ resource: this.apiURL('/' + courseName) }),
+      'Course details could not be loaded'
     );
     return response!.data;
   }
@@ -67,12 +67,10 @@ export class CourseService {
    * @param createCourse Data for creating the course
    * @returns Promise with the created course
    */
-  public static async createCourse(
-    createCourse: CreateCourse
-  ): Promise<Course> {
+  public static async createCourse(createCourse: CreateCourse): Promise<Course> {
     const [_, respose] = await handleError(
       ApiService.post<Course>({ resource: this.apiURL(), data: createCourse }),
-      "Course could not be created"
+      'Course could not be created'
     );
     return respose!.data;
   }
@@ -85,8 +83,8 @@ export class CourseService {
    */
   public static async joinCourse(short_name: string): Promise<Course> {
     const [_, response] = await handleError(
-      ApiService.post<Course>({ resource: this.apiURL("/" + short_name) }),
-      "Course could not be joined"
+      ApiService.post<Course>({ resource: this.apiURL('/' + short_name) }),
+      'Course could not be joined'
     );
     return response!.data;
   }
@@ -100,9 +98,9 @@ export class CourseService {
   public static async leaveCourse(short_name: string): Promise<Course> {
     const [_, response] = await handleError(
       ApiService.delete<Course>({
-        resource: this.apiURL("/" + short_name + "/member"),
+        resource: this.apiURL('/' + short_name + '/member')
       }),
-      "Course could not be left"
+      'Course could not be left'
     );
     return response!.data;
   }
@@ -115,21 +113,19 @@ export class CourseService {
    */
   public static async deleteCourse(short_name: string): Promise<Course> {
     const [_, response] = await handleError(
-      ApiService.delete<Course>({ resource: this.apiURL("/" + short_name) }),
-      "Course could not be deleted"
+      ApiService.delete<Course>({ resource: this.apiURL('/' + short_name) }),
+      'Course could not be deleted'
     );
     return response!.data;
   }
 
-  public static async updateCourse(
-    courseUpdate: UpdateCourse
-  ): Promise<Course> {
+  public static async updateCourse(courseUpdate: UpdateCourse): Promise<Course> {
     const [_, response] = await handleError(
       ApiService.put<Course>({
-        resource: this.apiURL("/"),
-        data: courseUpdate,
+        resource: this.apiURL(),
+        data: courseUpdate
       }),
-      "Course could not be updated"
+      'Course could not be updated'
     );
     return response!.data;
   }
