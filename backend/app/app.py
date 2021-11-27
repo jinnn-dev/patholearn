@@ -44,7 +44,6 @@ app.add_middleware(
 
 @app.get("/")
 def root():
-    division_by_zero = 1 / 0
     return {"Hello": "World"}
 
 
