@@ -20,8 +20,8 @@ class Settings(BaseSettings):
 
     RABBIT_URL = os.environ["RABBIT_URL"] if "RABBIT_URL" in os.environ else "amqp://guest:guest@127.0.0.1:5672//"
 
-    MINIO_ROOT_USER = os.environ["MINIO_ROOT_USER"]
-    MINIO_ROOT_PASSWORD = os.environ["MINIO_ROOT_PASSWORD"]
+    MINIO_ROOT_USER = os.environ["MINIO_ROOT_USER"] if "MINIO_ROOT_USER" in os.environ else "minio"
+    MINIO_ROOT_PASSWORD = os.environ["MINIO_ROOT_PASSWORD"] if "MINIO_ROOT_PASSWORD" in os.environ else "minioKey1234"
 
     FIRST_SUPERUSER_EMAIL: EmailStr = "admin@admin.de"
     FIRST_SUPERUSER_PASSWORD: str = "admin"
