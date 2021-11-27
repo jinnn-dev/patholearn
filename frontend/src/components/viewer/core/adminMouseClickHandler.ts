@@ -69,9 +69,9 @@ export async function adminMouseClickHandler(
         .on('click', function () {
           const selectionId = select(this).attr('id');
 
-          if (selectedPolygon.value !== undefined && selectedPolygon.value?.id === selectionId) {
-            return;
-          }
+          // if (selectedPolygon.value !== undefined && selectedPolygon.value?.id === selectionId) {
+          //   return;
+          // }
           // Values need to be reset otherwise select does not work
           selectionCallback(selectionId);
         });

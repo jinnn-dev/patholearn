@@ -84,7 +84,7 @@
 
   <escape-info :show="isPolygonDrawing || isLineDrawing" :isPolygon="isPolygonDrawing"></escape-info>
 
-  <saving-info></saving-info>
+  <saving-info />
 
   <ground-truth-dialog
     :showDialog="showUploadDialog"
@@ -103,7 +103,7 @@
   ></confirm-dialog>
 
   <background-annotation-switcher
-    v-if="task?.task_data"
+    v-if="task?.task_data && task?.task_data?.length !== 0"
     :backgroundAnnotations="task?.task_data?.length"
     @focus="focusAnnotation"
   ></background-annotation-switcher>
@@ -124,10 +124,10 @@ import { computed, defineComponent, onMounted, PropType, reactive, ref, watch } 
 
 import { getSlideUrl } from '../../config';
 
-import { options, SVG_ID } from './core/options';
+import { options } from './core/options';
 import { AnnotationViewer } from './core/annotationViewer';
 import OpenSeadragon from 'openseadragon';
-import { select, selectAll } from 'd3-selection';
+import { selectAll } from 'd3-selection';
 import { ParseResult } from '../../utils/annotation-parser';
 import { TaskService } from '../../services/task.service';
 import { focusBackgroundAnnotation, updateAnnotation } from './taskViewerHelper';
@@ -448,7 +448,6 @@ export default defineComponent({
       drawingViewer.value?.removeDrawingAnnotation();
       changeToolTo.value = undefined;
       currentTool.value = data.tool;
-
       setMoving.value = false;
 
       if (isDrawingTool(currentTool.value!)) {
@@ -584,14 +583,12 @@ export default defineComponent({
     };
 
     const selectAnnotation = (annotationId: string) => {
-      // Values need to be reset otherwise select does not work
-      selectedPolygonData.innerOffset = undefined;
-      selectedPolygonData.outerOffset = undefined;
-      selectedPolygonData.offsetRadius = undefined;
-      selectedPolygonData.color = undefined;
-      selectedPolygonData.name = undefined;
+      if (annotationId === selectedPolygon.value?.id) {
+        return;
+      }
 
       selectedPolygon.value = drawingViewer.value?.selectAnnotation(annotationId);
+
       selectedPolygonData.color = selectedPolygon.value!.color;
 
       if (selectedPolygon.value?.type !== ANNOTATION_TYPE.BASE) {

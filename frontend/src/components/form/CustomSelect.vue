@@ -96,7 +96,7 @@ export default defineComponent({
       type: String as PropType<SELECT_OPTIONS_SIZE>,
       default: 'medium'
     },
-    initialData: String,
+    initialData: [String, Object],
 
     isSearchable: {
       type: Boolean,
@@ -140,7 +140,10 @@ export default defineComponent({
     watch(
       () => props.initialData,
       () => {
-        valueSelected(props.initialData);
+        // valueSelected(props.initialData);
+        searchString.value = isObject(props.initialData!)
+          ? (props.initialData as Object)[props.field as string]
+          : props.initialData;
       }
     );
 
