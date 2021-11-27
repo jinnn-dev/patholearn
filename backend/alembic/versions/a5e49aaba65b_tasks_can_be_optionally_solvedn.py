@@ -28,12 +28,12 @@ def upgrade():
         op.drop_index('name', table_name='slide')
         op.drop_table('slide')
 
-    op.create_index(op.f('ix_basetask_slide_id'), 'basetask', ['slide_id'], unique=False)
-    op.add_column('task', sa.Column('can_be_solved', sa.Boolean(), nullable=True))
-    op.alter_column('usersolution', 'failed_attempts',
-               existing_type=mysql.INTEGER(),
-               nullable=False,
-               existing_server_default=sa.text('(0)'))
+        op.create_index(op.f('ix_basetask_slide_id'), 'basetask', ['slide_id'], unique=False)
+        op.add_column('task', sa.Column('can_be_solved', sa.Boolean(), nullable=True))
+        op.alter_column('usersolution', 'failed_attempts',
+                   existing_type=mysql.INTEGER(),
+                   nullable=False,
+                   existing_server_default=sa.text('(0)'))
     # ### end Alembic commands ###
 
 
