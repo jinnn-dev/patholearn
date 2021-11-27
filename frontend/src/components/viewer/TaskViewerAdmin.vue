@@ -80,7 +80,7 @@
     </div>
   </annotation-settings>
 
-  <tool-bar :tools="toolbarTools" @toolUpdate="setTool" :setMoving="setMoving"></tool-bar>
+  <tool-bar :tools="toolbarTools" @toolUpdate="setTool" :setMoving="setMoving" :changeToolTo="changeToolTo"></tool-bar>
 
   <escape-info :show="isPolygonDrawing || isLineDrawing" :isPolygon="isPolygonDrawing"></escape-info>
 
@@ -167,7 +167,7 @@ export default defineComponent({
       Tool.DELETE,
       Tool.DELETE_ANNOTATION,
       Tool.BASE_DRAWING,
-      Tool.RECT_SOLUTION
+      Tool.ADD_POINT_SOLUTION
     ]);
     const currentTool = ref<Tool>();
 
@@ -220,6 +220,8 @@ export default defineComponent({
 
     const showDeleteAnnotationDialog = ref(false);
     const deleteAnnoatationId = ref('');
+
+    const changeToolTo = ref<Tool>();
 
     watch(
       () => props.task,
@@ -375,9 +377,23 @@ export default defineComponent({
     });
 
     const setToolbarTools = () => {
-      const tools = [Tool.MOVE, Tool.SELECT, Tool.DELETE, Tool.DELETE_ANNOTATION, Tool.BASE_DRAWING];
+      const tools = [
+        Tool.MOVE,
+        Tool.SELECT,
+        Tool.DELETE,
+        Tool.DELETE_ANNOTATION,
+        Tool.BASE_DRAWING,
+        Tool.ADD_POINT_SOLUTION
+      ];
       if (toolbarTools.value.length === 0) {
-        toolbarTools.value = [Tool.MOVE, Tool.SELECT, Tool.DELETE, Tool.DELETE_ANNOTATION, Tool.BASE_DRAWING];
+        toolbarTools.value = [
+          Tool.MOVE,
+          Tool.SELECT,
+          Tool.DELETE,
+          Tool.DELETE_ANNOTATION,
+          Tool.BASE_DRAWING,
+          Tool.ADD_POINT_SOLUTION
+        ];
       }
 
       toolbarTools.value = toolbarTools.value.slice(0, tools.length);
@@ -429,10 +445,9 @@ export default defineComponent({
     };
 
     const setTool = (data: { tool: Tool; event: any }) => {
+      drawingViewer.value?.removeDrawingAnnotation();
+      changeToolTo.value = undefined;
       currentTool.value = data.tool;
-      polygonChanged.polygon?.unselect();
-
-      selectedPolygon.value = null;
 
       setMoving.value = false;
 
@@ -444,7 +459,7 @@ export default defineComponent({
         drawingViewer.value?.removeMouseCircle();
       }
 
-      if (isSolution(TOOL_POLYGON[currentTool.value!]!)) {
+      if (isSolution(TOOL_POLYGON[currentTool.value!]!) || currentTool.value === Tool.ADD_POINT_SOLUTION) {
         drawingViewer.value?.updateColor(ANNOTATION_COLOR.SOLUTION_COLOR);
       } else {
         drawingViewer.value?.updateColor(ANNOTATION_COLOR.BACKGORUND_COLOR);
@@ -468,6 +483,10 @@ export default defineComponent({
       } else {
         viewerRef.value.style.cursor = 'pointer';
       }
+
+      if (currentTool.value !== Tool.SELECT) {
+        polygonChanged.polygon?.unselect();
+      }
     };
 
     const handleKeyup = async (e: KeyboardEvent) => {
@@ -487,6 +506,7 @@ export default defineComponent({
 
           if (drawingViewer.value?.drawingAnnotation) {
             selectAnnotation(drawingViewer.value?.drawingAnnotation?.id);
+            changeToolTo.value = Tool.SELECT;
           }
 
           drawingViewer.value?.unsetDrawingAnnotation();
@@ -538,7 +558,7 @@ export default defineComponent({
     };
 
     const clickHandler = async (event: any) => {
-      adminMouseClickHandler(
+      const tool = await adminMouseClickHandler(
         event,
         currentTool.value!,
         drawingViewer.value!,
@@ -550,6 +570,10 @@ export default defineComponent({
           showDeleteAnnotationDialog.value = true;
         }
       );
+
+      if (tool !== undefined) {
+        changeToolTo.value = tool;
+      }
     };
 
     const deleteAnnotation = async () => {
@@ -598,7 +622,11 @@ export default defineComponent({
 
     const moveHandler = (event: any) => {
       drawingViewer.value?.update(event.position.x, event.position.y);
-      drawingViewer.value?.updateDrawingAnnotationIndicator();
+
+      drawingViewer.value?.updateDrawingAnnotationIndicator(
+        ANNOTATION_TYPE.SOLUTION,
+        currentTool.value === Tool.ADD_POINT_SOLUTION
+      );
     };
 
     const hideGroup = (group: AnnotationGroup) => {
@@ -673,7 +701,8 @@ export default defineComponent({
       updateAnnotationColor,
       showDeleteAnnotationDialog,
       isTaskSaving,
-      deleteAnnotation
+      deleteAnnotation,
+      changeToolTo
     };
   }
 });

@@ -15,7 +15,9 @@ export enum Tool {
   UPLOAD,
   DELETE,
   RECT_SOLUTION,
-  RECT_USER_SOLUTION
+  RECT_USER_SOLUTION,
+  ADD_POINT_USER_SOLUTION,
+  ADD_POINT_SOLUTION
 }
 
 type ToolComponent = {
@@ -36,7 +38,9 @@ export const TOOL_COMPONENTS: ToolComponent = {
   [Tool.UPLOAD]: 'upload',
   [Tool.DELETE]: 'trash',
   [Tool.RECT_SOLUTION]: 'rectangle',
-  [Tool.RECT_USER_SOLUTION]: 'rectangle'
+  [Tool.RECT_USER_SOLUTION]: 'rectangle',
+  [Tool.ADD_POINT_USER_SOLUTION]: 'plus-circle',
+  [Tool.ADD_POINT_SOLUTION]: 'plus-circle'
 };
 
 type ToolColors = {
@@ -52,7 +56,9 @@ export const TOOL_COLORS: ToolColors = {
   [Tool.LINE_SOLUTION]: ANNOTATION_COLOR.SOLUTION_COLOR,
   [Tool.LINE_USER_SOLUTION]: ANNOTATION_COLOR.USER_SOLUTION_COLOR,
   [Tool.RECT_SOLUTION]: ANNOTATION_COLOR.SOLUTION_COLOR,
-  [Tool.RECT_USER_SOLUTION]: ANNOTATION_COLOR.USER_SOLUTION_COLOR
+  [Tool.RECT_USER_SOLUTION]: ANNOTATION_COLOR.USER_SOLUTION_COLOR,
+  [Tool.ADD_POINT_USER_SOLUTION]: ANNOTATION_COLOR.USER_SOLUTION_COLOR,
+  [Tool.ADD_POINT_SOLUTION]: ANNOTATION_COLOR.SOLUTION_COLOR
 };
 
 export const TOOL_HINTS: ToolComponent = {
@@ -69,7 +75,9 @@ export const TOOL_HINTS: ToolComponent = {
   [Tool.LINE_USER_SOLUTION]: 'Zeichne eine Linie',
   [Tool.DELETE]: 'Alle Annotationen löschen',
   [Tool.RECT_SOLUTION]: 'Zeichne ein Rechteck',
-  [Tool.RECT_USER_SOLUTION]: 'Zeichne ein Rechteck'
+  [Tool.RECT_USER_SOLUTION]: 'Zeichne ein Rechteck',
+  [Tool.ADD_POINT_SOLUTION]: 'Füge einen Punkt hinzu',
+  [Tool.ADD_POINT_USER_SOLUTION]: 'Füge einen Punkt hinzu'
 };
 
 type ToolAnnotation = {
@@ -96,7 +104,9 @@ export const isDrawingTool = (tool: Tool) => {
     tool === Tool.LINE_SOLUTION ||
     tool === Tool.LINE_USER_SOLUTION ||
     tool === Tool.RECT_USER_SOLUTION ||
-    tool === Tool.RECT_SOLUTION
+    tool === Tool.RECT_SOLUTION ||
+    tool === Tool.ADD_POINT_SOLUTION ||
+    tool === Tool.ADD_POINT_USER_SOLUTION
   );
 };
 

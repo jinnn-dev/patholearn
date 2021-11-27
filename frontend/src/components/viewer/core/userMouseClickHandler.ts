@@ -4,7 +4,7 @@ import { isDrawingTool, Tool, TOOL_POLYGON } from '../../../model/viewer/tools';
 import { TooltipGenerator } from '../../../utils/tooltip-generator';
 import { AnnotationViewer } from './annotationViewer';
 import { SVG_ID } from './options';
-import { selectedPolygon, userSolutionLocked } from './viewerState';
+import { polygonChanged, selectedPolygon, userSolutionLocked } from './viewerState';
 
 export async function userMouseClickHandler(
   event: any,
@@ -13,8 +13,15 @@ export async function userMouseClickHandler(
   selectedPolygonData: any,
   saveCallback: Function,
   deleteAnnotation: Function
-) {
-  if (isDrawingTool(currentTool!)) {
+): Promise<Tool | undefined> {
+  if (currentTool === Tool.ADD_POINT_SOLUTION || currentTool === Tool.ADD_POINT_USER_SOLUTION) {
+    const annotation = annotationViewer.addVertexToAnnotation();
+    if (annotation) {
+      selectedPolygon.value = annotationViewer.selectAnnotation(annotation.id);
+      polygonChanged.changed = true;
+      return Tool.SELECT;
+    }
+  } else if (isDrawingTool(currentTool!)) {
     if (event.quick) {
       TooltipGenerator.destoyAll();
 
@@ -27,6 +34,7 @@ export async function userMouseClickHandler(
 
         saveCallback();
         annotationViewer.addDrawingAnnotation(TOOL_POLYGON[currentTool!]!);
+        return Tool.SELECT;
       }
     }
   } else if (currentTool === Tool.POINT_USER_SOLUTION) {
@@ -71,4 +79,5 @@ export async function userMouseClickHandler(
       annotationViewer.removeListener();
     }
   }
+  return undefined;
 }

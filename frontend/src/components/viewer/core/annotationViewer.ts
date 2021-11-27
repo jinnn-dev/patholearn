@@ -29,6 +29,7 @@ import { isUserSolution } from '../../../model/viewer/tools';
 import { AnnotationParser } from '../../../utils/annotation-parser';
 import { imageToViewport, pointIsInImage, webToViewport } from '../../../utils/seadragon.utils';
 import { TooltipGenerator } from '../../../utils/tooltip-generator';
+import { snapAnnotation, SnapResult } from './annotation-snapper';
 import { AnnotationManager } from './annotationManager';
 import { SVG_ID } from './options';
 import { SvgOverlay } from './svg-overlay';
@@ -49,6 +50,8 @@ export class AnnotationViewer {
   private _currentColor: ANNOTATION_COLOR;
 
   private _stopDraggingIndicator: boolean = false;
+
+  private _snapResult: SnapResult | undefined;
 
   constructor(viewerOptions: OpenSeadragon.Options) {
     this._viewer = OpenSeadragon(viewerOptions);
@@ -241,7 +244,22 @@ export class AnnotationViewer {
   /**
    * Updates the drawing annotation indicator
    */
-  updateDrawingAnnotationIndicator(): void {
+  updateDrawingAnnotationIndicator(annotationType: ANNOTATION_TYPE, snap: boolean = false): void {
+    if (snap) {
+      this._snapResult = snapAnnotation(
+        this._annotationManager.getAnnotations(annotationType),
+        new Point(this._mouseCircle.cx, this._mouseCircle.cy),
+        this.scale
+      );
+
+      if (this._snapResult) {
+        if (this._snapResult.distance) {
+          this._mouseCircle.updateCx(this._snapResult.snapPoint.x);
+          this._mouseCircle.updateCy(this._snapResult.snapPoint.y);
+        }
+      }
+    }
+
     if (!this._drawingAnnotation || this._drawingAnnotation.vertice.length < 1 || this._stopDraggingIndicator) return;
 
     if (this._drawingAnnotation instanceof AnnotationPolygon) {
@@ -701,6 +719,21 @@ export class AnnotationViewer {
     }
   }
 
+  addVertexToAnnotation(): Annotation | undefined {
+    if (this._snapResult) {
+      const { snapPoint, indexToInsertAfter, selectedAnnotation } = this._snapResult;
+      (selectedAnnotation as AnnotationLine).addVertexInBetween(
+        snapPoint,
+        indexToInsertAfter + 1,
+        POLYGON_VERTICE_RADIUS / this.scale,
+        POLYGON_STROKE_WIDTH / this.scale
+      );
+
+      return selectedAnnotation;
+    }
+    return undefined;
+  }
+
   focusBackgroundAnnotation(index: number): void {
     if (
       this._annotationManager.backgroundAnnotations.length == 0 ||
@@ -779,6 +812,10 @@ export class AnnotationViewer {
     }
 
     return this._drawingAnnotation?.isClosed;
+  }
+
+  get snapResult() {
+    return this._snapResult;
   }
 
   set stopDraggingIndicator(value: boolean) {

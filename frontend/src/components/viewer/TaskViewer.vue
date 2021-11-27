@@ -20,7 +20,12 @@
     />
   </annotation-settings>
 
-  <tool-bar :tools="toolbarTools" @toolUpdate="setTool" :setMoving="is_solving || setMoving"></tool-bar>
+  <tool-bar
+    :tools="toolbarTools"
+    @toolUpdate="setTool"
+    :setMoving="is_solving || setMoving"
+    :changeToolTo="changeToolTo"
+  ></tool-bar>
 
   <confirm-dialog
     :show="showDeleteAnnotationsModal"
@@ -104,7 +109,13 @@ export default defineComponent({
   setup(props, { emit }) {
     const viewerRef = ref();
 
-    const toolbarTools = ref<Tool[]>([Tool.MOVE, Tool.SELECT, Tool.DELETE, Tool.DELETE_ANNOTATION]);
+    const toolbarTools = ref<Tool[]>([
+      Tool.MOVE,
+      Tool.SELECT,
+      Tool.DELETE,
+      Tool.DELETE_ANNOTATION,
+      Tool.ADD_POINT_USER_SOLUTION
+    ]);
     const currentTool = ref<Tool>();
 
     const selectedPolygonData = reactive({
@@ -126,6 +137,8 @@ export default defineComponent({
     const showDeleteAnnotationDialog = ref(false);
 
     const annotationToBeDeleted = ref('');
+
+    const changeToolTo = ref<Tool>();
 
     watch(
       () => selectedPolygonData.name,
@@ -270,7 +283,7 @@ export default defineComponent({
     });
 
     const setToolbarTools = () => {
-      toolbarTools.value = toolbarTools.value.slice(0, 4);
+      toolbarTools.value = toolbarTools.value.slice(0, 5);
       let tool;
 
       if (props.task?.annotation_type === 0) {
@@ -289,10 +302,8 @@ export default defineComponent({
 
     const setTool = (data: { tool: Tool; event: any }) => {
       drawingViewer.value?.removeDrawingAnnotation();
-      polygonChanged.polygon?.unselect();
-
+      changeToolTo.value = undefined;
       currentTool.value = data.tool;
-      selectedPolygon.value = null;
 
       setMoving.value = false;
 
@@ -303,7 +314,7 @@ export default defineComponent({
         drawingViewer.value?.removeMouseCircle();
       }
 
-      if (isUserSolution(TOOL_POLYGON[currentTool.value!]!)) {
+      if (isUserSolution(TOOL_POLYGON[currentTool.value!]!) || currentTool.value! === Tool.ADD_POINT_USER_SOLUTION) {
         drawingViewer.value?.updateColor(ANNOTATION_COLOR.USER_SOLUTION_COLOR);
       }
 
@@ -342,6 +353,7 @@ export default defineComponent({
           drawingViewer.value!.stopDraggingIndicator = true;
           await saveUserSolution();
           drawingViewer.value!.stopDraggingIndicator = false;
+          changeToolTo.value = Tool.SELECT;
 
           drawingViewer.value?.unsetDrawingAnnotation();
         } else {
@@ -395,7 +407,7 @@ export default defineComponent({
     };
 
     const clickHandler = async (event: any) => {
-      userMouseClickHandler(
+      const tool = await userMouseClickHandler(
         event,
         currentTool.value!,
         drawingViewer.value!,
@@ -406,6 +418,10 @@ export default defineComponent({
           annotationToBeDeleted.value = annotationId;
         }
       );
+
+      if (tool !== undefined) {
+        changeToolTo.value = tool;
+      }
     };
 
     const deleteAnnotation = async () => {
@@ -417,7 +433,10 @@ export default defineComponent({
 
     const moveHandler = (event: any) => {
       drawingViewer.value?.update(event.position.x, event.position.y);
-      drawingViewer.value?.updateDrawingAnnotationIndicator();
+      drawingViewer.value?.updateDrawingAnnotationIndicator(
+        ANNOTATION_TYPE.USER_SOLUTION,
+        currentTool.value === Tool.ADD_POINT_USER_SOLUTION
+      );
     };
 
     const setColors = (taskResult: TaskResult) => {
@@ -520,7 +539,8 @@ export default defineComponent({
       deleteAnnotationsLoading,
       updateAnnotationName,
       showDeleteAnnotationDialog,
-      isTaskSaving
+      isTaskSaving,
+      changeToolTo
     };
   }
 });

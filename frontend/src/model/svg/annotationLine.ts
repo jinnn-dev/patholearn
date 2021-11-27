@@ -1,6 +1,6 @@
 import { select, Selection } from 'd3-selection';
 import { nanoid } from 'nanoid';
-import OpenSeadragon from 'openseadragon';
+import OpenSeadragon, { Point } from 'openseadragon';
 import { polygonChanged } from '../../components/viewer/core/viewerState';
 import { POLYGON_VERTICE_RADIUS } from '../../model/viewer/config';
 import { ANNOTATION_TYPE } from '../viewer/annotationType';
@@ -78,6 +78,38 @@ export class AnnotationLine extends Annotation {
     if (this.polyline) {
       this.polyline.attr('points', this.polylinePoints.toString().replace('[', '').replace(']', ''));
     }
+  }
+
+  addVertexInBetween(point: OpenSeadragon.Point, indexToInsertAt: number, r: number, strokeWidth: number) {
+    const circle = new Circle(
+      this.g,
+      point.x,
+      point.y,
+      r,
+      this.color,
+      strokeWidth,
+      this.color,
+      this.id + '-' + this._vertice.length
+    );
+
+    if (this.name) {
+      circle.updateName(this.name);
+    }
+
+    const vertex: VertexElement = {
+      viewport: point,
+      element: circle
+    };
+
+    this._vertice.splice(indexToInsertAt, 0, vertex);
+
+    for (let i = 0; i < this._vertice.length; i++) {
+      this._vertice[i].element.updateId(this.id + '-' + i);
+    }
+
+    this._polylinePoints.splice(indexToInsertAt, 0, vertex.viewport.x + ',' + vertex.viewport.y);
+
+    this.redrawPolyline();
   }
 
   /**
@@ -180,6 +212,7 @@ export class AnnotationLine extends Annotation {
     selected.attr('cy', Number(selected.attr('cy')) + Number(viewportDelta.y));
 
     const selectedId = selected.attr('id');
+
     const ids = selectedId.split('-');
     const circleId = +ids[ids.length - 1];
 
@@ -260,6 +293,17 @@ export class AnnotationLine extends Annotation {
         this.polylinePoints.toString().replace('[', '').replace(']', '') + ',' + x + ',' + y
       );
     }
+  }
+
+  updateVertex(point: Point, index: number) {
+    this._vertice[index].viewport.x = point.x;
+    this._vertice[index].viewport.y = point.y;
+    this._vertice[index].element.cx = point.x;
+    this._vertice[index].element.cy = point.y;
+
+    this._polylinePoints[index] = this._vertice[index].viewport.x + ',' + this._vertice[index].viewport.y;
+
+    this.redrawPolyline();
   }
 
   resetColors(): void {

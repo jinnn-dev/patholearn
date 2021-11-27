@@ -4,7 +4,7 @@ import { ANNOTATION_TYPE } from '../../../model/viewer/annotationType';
 import { isDrawingTool, Tool, TOOL_POLYGON } from '../../../model/viewer/tools';
 import { AnnotationViewer } from './annotationViewer';
 import { SVG_ID } from './options';
-import { isTaskSaving, selectedPolygon } from './viewerState';
+import { isTaskSaving, polygonChanged, selectedPolygon } from './viewerState';
 
 export async function adminMouseClickHandler(
   event: any,
@@ -15,7 +15,14 @@ export async function adminMouseClickHandler(
   saveCallback: Function,
   deleteAnnotation: Function
 ) {
-  if (isDrawingTool(currentTool)) {
+  if (currentTool === Tool.ADD_POINT_SOLUTION || currentTool === Tool.ADD_POINT_USER_SOLUTION) {
+    const annotation = annotationViewer.addVertexToAnnotation();
+    if (annotation) {
+      selectedPolygon.value = annotationViewer.selectAnnotation(annotation.id);
+      polygonChanged.changed = true;
+      return Tool.SELECT;
+    }
+  } else if (isDrawingTool(currentTool)) {
     if (event.quick) {
       annotationViewer.addDrawingAnnotation(TOOL_POLYGON[currentTool]!);
 

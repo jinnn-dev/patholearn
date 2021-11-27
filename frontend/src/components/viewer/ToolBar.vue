@@ -34,7 +34,8 @@ import { userSolutionLocked, viewerLoadingState } from './core/viewerState';
 export default defineComponent({
   props: {
     tools: Array as PropType<Tool[]>,
-    setMoving: Boolean
+    setMoving: Boolean,
+    changeToolTo: Number as PropType<Tool>
   },
 
   emits: ['toolUpdate'],
@@ -46,6 +47,15 @@ export default defineComponent({
       currentTool.value = tool;
       emit('toolUpdate', { tool, event });
     };
+
+    watch(
+      () => props.changeToolTo,
+      () => {
+        if (props.changeToolTo !== undefined) {
+          changeTool(props.changeToolTo, null);
+        }
+      }
+    );
 
     watch(
       () => props.setMoving,
