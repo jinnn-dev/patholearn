@@ -168,6 +168,8 @@ export default defineComponent({
           if (newVal?.task_data) {
             drawingViewer.value?.addBackgroundPolygons(newVal?.task_data as AnnotationData[]);
             focusAnnotation(0);
+          } else {
+            drawingViewer.value?.resetZoom();
           }
 
           if (newVal?.solution && showSolution.value) {
@@ -249,6 +251,8 @@ export default defineComponent({
             if (props.task.task_data) {
               drawingViewer.value?.addAnnotations(props.task.task_data as AnnotationData[]);
               focusAnnotation(0);
+            } else {
+              drawingViewer.value?.resetZoom();
             }
 
             if (props.task.solution) {

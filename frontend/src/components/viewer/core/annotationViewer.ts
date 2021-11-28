@@ -778,6 +778,10 @@ export class AnnotationViewer {
     }
   }
 
+  resetZoom() {
+    this._viewer.viewport.fitBounds(this._viewer.viewport.getHomeBounds());
+  }
+
   get isLineDrawing() {
     return this._drawingAnnotation !== undefined && this._drawingAnnotation instanceof AnnotationLine;
   }
