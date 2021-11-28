@@ -410,7 +410,7 @@ export default defineComponent({
         tool = Tool.LINE_SOLUTION;
       } else {
         tool = Tool.SOLUTION_DRAWING;
-        toolbarTools.value.push(Tool.RECT_SOLUTION);
+        // toolbarTools.value.push(Tool.RECT_SOLUTION);
       }
 
       if (!toolbarTools.value.includes(tool)) {
@@ -587,6 +587,7 @@ export default defineComponent({
       await drawingViewer.value?.deleteAnnotationByID(props.task!, deleteAnnoatationId.value);
       isTaskSaving.value = false;
       showDeleteAnnotationDialog.value = false;
+      changeToolTo.value = Tool.MOVE;
     };
 
     const selectAnnotation = (annotationId: string) => {
