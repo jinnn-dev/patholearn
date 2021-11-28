@@ -76,8 +76,8 @@ export const TOOL_HINTS: ToolComponent = {
   [Tool.DELETE]: 'Alle Annotationen löschen',
   [Tool.RECT_SOLUTION]: 'Zeichne ein Rechteck',
   [Tool.RECT_USER_SOLUTION]: 'Zeichne ein Rechteck',
-  [Tool.ADD_POINT_SOLUTION]: 'Füge einen Punkt hinzu',
-  [Tool.ADD_POINT_USER_SOLUTION]: 'Füge einen Punkt hinzu'
+  [Tool.ADD_POINT_SOLUTION]: 'Füge einen Punkt zu einer Annotation hinzu',
+  [Tool.ADD_POINT_USER_SOLUTION]: 'Füge einen Punkt zu einer Annotation hinzu'
 };
 
 type ToolAnnotation = {
