@@ -466,6 +466,7 @@ export default defineComponent({
 
       if (currentTool.value === Tool.DELETE) {
         showConfirmationDialog.value = true;
+        selectedPolygon.value = undefined;
       }
 
       if (
@@ -477,8 +478,10 @@ export default defineComponent({
       } else if (currentTool.value === Tool.MOVE) {
         viewerRef.value.style.cursor = 'grab';
         drawingViewer.value?.removeListener();
+        selectedPolygon.value = undefined;
       } else if (currentTool.value === Tool.UPLOAD) {
         showUploadDialog.value = true;
+        selectedPolygon.value = undefined;
       } else {
         viewerRef.value.style.cursor = 'pointer';
       }

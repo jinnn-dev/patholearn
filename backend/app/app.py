@@ -10,11 +10,10 @@ from app.core.config import settings
 from app.utils.minio_client import MinioClient, minio_client
 
 
-if "SENTRY_METRICS" in os.environ:
-    if os.environ["SENTRY_METRICS"]:
+if settings.SENTRY_METRICS:
         import sentry_sdk
         sentry_sdk.init(
-            f"https://{os.environ['SENTRY_KEY']}.{os.environ['SENTRY_PATH']}",
+            settings.SENTRY_URL,
             traces_sample_rate=0.8
         )
 

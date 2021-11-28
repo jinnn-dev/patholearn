@@ -15,11 +15,13 @@ export async function userMouseClickHandler(
   deleteAnnotation: Function
 ): Promise<Tool | undefined> {
   if (currentTool === Tool.ADD_POINT_SOLUTION || currentTool === Tool.ADD_POINT_USER_SOLUTION) {
-    const annotation = annotationViewer.addVertexToAnnotation();
-    if (annotation) {
-      selectedPolygon.value = annotationViewer.selectAnnotation(annotation.id);
-      polygonChanged.changed = true;
-      return Tool.SELECT;
+    if (event.quick) {
+      const annotation = annotationViewer.addVertexToAnnotation();
+      if (annotation) {
+        selectedPolygon.value = annotationViewer.selectAnnotation(annotation.id);
+        polygonChanged.changed = true;
+        return Tool.SELECT;
+      }
     }
   } else if (isDrawingTool(currentTool!)) {
     if (event.quick) {
