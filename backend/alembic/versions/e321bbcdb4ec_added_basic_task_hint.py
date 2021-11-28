@@ -23,7 +23,7 @@ def upgrade():
     conn = op.get_bind()
     inspector = Inspector.from_engine(conn)
     tables = inspector.get_table_names()
-    if 'taskhint' in tables:
+    if not 'taskhint' in tables:
         op.create_table('taskhint',
                         sa.Column('id', sa.Integer(), nullable=False),
                         sa.Column('task_id', sa.Integer(), nullable=True),
