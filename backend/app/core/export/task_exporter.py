@@ -166,7 +166,7 @@ class TaskExporter:
                     TaskPointRow(
                         user_id=user.id,
                         first_name=user.firstname,
-                        middle_name=user.middlename,
+                        middle_name=user.middlename or "",
                         last_name=user.lastname,
                         x=annotation.coord.image[0].x,
                         y=annotation.coord.image[0].y,
