@@ -120,29 +120,28 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, PropType, reactive, ref, watch } from 'vue';
-
-import { getSlideUrl } from '../../config';
-
-import { options } from './core/options';
-import { AnnotationViewer } from './core/annotationViewer';
-import OpenSeadragon from 'openseadragon';
 import { selectAll } from 'd3-selection';
-import { ParseResult } from '../../utils/annotation-parser';
-import { TaskService } from '../../services/task.service';
-import { focusBackgroundAnnotation, updateAnnotation } from './taskViewerHelper';
-import { AnnotationGroup, Task, TaskType } from '../../model/task';
-import { isDrawingTool, isSolution, Tool, TOOL_POLYGON } from '../../model/viewer/tools';
-import { AnnotationLine } from '../../model/svg/annotationLine';
-import { OffsetAnnotationPolygon } from '../../model/svg/offsetPolygon';
-import { OffsetAnnotationPoint } from '../../model/svg/offsetAnnotationPoint';
-import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
-import { OffsetAnnotationLine } from '../../model/svg/offsetAnnotationLine';
-import { OffsetAnnotationRectangle } from '../../model/svg/offsetAnnotationRect';
-import { ANNOTATION_COLOR } from '../../model/viewer/colors';
-import { isTaskSaving, polygonChanged, selectedPolygon, viewerLoadingState, viewerZoom } from './core/viewerState';
 import { AnnotationData } from 'model/viewer/export/annotationData';
+import OpenSeadragon from 'openseadragon';
+import { computed, defineComponent, onMounted, PropType, reactive, ref, watch } from 'vue';
+import { getSlideUrl } from '../../config';
+import { AnnotationLine } from '../../model/svg/annotationLine';
+import { OffsetAnnotationLine } from '../../model/svg/offsetAnnotationLine';
+import { OffsetAnnotationPoint } from '../../model/svg/offsetAnnotationPoint';
+import { OffsetAnnotationRectangle } from '../../model/svg/offsetAnnotationRect';
+import { OffsetAnnotationPolygon } from '../../model/svg/offsetPolygon';
+import { AnnotationGroup, Task, TaskType } from '../../model/task';
+import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
+import { ANNOTATION_COLOR } from '../../model/viewer/colors';
+import { isDrawingTool, isSolution, Tool, TOOL_POLYGON } from '../../model/viewer/tools';
+import { TaskService } from '../../services/task.service';
+import { ParseResult } from '../../utils/annotation-parser';
 import { adminMouseClickHandler } from './core/adminMouseClickHandler';
+import { AnnotationViewer } from './core/annotationViewer';
+import { options } from './core/options';
+import { isTaskSaving, polygonChanged, selectedPolygon, viewerLoadingState, viewerZoom } from './core/viewerState';
+import { focusBackgroundAnnotation, updateAnnotation } from './taskViewerHelper';
+
 export default defineComponent({
   props: {
     slide_name: String,
