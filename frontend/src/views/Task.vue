@@ -14,12 +14,13 @@
 
         <hint-overlay :taskId="selectedTask?.id" />
 
-        <div class="fixed z-10 bottom-8 right-8" v-if="selectedTask?.can_be_solved">
+        <div class="fixed z-10 bottom-8 right-8">
           <save-button
             @click="solveTask"
-            label="Überprüfe Lösung"
+            :label="selectedTask?.can_be_solved ? 'Überprüfe Lösung' : 'Ich bin fertig'"
             fontWeight="font-medium"
             :loading="isSolving"
+            :disabled="userSolutionLocked"
           ></save-button>
         </div>
 
@@ -54,16 +55,15 @@
 </template>
 
 <script lang="ts">
+import { defineAsyncComponent, defineComponent, onMounted, onUnmounted, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import { showSolution, userSolutionLocked, viewerLoadingState } from '../components/viewer/core/viewerState';
 import { BaseTask } from '../model/baseTask';
 import { Course } from '../model/course';
-import { TaskResult, TaskStatus } from '../model/result';
-import { Task } from '../model/task';
-import { defineComponent, onMounted, ref, onUnmounted, defineAsyncComponent, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { TaskResult } from '../model/result';
+import { Task, TaskType } from '../model/task';
 import { TaskService } from '../services/task.service';
 import { getTaskHints } from '../utils/hint.store';
-import { TaskType } from '../model/task';
 
 const TaskViewer = defineAsyncComponent({
   loader: () => import('../components/viewer/TaskViewer.vue')
@@ -165,15 +165,14 @@ export default defineComponent({
     const solveTask = async () => {
       if (selectedTask.value?.user_solution?.solution_data) {
         isSolving.value = true;
+        const solveResult = await TaskService.solveTask(selectedTask.value!.id);
 
-        TaskService.solveTask(selectedTask.value!.id).then((res) => {
-          solve_result.value = res;
-          userSolutionLocked.value = true;
-          selectedTask.value!.user_solution!.task_result = res;
-          showSolution.value = false;
-          isSolving.value = false;
-          if (res) showTaskResult.value = true;
-        });
+        solve_result.value = solveResult;
+        userSolutionLocked.value = true;
+        selectedTask.value!.user_solution!.task_result = solveResult;
+        showSolution.value = false;
+        isSolving.value = false;
+        if (solveResult) showTaskResult.value = true;
 
         if (selectedTask.value.task_type !== TaskType.IMAGE_SELECT) {
           await getTaskHints(selectedTask.value.id);
@@ -206,23 +205,19 @@ export default defineComponent({
 
     return {
       baseTask,
-      loading,
       selectedTask,
       solve_result,
       showTaskResult,
-      TaskStatus,
       isSolving,
       isMember,
       course,
       solveTask,
       loadTaskDetails,
-      hideResult,
       setSelectedTask,
       resetTaskResult,
       viewerLoadingState,
-      loadTaskSolution,
-      show_solution,
-      TaskType
+      TaskType,
+      userSolutionLocked
     };
   }
 });

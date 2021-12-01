@@ -56,10 +56,23 @@
   <div ref="viewerRef" id="viewerImage" class="h-screen bg-gray-900" @keyup="handleKeyup"></div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, onMounted, onUnmounted, PropType, reactive, ref, watch } from 'vue';
-import OpenSeadragon from 'openseadragon';
 import { selectAll } from 'd3-selection';
-
+import OpenSeadragon from 'openseadragon';
+import { computed, defineComponent, onMounted, onUnmounted, PropType, reactive, ref, watch } from 'vue';
+import { getSlideUrl } from '../../config';
+import { RESULT_POLYGON_COLOR, TaskResult, TaskStatus } from '../../model/result';
+import { Annotation } from '../../model/svg/annotation';
+import { AnnotationGroup, Task } from '../../model/task';
+import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
+import { ANNOTATION_COLOR } from '../../model/viewer/colors';
+import { AnnotationData } from '../../model/viewer/export/annotationData';
+import { isDrawingTool, isUserSolution, Tool, TOOL_COLORS, TOOL_POLYGON } from '../../model/viewer/tools';
+import { TaskService } from '../../services/task.service';
+import { ParseResult } from '../../utils/annotation-parser';
+import { TooltipGenerator } from '../../utils/tooltip-generator';
+import { AnnotationViewer } from './core/annotationViewer';
+import { options } from './core/options';
+import { userMouseClickHandler } from './core/userMouseClickHandler';
 import {
   isTaskSaving,
   polygonChanged,
@@ -68,26 +81,7 @@ import {
   userSolutionLocked,
   viewerLoadingState
 } from './core/viewerState';
-
-import { options } from './core/options';
-import { AnnotationViewer } from './core/annotationViewer';
-
-import { Task } from '../../model/task';
-import { Annotation } from '../../model/svg/annotation';
-import { AnnotationGroup } from '../../model/task';
-import { ANNOTATION_COLOR } from '../../model/viewer/colors';
-import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
-import { isDrawingTool, isUserSolution, Tool, TOOL_COLORS, TOOL_POLYGON } from '../../model/viewer/tools';
-import { UserSolution } from '../../model/userSolution';
-import { RESULT_POLYGON_COLOR, TaskResult, TaskStatus } from '../../model/result';
-
-import { getSlideUrl } from '../../config';
-import { TooltipGenerator } from '../../utils/tooltip-generator';
-import { ParseResult } from '../../utils/annotation-parser';
-import { TaskService } from '../../services/task.service';
 import { focusBackgroundAnnotation, updateAnnotation } from './taskViewerHelper';
-import { AnnotationData } from '../../model/viewer/export/annotationData';
-import { userMouseClickHandler } from './core/userMouseClickHandler';
 
 export default defineComponent({
   props: {
@@ -178,7 +172,7 @@ export default defineComponent({
 
           drawingViewer.value?.updateColor(TOOL_COLORS[currentTool.value!]!);
 
-          if (props.solve_result && props.show_result) {
+          if (props.solve_result && props.show_result && props.task?.can_be_solved) {
             userSolutionLocked.value = true;
             setColors(props.solve_result);
           }
@@ -210,7 +204,7 @@ export default defineComponent({
           return;
         }
 
-        if (props.show_result) {
+        if (props.show_result && props.task?.can_be_solved) {
           TooltipGenerator.addAll(props.solve_result!.result_detail!);
           setColors(newVal);
         }
@@ -233,7 +227,7 @@ export default defineComponent({
           TooltipGenerator.destoyAll();
           drawingViewer.value?.clearSolutionAnnotations();
         } else {
-          if (props.solve_result) {
+          if (props.solve_result && props.task?.can_be_solved) {
             setColors(props.solve_result);
           }
         }
@@ -263,7 +257,7 @@ export default defineComponent({
           if (props.show_result) {
             userSolutionLocked.value = true;
 
-            if (props.task && props.task?.user_solution?.task_result?.result_detail) {
+            if (props.task && props.task?.user_solution?.task_result?.result_detail && props.task.can_be_solved) {
               TooltipGenerator.addAll(props.solve_result!.result_detail!);
               setColors(props.task?.user_solution?.task_result);
             }

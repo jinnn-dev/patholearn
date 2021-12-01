@@ -33,6 +33,10 @@ class Solver:
         task_annotation_type = task.annotation_type
         task_solution = task.solution
 
+        if not task.can_be_solved:
+            return TaskFeedback(task_id=task.id, task_status=TaskStatus.CORRECT,
+                                response_text="Danke für das Einreichen", result_detail=[])
+
         if task_solution is None:
             return TaskFeedback(task_id=task.id, task_status=TaskStatus.WRONG,
                                 response_text="Es ist keine Musterlösung hinterlegt. Bitte informiere den Kursinhaber.",
