@@ -55,5 +55,4 @@ class CRUDTaskStatistic(CRUDBase[TaskStatistic, TaskStatisticCreate, TaskStatist
             db.commit()
         return db_objs
 
-
 crud_task_statistic = CRUDTaskStatistic(TaskStatistic)

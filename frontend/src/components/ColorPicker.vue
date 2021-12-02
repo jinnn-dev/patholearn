@@ -8,7 +8,7 @@
         name="body"
         @change="$emit('isReleased', $event.srcElement.value)"
         @input="$emit('changed', $event.srcElement.value)"
-        class="h-6 w-full"
+        class="h-6 w-full cursor-pointer"
       />
     </div>
   </form-field>

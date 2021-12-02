@@ -567,6 +567,14 @@ export class AnnotationViewer {
     return TaskSaver.updateAnnotation(task, annotation, this._viewer);
   }
 
+  updateAnnotationClass(id: string, className: string, classColor: string): Annotation | undefined {
+    const annotation = this._annotationManager.getAnnotationById(id);
+
+    annotation?.updateAnnotationClass(className, classColor);
+
+    return annotation;
+  }
+
   /**
    * Updates the given use solution annotation
    *

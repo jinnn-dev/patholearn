@@ -20,7 +20,7 @@
         class="cursor-pointer ml-2"
         :size="20"
         weight="bold"
-        @click="saveValue"
+        @click.stop="saveValue"
       />
     </role-only>
   </div>

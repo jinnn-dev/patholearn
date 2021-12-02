@@ -1,4 +1,6 @@
 from typing import Any, List
+
+from app.crud.crud_task_statistic import crud_task_statistic
 from app.schemas.task_group import TaskGroupUpdate
 
 from starlette.responses import StreamingResponse
@@ -123,7 +125,8 @@ def remove_task_group(*, db: Session = Depends(get_db), short_name: str,
     task_group = crud_task_group.get_by_short_name(db, short_name=short_name)
 
     check_if_user_can_access_course(db, user_id=current_user.id, course_id=task_group.course_id)
-
+    for task in task_group.tasks:
+        crud_task_statistic.remove_all_by_base_task_id(db, base_task_id=task.id)
     crud_user_solution.remove_all_to_task_group(db, task_group_id=task_group.id)
     deleted_task_group = crud_task_group.remove(db, model_id=task_group.id)
     return deleted_task_group

@@ -22,7 +22,7 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         return db.query(self.model).filter(UserSolution.user_id == user_id).filter(
             UserSolution.task_id == task_id).first()
 
-    def get_solution_to_task(self, db: Session, *, task_id: int) -> SchemaSolution:
+    def get_solution_to_task(self, db: Session, *, task_id: int) -> List[SchemaSolution]:
         return db.query(self.model).filter(UserSolution.task_id == task_id).all()
 
     def remove_by_user_id_and_task_id(self, db: Session, *, user_id: int, task_id: int) -> SchemaSolution:

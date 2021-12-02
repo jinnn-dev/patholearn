@@ -18,8 +18,18 @@
             />
             <Icon name="eye-slash" v-else class="cursor-pointer" @click.stop="toggleAnnotationGroup(group)" />
           </div>
-          <div class="w-4 h-4 mr-3 flex-shrink-0 rounded-full" :style="`background-color:${group.color}`"></div>
-          <text-edit :value="group.name" @valueChanged="updateGroup($event, group)" class="w-full"></text-edit>
+          <!-- <div class="w-4 h-4 mr-3 flex-shrink-0 rounded-full" :style="`background-color:${group.color}`"></div> -->
+          <color-picker
+            class="w-4 h-4 mr-3 flex-shrink-0"
+            @isReleased="updateGroup(group.name, groupUpdateColor, group)"
+            @changed="groupUpdateColor = $event"
+            :initialColor="group.color"
+          ></color-picker>
+          <text-edit
+            :value="group.name"
+            @valueChanged="updateGroup($event, group.color, group)"
+            class="w-full items-center"
+          ></text-edit>
         </div>
       </div>
     </div>
@@ -71,8 +81,9 @@
 
 <script lang="ts">
 import { defineComponent, PropType, reactive, ref } from 'vue';
-import { TaskService } from '../../services/task.service';
 import { AnnotationGroup } from '../../model/task';
+import { TaskService } from '../../services/task.service';
+import { isTaskSaving } from './core/viewerState';
 
 export default defineComponent({
   props: {
@@ -89,6 +100,8 @@ export default defineComponent({
     const showGroupCreation = ref<Boolean>(false);
 
     const hiddenElements = ref<AnnotationGroup[]>([]);
+
+    const groupUpdateColor = ref('');
 
     const groupCreationForm = reactive({
       name: '',
@@ -114,10 +127,15 @@ export default defineComponent({
       }
     };
 
-    const updateGroup = async (newName: string, group: AnnotationGroup) => {
-      TaskService.updateAnnotationGroup(props.taskId!, group.name, newName, group.color).then(() => {
-        emit('groupUpdated', { group, newName });
-      });
+    const updateGroup = async (newName: string, newColor: string, group: AnnotationGroup) => {
+      if (newName !== group.name || newColor !== group.color) {
+        isTaskSaving.value = true;
+
+        TaskService.updateAnnotationGroup(props.taskId!, group.name, newName, newColor).then(() => {
+          emit('groupUpdated', { group, newName, newColor });
+          isTaskSaving.value = false;
+        });
+      }
     };
 
     const onSubmit = () => {
@@ -143,7 +161,8 @@ export default defineComponent({
       updateGroup,
       showGroupCreation,
       groupCreationForm,
-      groupCreationLoading
+      groupCreationLoading,
+      groupUpdateColor
     };
   }
 });

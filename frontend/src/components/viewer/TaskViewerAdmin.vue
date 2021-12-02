@@ -120,7 +120,7 @@
 </template>
 
 <script lang="ts">
-import { selectAll } from 'd3-selection';
+import { select, selectAll } from 'd3-selection';
 import { AnnotationData } from 'model/viewer/export/annotationData';
 import OpenSeadragon from 'openseadragon';
 import { computed, defineComponent, onMounted, PropType, reactive, ref, watch } from 'vue';
@@ -641,11 +641,21 @@ export default defineComponent({
       selectAll('[name ="' + group.name + '"]').style('visibility', 'visible');
     };
 
-    const updateGroup = (data: { group: AnnotationGroup; newName: string }) => {
+    const updateGroup = async (data: { group: AnnotationGroup; newName: string; newColor: string }) => {
       const index = props.task?.annotation_groups.findIndex((item) => data.group.name === item.name);
-      if (index) {
+
+      if (index !== undefined) {
+        const ids: Set<string> = new Set();
+
+        selectAll('[name ="' + data.group.name + '"]').each(function (d, i) {
+          ids.add(select(this).attr('id'));
+        });
+
+        for (const id of ids) {
+          drawingViewer.value?.updateAnnotationClass(id, data.newName, data.newColor);
+        }
+
         props.task!.annotation_groups[index].name = data.newName;
-        selectAll('[name ="' + data.group.name + '"]').attr('name', data.newName);
       }
     };
 

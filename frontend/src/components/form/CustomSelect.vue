@@ -27,8 +27,10 @@
         "
       >
         {{ searchString || 'Keine Klasse' }}
-        <Icon v-if="isFocus" width="12" name="caret-up" strokeWidth="32" />
-        <Icon v-else width="12" name="caret-down" strokeWidth="32" />
+        <div class="ml-3">
+          <Icon v-if="isFocus" width="12" name="caret-up" strokeWidth="32" />
+          <Icon v-else width="12" name="caret-down" strokeWidth="32" />
+        </div>
       </div>
     </div>
 
@@ -42,23 +44,23 @@
         w-full
         bg-gray-500
         rounded-lg
-        px-2
-        py-2
         shadow-md
         z-[99]
         overflow-auto
+        border-2 border-gray-300
       "
+      :class="MAPPED_OPTION_WRAPPER_SIZE[displayType]"
     >
       <div v-if="filteredData?.length === 0" class="p-2">Nichts gefunden</div>
-      <div v-else class="w-full">
+      <div v-else class="w-full divide-y-2 divide-gray-600">
         <div
           v-for="value in filteredData"
           :key="isObject(value) && field ? value[field] : value"
-          class="flex transition justify-start items-center hover:bg-gray-400 bg-gray-300 cursor-pointer"
+          class="flex transition justify-start items-center hover:bg-gray-400 bg-gray-500 cursor-pointer"
           :class="MAPPED_OPTION_SIZE[displayType]"
           @click="valueSelected(value)"
         >
-          <div class="w-full">
+          <div class="w-full" :class="MAPPED_OPTION_DETAIL_SIZE[displayType]">
             {{ isObject(value) && field ? value[field] : value }}
           </div>
         </div>
@@ -74,8 +76,20 @@ import { defineComponent, onMounted, PropType, ref, watch } from 'vue';
 type SELECT_OPTIONS_SIZE = 'small' | 'medium' | 'large';
 
 const MAPPED_OPTION_SIZE: Record<SELECT_OPTIONS_SIZE, string> = {
-  small: 'px-2 rounded-md my-2',
+  small: 'px-0  p-1 ',
   medium: 'my-4 p-2 rounded-md',
+  large: ''
+};
+
+const MAPPED_OPTION_WRAPPER_SIZE: Record<SELECT_OPTIONS_SIZE, string> = {
+  small: 'px-0 py-0',
+  medium: 'px-2 py-2',
+  large: 'px-2 py-2'
+};
+
+const MAPPED_OPTION_DETAIL_SIZE: Record<SELECT_OPTIONS_SIZE, string> = {
+  small: 'px-2',
+  medium: '',
   large: ''
 };
 
@@ -176,7 +190,9 @@ export default defineComponent({
       valueSelected,
       filteredData,
       MAPPED_OPTION_SIZE,
-      isObject
+      isObject,
+      MAPPED_OPTION_WRAPPER_SIZE,
+      MAPPED_OPTION_DETAIL_SIZE
     };
   }
 });

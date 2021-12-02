@@ -248,14 +248,14 @@
   </modal-dialog>
 </template>
 <script lang="ts">
-import { BaseTask, UpdateBaseTask } from '../model/baseTask';
-import { defineComponent, nextTick, onUnmounted, PropType, ref } from 'vue';
-import { MembersolutionSummary } from '../model/membersolutionSummary';
-import { TooltipGenerator } from '../utils/tooltip-generator';
-import { TaskService } from '../services/task.service';
-import { SLIDE_IMAGE_URL } from '../config';
-import { ImageSelectStatistic } from '../model/imageSelectStatistic';
 import { onClickOutside } from '@vueuse/core';
+import { defineComponent, nextTick, PropType, ref } from 'vue';
+import { SLIDE_IMAGE_URL } from '../config';
+import { BaseTask, UpdateBaseTask } from '../model/baseTask';
+import { ImageSelectStatistic } from '../model/imageSelectStatistic';
+import { MembersolutionSummary } from '../model/membersolutionSummary';
+import { TaskService } from '../services/task.service';
+import { TooltipGenerator } from '../utils/tooltip-generator';
 
 export default defineComponent({
   props: {
@@ -328,7 +328,6 @@ export default defineComponent({
 
     const editBaseTask = async () => {
       editTaskLoading.value = true;
-      console.log(newTaskName.value);
 
       const updateBaseTask: UpdateBaseTask = {
         base_task_id: props.baseTask!.id,
