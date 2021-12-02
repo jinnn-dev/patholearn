@@ -4,15 +4,13 @@
   <div ref="viewerRef" id="viewerImage" class="h-screen bg-gray-900" @keyup="handleKeyup"></div>
 </template>
 <script lang="ts">
-import { debounceRef } from '../../../utils/debounceRef';
-import { defineComponent, onMounted, onUnmounted, PropType, ref, watch } from 'vue';
-
-import { Task } from '../../../model/task';
-import { ImageSelectViewer } from './imageSelectViewer';
-import { TaskService } from '../../../services/task.service';
-import { ANNOTATION_COLOR } from '../../../model/viewer/colors';
-import { isTaskSaving, userSolutionLocked } from '../../viewer/core/viewerState';
+import { defineComponent, onMounted, PropType, ref, watch } from 'vue';
 import { ImageSelectFeedback, TaskResult } from '../../../model/result';
+import { Task } from '../../../model/task';
+import { ANNOTATION_COLOR } from '../../../model/viewer/colors';
+import { TaskService } from '../../../services/task.service';
+import { isTaskSaving, userSolutionLocked } from '../../viewer/core/viewerState';
+import { ImageSelectViewer } from './imageSelectViewer';
 
 export default defineComponent({
   props: {
@@ -151,8 +149,6 @@ export default defineComponent({
         imageSelectViewer.value?.setResultColors(resultDetail as ImageSelectFeedback[]);
       }
     });
-
-    return {};
   }
 });
 </script>

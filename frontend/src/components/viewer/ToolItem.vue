@@ -4,11 +4,11 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted } from 'vue';
 import tippy from 'tippy.js';
 import 'tippy.js/animations/shift-away.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/dist/tippy.css';
+import { defineComponent, onMounted } from 'vue';
 
 export default defineComponent({
   props: {
@@ -23,7 +23,6 @@ export default defineComponent({
         theme: 'myDark'
       });
     });
-    return {};
   }
 });
 </script>

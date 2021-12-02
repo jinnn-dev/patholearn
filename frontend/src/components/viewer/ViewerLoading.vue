@@ -12,9 +12,6 @@ import { defineComponent } from 'vue';
 export default defineComponent({
   props: {
     show: Boolean
-  },
-  setup() {
-    return {};
   }
 });
 </script>

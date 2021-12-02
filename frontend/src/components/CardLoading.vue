@@ -8,9 +8,6 @@ import { defineComponent } from 'vue';
 export default defineComponent({
   props: {
     loading: Boolean
-  },
-  setup() {
-    return {};
   }
 });
 </script>

@@ -133,11 +133,8 @@ export default defineComponent({
       course,
       loading,
       showModal,
-      formData,
       isMember,
-      joinLoading,
       leaveCourseLoading,
-      joinCourse,
       leaveGroup,
       loadCourseDetails
     };

@@ -13,8 +13,8 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, computed, PropType } from 'vue';
-import { IconNames, Icon } from '../../icons';
+import { computed, defineComponent, PropType } from 'vue';
+import { Icon, IconNames } from '../../icons';
 
 let lib: Icon[] = [];
 

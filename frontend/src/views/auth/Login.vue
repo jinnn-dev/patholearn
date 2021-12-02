@@ -46,12 +46,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue';
-import { AuthService } from '../../services/auth.service';
-import { useRouter } from 'vue-router';
 import useVuelidate from '@vuelidate/core';
-import { required, email } from '@vuelidate/validators';
+import { email, required } from '@vuelidate/validators';
+import { defineComponent, reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { getEnv } from '../../config';
+import { AuthService } from '../../services/auth.service';
 
 export default defineComponent({
   setup() {

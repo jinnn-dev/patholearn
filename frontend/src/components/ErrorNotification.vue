@@ -10,8 +10,8 @@
   </div>
 </template>
 <script lang="ts">
+import { computed, defineComponent, onMounted, PropType } from 'vue';
 import { CustomError } from '../services/error-handler';
-import { defineComponent, PropType, computed, onMounted } from 'vue';
 export default defineComponent({
   props: {
     error: {

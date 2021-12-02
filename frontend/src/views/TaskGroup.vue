@@ -49,14 +49,14 @@
 </template>
 
 <script lang="ts">
+import { defineComponent, onMounted, reactive, ref } from 'vue';
+import { useRoute } from 'vue-router';
 import { BaseTask } from '../model/baseTask';
 import { Course } from '../model/course';
 import { Slide } from '../model/slide';
 import { TaskGroup } from '../model/taskGroup';
 import { TaskGroupService } from '../services/task-group.service';
 import { TaskService } from '../services/task.service';
-import { defineComponent, onMounted, reactive, ref } from 'vue';
-import { useRoute } from 'vue-router';
 
 export default defineComponent({
   setup() {
@@ -132,15 +132,8 @@ export default defineComponent({
 
     return {
       taskGroup,
-      showModal,
-      formData,
-      onSubmit,
-      setSlide,
-      taskLoading,
-      taskError,
       isMember,
       course,
-      onTaskClose,
       loadTaskGroup
     };
   }

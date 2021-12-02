@@ -40,9 +40,6 @@ export default defineComponent({
       type: String,
       default: 'font-bold'
     }
-  },
-  setup() {
-    return {};
   }
 });
 </script>

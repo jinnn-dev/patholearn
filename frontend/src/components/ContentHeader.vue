@@ -1,39 +1,14 @@
 <template>
   <div class="flex justify-center w-full">
-    <div
-      id="test"
-      class="
-        flex
-        w-11/12
-        relative
-        items-center
-        bg-gray-700
-        rounded-xl
-        bg-opacity-40
-        py-5
-      "
-    >
-      <div
-        class="
-          flex
-          transition
-          ml-2
-          text-xl
-          items-center
-          cursor-pointer
-          hover:text-highlight-500
-          absolute
-        "
-      >
-        <router-link
-          class="flex p-2 items-center text-base lg:text-xl"
-          :to="link"
+    <div id="test" class="flex w-11/12 relative items-center bg-gray-700 rounded-xl bg-opacity-40 py-5">
+      <div class="flex transition ml-2 text-xl items-center cursor-pointer hover:text-highlight-500 absolute">
+        <router-link class="flex p-2 items-center text-base lg:text-xl" :to="link"
           ><Icon name="arrow-left" class="mr-2" />{{ linkText }}</router-link
         >
       </div>
       <div class="w-full flex flex-col gap-4">
         <h1 class="text-lg md:text-2xl lg:text-4xl xl:text-5xl flex-1">
-          {{ text || "Loading..." }}
+          {{ text || 'Loading...' }}
         </h1>
         <h2 v-if="subText" class="text-2xl">{{ subText }}</h2>
       </div>
@@ -41,17 +16,14 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent } from 'vue';
 export default defineComponent({
   props: {
     link: String,
     linkText: String,
     text: String,
-    subText: String,
-  },
-  setup() {
-    return {};
-  },
+    subText: String
+  }
 });
 </script>
 <style></style>

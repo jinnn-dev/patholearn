@@ -24,10 +24,7 @@ export default defineComponent({
     }
   },
 
-  emits: ['isReleased', 'changed'],
-  setup() {
-    return {};
-  }
+  emits: ['isReleased', 'changed']
 });
 </script>
 <style></style>

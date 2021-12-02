@@ -9,9 +9,6 @@ import { defineComponent } from 'vue';
 export default defineComponent({
   props: {
     taskQuestion: String
-  },
-  setup() {
-    return {};
   }
 });
 </script>

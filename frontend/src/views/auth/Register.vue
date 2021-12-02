@@ -63,11 +63,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, watch } from 'vue';
-import { AuthService } from '../../services/auth.service';
-import { useRouter } from 'vue-router';
-import { required, email, minLength } from '@vuelidate/validators';
 import useVuelidate from '@vuelidate/core';
+import { email, minLength, required } from '@vuelidate/validators';
+import { defineComponent, reactive, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { AuthService } from '../../services/auth.service';
 
 export default defineComponent({
   setup() {

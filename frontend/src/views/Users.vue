@@ -90,11 +90,11 @@
   </modal-dialog>
 </template>
 <script lang="ts">
-import { defineComponent, ref, reactive, watch, onMounted } from 'vue';
-import { required, email, minLength } from '@vuelidate/validators';
 import useVuelidate from '@vuelidate/core';
-import { AuthService } from '../services/auth.service';
+import { email, minLength, required } from '@vuelidate/validators';
+import { defineComponent, onMounted, reactive, ref, watch } from 'vue';
 import { User } from '../model/user';
+import { AuthService } from '../services/auth.service';
 
 export default defineComponent({
   props: {},
@@ -199,7 +199,6 @@ export default defineComponent({
       formData,
       emailAlreadyExists,
       validator,
-      userLoadingError,
       userLoading,
       users
     };

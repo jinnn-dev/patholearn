@@ -16,9 +16,6 @@ import { defineComponent } from 'vue';
 export default defineComponent({
   props: {
     header: String
-  },
-  setup() {
-    return {};
   }
 });
 </script>

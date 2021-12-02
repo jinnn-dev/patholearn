@@ -27,10 +27,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 export default defineComponent({
-  props: { show: Boolean, isPolygon: Boolean },
-  setup() {
-    return {};
-  }
+  props: { show: Boolean, isPolygon: Boolean }
 });
 </script>
 <style></style>
