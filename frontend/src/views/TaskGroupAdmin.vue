@@ -85,20 +85,7 @@
                 <HintImage :imgSrc="image" @click="deleteImage(index)" />
               </div>
               <div
-                class="
-                  h-20
-                  w-20
-                  mx-2
-                  my-2
-                  bg-highlight-900
-                  rounded-lg
-                  flex
-                  items-center
-                  justify-center
-                  cursor-pointer
-                  hover:bg-highlight-800
-                  transition
-                "
+                class="h-20 w-20 mx-2 my-2 bg-highlight-900 rounded-lg flex items-center justify-center cursor-pointer hover:bg-highlight-800 transition"
                 @click="fileRef?.click()"
               >
                 <Icon name="plus" width="30" height="30" stroke-width="25" />
@@ -112,7 +99,9 @@
             <div class="flex-1">
               <div
                 class="animate-pulse bg-green-500 my-2 rounded-lg transition duration-10 h-3"
-                :style="{ width: uploadProgress + '%' }"
+                :style="{
+                  width: uploadProgress + '%'
+                }"
               ></div>
             </div>
             <div>{{ uploadProgress }}%</div>

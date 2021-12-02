@@ -2,7 +2,9 @@
   <modal-dialog :show="show">
     <div class="relative">
       <h1 class="text-2xl">{{ header }}</h1>
-      <h2 v-if="detail" class="mt-4">{{ detail }}</h2>
+      <h2 v-if="detail" class="mt-4">
+        {{ detail }}
+      </h2>
       <div class="flex justify-end mt-4">
         <primary-button
           @click.prevent="reject"

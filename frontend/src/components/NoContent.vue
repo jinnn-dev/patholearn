@@ -11,19 +11,19 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent } from 'vue';
 export default defineComponent({
   props: {
     text: String,
     textSize: {
       type: String,
-      default: "text-xl",
+      default: 'text-xl'
     },
     iconSize: {
       type: String,
-      default: "w-32",
-    },
-  },
+      default: 'w-32'
+    }
+  }
 });
 </script>
 <style></style>

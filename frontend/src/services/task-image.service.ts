@@ -6,7 +6,11 @@ import { handleError } from './error-handler';
 export class TaskImageService {
   public static async uploadTaskImage(formData: FormData): Promise<TaskImage> {
     const [_, response] = await handleError(
-      ApiService.post<TaskImage>({ resource: '/task-images', host: SLIDE_API_URL, data: formData }),
+      ApiService.post<TaskImage>({
+        resource: '/task-images',
+        host: SLIDE_API_URL,
+        data: formData
+      }),
       'Task Image could not be uploaded'
     );
     return response!.data;

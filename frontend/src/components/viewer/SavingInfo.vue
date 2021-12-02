@@ -1,20 +1,7 @@
 <template>
   <div
     v-if="isTaskSaving"
-    class="
-      flex
-      justify-center
-      items-center
-      fixed
-      bottom-14
-      left-1/2
-      transform
-      -translate-x-1/2
-      bg-gray-800
-      z-[2]
-      rounded-lg
-      p-2
-    "
+    class="flex justify-center items-center fixed bottom-14 left-1/2 transform -translate-x-1/2 bg-gray-800 z-[2] rounded-lg p-2"
   >
     <svg
       class="animate-spin mr-3 h-5 w-5 text-white"

@@ -10,7 +10,9 @@
         <h1 class="text-lg md:text-2xl lg:text-4xl xl:text-5xl flex-1">
           {{ text || 'Loading...' }}
         </h1>
-        <h2 v-if="subText" class="text-2xl">{{ subText }}</h2>
+        <h2 v-if="subText" class="text-2xl">
+          {{ subText }}
+        </h2>
       </div>
     </div>
   </div>

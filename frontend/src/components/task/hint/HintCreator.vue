@@ -29,18 +29,7 @@
         <HintImage :imgSrc="image" @click="deleteImage(image)" />
       </div>
       <div
-        class="
-          h-20
-          w-20
-          bg-green-600
-          rounded-lg
-          flex
-          items-center
-          justify-center
-          cursor-pointer
-          hover:bg-green-500
-          transition
-        "
+        class="h-20 w-20 bg-green-600 rounded-lg flex items-center justify-center cursor-pointer hover:bg-green-500 transition"
         @click="fileRef?.click()"
       >
         <Icon name="plus" width="30" height="30" stroke-width="25" />

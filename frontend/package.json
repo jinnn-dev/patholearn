@@ -7,7 +7,8 @@
     "serve": "vite preview",
     "test": "jest test --coverage",
     "dev-build": "vite build --mode development",
-    "gen:icons": "node scripts/generateIcons.js"
+    "gen:icons": "node scripts/generateIcons.js",
+    "pretty": "prettier --write \"./**/*.{js,ts,vue}\""
   },
   "dependencies": {
     "@tailwindcss/forms": "^0.3.3",
@@ -43,6 +44,7 @@
     "jest": "^26.6.3",
     "jest-canvas-mock": "^2.3.1",
     "postcss": "^8.3.7",
+    "prettier": "^2.5.0",
     "rollup-plugin-visualizer": "^5.5.0",
     "tailwindcss": "^2.2.17",
     "ts-jest": "^26.5.6",

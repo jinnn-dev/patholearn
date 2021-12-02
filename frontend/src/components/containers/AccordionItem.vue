@@ -67,7 +67,12 @@ export default defineComponent({
       }
     }
 
-    return { expand, selectedIndex, index, toggleDisplay };
+    return {
+      expand,
+      selectedIndex,
+      index,
+      toggleDisplay
+    };
   }
 });
 </script>

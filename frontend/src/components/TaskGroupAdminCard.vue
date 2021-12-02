@@ -1,7 +1,9 @@
 <template>
   <skeleton-card class="min-w-40 relative" :shouldHover="false">
     <div class="flex items-center">
-      <div class="flex-1 text-xl">{{ baseTask.name }}</div>
+      <div class="flex-1 text-xl">
+        {{ baseTask.name }}
+      </div>
       <div class="flex justify-end ml-5">
         <Icon
           name="dots-three-vertical"
@@ -33,17 +35,7 @@
       ></save-button>
 
       <div
-        class="
-          transition
-          hover:ring-2
-          ring-white
-          bg-gray-500
-          hover:bg-gray-400
-          p-2
-          rounded-lg
-          cursor-pointer
-          inline-block
-        "
+        class="transition hover:ring-2 ring-white bg-gray-500 hover:bg-gray-400 p-2 rounded-lg cursor-pointer inline-block"
         @click.stop="downloadUserSolutions(baseTask.short_name)"
       >
         <Icon name="download-simple" v-if="!downloadUserSolutionsLoading" />
@@ -51,17 +43,7 @@
       </div>
 
       <div
-        class="
-          transition
-          hover:ring-2
-          ring-white
-          bg-gray-500
-          hover:bg-gray-400
-          p-2
-          rounded-lg
-          cursor-pointer
-          inline-block
-        "
+        class="transition hover:ring-2 ring-white bg-gray-500 hover:bg-gray-400 p-2 rounded-lg cursor-pointer inline-block"
         @click.stop="loadTaskDetails(baseTask?.short_name)"
       >
         <Icon name="chart-bar" v-if="!taskDetailLoading" />
@@ -91,21 +73,7 @@
     <div class="mt-8 max-h-[50vh]" v-if="summaryData?.tasks.length !== 0">
       <div class="w-full overflow-auto max-h-[50vh] pb-4">
         <div
-          class="
-            flex
-            items-center
-            justify-between
-            text-center
-            sticky
-            top-0
-            z-20
-            font-bold
-            text-lg text-gray-200
-            bg-gray-800
-            flex-1
-            min-w-full
-            w-fit-content
-          "
+          class="flex items-center justify-between text-center sticky top-0 z-20 font-bold text-lg text-gray-200 bg-gray-800 flex-1 min-w-full w-fit-content"
         >
           <div class="w-48 flex-shrink-0 sticky left-0 top-0 z-10 p-4 bg-gray-800">Name</div>
           <div
@@ -127,7 +95,8 @@
             class="w-48 flex-shrink-0 sticky left-0 py-2 z-10 font-semibold"
             :class="index % 2 == 0 ? 'bg-gray-700' : 'bg-gray-800'"
           >
-            {{ row.user.lastname }}, {{ row.user.firstname }}
+            {{ row.user.lastname }},
+            {{ row.user.firstname }}
             {{ row.user.middlename }}
           </div>
           <div
@@ -172,7 +141,9 @@
             ></lazy-image>
             <div class="text-center">
               <div class="text-lg font-bold">{{ statistic.amount }}x</div>
-              <div>{{ statistic.name }}</div>
+              <div>
+                {{ statistic.name }}
+              </div>
               <div class="font-semibold text-gray-300">
                 {{ statistic.label }}
               </div>
@@ -191,10 +162,14 @@
               :key="statistic.label"
               class="flex flex-col items-center gap-2 bg-gray-700 p-2 rounded-lg"
             >
-              <div class="font-semibold text-lg">{{ statistic.label }}</div>
+              <div class="font-semibold text-lg">
+                {{ statistic.label }}
+              </div>
               <div class="w-full">
                 <div v-for="detail in statistic.detail" :key="detail.label" class="flex justify-between">
-                  <div class="mr-2">{{ detail.label }}</div>
+                  <div class="mr-2">
+                    {{ detail.label }}
+                  </div>
                   <div>{{ detail.amount }}x</div>
                 </div>
               </div>
@@ -288,7 +263,9 @@ export default defineComponent({
       downloadUserSolutionsLoading.value = true;
       const data = await TaskService.downloadUserSolutionsToBaseTask(short_name);
       const a = document.createElement('a');
-      const blob = new Blob([data], { type: 'application/xlsx' });
+      const blob = new Blob([data], {
+        type: 'application/xlsx'
+      });
       downloadUserSolutionsLoading.value = false;
       a.href = window.URL.createObjectURL(blob);
       a.download = short_name + '.xlsx';

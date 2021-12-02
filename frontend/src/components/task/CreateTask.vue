@@ -1,6 +1,9 @@
 <template>
   <div>
-    <h1 class="text-2xl text-center">Füge eine neue Aufgabe der {{ layerIndex }}. Ebene hinzu</h1>
+    <h1 class="text-2xl text-center">
+      Füge eine neue Aufgabe der
+      {{ layerIndex }}. Ebene hinzu
+    </h1>
     <form @submit.prevent="onSubmit" class="w-full">
       <input-field
         v-model="taskCreationForm.task_question"
@@ -16,19 +19,7 @@
 
           <div class="flex justify-evenly gap-4 mt-4">
             <div
-              class="
-                transition
-                flex
-                justify-center
-                items-center
-                w-48
-                h-20
-                bg-gray-400
-                hover:bg-gray-300 hover:ring-2
-                ring-highlight-900
-                cursor-pointer
-                rounded-lg
-              "
+              class="transition flex justify-center items-center w-48 h-20 bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg"
               :class="selectedTaskType === 0 && 'bg-gray-500 ring-2 ring-highlight-900'"
               @click="selectedTaskType = 0"
             >
@@ -38,19 +29,7 @@
               </div>
             </div>
             <div
-              class="
-                transition
-                flex
-                justify-center
-                items-center
-                w-48
-                h-20
-                bg-gray-400
-                hover:bg-gray-300 hover:ring-2
-                ring-highlight-900
-                cursor-pointer
-                rounded-lg
-              "
+              class="transition flex justify-center items-center w-48 h-20 bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg"
               :class="selectedTaskType === 1 && 'bg-gray-500 ring-2 ring-highlight-900'"
               @click="
                 selectedTaskType = 1;
@@ -69,18 +48,7 @@
               <div>Wähle eine Annotationseigenschaft:</div>
               <div class="flex flex-col w-full justify-evenly gap-2 my-4">
                 <div
-                  class="
-                    transition
-                    flex
-                    justify-center
-                    items-center
-                    bg-gray-400
-                    hover:bg-gray-300 hover:ring-2
-                    ring-highlight-900
-                    cursor-pointer
-                    rounded-lg
-                    p-2
-                  "
+                  class="transition flex justify-center items-center bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg p-2"
                   v-for="taskType in taskTypes"
                   :key="taskType.index"
                   :class="taskCreationForm.task_type === taskType.index && 'bg-gray-500 ring-2 ring-highlight-900'"
@@ -101,19 +69,7 @@
               <div class="mb-4">Welche Art von Annotation soll für die Aufgabe verwendet werden:</div>
               <div class="flex w-full justify-evenly">
                 <div
-                  class="
-                    transition
-                    flex
-                    justify-center
-                    items-center
-                    w-32
-                    h-20
-                    bg-gray-400
-                    hover:bg-gray-300 hover:ring-2
-                    ring-highlight-900
-                    cursor-pointer
-                    rounded-lg
-                  "
+                  class="transition flex justify-center items-center w-32 h-20 bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg"
                   v-for="item in typeSelection"
                   :key="item.index"
                   :class="taskCreationForm.annotation_type === item.index && 'bg-gray-500 ring-2 ring-highlight-900'"
@@ -142,18 +98,7 @@
               </div>
               <div class="flex w-full justify-evenly gap-2 my-2">
                 <div
-                  class="
-                    transition
-                    flex
-                    justify-center
-                    items-center
-                    bg-gray-400
-                    hover:bg-gray-300 hover:ring-2
-                    ring-highlight-900
-                    cursor-pointer
-                    rounded-lg
-                    p-2
-                  "
+                  class="transition flex justify-center items-center bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg p-2"
                   v-for="level in knowledgeLevel"
                   :key="level.index"
                   :class="taskCreationForm.knowledge_level === level.index && 'bg-gray-500 ring-2 ring-highlight-900'"
@@ -188,20 +133,7 @@
                   <HintImage :imgSrc="image" @click="deleteImage(index)" />
                 </div>
                 <div
-                  class="
-                    h-20
-                    w-20
-                    mx-2
-                    my-2
-                    bg-highlight-900
-                    rounded-lg
-                    flex
-                    items-center
-                    justify-center
-                    cursor-pointer
-                    hover:bg-highlight-800
-                    transition
-                  "
+                  class="h-20 w-20 mx-2 my-2 bg-highlight-900 rounded-lg flex items-center justify-center cursor-pointer hover:bg-highlight-800 transition"
                   @click="fileRef?.click()"
                 >
                   <Icon name="plus" width="30" height="30" stroke-width="25" />

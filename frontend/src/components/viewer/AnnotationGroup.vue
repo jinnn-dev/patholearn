@@ -132,7 +132,11 @@ export default defineComponent({
         isTaskSaving.value = true;
 
         TaskService.updateAnnotationGroup(props.taskId!, group.name, newName, newColor).then(() => {
-          emit('groupUpdated', { group, newName, newColor });
+          emit('groupUpdated', {
+            group,
+            newName,
+            newColor
+          });
           isTaskSaving.value = false;
         });
       }

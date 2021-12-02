@@ -250,7 +250,10 @@ export class TaskSaver {
     } else {
       for (const vertice of (annotation as AnnotationLine).vertice) {
         const imagePoint = viewportToImage(vertice.viewport, viewer);
-        elem.coord.image.push({ x: imagePoint.x, y: imagePoint.y });
+        elem.coord.image.push({
+          x: imagePoint.x,
+          y: imagePoint.y
+        });
       }
 
       if (annotation instanceof AnnotationRectangle) {

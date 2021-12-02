@@ -2,7 +2,10 @@
   <content-container>
     <template v-slot:header>
       <div class="flex justify-center w-full text-5xl font-semibold">
-        <div class="">Willkommen zurück {{ appState.user?.firstname }}</div>
+        <div class="">
+          Willkommen zurück
+          {{ appState.user?.firstname }}
+        </div>
       </div>
     </template>
     <template v-slot:content>
@@ -36,7 +39,9 @@
 
       <div>
         <div class="text-xl font-bold text-gray-200 uppercase">
-          Deine {{ appState.user?.is_superuser ? 'beigetretenen' : '' }} Kurse
+          Deine
+          {{ appState.user?.is_superuser ? 'beigetretenen' : '' }}
+          Kurse
         </div>
         <div class="my-8">
           <div v-if="loading" class="flex">
@@ -139,7 +144,9 @@ export default defineComponent({
 
       const createCourse: CreateCourse = {
         name: formData.name,
-        ...(formData.description && { description: formData.description })
+        ...(formData.description && {
+          description: formData.description
+        })
       };
 
       CourseService.createCourse(createCourse)

@@ -6,23 +6,14 @@
         <div class="flex items-center">
           <label
             for="slide-upload"
-            class="
-              transition
-              cursor-pointer
-              flex
-              justify-center
-              bg-gray-500
-              hover:bg-gray-300
-              px-2
-              w-full
-              rounded-lg
-              py-1
-            "
+            class="transition cursor-pointer flex justify-center bg-gray-500 hover:bg-gray-300 px-2 w-full rounded-lg py-1"
           >
             <Icon name="cloud-arrow-up" class="mr-2" />
             <span>Musterlösung auswählen</span>
           </label>
-          <div v-if="file" class="ml-4">{{ file.name }}</div>
+          <div v-if="file" class="ml-4">
+            {{ file.name }}
+          </div>
         </div>
         <input class="hidden" id="slide-upload" type="file" @change="onFileSelected" />
       </form-field>

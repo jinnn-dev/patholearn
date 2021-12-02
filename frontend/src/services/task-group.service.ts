@@ -16,7 +16,10 @@ export class TaskGroupService {
     const [_, response] = await handleError(
       ApiService.post<TaskGroup>({
         resource: this._apiUrl,
-        data: { name, course_id: courseId }
+        data: {
+          name,
+          course_id: courseId
+        }
       }),
       'Task group could not be created'
     );
@@ -48,7 +51,9 @@ export class TaskGroupService {
    */
   public static async getTaskGroup(shortName: string): Promise<TaskGroup> {
     const [_, response] = await handleError(
-      ApiService.get<TaskGroup>({ resource: this._apiUrl + '/' + shortName }),
+      ApiService.get<TaskGroup>({
+        resource: this._apiUrl + '/' + shortName
+      }),
       'Task group could not be loaded'
     );
     return response!.data;

@@ -15,7 +15,10 @@ export class AuthService {
     form_data.append('username', email);
     form_data.append('password', password);
     const [_, response] = await handleError(
-      ApiService.post<{ access_token: string; type: string }>({
+      ApiService.post<{
+        access_token: string;
+        type: string;
+      }>({
         resource: '/login/access-token',
         data: form_data
       }),
@@ -109,7 +112,9 @@ export class AuthService {
    */
   public static async getUser(): Promise<User> {
     const [_, response] = await handleError(
-      ApiService.get<User>({ resource: '/users/me' }),
+      ApiService.get<User>({
+        resource: '/users/me'
+      }),
       'User could not be loaded: '
     );
 
@@ -123,7 +128,9 @@ export class AuthService {
    */
   public static async getAdminUsers(): Promise<User[]> {
     const [_, response] = await handleError(
-      ApiService.get<User[]>({ resource: '/users/admin' }),
+      ApiService.get<User[]>({
+        resource: '/users/admin'
+      }),
       'User could not be loaded: '
     );
     return response!.data;

@@ -18,22 +18,12 @@
         <div
           v-for="course in foundCourses"
           :key="course.id"
-          class="
-            flex
-            transition
-            justify-start
-            items-center
-            hover:bg-gray-500
-            bg-gray-500
-            my-4
-            p-2
-            rounded-md
-            cursor-pointer
-            h-14
-          "
+          class="flex transition justify-start items-center hover:bg-gray-500 bg-gray-500 my-4 p-2 rounded-md cursor-pointer h-14"
           @click="course.is_member ? $router.push('/course/' + course.short_name) : ''"
         >
-          <div class="w-full">{{ course.name }}</div>
+          <div class="w-full">
+            {{ course.name }}
+          </div>
           <save-button
             v-if="!course.is_member"
             :loading="joinCourseLoading"
@@ -96,7 +86,15 @@ export default defineComponent({
           joinCourseLoading.value = false;
         });
     };
-    return { searchString, foundCourses, joinCourse, loading, isFocus, target, joinCourseLoading };
+    return {
+      searchString,
+      foundCourses,
+      joinCourse,
+      loading,
+      isFocus,
+      target,
+      joinCourseLoading
+    };
   }
 });
 </script>

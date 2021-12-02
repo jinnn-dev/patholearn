@@ -10,6 +10,6 @@ export default defineConfig({
       dts: true
     }),
     visualizer(),
-    vue(),
+    vue()
   ]
 });

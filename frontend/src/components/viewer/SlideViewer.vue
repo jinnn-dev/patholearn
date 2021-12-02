@@ -17,7 +17,9 @@ export default defineComponent({
       const route = useRoute();
       // OpenSeadragon(options('viewerImage', getSlideUrl(route.params.id as string)));
       OpenSeadragon(options('viewerImage', getSlideUrl(route.params.id as string)));
-      new OpenSeadragon.TileCache({ maxImageCacheCount: 500 });
+      new OpenSeadragon.TileCache({
+        maxImageCacheCount: 500
+      });
       const elements = document.getElementsByClassName('openseadragon-container');
 
       if (elements.length > 1) {

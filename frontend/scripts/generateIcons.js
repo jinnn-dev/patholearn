@@ -4,7 +4,9 @@ const rootPath = require('path').resolve(__dirname, '../');
 const iconPath = rootPath + '/src/assets/icons';
 
 const directories = fs
-  .readdirSync(iconPath, { withFileTypes: true })
+  .readdirSync(iconPath, {
+    withFileTypes: true
+  })
   .filter((dirent) => dirent.isDirectory())
   .map((dirent) => dirent.name);
 

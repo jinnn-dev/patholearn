@@ -1,7 +1,9 @@
 <template>
   <div class="flex flex-center items-center group">
     <div class="w-full">
-      <div v-if="!activeEdit">{{ newValue }}</div>
+      <div v-if="!activeEdit">
+        {{ newValue }}
+      </div>
       <role-only>
         <input-field v-model="newValue" v-if="activeEdit" marginHor="my-0" />
       </role-only>
@@ -44,7 +46,11 @@ export default defineComponent({
       activeEdit.value = false;
     };
 
-    return { activeEdit, newValue, saveValue };
+    return {
+      activeEdit,
+      newValue,
+      saveValue
+    };
   }
 });
 </script>

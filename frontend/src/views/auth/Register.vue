@@ -99,7 +99,10 @@ export default defineComponent({
       firstname: { required },
       lastname: { required },
       email: { email },
-      password: { required, minLengthValue: minLength(3) },
+      password: {
+        required,
+        minLengthValue: minLength(3)
+      },
       confirmPassword: { required }
     };
 
@@ -137,7 +140,14 @@ export default defineComponent({
       }
     };
 
-    return { onSubmit, formData, validator, emailAlreadyExists, passwordMatch, registerLoading };
+    return {
+      onSubmit,
+      formData,
+      validator,
+      emailAlreadyExists,
+      passwordMatch,
+      registerLoading
+    };
   }
 });
 </script>

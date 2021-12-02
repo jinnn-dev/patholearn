@@ -91,7 +91,14 @@ export default defineComponent({
 
     const validator = useVuelidate(rules, formData);
 
-    return { onSubmit, formData, validator, error, loginLoading, getEnv };
+    return {
+      onSubmit,
+      formData,
+      validator,
+      error,
+      loginLoading,
+      getEnv
+    };
   }
 });
 </script>

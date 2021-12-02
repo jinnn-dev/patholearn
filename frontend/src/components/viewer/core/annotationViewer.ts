@@ -55,7 +55,9 @@ export class AnnotationViewer {
 
   constructor(viewerOptions: OpenSeadragon.Options) {
     this._viewer = OpenSeadragon(viewerOptions);
-    new OpenSeadragon.TileCache({ maxImageCacheCount: 500 });
+    new OpenSeadragon.TileCache({
+      maxImageCacheCount: 500
+    });
 
     // Needs to be there, so opensedragon knows that the svg overlay exists
     new SvgOverlay(this._viewer);

@@ -1,5 +1,7 @@
 <template>
-  <div class="w-full text-xl font-bold text-gray-200 uppercase">{{ text }}</div>
+  <div class="w-full text-xl font-bold text-gray-200 uppercase">
+    {{ text }}
+  </div>
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue';

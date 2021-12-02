@@ -12,7 +12,9 @@
     <p class="mt-2 text-sm text-gray-200" v-if="tip">
       {{ tip }}
     </p>
-    <p class="text-red-500 text-sm my-1">{{ errorMessage }}</p>
+    <p class="text-red-500 text-sm my-1">
+      {{ errorMessage }}
+    </p>
   </div>
 </template>
 

@@ -37,7 +37,9 @@
               <Icon name="cloud-arrow-up" class="mr-2" />
               <span>Bild auswählen</span>
             </label>
-            <div v-if="formModel.file" class="ml-4">{{ formModel.file.name }}</div>
+            <div v-if="formModel.file" class="ml-4">
+              {{ formModel.file.name }}
+            </div>
           </div>
           <input class="hidden" id="slide-upload" type="file" @change="onFileUpload" />
         </form-field>
@@ -46,7 +48,9 @@
             <div class="flex-1">
               <div
                 class="animate-pulse bg-green-500 my-2 rounded-lg transition duration-10 h-3"
-                :style="{ width: progress + '%' }"
+                :style="{
+                  width: progress + '%'
+                }"
               ></div>
             </div>
             <div>{{ progress }}%</div>
@@ -126,7 +130,16 @@ export default defineComponent({
         });
     };
 
-    return { formModel, showUpload, toggleShowUpload, onFileUpload, onSubmit, progress, loading, errorMessage };
+    return {
+      formModel,
+      showUpload,
+      toggleShowUpload,
+      onFileUpload,
+      onSubmit,
+      progress,
+      loading,
+      errorMessage
+    };
   }
 });
 </script>

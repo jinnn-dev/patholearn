@@ -90,7 +90,10 @@ export default defineComponent({
 
     const deleteTask = (taskId: number, taskIndex: number) => {
       TaskService.deleteTask(taskId).then((res: Task) => {
-        emit('taskDeleted', { task: res, taskIndex: taskIndex });
+        emit('taskDeleted', {
+          task: res,
+          taskIndex: taskIndex
+        });
       });
     };
 
@@ -119,7 +122,9 @@ export default defineComponent({
       const data = await TaskService.downloadUserSolutions(task.id);
       const a = document.createElement('a');
 
-      const blob = new Blob([data], { type: 'application/xlsx' });
+      const blob = new Blob([data], {
+        type: 'application/xlsx'
+      });
 
       a.href = window.URL.createObjectURL(blob);
       a.download = task.id + '.xlsx';

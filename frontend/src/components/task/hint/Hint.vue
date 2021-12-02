@@ -2,8 +2,9 @@
   <div class="rounded-lg h-full bg-gray-500/40 flex w-full mb-2 flex-col p-2">
     <div class="flex justify-between items-center w-full mb-4">
       <div class="text-gray-200 font-bold">
-        Wird nach <span class="text-xl font-semibold text-highlight-500">{{ hint.needed_mistakes }}</span> Fehlern
-        angezeigt
+        Wird nach
+        <span class="text-xl font-semibold text-highlight-500">{{ hint.needed_mistakes }}</span>
+        Fehlern angezeigt
       </div>
       <div class="flex gap-2">
         <primary-button type="button" class="w-8 h-8" bgColor="bg-gray-500" @click="$emit('edit', hint)"

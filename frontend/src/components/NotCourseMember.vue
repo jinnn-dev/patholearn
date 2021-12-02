@@ -1,6 +1,8 @@
 <template>
   <div class="text-center">
-    <div class="text-5xl mb-4">{{ course?.name || 'Name' }}</div>
+    <div class="text-5xl mb-4">
+      {{ course?.name || 'Name' }}
+    </div>
     <div class="text-2xl">bei {{ course?.owner.firstname }}</div>
   </div>
   <div class="flex flex-col items-center">
@@ -34,7 +36,11 @@ export default defineComponent({
       }
     };
 
-    return { joinCourse, joinLoading, leaveCourseLoading };
+    return {
+      joinCourse,
+      joinLoading,
+      leaveCourseLoading
+    };
   }
 });
 </script>

@@ -50,7 +50,10 @@ export default defineComponent({
       emit('confirmation');
     };
 
-    return { showConfirmationDialog, confirm };
+    return {
+      showConfirmationDialog,
+      confirm
+    };
   }
 });
 </script>

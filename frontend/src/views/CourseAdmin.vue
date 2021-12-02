@@ -188,11 +188,17 @@ export default defineComponent({
     const loading = ref<Boolean>(true);
 
     const showModal = ref<Boolean>(false);
-    const formData = reactive({ name: '', slide_id: '', task_group_id: -1 });
+    const formData = reactive({
+      name: '',
+      slide_id: '',
+      task_group_id: -1
+    });
     const taskLoading = ref<boolean>(false);
     const taskError = ref<boolean>(false);
 
-    const fromGroupData = reactive({ name: '' });
+    const fromGroupData = reactive({
+      name: ''
+    });
     const taskGroupExists = ref<boolean>(false);
     const taskGroupLoading = ref<boolean>(false);
     const showGroupModal = ref<Boolean>(false);

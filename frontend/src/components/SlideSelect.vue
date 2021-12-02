@@ -21,23 +21,13 @@
         <div
           v-for="slide in slides"
           :key="slide.id"
-          class="
-            flex
-            transition
-            justify-start
-            items-center
-            hover:bg-gray-400
-            bg-gray-500
-            my-4
-            p-2
-            rounded-md
-            cursor-pointer
-            h-14
-          "
+          class="flex transition justify-start items-center hover:bg-gray-400 bg-gray-500 my-4 p-2 rounded-md cursor-pointer h-14"
           @click="selectSlide(slide)"
         >
           <lazy-image :image-url="getThumbnailUrl(slide.slide_id)" class="w-14 rounded-sm mr-4"></lazy-image>
-          <div class="w-full">{{ slide.name }}</div>
+          <div class="w-full">
+            {{ slide.name }}
+          </div>
         </div>
       </div>
     </div>
@@ -94,7 +84,16 @@ export default defineComponent({
       emit('slideChanged', selectedSlide);
     };
 
-    return { searchString, loadSlides, slides, loading, isFocus, target, selectSlide, getThumbnailUrl };
+    return {
+      searchString,
+      loadSlides,
+      slides,
+      loading,
+      isFocus,
+      target,
+      selectSlide,
+      getThumbnailUrl
+    };
   }
 });
 </script>

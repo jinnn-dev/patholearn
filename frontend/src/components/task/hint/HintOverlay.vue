@@ -1,22 +1,7 @@
 <template>
   <div v-if="hints && hints.length > 0">
     <div
-      class="
-        transition-all
-        transform
-        cursor-pointer
-        absolute
-        z-10
-        -translate-x-1/2
-        left-1/2
-        bg-gray-700/70
-        backdrop-blur-md
-        h-7
-        flex
-        p-3
-        items-center
-        justify-between
-      "
+      class="transition-all transform cursor-pointer absolute z-10 -translate-x-1/2 left-1/2 bg-gray-700/70 backdrop-blur-md h-7 flex p-3 items-center justify-between"
       @click="isCollapsed = !isCollapsed"
       :title="isCollapsed ? 'Ausklappen' : 'Einklappen'"
       :class="[isCollapsed ? 'bottom-4 rounded-lg' : 'bottom-[13.5rem] rounded-t-lg']"
@@ -37,18 +22,7 @@
       :class="[isCollapsed ? '-bottom-52' : 'bottom-2']"
     >
       <div
-        class="
-          w-full
-          h-full
-          bg-gray-600/70
-          filter
-          backdrop-blur-md
-          flex
-          items-center
-          justify-center
-          rounded-lg
-          max-w-[100%]
-        "
+        class="w-full h-full bg-gray-600/70 filter backdrop-blur-md flex items-center justify-center rounded-lg max-w-[100%]"
       >
         <div class="w-full h-full flex items-center justify-center">
           <div class="w-full h-52" v-if="hints">
@@ -101,7 +75,11 @@ export default defineComponent({
 
     const isCollapsed = ref(true);
 
-    return { modules: [Navigation, Pagination, A11y], isCollapsed, hints };
+    return {
+      modules: [Navigation, Pagination, A11y],
+      isCollapsed,
+      hints
+    };
   }
 });
 </script>

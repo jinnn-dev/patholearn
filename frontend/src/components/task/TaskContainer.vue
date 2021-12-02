@@ -1,23 +1,6 @@
 <template>
   <div
-    class="
-      transition-all
-      transform
-      cursor-pointer
-      absolute
-      z-10
-      top-1/2
-      -translate-y-1/2
-      bg-gray-700/70
-      filter
-      backdrop-blur-md
-      text-3xl
-      rounded-l-lg
-      h-12
-      flex flex-col
-      items-center
-      justify-center
-    "
+    class="transition-all transform cursor-pointer absolute z-10 top-1/2 -translate-y-1/2 bg-gray-700/70 filter backdrop-blur-md text-3xl rounded-l-lg h-12 flex flex-col items-center justify-center"
     @click="isCollapsed = !isCollapsed"
     :title="isCollapsed ? 'Ausklappen' : 'Einklappen'"
     :class="[isCollapsed ? 'right-0' : 'right-80']"
@@ -26,21 +9,7 @@
   </div>
 
   <div
-    class="
-      transition-all
-      w-80
-      fixed
-      z-10
-      right-0
-      top-1/2
-      transform
-      -translate-y-1/2
-      rounded-l-lg
-      overflow-hidden
-      bg-gray-700/70
-      filter
-      backdrop-blur-md
-    "
+    class="transition-all w-80 fixed z-10 right-0 top-1/2 transform -translate-y-1/2 rounded-l-lg overflow-hidden bg-gray-700/70 filter backdrop-blur-md"
     :class="[isCollapsed ? '-right-80' : 'right-0']"
   >
     <div class="flex gap-4 justify-between items-center m-2 text-center text-xl">
@@ -171,7 +140,13 @@ export default defineComponent({
       changeTask(taskMap.value[task.layer][taskMap.value[task.layer].length - 1]);
     };
 
-    const deleteTask = (index: number, event: { task: Task; taskIndex: number }) => {
+    const deleteTask = (
+      index: number,
+      event: {
+        task: Task;
+        taskIndex: number;
+      }
+    ) => {
       taskMap.value[index].splice(event.taskIndex, 1);
 
       if (taskMap.value[index].length === 0) {

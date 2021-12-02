@@ -24,7 +24,9 @@
                 @click="baseTask.task_count && baseTask.task_count > 0 && $router.push('/task/' + baseTask.short_name)"
               >
                 <div class="flex justify-between">
-                  <div class="text-xl">{{ baseTask.name }}</div>
+                  <div class="text-xl">
+                    {{ baseTask.name }}
+                  </div>
                 </div>
 
                 <progress-bar

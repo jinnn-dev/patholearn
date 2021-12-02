@@ -26,17 +26,7 @@
 
       <div class="flex justify-end mt-4 items-center gap-4">
         <div
-          class="
-            transition
-            hover:ring-2
-            ring-white
-            bg-gray-500
-            group-hover:bg-gray-300
-            p-2
-            rounded-lg
-            cursor-pointer
-            inline-block
-          "
+          class="transition hover:ring-2 ring-white bg-gray-500 group-hover:bg-gray-300 p-2 rounded-lg cursor-pointer inline-block"
           @click.prevent="downloadUserSolutions(taskgroup.short_name)"
         >
           <Icon name="download-simple" v-if="!downloadUserSolutionsLoading" />
@@ -158,7 +148,9 @@ export default defineComponent({
 
       const a = document.createElement('a');
 
-      const blob = new Blob([data], { type: 'application/xlsx' });
+      const blob = new Blob([data], {
+        type: 'application/xlsx'
+      });
 
       a.href = window.URL.createObjectURL(blob);
       a.download = short_name + '.xlsx';

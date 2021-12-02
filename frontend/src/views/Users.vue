@@ -18,8 +18,13 @@
         <div v-if="!userLoading" class="flex gap-4 flex-wrap">
           <div v-for="user in users" :key="user.id">
             <skeleton-card class="flex justify-between">
-              <div class="mr-4">{{ user.firstname }} {{ user.lastname }}</div>
-              <div>{{ user.email }}</div>
+              <div class="mr-4">
+                {{ user.firstname }}
+                {{ user.lastname }}
+              </div>
+              <div>
+                {{ user.email }}
+              </div>
             </skeleton-card>
           </div>
         </div>
@@ -108,7 +113,9 @@ export default defineComponent({
       password: '',
       confirmPassword: ''
     };
-    let formData = reactive({ ...initialState });
+    let formData = reactive({
+      ...initialState
+    });
 
     const showModal = ref<Boolean>(false);
 
@@ -122,7 +129,10 @@ export default defineComponent({
       firstname: { required },
       lastname: { required },
       email: { email },
-      password: { required, minLengthValue: minLength(3) },
+      password: {
+        required,
+        minLengthValue: minLength(3)
+      },
       confirmPassword: { required }
     };
 

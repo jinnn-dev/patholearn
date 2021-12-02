@@ -3,7 +3,7 @@ import { TaskHintImage } from './taskHintImage';
 export enum HintType {
   TEXT = 0,
   IMAGE = 1,
-  SOLUTION = 2,
+  SOLUTION = 2
 }
 
 export interface TaskHint {

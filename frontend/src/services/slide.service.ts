@@ -12,7 +12,10 @@ export class SlideService {
    */
   public static async getSlides(): Promise<Slide[]> {
     const [_, response] = await handleError(
-      ApiService.get<Slide[]>({ resource: '/slides', host: SLIDE_API_URL }),
+      ApiService.get<Slide[]>({
+        resource: '/slides',
+        host: SLIDE_API_URL
+      }),
       'Slides could not be loaded'
     );
     return response!.data;
@@ -46,7 +49,10 @@ export class SlideService {
    */
   public static async deleteSlide(slideName: string): Promise<any> {
     const [_, response] = await handleError(
-      ApiService.delete({ resource: `/slides/${slideName}`, host: SLIDE_API_URL }),
+      ApiService.delete({
+        resource: `/slides/${slideName}`,
+        host: SLIDE_API_URL
+      }),
       'Slide could bot be deleted'
     );
     return response!.data;

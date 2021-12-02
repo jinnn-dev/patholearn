@@ -69,7 +69,9 @@ export class ImageSelectViewer {
     });
 
     this._viewer = OpenSeadragon(viewerOptions);
-    new TileCache({ maxImageCacheCount: 500 });
+    new TileCache({
+      maxImageCacheCount: 500
+    });
 
     new SvgOverlay(this._viewer);
     select('#' + SVG_ID).remove();

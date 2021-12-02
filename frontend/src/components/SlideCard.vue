@@ -55,7 +55,9 @@
         ></lazy-image>
       </div>
 
-      <div class="text-2xl text-center">{{ slide.name }}</div>
+      <div class="text-2xl text-center">
+        {{ slide.name }}
+      </div>
 
       <div class="w-full">
         <div v-if="slide.status === SLIDE_STATUS.SUCCESS" class="w-full">
@@ -76,8 +78,12 @@
     </div>
     <div class="h-full">
       <div v-for="(metaValue, metaKey) in slide.metadata" :key="metaKey" class="bg-gray-600 my-2 p-2 rounded-md">
-        <div class="text-gray-300 font-semibold">{{ metaKey }}</div>
-        <div class="break-all hyphens-auto">{{ metaValue }}</div>
+        <div class="text-gray-300 font-semibold">
+          {{ metaKey }}
+        </div>
+        <div class="break-all hyphens-auto">
+          {{ metaValue }}
+        </div>
       </div>
     </div>
   </modal-dialog>
@@ -91,10 +97,9 @@
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, PropType, ref } from 'vue';
-
+import { getThumbnailUrl } from '../config';
 import { Slide } from '../model/slide';
 import { SLIDE_STATUS } from '../model/slideStatus';
-import { getThumbnailUrl } from '../config';
 import { TooltipGenerator } from '../utils/tooltip-generator';
 
 export default defineComponent({
@@ -150,7 +155,13 @@ export default defineComponent({
       });
     });
 
-    return { SLIDE_STATUS, getStatusColor, getThumbnailUrl, showInfoDialog, showDeleteDialog };
+    return {
+      SLIDE_STATUS,
+      getStatusColor,
+      getThumbnailUrl,
+      showInfoDialog,
+      showDeleteDialog
+    };
   }
 });
 </script>

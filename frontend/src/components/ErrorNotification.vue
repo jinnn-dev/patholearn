@@ -1,10 +1,14 @@
 <template>
   <div @click="$emit('expired', index)" class="bg-red-700 p-4 rounded-lg shadow-xl text-white my-4">
-    <div class="font-semibold text-red-200">{{ getDate }}</div>
+    <div class="font-semibold text-red-200">
+      {{ getDate }}
+    </div>
     <div>{{ error.errorMessage }}</div>
     <div v-if="error.err">
       <div>{{ error.err }}</div>
-      <div v-if="error.err.response">{{ error.err.response.data }}</div>
+      <div v-if="error.err.response">
+        {{ error.err.response.data }}
+      </div>
     </div>
     <div></div>
   </div>
@@ -34,7 +38,11 @@ export default defineComponent({
     });
 
     const getDate = computed(() =>
-      new Date().toLocaleDateString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+      new Date().toLocaleDateString('de-DE', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      })
     );
 
     return { getDate };

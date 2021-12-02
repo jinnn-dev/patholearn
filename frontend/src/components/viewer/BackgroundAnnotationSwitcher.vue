@@ -1,18 +1,6 @@
 <template>
   <div
-    class="
-      fixed
-      bottom-[10%]
-      right-0
-      p-2
-      rounded-l-lg
-      shadow-md
-      bg-gray-700/70
-      filter
-      backdrop-blur-md
-      z-[2]
-      select-none
-    "
+    class="fixed bottom-[10%] right-0 p-2 rounded-l-lg shadow-md bg-gray-700/70 filter backdrop-blur-md z-[2] select-none"
   >
     <div>Hintergrundannotationen</div>
     <div class="flex justify-between my-2">

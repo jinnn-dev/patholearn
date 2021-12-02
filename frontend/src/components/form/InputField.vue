@@ -9,13 +9,7 @@
       :value="modelValue"
       @input="onChanged"
       :required="required"
-      class="
-        bg-gray-900 bg-opacity-50
-        placeholder-gray-400
-        rounded-lg
-        w-full
-        focus:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-highlight-400 focus:border-transparent
-      "
+      class="bg-gray-900 bg-opacity-50 placeholder-gray-400 rounded-lg w-full focus:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-highlight-400 focus:border-transparent"
       :class="paddingLeft"
       :min="min"
       :max="max"

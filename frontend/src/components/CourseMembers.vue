@@ -11,7 +11,9 @@
 
     <div class="overflow-y-auto">
       <div v-for="member of members" :key="member.id" class="bg-gray-500 w-full rounded-lg p-1 px-2 my-2 min-h-8">
-        {{ member.firstname }} {{ member.middlename }} {{ member.lastname }}
+        {{ member.firstname }}
+        {{ member.middlename }}
+        {{ member.lastname }}
       </div>
     </div>
   </div>

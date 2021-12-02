@@ -10,14 +10,7 @@
       @input="onChanged"
       :required="required"
       :autocomplete="autocomplete"
-      class="
-        bg-gray-900 bg-opacity-50
-        placeholder-gray-400
-        rounded-lg
-        w-full
-        pl-10
-        focus:outline-none focus:ring-2 focus:ring-highlight-400 focus:border-transparent
-      "
+      class="bg-gray-900 bg-opacity-50 placeholder-gray-400 rounded-lg w-full pl-10 focus:outline-none focus:ring-2 focus:ring-highlight-400 focus:border-transparent"
     />
   </form-field>
 </template>

@@ -41,7 +41,9 @@
               <div v-for="taskgroup in course?.task_groups" :key="taskgroup.short_name" class="ml-4 mb-4">
                 <router-link :to="'/group/' + taskgroup.short_name">
                   <skeleton-card class="min-w-[15rem]">
-                    <div class="text-xl">{{ taskgroup.name }}</div>
+                    <div class="text-xl">
+                      {{ taskgroup.name }}
+                    </div>
                     <progress-bar
                       :id="taskgroup.short_name"
                       :correctTasks="taskgroup.correct_tasks"
@@ -82,7 +84,10 @@ export default defineComponent({
     const leaveCourseLoading = ref<Boolean>(false);
 
     const showModal = ref<Boolean>(false);
-    const formData = reactive({ name: '', slide_id: '' });
+    const formData = reactive({
+      name: '',
+      slide_id: ''
+    });
 
     const router = useRouter();
 

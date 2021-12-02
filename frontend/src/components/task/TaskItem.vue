@@ -17,7 +17,9 @@
         ></Icon>
         <Icon name="x-circle" v-else class="text-red-500" />
       </div>
-      <div class="ml-2 w-full mx-2 break-all">{{ question }}</div>
+      <div class="ml-2 w-full mx-2 break-all">
+        {{ question }}
+      </div>
     </div>
     <role-only v-if="isOwner">
       <div class="flex">

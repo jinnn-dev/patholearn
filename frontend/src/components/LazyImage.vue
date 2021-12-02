@@ -23,7 +23,9 @@
         @error="handleError"
       />
     </div>
-    <div v-else class="bg-gray-300 p-2 rounded-lg"><Icon name="filex" :width="32" :height="32" /></div>
+    <div v-else class="bg-gray-300 p-2 rounded-lg">
+      <Icon name="filex" :width="32" :height="32" />
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -75,7 +77,13 @@ export default defineComponent({
 
     const imageLoadError = ref(false);
 
-    return { loaded, onLoaded, imageLoadError, url, handleError };
+    return {
+      loaded,
+      onLoaded,
+      imageLoadError,
+      url,
+      handleError
+    };
   }
 });
 </script>

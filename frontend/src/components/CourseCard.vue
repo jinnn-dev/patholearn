@@ -2,9 +2,13 @@
   <router-link :to="'/course/' + course.short_name + (isCourseOwner ? '/admin' : '')">
     <skeleton-card>
       <div class="max-h-60 w-96">
-        <div class="text-xl truncated-lines-2">{{ course.name }}</div>
+        <div class="text-xl truncated-lines-2">
+          {{ course.name }}
+        </div>
         <div class="text-gray-200" v-if="!isCourseOwner">
-          bei {{ course.owner.firstname }} {{ course.owner.lastname }}
+          bei
+          {{ course.owner.firstname }}
+          {{ course.owner.lastname }}
         </div>
         <progress-bar
           v-if="!isCourseOwner"

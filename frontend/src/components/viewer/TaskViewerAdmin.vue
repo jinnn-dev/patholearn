@@ -434,7 +434,10 @@ export default defineComponent({
 
         const found = annotationGroups.some((el) => el.name === item.name);
         if (!found) {
-          annotationGroups.push({ name: item.name!, color: item.color! });
+          annotationGroups.push({
+            name: item.name!,
+            color: item.color!
+          });
         }
       }
       props.task!.annotation_groups = annotationGroups;

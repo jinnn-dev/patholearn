@@ -72,7 +72,14 @@ export default defineComponent({
       element.style.height = null;
     }
 
-    return { beforeEnter, enter, afterEnter, beforeLeave, leave, afterLeave };
+    return {
+      beforeEnter,
+      enter,
+      afterEnter,
+      beforeLeave,
+      leave,
+      afterLeave
+    };
   }
 });
 </script>

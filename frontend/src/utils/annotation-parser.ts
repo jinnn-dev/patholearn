@@ -76,7 +76,10 @@ export class AnnotationParser {
             Array.from(vertices).forEach((vertice) => {
               const x = +vertice.getAttribute('X')!;
               const y = +vertice.getAttribute('Y')!;
-              imagePoints.push({ x: x, y: y });
+              imagePoints.push({
+                x: x,
+                y: y
+              });
             });
             const simplifiedImage = Simplify(imagePoints, 3);
 

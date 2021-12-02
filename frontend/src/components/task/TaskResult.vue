@@ -75,15 +75,27 @@
           /> -->
         </svg>
       </div>
-      <h2 class="text-xl text-center">{{ solveResult?.response_text }}</h2>
+      <h2 class="text-xl text-center">
+        {{ solveResult?.response_text }}
+      </h2>
     </div>
 
     <div class="w-full flex flex-col items-center" v-if="groupedDetail">
       <div class="mt-1">
         <div v-for="(item, index) in groupedDetail" :key="index" class="flex gap-4 my-2 items-center">
-          <div :style="{ backgroundColor: RESULT_POLYGON_COLOR[item[0]] }" class="w-4 h-4 rounded-full"></div>
-          <div>{{ item[1] }} / {{ solveResult.result_detail?.length }}</div>
-          <div>{{ RESULT_RESPONSE_NAME[item[0]] }}</div>
+          <div
+            :style="{
+              backgroundColor: RESULT_POLYGON_COLOR[item[0]]
+            }"
+            class="w-4 h-4 rounded-full"
+          ></div>
+          <div>
+            {{ item[1] }} /
+            {{ solveResult.result_detail?.length }}
+          </div>
+          <div>
+            {{ RESULT_RESPONSE_NAME[item[0]] }}
+          </div>
         </div>
       </div>
     </div>

@@ -69,7 +69,9 @@ export class ApiService {
       params: {
         ...(data && data)
       },
-      ...(responseType && { responseType: responseType })
+      ...(responseType && {
+        responseType: responseType
+      })
     });
   }
 

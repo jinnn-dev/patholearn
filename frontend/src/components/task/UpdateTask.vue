@@ -1,6 +1,9 @@
 <template>
   <div>
-    <h1 class="text-2xl text-center">Füge eine neue Aufgabe der {{ taskUpdateForm.layer }}. Ebene hinzu</h1>
+    <h1 class="text-2xl text-center">
+      Füge eine neue Aufgabe der
+      {{ taskUpdateForm.layer }}. Ebene hinzu
+    </h1>
     <form @submit.prevent="updateTask" class="w-full">
       <input-field
         v-model="taskUpdateForm.task_question"
@@ -32,25 +35,16 @@
             </div>
             <div class="flex w-full justify-evenly gap-2 my-2">
               <div
-                class="
-                  transition
-                  flex
-                  justify-center
-                  items-center
-                  bg-gray-400
-                  hover:bg-gray-300 hover:ring-2
-                  ring-highlight-900
-                  cursor-pointer
-                  rounded-lg
-                  p-2
-                "
+                class="transition flex justify-center items-center bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg p-2"
                 v-for="level in knowledgeLevel"
                 :key="level.index"
                 :class="taskUpdateForm.knowledge_level === level.index && 'bg-gray-500 ring-2 ring-highlight-900'"
                 @click="taskUpdateForm.knowledge_level = level.index"
               >
                 <div class="flex flex-col gap-3 justify-center items-center text-center">
-                  <div>{{ level.name }}</div>
+                  <div>
+                    {{ level.name }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -153,7 +147,15 @@ export default defineComponent({
     const changeCanBeSolved = (value: boolean) => {
       taskUpdateForm.can_be_solved = value;
     };
-    return { taskUpdateForm, updateTask, taskUpdateLoading, knowledgeLevel, taskTypes, TaskType, changeCanBeSolved };
+    return {
+      taskUpdateForm,
+      updateTask,
+      taskUpdateLoading,
+      knowledgeLevel,
+      taskTypes,
+      TaskType,
+      changeCanBeSolved
+    };
   }
 });
 </script>
