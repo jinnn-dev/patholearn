@@ -37,6 +37,9 @@ def get_max_value_length(arr_dict: Dict[Any, List[Any]]) -> int:
 
 
 def print_python_dict(matched_ids: Dict[str, List[Union[PointResult, LineResult, PolygonResult]]]):
+    """
+    Prints dict with different annotation result lists
+    """
     result = {}
     for key in matched_ids:
         result[key] = []
@@ -46,6 +49,13 @@ def print_python_dict(matched_ids: Dict[str, List[Union[PointResult, LineResult,
 
 
 def get_csv_iterator(csv_file: UploadFile = File(...), skip_headers=False) -> [Iterator, str]:
+    """
+    Returns an iterator and the csv delimiter for the given file
+
+    :param csv_file: The csv file
+    :param skip_headers: Whether the iterator should skip the headers
+    :return Iterator and delimiter
+    """
     csv_file.file.seek(0)
     csv_reader = csv.reader(StringIO(str(csv_file.file.read(), 'utf-8')))
     headers = next(csv_reader)

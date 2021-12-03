@@ -1,11 +1,12 @@
 from typing import List, Optional
 
+from sqlalchemy.orm import Session
+
 from app.crud.base import CRUDBase
 from app.models.course import Course
 from app.models.course_members import CourseMembers
 from app.schemas.course import (CourseAdmin, CourseCreate, CourseDetail,
                                 CourseUpdate)
-from sqlalchemy.orm import Session
 
 
 def set_member_status(*, courses: List[Course], user_id: int) -> None:
@@ -59,9 +60,16 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
         db.refresh(db_obj)
         return course
 
-    def leave_course(self, db: Session, *, course_id: int, user_id: int):
-        membership = db.query(CourseMembers).filter(CourseMembers.course_id == course_id).filter(
-            CourseMembers.user_id == user_id).first()
+    def leave_course(self, db: Session, *, course_id: int, user_id: int) -> None:
+        """
+        Lets user leave a course
+
+        :param db: DB-Session
+        :param course_id: Id of the course
+        :param user_id: Id of the user
+        """
+        membership = db.query(self.model).filter(self.model.course_id == course_id).filter(
+            self.model.user_id == user_id).first()
         db.delete(membership)
         db.commit()
 
@@ -115,7 +123,7 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
         :param user_id: id of the user
         :return: All Courses where search string is included
         """
-        courses = db.query(Course).filter(Course.name.ilike('%{0}%'.format(search))).all()
+        courses = db.query(self.model).filter(self.model.name.ilike('%{0}%'.format(search))).all()
         set_member_status(courses=courses, user_id=user_id)
         return courses
 
@@ -144,5 +152,6 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
         #     return False
 
         return course.owner_id == user_id
+
 
 crud_course = CRUDCourse(Course)

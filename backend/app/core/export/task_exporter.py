@@ -40,7 +40,13 @@ class TaskPointRow(BaseModel):
 class TaskExporter:
 
     @staticmethod
-    def write_xlsx_header(worksheet: Worksheet, model: Type[BaseModel]):
+    def write_xlsx_header(worksheet: Worksheet, model: Type[BaseModel]) -> None:
+        """
+        Writes all fields in the given model to the worksheet first row
+
+        :param worksheet: Worksheet to write to
+        :param model: Model which field represent the column names
+        """
         char = "A"
         for index, field in enumerate(model.__fields__):
             col = chr(ord(char[0]) + index) + '1'
@@ -48,7 +54,13 @@ class TaskExporter:
 
     @staticmethod
     def export_point_task_group_as_xlsx(db: Session, task_group: TaskGroup) -> BytesIO:
+        """
+        Creates worksheet of point user solutions to the given task group
 
+        :param db: DB-Session
+        :param task_group: The task group to export the points from
+        :return: Bytes representation of the worksheet
+        """
         workbook, worksheet, output = TaskExporter.initialize_xlsx_file()
         TaskExporter.write_xlsx_header(worksheet, TaskPointRow)
 
@@ -68,7 +80,14 @@ class TaskExporter:
 
     @staticmethod
     def export_point_base_task_as_xlsx(db: Session, base_task: BaseTaskDetail, task_group=None) -> BytesIO:
+        """
+        Creates worksheet of point user solutions to the given base task
 
+        :param db: DB-Session
+        :param base_task: The base task to export the points from
+        :param task_group: The task group of the base task
+        :return: Bytes representation of the worksheet
+        """
         if not task_group:
             task_group = crud_task_group.get(db, id=base_task.task_group_id)
 
@@ -95,6 +114,15 @@ class TaskExporter:
     @staticmethod
     def export_point_task_as_xlsx(db: Session, task: Task, base_task: BaseTask = None,
                                   task_group: TaskGroup = None) -> BytesIO:
+        """
+        Creates worksheet of point user solutions to the given task
+
+        :param db: DB-Session
+        :param task: The task to export the points from
+        :param base_task: The base task of the task
+        :param task_group: The task group of the task
+        :return: Bytes representation of the worksheet
+        """
         if not base_task:
             base_task = crud_base_task.get(db, id=task.base_task_id)
         if not task_group:
@@ -122,6 +150,19 @@ class TaskExporter:
     @staticmethod
     def write_rows_for_task(db: Session, worksheet: Worksheet, user_solutions: List[UserSolution], task: Task,
                             base_task: BaseTask, task_group: TaskGroup, image: str, start_row: int) -> int:
+        """
+        Writes one row for each user solution
+
+        :param db: DB-Session
+        :param worksheet: Worksheet to write to
+        :param user_solutions: User solutions to extract data from
+        :param task: The task of the user solutions
+        :param base_task: The base task of the user solutions
+        :param task_group: The task group of the user solutions
+        :param image: Image path of the task
+        :param start_row: Where to start writing
+        :return: The last row written to
+        """
         char = "A"
         row_num = 0
         for user_solution in user_solutions:
@@ -138,7 +179,18 @@ class TaskExporter:
 
     @staticmethod
     def write_rows_for_base_task(db: Session, worksheet: Worksheet, base_task: BaseTaskDetail, task_group: TaskGroup,
-                                 image: str, start_row: int):
+                                 image: str, start_row: int) -> int:
+        """
+        Writes rows for each task in base task
+
+        :param db: DB-Session
+        :param worksheet: The worksheet to write to
+        :param base_task: The base task to extract data from
+        :param task_group: The task group of the base task
+        :param image: The image of the base task
+        :param start_row: Where to start writing
+        :return: The last row written to
+        """
         for task in base_task.tasks:
             user_solutions = crud_user_solution.get_solution_to_task(db, task_id=task.id)
             start_row += TaskExporter.write_rows_for_task(db, worksheet, user_solutions, task, base_task, task_group,
@@ -149,6 +201,17 @@ class TaskExporter:
     @staticmethod
     def get_point_row(user_solution: UserSolution, user: User, task: Task, base_task: BaseTask,
                       task_group: TaskGroup, image: str) -> List[TaskPointRow]:
+        """
+        Converts each annotation of the given user solution to an object representing a row in the worksheet
+
+        :param user_solution: User solution that should be converted
+        :param user: User of the user solution
+        :param task: Task of the user solution
+        :param base_task: Base task of the user solution
+        :param task_group: Task group of the user solution
+        :param image: Image of the base task
+        :return: All Row objects
+        """
         task_point_rows = []
 
         if task.annotation_type == AnnotationType.SOLUTION_POINT and task.task_type != TaskType.IMAGE_SELECT:
@@ -182,6 +245,10 @@ class TaskExporter:
 
     @staticmethod
     def initialize_xlsx_file() -> [Workbook, Worksheet, BytesIO]:
+        """
+        Initializes a xlsx workbook, worksheet and Bytes Buffer
+        :return: Initialized workbook, worksheet and bytes buffer
+        """
         output = BytesIO()
         workbook = xlsxwriter.Workbook(output)
         worksheet = workbook.add_worksheet()

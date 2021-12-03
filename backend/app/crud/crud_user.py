@@ -10,7 +10,14 @@ from app.schemas.user import UserCreate, UserUpdate
 
 class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
     def get_by_email(self, db: Session, *, email: str) -> Optional[User]:
-        return db.query(User).filter(User.email == email).first()
+        """
+        Returns the user to the given email
+
+        :param db: DB-Session
+        :param email: Email address of user
+        :return: The found user
+        """
+        return db.query(self.model).filter(self.model.email == email).first()
 
     def create(self, db: Session, *, obj_in: UserCreate) -> User:
         """

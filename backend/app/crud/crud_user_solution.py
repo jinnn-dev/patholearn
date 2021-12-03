@@ -1,11 +1,12 @@
 from typing import List, Tuple
 
+from sqlalchemy import and_, func
+from sqlalchemy.orm import Session
+
 from app.crud.base import CRUDBase
 from app.models.user_solution import UserSolution
 from app.schemas.user_solution import UserSolution as SchemaSolution
 from app.schemas.user_solution import UserSolutionCreate, UserSolutionUpdate
-from sqlalchemy import and_, func
-from sqlalchemy.orm import Session
 
 
 class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUpdate]):
@@ -23,6 +24,13 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
             UserSolution.task_id == task_id).first()
 
     def get_solution_to_task(self, db: Session, *, task_id: int) -> List[SchemaSolution]:
+        """
+        Returns all user solutions to the given task
+
+        :param db: DB-Session
+        :param task_id: Id of the task
+        :return: All found user solutions
+        """
         return db.query(self.model).filter(UserSolution.task_id == task_id).all()
 
     def remove_by_user_id_and_task_id(self, db: Session, *, user_id: int, task_id: int) -> SchemaSolution:

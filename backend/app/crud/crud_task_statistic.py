@@ -12,7 +12,15 @@ from app.schemas.task_statistic import TaskStatisticCreate, TaskStatisticUpdate,
 class CRUDTaskStatistic(CRUDBase[TaskStatistic, TaskStatisticCreate, TaskStatisticUpdate]):
 
     def get_oldest_task_statistics_to_base_task_id(self, db: Session, *, base_task_id: int) -> [List[
-        TaskStatisticSchema], List[int]]:
+                                                                                                    TaskStatisticSchema],
+                                                                                                List[int]]:
+        """
+        Returns all statistics to the given base task
+
+        :param db: DB-Session
+        :param base_task_id: Id of the base task
+        :return: All found task statistics and task ids
+        """
         sql = text("""SELECT ts.* FROM taskstatistic as ts
          join (SELECT user_id, task_id, min(solved_date) as smallest_date
                FROM taskstatistic
@@ -42,17 +50,32 @@ class CRUDTaskStatistic(CRUDBase[TaskStatistic, TaskStatisticCreate, TaskStatist
         return task_statistics, task_ids
 
     def remove_all_by_task_id(self, db: Session, *, task_id: int) -> List[TaskStatistic]:
+        """
+        Removes all task statistic to the given task
+
+        :param db: DB-Session
+        :param task_id: Id of the task
+        :return: The deleted task statistics
+        """
         db_objs = db.query(self.model).filter(self.model.task_id == task_id).all()
         for obj in db_objs:
             db.delete(obj)
             db.commit()
         return db_objs
 
-    def remove_all_by_base_task_id(self, db: Session, *, base_task_id: int):
+    def remove_all_by_base_task_id(self, db: Session, *, base_task_id: int) -> List[TaskStatistic]:
+        """
+        Removes all task statistics to the given base task
+
+        :param db: DB-Session
+        :param base_task_id: Id of the base task
+        :return: The deleted task statistics
+        """
         db_objs = db.query(self.model).filter(self.model.base_task_id == base_task_id).all()
         for obj in db_objs:
             db.delete(obj)
             db.commit()
         return db_objs
+
 
 crud_task_statistic = CRUDTaskStatistic(TaskStatistic)
