@@ -1,5 +1,3 @@
-import os
-
 import sentry_sdk
 from fastapi import FastAPI
 from sentry_sdk import set_tag
@@ -19,7 +17,7 @@ if settings.SENTRY_METRICS:
         settings.SENTRY_URL,
         traces_sample_rate=1.0
     )
-    set_tag("environment", "dev")
+    set_tag("environment", settings.SENTRY_ENVIRONMENT_TAG)
 
 origins = [
     "http://10.168.2.105:3000",
@@ -47,12 +45,8 @@ app.add_middleware(
 )
 
 
-# app.mount("/data", StaticFiles(directory="./data/slide"), name="data")
-
-
 @app.get("/")
 def root():
-    raise Exception(settings.SENTRY_METRICS)
     return {"Hello": "World"}
 
 

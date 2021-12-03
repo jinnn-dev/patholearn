@@ -31,6 +31,7 @@ class Settings(BaseSettings):
 
     SENTRY_METRICS = os.environ["SENTRY_METRICS"] if "SENTRY_METRICS" in os.environ else False
     SENTRY_URL = os.environ["SENTRY_URL"] if "SENTRY_URL" in os.environ else ""
+    SENTRY_ENVIRONMENT_TAG = os.environ["SENTRY_ENVIRONMENT_TAG"] if "SENTRY_ENVIRONMENT_TAG" in os.environ else "dev"
 
     class Config:
         case_sensitive = True
