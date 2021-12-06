@@ -19,8 +19,8 @@ class CRUDTask(CRUDBase[Task, TaskCreate, TaskUpdate]):
         :param base_task_id: ID of the BaseTask
         :return: If there are new tasks or not
         """
-        result = db.query(self.model).filter(self.model.base_task_id == base_task_id).filter(
-            self.model.user_id == user_id).first()
+        result = db.query(NewTask).filter(NewTask.base_task_id == base_task_id).filter(
+            NewTask.user_id == user_id).first()
         return True if result is not None else False
 
     def has_new_task_multiple_base_tasks(self, db: Session, user_id: int, base_task_ids: List[int]) -> bool:
@@ -32,8 +32,8 @@ class CRUDTask(CRUDBase[Task, TaskCreate, TaskUpdate]):
         :param base_task_ids: Id of the BaseTask
         :return: Whether there are new tasks or not
         """
-        result = db.query(self.model).filter(self.model.base_task_id.in_(base_task_ids)).filter(
-            self.model.user_id == user_id).first()
+        result = db.query(NewTask).filter(NewTask.base_task_id.in_(base_task_ids)).filter(
+            NewTask.user_id == user_id).first()
         return True if result is not None else False
 
     def create_new_task(self, db: Session, user_id: int, base_task_id: int) -> NewTask:
@@ -61,8 +61,8 @@ class CRUDTask(CRUDBase[Task, TaskCreate, TaskUpdate]):
         :param base_task_id: ID of the BaseTask
         :return: The deleted entity
         """
-        obj = db.query(self.model).filter(self.model.base_task_id == base_task_id).filter(
-            self.model.user_id == user_id).first()
+        obj = db.query(NewTask).filter(NewTask.base_task_id == base_task_id).filter(
+            NewTask.user_id == user_id).first()
         if obj is not None:
             db.delete(obj)
             db.commit()
@@ -76,7 +76,7 @@ class CRUDTask(CRUDBase[Task, TaskCreate, TaskUpdate]):
         :param base_task_id: ID of the base task
         :return: The deleted entities
         """
-        db_objs = db.query(self.model).filter(self.model.base_task_id == base_task_id).all()
+        db_objs = db.query(NewTask).filter(NewTask.base_task_id == base_task_id).all()
         for obj in db_objs:
             db.delete(obj)
         db.commit()
