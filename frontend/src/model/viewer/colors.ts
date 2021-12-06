@@ -12,5 +12,10 @@ export enum ANNOTATION_COLOR {
   MISTAKE = '#e74c3c',
   CORRECT = '#2ecc71',
   RESULT_LINE_COLOR = '#FFFF00',
+  INFO_COLOR = '#FF00FF',
   FILL_OPACITY = '66'
+}
+
+export function getFillColor(color: string): string {
+  return color + ANNOTATION_COLOR.FILL_OPACITY;
 }

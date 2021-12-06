@@ -7,6 +7,9 @@ import { OffsetAnnotationRectangleData } from '../../../model/viewer/export/offs
 import { AnnotationBaseData, AnnotationBaseOffsetData, AnnotationFactory } from './annotationFactory';
 
 export class RectangleFactory extends AnnotationFactory<AnnotationRectangle> {
+  public createInfo(annotationData: AnnotationBaseData): AnnotationRectangle {
+    throw new Error('Method not implemented.');
+  }
   public create(annotationData: AnnotationBaseData): AnnotationRectangle {
     const points: Point[] = this.convertToPoints(annotationData.data.coord.viewport || []);
 

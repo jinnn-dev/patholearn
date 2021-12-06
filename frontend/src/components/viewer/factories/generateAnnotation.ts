@@ -111,6 +111,16 @@ export function generateAnnotation(
         generatedAnnotation = RectangleFactory.getInstance().create(annotationData);
       }
       break;
+
+    case ANNOTATION_TYPE.INFO_POINT:
+      generatedAnnotation = PointFactory.getInstance().createInfo({
+        data: data,
+        node: node,
+        strokeWidth: strokeWidth,
+        radius: radius,
+        strokeColor: strokeColor
+      });
+      break;
     default:
       generatedAnnotation = PolygonFactory.getInstance().create({
         data: data,

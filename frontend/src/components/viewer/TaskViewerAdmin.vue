@@ -166,7 +166,7 @@ export default defineComponent({
       Tool.DELETE,
       Tool.DELETE_ANNOTATION,
       Tool.BASE_DRAWING,
-      Tool.ADD_POINT_SOLUTION
+      Tool.ADD_INFO
     ]);
     const currentTool = ref<Tool>();
 
@@ -248,15 +248,8 @@ export default defineComponent({
         }
 
         if (viewerLoadingState.tilesLoaded) {
-          if (newVal?.task_data) {
-            drawingViewer.value?.addBackgroundPolygons(newVal?.task_data as AnnotationData[]);
-            focusAnnotation(0);
-          } else {
-            drawingViewer.value?.resetZoom();
-          }
-
-          if (newVal?.solution) {
-            drawingViewer.value?.addAnnotations(newVal?.solution as AnnotationData[]);
+          if (newVal) {
+            setAnnotations(newVal);
           }
         }
       }
@@ -345,16 +338,7 @@ export default defineComponent({
               toolbarTools.value.push(Tool.UPLOAD);
             }
 
-            if (props.task.task_data) {
-              drawingViewer.value?.addAnnotations(props.task.task_data as AnnotationData[]);
-              focusAnnotation(0);
-            } else {
-              drawingViewer.value?.resetZoom();
-            }
-
-            if (props.task.solution) {
-              drawingViewer.value?.addAnnotations(props.task.solution as AnnotationData[]);
-            }
+            setAnnotations(props.task);
             setToolbarTools();
           } else {
             toolbarTools.value = [];
@@ -380,23 +364,9 @@ export default defineComponent({
     });
 
     const setToolbarTools = () => {
-      const tools = [
-        Tool.MOVE,
-        Tool.SELECT,
-        Tool.DELETE,
-        Tool.DELETE_ANNOTATION,
-        Tool.BASE_DRAWING,
-        Tool.ADD_POINT_SOLUTION
-      ];
+      const tools = [Tool.MOVE, Tool.SELECT, Tool.DELETE, Tool.DELETE_ANNOTATION, Tool.BASE_DRAWING, Tool.ADD_INFO];
       if (toolbarTools.value.length === 0) {
-        toolbarTools.value = [
-          Tool.MOVE,
-          Tool.SELECT,
-          Tool.DELETE,
-          Tool.DELETE_ANNOTATION,
-          Tool.BASE_DRAWING,
-          Tool.ADD_POINT_SOLUTION
-        ];
+        toolbarTools.value = [...tools];
       }
 
       toolbarTools.value = toolbarTools.value.slice(0, tools.length);
@@ -414,6 +384,10 @@ export default defineComponent({
 
       if (!toolbarTools.value.includes(tool)) {
         toolbarTools.value.push(tool);
+      }
+
+      if (tool !== Tool.POINT_SOLUTION) {
+        toolbarTools.value.push(Tool.ADD_POINT_SOLUTION);
       }
 
       if (props.task?.task_type === 1 && props.task?.annotation_type === 2) {
@@ -674,6 +648,23 @@ export default defineComponent({
 
     const focusAnnotation = (index: number) => {
       focusBackgroundAnnotation(index, drawingViewer.value!);
+    };
+
+    const setAnnotations = (task: Task) => {
+      if (task.task_data) {
+        drawingViewer.value?.addBackgroundPolygons(task.task_data as AnnotationData[]);
+        focusAnnotation(0);
+      } else {
+        drawingViewer.value?.resetZoom();
+      }
+
+      if (task.info_annotations) {
+        drawingViewer.value?.addAnnotations(task.info_annotations as AnnotationData[]);
+      }
+
+      if (task.solution) {
+        drawingViewer.value?.addAnnotations(task.solution as AnnotationData[]);
+      }
     };
 
     return {

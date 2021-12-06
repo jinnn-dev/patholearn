@@ -3,6 +3,7 @@ import { Annotation } from '../../../model/svg/annotation';
 import { AnnotationLine } from '../../../model/svg/annotationLine';
 import { AnnotationPoint } from '../../../model/svg/annotationPoint';
 import { AnnotationRectangle } from '../../../model/svg/annotationRect';
+import InfoAnnotationPoint from '../../../model/svg/infoAnnotationPoint';
 import { OffsetAnnotationLine } from '../../../model/svg/offsetAnnotationLine';
 import { OffsetAnnotationPoint } from '../../../model/svg/offsetAnnotationPoint';
 import { OffsetAnnotationRectangle } from '../../../model/svg/offsetAnnotationRect';
@@ -12,6 +13,7 @@ import { UserSolution, UserSolutionCreate } from '../../../model/userSolution';
 import { ANNOTATION_TYPE } from '../../../model/viewer/annotationType';
 import { AnnotationData } from '../../../model/viewer/export/annotationData';
 import { AnnotationRectangleData } from '../../../model/viewer/export/annotationRectangleData';
+import { InfoAnnotatationData } from '../../../model/viewer/export/infoAnnotationData';
 import { OffsetAnnotationLineData } from '../../../model/viewer/export/offsetAnnotationLineData';
 import { OffsetAnnotationPointData } from '../../../model/viewer/export/offsetAnnotationPointData';
 import { OffsetAnnotationPolygonData } from '../../../model/viewer/export/offsetAnnotationPolygonData';
@@ -86,7 +88,7 @@ export class TaskSaver {
 
       return TaskService.deleteUserAnnotation(task.id, annotation.id);
     } else {
-      const index = task.solution?.findIndex((item: AnnotationData) => item.id === annotation.id);
+      const index = (task.solution as AnnotationData[]).findIndex((item: AnnotationData) => item.id === annotation.id);
 
       if (index !== undefined && index > -1) {
         task.solution?.splice(index, 1);
@@ -143,7 +145,7 @@ export class TaskSaver {
       if (!task.solution) {
         task.solution = [];
       }
-      task.solution?.push(serializedTask);
+      (task.solution as AnnotationData[]).push(serializedTask);
     }
 
     return TaskService.createTaskAnnotation(task.id, TaskSaver.serializeAnnotation(annotation, viewer));
@@ -293,6 +295,14 @@ export class TaskSaver {
           newData.height = annotation.height;
         }
       }
+    }
+
+    if (annotation instanceof InfoAnnotationPoint) {
+      let data = elem as InfoAnnotatationData;
+
+      data.headerText = annotation.headerText;
+      data.detailText = annotation.detailText;
+      data.images = annotation.images;
     }
 
     return elem;

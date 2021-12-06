@@ -37,6 +37,12 @@ export async function adminMouseClickHandler(
         annotationViewer.addDrawingAnnotation(TOOL_POLYGON[currentTool]!);
       }
     }
+  } else if (currentTool === Tool.ADD_INFO) {
+    if (event.quick) {
+      isTaskSaving.value = true;
+      const point = await annotationViewer.addInfoAnnotation(event.position.x, event.position.y, task);
+      isTaskSaving.value = false;
+    }
   } else if (currentTool === Tool.POINT_SOLUTION) {
     if (event.quick) {
       isTaskSaving.value = true;

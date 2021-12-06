@@ -5,6 +5,9 @@ import { OffsetAnnotationLineData } from '../../../model/viewer/export/offsetAnn
 import { AnnotationBaseData, AnnotationBaseOffsetData, AnnotationFactory } from './annotationFactory';
 
 export class LineFactory extends AnnotationFactory<AnnotationLine> {
+  public createInfo(annotationData: AnnotationBaseData): AnnotationLine {
+    throw new Error('Method not implemented.');
+  }
   public create(annotationData: AnnotationBaseData): AnnotationLine {
     const points: Point[] = this.convertToPoints(annotationData.data.coord.viewport || []);
 

@@ -77,7 +77,6 @@ import {
   isTaskSaving,
   polygonChanged,
   selectedPolygon,
-  showSolution,
   userSolutionLocked,
   viewerLoadingState
 } from './core/viewerState';
@@ -103,13 +102,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const viewerRef = ref();
 
-    const toolbarTools = ref<Tool[]>([
-      Tool.MOVE,
-      Tool.SELECT,
-      Tool.DELETE,
-      Tool.DELETE_ANNOTATION,
-      Tool.ADD_POINT_USER_SOLUTION
-    ]);
+    const toolbarTools = ref<Tool[]>([Tool.MOVE, Tool.SELECT, Tool.DELETE, Tool.DELETE_ANNOTATION]);
     const currentTool = ref<Tool>();
 
     const selectedPolygonData = reactive({
@@ -155,19 +148,8 @@ export default defineComponent({
         setMoving.value = true;
 
         if (viewerLoadingState.tilesLoaded) {
-          if (newVal?.user_solution?.solution_data) {
-            drawingViewer.value?.addAnnotations(newVal?.user_solution?.solution_data);
-          }
-
-          if (newVal?.task_data) {
-            drawingViewer.value?.addBackgroundPolygons(newVal?.task_data as AnnotationData[]);
-            focusAnnotation(0);
-          } else {
-            drawingViewer.value?.resetZoom();
-          }
-
-          if (newVal?.solution && showSolution.value) {
-            drawingViewer.value?.addAnnotations(newVal?.solution as AnnotationData[]);
+          if (newVal) {
+            setAnnotations(newVal);
           }
 
           drawingViewer.value?.updateColor(TOOL_COLORS[currentTool.value!]!);
@@ -239,21 +221,8 @@ export default defineComponent({
       (newVal, _) => {
         if (newVal) {
           if (props.task) {
-            if (props.task.user_solution?.solution_data) {
-              drawingViewer.value?.addAnnotations(props.task.user_solution.solution_data);
-            }
-            if (props.task.task_data) {
-              drawingViewer.value?.addAnnotations(props.task.task_data as AnnotationData[]);
-              focusAnnotation(0);
-            } else {
-              drawingViewer.value?.resetZoom();
-            }
-
-            if (props.task.solution) {
-              drawingViewer.value?.addAnnotations(props.task.solution as AnnotationData[]);
-            }
+            setAnnotations(props.task);
           }
-
           if (props.show_result) {
             userSolutionLocked.value = true;
 
@@ -281,7 +250,7 @@ export default defineComponent({
     });
 
     const setToolbarTools = () => {
-      toolbarTools.value = toolbarTools.value.slice(0, 5);
+      toolbarTools.value = toolbarTools.value.slice(0, 4);
       let tool;
 
       if (props.task?.annotation_type === 0) {
@@ -295,6 +264,10 @@ export default defineComponent({
 
       if (!toolbarTools.value.includes(tool)) {
         toolbarTools.value.push(tool);
+      }
+
+      if (tool !== Tool.POINT_USER_SOLUTION) {
+        toolbarTools.value.push(Tool.ADD_POINT_USER_SOLUTION);
       }
     };
 
@@ -510,6 +483,26 @@ export default defineComponent({
 
     const focusAnnotation = (index: number) => {
       focusBackgroundAnnotation(index, drawingViewer.value!);
+    };
+
+    const setAnnotations = (task: Task) => {
+      if (task.user_solution?.solution_data) {
+        drawingViewer.value?.addAnnotations(task.user_solution.solution_data);
+      }
+      if (task.task_data) {
+        drawingViewer.value?.addAnnotations(task.task_data as AnnotationData[]);
+        focusAnnotation(0);
+      } else {
+        drawingViewer.value?.resetZoom();
+      }
+
+      if (task.info_annotations) {
+        drawingViewer.value?.addAnnotations(task.info_annotations as AnnotationData[]);
+      }
+
+      if (task.solution) {
+        drawingViewer.value?.addAnnotations(task.solution as AnnotationData[]);
+      }
     };
 
     onUnmounted(() => {

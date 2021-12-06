@@ -1,11 +1,11 @@
 import { select } from 'd3-selection';
 import { Annotation } from '../../../model/svg/annotation';
 import { ANNOTATION_TYPE } from '../../../model/viewer/annotationType';
-import { ANNOTATION_COLOR } from '../../../model/viewer/colors';
+import { ANNOTATION_COLOR, getFillColor } from '../../../model/viewer/colors';
 import { POLYGON_STROKE_WIDTH, POLYGON_VERTICE_RADIUS } from '../../../model/viewer/config';
 import { AnnotationData } from '../../../model/viewer/export/annotationData';
-import { isSolution, isUserSolution } from '../../../model/viewer/tools';
-import { generateAnnotation } from '../factories/generateAnntation';
+import { isInfoAnnotation, isSolution, isUserSolution } from '../../../model/viewer/tools';
+import { generateAnnotation } from '../factories/generateAnnotation';
 
 export class AnnotationManager {
   private _backgroundNode: HTMLElement;
@@ -15,6 +15,7 @@ export class AnnotationManager {
   private _backgroundAnnotations: Annotation[];
   private _solutionAnnotations: Annotation[];
   private _userSolutionAnnotations: Annotation[];
+  private _infoAnnotations: Annotation[];
 
   constructor(backgroundNode: HTMLElement, solutionNode: HTMLElement, userSolutionNode: HTMLElement) {
     this._backgroundNode = backgroundNode;
@@ -24,6 +25,7 @@ export class AnnotationManager {
     this._backgroundAnnotations = [];
     this._solutionAnnotations = [];
     this._userSolutionAnnotations = [];
+    this._infoAnnotations = [];
   }
 
   /**
@@ -36,6 +38,8 @@ export class AnnotationManager {
       this._userSolutionAnnotations.push(annotation);
     } else if (isSolution(annotation.type)) {
       this._solutionAnnotations.push(annotation);
+    } else if (isInfoAnnotation(annotation.type)) {
+      this._infoAnnotations.push(annotation);
     } else {
       this._backgroundAnnotations.push(annotation);
     }
@@ -115,6 +119,17 @@ export class AnnotationManager {
     );
   }
 
+  addInfoAnnotation(data: AnnotationData, scale: number): void {
+    this._infoAnnotations.push(
+      this._generateAnnotation(
+        data,
+        scale,
+        getFillColor(data.color) || getFillColor(ANNOTATION_COLOR.INFO_COLOR),
+        data.color || ANNOTATION_COLOR.INFO_COLOR
+      )
+    );
+  }
+
   /**
    * Adds the serialized annotations
    *
@@ -125,6 +140,8 @@ export class AnnotationManager {
     for (const annotation of data) {
       if (annotation.type === ANNOTATION_TYPE.BASE) {
         this.addBackgroundAnnotation(annotation, scale);
+      } else if (isInfoAnnotation(annotation.type)) {
+        this.addInfoAnnotation(annotation, scale);
       } else if (isSolution(annotation.type)) {
         this.addSolutionAnnotation(annotation, scale);
       } else {
@@ -168,6 +185,10 @@ export class AnnotationManager {
     }
 
     for (const annotation of this._solutionAnnotations) {
+      annotation.update(radius, strokeWidth);
+    }
+
+    for (const annotation of this._infoAnnotations) {
       annotation.update(radius, strokeWidth);
     }
   }
@@ -292,6 +313,10 @@ export class AnnotationManager {
 
   get userSolutionAnnotations() {
     return this._userSolutionAnnotations;
+  }
+
+  getInfoAnnotations() {
+    return this._infoAnnotations;
   }
 
   get backgroundNode() {

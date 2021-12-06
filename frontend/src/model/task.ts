@@ -22,6 +22,7 @@ export interface Task {
   task_data?: AnnotationData[] | string[];
   user_solution?: UserSolution;
   solution?: AnnotationData[] | number[] | string[];
+  info_annotations?: any[];
   annotation_type: number;
   min_correct: number;
   annotation_groups: AnnotationGroup[];
@@ -42,6 +43,7 @@ export interface TaskCreate {
   annotation_groups?: AnnotationGroup[];
   hints: TaskHint[];
   can_be_solved?: boolean;
+  info_annotations?: any[];
 }
 
 export interface TaskUpdate {
@@ -54,4 +56,5 @@ export interface TaskUpdate {
   solution?: string;
   annotation_groups?: AnnotationGroup[];
   can_be_solved?: boolean;
+  info_annotations?: any[];
 }

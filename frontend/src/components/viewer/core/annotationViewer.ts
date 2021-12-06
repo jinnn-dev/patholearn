@@ -4,6 +4,7 @@ import { Annotation } from '../../../model/svg/annotation';
 import { AnnotationLine } from '../../../model/svg/annotationLine';
 import { AnnotationPoint } from '../../../model/svg/annotationPoint';
 import { AnnotationRectangle } from '../../../model/svg/annotationRect';
+import InfoAnnotationPoint from '../../../model/svg/infoAnnotationPoint';
 import { MouseCircle } from '../../../model/svg/mouseCircle';
 import { OffsetAnnotationLine } from '../../../model/svg/offsetAnnotationLine';
 import { OffsetAnnotationPoint } from '../../../model/svg/offsetAnnotationPoint';
@@ -317,6 +318,29 @@ export class AnnotationViewer {
     this._annotationManager.pushAnnotation(annotationPoint);
     await this.saveTaskAnnotation(task, annotationPoint);
     return annotationPoint;
+  }
+
+  /**
+   * Adds a new info annotation
+   *
+   * @param x X Position
+   * @param y Y Position
+   * @param task Task to add the info annotation to
+   * @returns The created and saved info annotation
+   */
+  async addInfoAnnotation(x: number, y: number, task: Task): Promise<Annotation> {
+    const point = new InfoAnnotationPoint(
+      'Test',
+      'Das ist eine Info',
+      [],
+      this._annotationManager.backgroundNode,
+      ANNOTATION_TYPE.INFO_POINT
+    );
+    const viewport = webToViewport(x, y, this._viewer);
+    point.setPoint(viewport, POLYGON_VERTICE_RADIUS / this.scale, POLYGON_STROKE_WIDTH / this.scale);
+    this._annotationManager.pushAnnotation(point);
+    await this.saveTaskAnnotation(task, point);
+    return point;
   }
 
   /**

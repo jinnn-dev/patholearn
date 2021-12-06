@@ -6,6 +6,9 @@ import { OffsetAnnotationPolygonData } from '../../../model/viewer/export/offset
 import { AnnotationBaseData, AnnotationBaseOffsetData, AnnotationFactory } from './annotationFactory';
 
 export class PolygonFactory extends AnnotationFactory<AnnotationPolygon> {
+  public createInfo(annotationData: AnnotationBaseData): AnnotationPolygon {
+    throw new Error('Method not implemented.');
+  }
   public create(annotationData: AnnotationBaseData): AnnotationPolygon {
     const points: Point[] = this.convertToPoints(annotationData.data.coord.viewport || []);
 
