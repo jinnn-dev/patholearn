@@ -214,6 +214,7 @@ def read_task_details(*, db: Session = Depends(get_db), short_name: str,
         task.user_solution = crud_user_solution.get_solution_to_task_and_user(db, task_id=task.id,
                                                                               user_id=current_user.id)
         delattr(task, 'solution')
+        print(task.info_annotations)
 
     task_group = crud_task_group.get(db=db, id=base_task.task_group_id)
     base_task.task_group_short_name = task_group.short_name

@@ -76,6 +76,7 @@ class TaskBase(BaseModel):
 class TaskCreate(TaskBase):
     solution: Optional[List[Union[AnnotationData, OffsetPolygonData, str]]]
     task_data: Optional[Union[List[RectangleData], List[AnnotationData], List[str]]]
+    info_annotations: Optional[Any]
     hints: Optional[List[TaskHint]] = []
     base_task_id: int
     can_be_solved: Optional[bool]
@@ -90,6 +91,7 @@ class TaskUpdate(TaskBase):
     min_correct: Optional[int]
     annotation_type: Optional[TaskAnnotationType]
     task_data: Optional[Any]
+    info_annotations: Optional[Any]
     solution: Optional[Any]
     annotation_groups: Optional[List[AnnotationGroup]]
     can_be_solved: Optional[bool]
@@ -109,6 +111,7 @@ class TaskInDB(TaskInDBBase):
 
 class Task(TaskInDB):
     task_data: Optional[Any]
+    info_annotations: Optional[Any]
     user_solution: Optional[Any]
     solution: Optional[Any]
     percentage_solved: Optional[float]

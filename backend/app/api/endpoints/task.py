@@ -24,7 +24,7 @@ from app.crud.crud_user_solution import crud_user_solution
 from app.models.user import User
 from app.schemas.hint_image import HintImageCreate
 from app.schemas.polygon_data import OffsetRectangleData, OffsetPolygonData, OffsetPointData, AnnotationData, \
-    OffsetLineData, AnnotationType, RectangleData
+    OffsetLineData, AnnotationType, RectangleData, InfoAnnotationData
 from app.schemas.task import (TaskCreate, TaskType, Task, TaskUpdate, AnnotationGroup, AnnotationGroupUpdate)
 from app.schemas.task_hint import TaskHint, TaskHintCreate, TaskHintUpdate
 from app.schemas.user_solution import (UserSolutionUpdate)
@@ -169,7 +169,7 @@ def delete_task_annotations(*, db: Session = Depends(get_db), task_id: int,
 @router.post('/{task_id}/annotations', response_model=Any)
 def add_task_annotation(*, db: Session = Depends(get_db), task_id: int,
                         annotation: Union[
-                            OffsetRectangleData, OffsetPolygonData, OffsetLineData, OffsetPointData, RectangleData, AnnotationData],
+                            OffsetRectangleData, OffsetPolygonData, OffsetLineData, OffsetPointData, RectangleData, InfoAnnotationData, AnnotationData],
                         current_user: User = Depends(get_current_active_superuser)) -> Any:
     task = crud_task.get(db, id=task_id)
 
@@ -182,6 +182,15 @@ def add_task_annotation(*, db: Session = Depends(get_db), task_id: int,
             data = task.task_data
             data.append(annotation)
         crud_task.update(db, db_obj=task, obj_in=TaskUpdate(task_data=data))
+
+    elif annotation.type == AnnotationType.INFO_POINT:
+        if task.info_annotations is None:
+            data = [annotation]
+        else:
+            data = task.info_annotations
+            data.append(annotation)
+        crud_task.update(db, db_obj=task, obj_in=TaskUpdate(info_annotations=data))
+
     else:
         if task.solution is None:
             solution = [annotation]
@@ -195,7 +204,7 @@ def add_task_annotation(*, db: Session = Depends(get_db), task_id: int,
 @router.put('/{task_id}/{annotation_id}', response_model=Any)
 def update_task_annotation(*, db: Session = Depends(get_db), task_id: int, annotation_id: str,
                            annotation: Union[
-                               OffsetRectangleData, OffsetPolygonData, OffsetLineData, OffsetPointData, RectangleData, AnnotationData],
+                               OffsetRectangleData, OffsetPolygonData, OffsetLineData, OffsetPointData, RectangleData, InfoAnnotationData, AnnotationData],
                            current_user: User = Depends(get_current_active_superuser)) -> Any:
     task = crud_task.get(db, id=task_id)
 

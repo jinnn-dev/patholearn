@@ -13,7 +13,8 @@ class AnnotationType(IntEnum):
     USER_SOLUTION = 5
     BASE = 6,
     SOLUTION_RECT = 7,
-    USER_SOLUTION_RECT = 8
+    USER_SOLUTION_RECT = 8,
+    INFO_POINT = 9
 
 
 class Point(BaseModel):
@@ -37,6 +38,11 @@ class RectangleData(AnnotationData):
     width: float
     height: float
 
+
+class InfoAnnotationData(AnnotationData):
+    headerText: str
+    detailText: str
+    images: Optional[List[str]]
 
 class OffsetRectangleData(RectangleData):
     outerPoints: AnnotationCoord
