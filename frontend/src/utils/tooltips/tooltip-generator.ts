@@ -3,7 +3,7 @@ import tippy, { animateFill, followCursor, Instance, Placement, Props } from 'ti
 import 'tippy.js/animations/shift-away.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/dist/tippy.css';
-import { RESULT_RESPONSE_DETAIL, RESULT_RESPONSE_NAME, TaskResultDetail, TaskStatus } from '../model/result';
+import { RESULT_RESPONSE_DETAIL, RESULT_RESPONSE_NAME, TaskResultDetail, TaskStatus } from '../../model/result';
 export class TooltipGenerator {
   private static instances: Instance<Props>[] = [];
 

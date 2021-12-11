@@ -28,6 +28,7 @@ from app.schemas.polygon_data import OffsetRectangleData, OffsetPolygonData, Off
 from app.schemas.task import (TaskCreate, TaskType, Task, TaskUpdate, AnnotationGroup, AnnotationGroupUpdate)
 from app.schemas.task_hint import TaskHint, TaskHintCreate, TaskHintUpdate
 from app.schemas.user_solution import (UserSolutionUpdate)
+from app.utils.annotation_type import is_info_annotation
 from app.utils.colored_printer import ColoredPrinter
 from app.utils.minio_client import MinioClient, minio_client
 from app.utils.timer import Timer
@@ -216,6 +217,12 @@ def update_task_annotation(*, db: Session = Depends(get_db), task_id: int, annot
         task.task_data[old_annotation_index] = annotation
         task_data = task.task_data
         crud_task.update(db, db_obj=task, obj_in=TaskUpdate(task_data=task_data))
+    elif is_info_annotation(annotation.type):
+        old_annotation_index = next((index for (index, d) in enumerate(task.info_annotations) if d["id"] == annotation_id),
+                                    None)
+        task.info_annotations[old_annotation_index] = annotation
+        info_annotations = task.info_annotations
+        crud_task.update(db, db_obj=task, obj_in=TaskUpdate(info_annotations=info_annotations))
     else:
         old_annotation_index = next((index for (index, d) in enumerate(task.solution) if d["id"] == annotation_id),
                                     None)
@@ -240,7 +247,12 @@ def delete_task_annotation(*, db: Session = Depends(get_db), current_user: User 
     if task_data:
         task_data = [d for d in task_data if d.get("id") != annotation_id]
 
-    crud_task.update(db, db_obj=task, obj_in=TaskUpdate(solution=solution, task_data=task_data))
+    info_annotations = task.info_annotations
+    if info_annotations:
+        info_annotations = [d for d in info_annotations if d.get("id") != annotation_id]
+
+    crud_task.update(db, db_obj=task,
+                     obj_in=TaskUpdate(solution=solution, task_data=task_data, info_annotations=info_annotations))
     return {"Status": "OK"}
 
 

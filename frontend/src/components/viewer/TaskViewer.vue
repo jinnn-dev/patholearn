@@ -69,7 +69,7 @@ import { AnnotationData } from '../../model/viewer/export/annotationData';
 import { isDrawingTool, isUserSolution, Tool, TOOL_COLORS, TOOL_POLYGON } from '../../model/viewer/tools';
 import { TaskService } from '../../services/task.service';
 import { ParseResult } from '../../utils/annotation-parser';
-import { TooltipGenerator } from '../../utils/tooltip-generator';
+import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
 import { AnnotationViewer } from './core/annotationViewer';
 import { options } from './core/options';
 import { userMouseClickHandler } from './core/userMouseClickHandler';

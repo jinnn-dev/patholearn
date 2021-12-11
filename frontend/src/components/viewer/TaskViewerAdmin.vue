@@ -116,7 +116,7 @@
     @reject="showDeleteAnnotationDialog = false"
   ></confirm-dialog>
 
-  <div ref="viewerRef" id="viewerImage" class="h-screen bg-gray-900" @keyup="handleKeyup"></div>
+  <div ref="viewerRef" id="viewerImage" class="h-screen bg-gray-900 overflow-hidden" @keyup="handleKeyup"></div>
 </template>
 
 <script lang="ts">
@@ -133,7 +133,7 @@ import { OffsetAnnotationPolygon } from '../../model/svg/offsetPolygon';
 import { AnnotationGroup, Task, TaskType } from '../../model/task';
 import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
 import { ANNOTATION_COLOR } from '../../model/viewer/colors';
-import { isDrawingTool, isSolution, Tool, TOOL_POLYGON } from '../../model/viewer/tools';
+import { isDrawingTool, isInfoAnnotation, isSolution, Tool, TOOL_POLYGON } from '../../model/viewer/tools';
 import { TaskService } from '../../services/task.service';
 import { ParseResult } from '../../utils/annotation-parser';
 import { adminMouseClickHandler } from './core/adminMouseClickHandler';
@@ -575,7 +575,7 @@ export default defineComponent({
 
       selectedPolygonData.color = selectedPolygon.value!.color;
 
-      if (selectedPolygon.value?.type !== ANNOTATION_TYPE.BASE) {
+      if (selectedPolygon.value?.type !== ANNOTATION_TYPE.BASE && !isInfoAnnotation(selectedPolygon.value!.type)) {
         selectedPolygonData.name = selectedPolygon.value!.name;
         if (
           selectedPolygon.value instanceof OffsetAnnotationPolygon ||

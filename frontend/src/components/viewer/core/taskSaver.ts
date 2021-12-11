@@ -18,7 +18,7 @@ import { OffsetAnnotationLineData } from '../../../model/viewer/export/offsetAnn
 import { OffsetAnnotationPointData } from '../../../model/viewer/export/offsetAnnotationPointData';
 import { OffsetAnnotationPolygonData } from '../../../model/viewer/export/offsetAnnotationPolygonData';
 import { OffsetAnnotationRectangleData } from '../../../model/viewer/export/offsetAnnotationRectangleData';
-import { isSolution, isUserSolution } from '../../../model/viewer/tools';
+import { isInfoAnnotation, isSolution, isUserSolution } from '../../../model/viewer/tools';
 import { TaskService } from '../../../services/task.service';
 import { viewportToImage } from '../../../utils/seadragon.utils';
 
@@ -68,34 +68,59 @@ export class TaskSaver {
   public static deleteAnnotation(task: Task, annotation: Annotation): Promise<any> {
     if (annotation.type === ANNOTATION_TYPE.BASE) {
       const index = (task.task_data as AnnotationData[])?.findIndex(
-        (item: AnnotationData) => item.id === annotation.id
+        (data: AnnotationData) => data.id === annotation.id
       );
-      if (index !== undefined && index > -1) {
-        task.task_data?.splice(index, 1);
-      }
 
+      task.task_data?.splice(index, 1);
       return TaskService.deleteAnnotation(task.id, annotation.id);
     } else if (isUserSolution(annotation.type)) {
       const index = task.user_solution?.solution_data.findIndex((item: AnnotationData) => item.id === annotation.id);
 
-      if (index !== undefined && index > -1) {
-        task.user_solution?.solution_data?.splice(index, 1);
-      }
-
-      // if (task.user_solution?.solution_data?.length === 0) {
-      //   task.user_solution.solution_data = undefined;
-      // }
+      task.user_solution?.solution_data?.splice(index, 1);
 
       return TaskService.deleteUserAnnotation(task.id, annotation.id);
-    } else {
+    } else if (isSolution(annotation.type)) {
       const index = (task.solution as AnnotationData[]).findIndex((item: AnnotationData) => item.id === annotation.id);
-
-      if (index !== undefined && index > -1) {
-        task.solution?.splice(index, 1);
-      }
-
+      task.solution?.splice(index, 1);
+      return TaskService.deleteAnnotation(task.id, annotation.id);
+    } else {
+      const index = (task.info_annotations as AnnotationData[]).findIndex(
+        (item: AnnotationData) => item.id === annotation.id
+      );
+      task.info_annotations?.splice(index, 1);
       return TaskService.deleteAnnotation(task.id, annotation.id);
     }
+
+    // if (annotation.type === ANNOTATION_TYPE.BASE) {
+    //   const index = (task.task_data as AnnotationData[])?.findIndex(
+    //     (item: AnnotationData) => item.id === annotation.id
+    //   );
+    //   if (index !== undefined && index > -1) {
+    //     task.task_data?.splice(index, 1);
+    //   }
+
+    //   return TaskService.deleteAnnotation(task.id, annotation.id);
+    // } else if (isUserSolution(annotation.type)) {
+    //   const index = task.user_solution?.solution_data.findIndex((item: AnnotationData) => item.id === annotation.id);
+
+    //   if (index !== undefined && index > -1) {
+    //     task.user_solution?.solution_data?.splice(index, 1);
+    //   }
+
+    //   // if (task.user_solution?.solution_data?.length === 0) {
+    //   //   task.user_solution.solution_data = undefined;
+    //   // }
+
+    //   return TaskService.deleteUserAnnotation(task.id, annotation.id);
+    // } else {
+    //   const index = (task.solution as AnnotationData[]).findIndex((item: AnnotationData) => item.id === annotation.id);
+
+    //   if (index !== undefined && index > -1) {
+    //     task.solution?.splice(index, 1);
+    //   }
+
+    //   return TaskService.deleteAnnotation(task.id, annotation.id);
+    // }
   }
 
   /**
@@ -108,15 +133,22 @@ export class TaskSaver {
    */
   public static updateAnnotation(task: Task, annotation: Annotation, viewer: OpenSeadragon.Viewer): Promise<any> {
     const serializedAnnotation = TaskSaver.serializeAnnotation(annotation, viewer);
+
     if (annotation.type === ANNOTATION_TYPE.BASE) {
       for (let i = 0; i < task.task_data!.length; i++) {
         if ((task.task_data![i] as AnnotationData).id === serializedAnnotation.id) {
           task.task_data![i] = serializedAnnotation;
         }
       }
+    } else if (isInfoAnnotation(annotation.type)) {
+      for (let i = 0; i < task.info_annotations!.length; i++) {
+        if ((task.info_annotations![i] as AnnotationData).id === serializedAnnotation.id) {
+          task.info_annotations![i] = serializedAnnotation;
+        }
+      }
     } else {
       for (let i = 0; i < task.solution!.length; i++) {
-        if (task.solution![i].id === serializedAnnotation.id) {
+        if ((task.solution![i] as AnnotationData).id === serializedAnnotation.id) {
           task.solution![i] = serializedAnnotation;
         }
       }

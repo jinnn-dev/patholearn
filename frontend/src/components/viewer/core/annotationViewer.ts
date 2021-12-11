@@ -29,7 +29,7 @@ import { PointData } from '../../../model/viewer/export/pointData';
 import { isUserSolution } from '../../../model/viewer/tools';
 import { AnnotationParser } from '../../../utils/annotation-parser';
 import { imageToViewport, pointIsInImage, webToViewport } from '../../../utils/seadragon.utils';
-import { TooltipGenerator } from '../../../utils/tooltip-generator';
+import { TooltipGenerator } from '../../../utils/tooltips/tooltip-generator';
 import { snapAnnotation, SnapResult } from './annotation-snapper';
 import { AnnotationManager } from './annotationManager';
 import { SVG_ID } from './options';
@@ -640,6 +640,15 @@ export class AnnotationViewer {
     this._annotationManager.solutionAnnotations.forEach((element: Annotation, index: number) => {
       if (element.id === selectionId) {
         annotation = this._annotationManager.solutionAnnotations.splice(index, 1)[0];
+        annotation.remove();
+
+        return;
+      }
+    });
+
+    this._annotationManager.infoAnnotations.forEach((element: Annotation, index: number) => {
+      if (element.id === selectionId) {
+        annotation = this._annotationManager.infoAnnotations.splice(index, 1)[0];
         annotation.remove();
 
         return;

@@ -275,24 +275,16 @@ export class AnnotationManager {
    * @returns The annotation to the id
    */
   findByIdAndUnselect(annotationId: string): Annotation {
+    const annotations = [
+      ...this._backgroundAnnotations,
+      ...this._infoAnnotations,
+      ...this._solutionAnnotations,
+      ...this._userSolutionAnnotations
+    ];
+
     let resultAnnotation: Annotation;
-    for (const annotation of this._backgroundAnnotations) {
-      if (annotation.id !== annotationId) {
-        annotation.unselect();
-      } else {
-        resultAnnotation = annotation;
-      }
-    }
 
-    for (const annotation of this._solutionAnnotations) {
-      if (annotation.id !== annotationId) {
-        annotation.unselect();
-      } else {
-        resultAnnotation = annotation;
-      }
-    }
-
-    for (const annotation of this._userSolutionAnnotations) {
+    for (const annotation of annotations) {
       if (annotation.id !== annotationId) {
         annotation.unselect();
       } else {
@@ -315,7 +307,7 @@ export class AnnotationManager {
     return this._userSolutionAnnotations;
   }
 
-  getInfoAnnotations() {
+  get infoAnnotations() {
     return this._infoAnnotations;
   }
 

@@ -36,11 +36,10 @@
 <script lang="ts">
 import { defineAsyncComponent, defineComponent, onMounted, onUnmounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { BaseTask } from '../model/baseTask';
-import { Task } from '../model/task';
-import { TaskService } from '../services/task.service';
 import { viewerLoadingState } from '../components/viewer/core/viewerState';
-import { TaskType } from '../model/task';
+import { BaseTask } from '../model/baseTask';
+import { Task, TaskType } from '../model/task';
+import { TaskService } from '../services/task.service';
 
 const TaskViewerAdmin = defineAsyncComponent({
   loader: () => import('../components/viewer/TaskViewerAdmin.vue')
@@ -56,12 +55,14 @@ export default defineComponent({
     const selectedTask = ref<Task>();
 
     const selectTask = (task: Task) => {
-      if (task !== selectedTask.value) {
-        selectedTask.value = task;
+      if (task) {
+        if (task !== selectedTask.value) {
+          selectedTask.value = task;
 
-        if (task.task_type === TaskType.IMAGE_SELECT) {
-          viewerLoadingState.tilesLoaded = false;
-          viewerLoadingState.annotationsLoaded = false;
+          if (task.task_type === TaskType.IMAGE_SELECT) {
+            viewerLoadingState.tilesLoaded = false;
+            viewerLoadingState.annotationsLoaded = false;
+          }
         }
       }
     };
@@ -69,7 +70,7 @@ export default defineComponent({
     onMounted(() => {
       viewerLoadingState.dataLoaded = false;
       viewerLoadingState.tilesLoaded = false;
-
+      document.body.style.overflow = 'hidden';
       TaskService.getBaseTaskAdmin(route.params.id as string)
         .then((res: BaseTask) => {
           baseTask.value = res;
@@ -83,6 +84,7 @@ export default defineComponent({
     onUnmounted(() => {
       viewerLoadingState.dataLoaded = false;
       viewerLoadingState.tilesLoaded = false;
+      document.body.style.overflow = 'auto';
     });
 
     return {

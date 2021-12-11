@@ -13,11 +13,9 @@
 </template>
 
 <script lang="ts">
-import { User } from './model/user';
-import { defineComponent, onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
-import { getEnv } from './config';
 import { detect } from 'detect-browser';
+import { defineComponent, onMounted, ref } from 'vue';
+import { getEnv } from './config';
 
 export default defineComponent({
   name: 'App',

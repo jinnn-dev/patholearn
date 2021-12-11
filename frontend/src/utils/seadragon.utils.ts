@@ -43,6 +43,10 @@ const pointIsInImage = (viewportPoint: Point, viewer: Viewer): boolean => {
   return imageCoord.x >= 0 && imageCoord.x <= imageDimension.x && imageCoord.y >= 0 && imageCoord.y <= imageDimension.y;
 };
 
+const viewportToWeb = (viewportPoint: Point, viewer: Viewer): Point => {
+  return viewer.viewport.viewportToWindowCoordinates(viewportPoint);
+};
+
 const shuffle = (array: any) => {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -51,4 +55,4 @@ const shuffle = (array: any) => {
   return array;
 };
 
-export { webToViewport, viewportToImage, pointIsInImage, imageToViewport, shuffle };
+export { webToViewport, viewportToImage, pointIsInImage, imageToViewport, viewportToWeb, shuffle };

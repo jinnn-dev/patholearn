@@ -230,7 +230,7 @@ import { BaseTask, UpdateBaseTask } from '../model/baseTask';
 import { ImageSelectStatistic } from '../model/imageSelectStatistic';
 import { MembersolutionSummary } from '../model/membersolutionSummary';
 import { TaskService } from '../services/task.service';
-import { TooltipGenerator } from '../utils/tooltip-generator';
+import { TooltipGenerator } from '../utils/tooltips/tooltip-generator';
 
 export default defineComponent({
   props: {

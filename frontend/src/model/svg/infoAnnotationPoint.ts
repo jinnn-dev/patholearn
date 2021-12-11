@@ -1,9 +1,12 @@
 import { nanoid } from 'nanoid';
+import { Point, Viewer } from 'openseadragon';
+import { InfoTooltipGenerator } from '../../utils/tooltips/info-tooltip-generator';
 import { ANNOTATION_TYPE } from '../viewer/annotationType';
 import { ANNOTATION_COLOR } from '../viewer/colors';
 import { AnnotationPoint } from './annotationPoint';
+import { InfoAnnotation } from './infoAnnotation';
 
-export default class InfoAnnotationPoint extends AnnotationPoint {
+export default class InfoAnnotationPoint extends AnnotationPoint implements InfoAnnotation {
   private _headerText: string;
 
   private _detailText: string;
@@ -23,6 +26,32 @@ export default class InfoAnnotationPoint extends AnnotationPoint {
     this._headerText = headerText;
     this._detailText = detailText;
     this._images = images;
+  }
+
+  generateTooltip(): void {
+    InfoTooltipGenerator.addTooltip(this.id, this.g, this._headerText, this._detailText, this._images);
+  }
+
+  deleteTooltip(): void {}
+
+  setPoint(point: Point, r: number, strokeWidth: number): void {
+    super.setPoint(point, r, strokeWidth);
+    this.generateTooltip();
+  }
+
+  update(r: number, strokeWidth: number): void {
+    super.update(r, strokeWidth);
+    InfoTooltipGenerator.updateTooltip(this.id);
+  }
+
+  select(viewer: Viewer, scale: number): void {
+    super.select(viewer, scale);
+    InfoTooltipGenerator.showTooltip(this.id);
+  }
+
+  unselect(): void {
+    super.unselect();
+    InfoTooltipGenerator.hideTooltip(this.id);
   }
 
   public get headerText(): string {

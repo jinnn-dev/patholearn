@@ -100,7 +100,7 @@ import { defineComponent, onMounted, PropType, ref } from 'vue';
 import { getThumbnailUrl } from '../config';
 import { Slide } from '../model/slide';
 import { SLIDE_STATUS } from '../model/slideStatus';
-import { TooltipGenerator } from '../utils/tooltip-generator';
+import { TooltipGenerator } from '../utils/tooltips/tooltip-generator';
 
 export default defineComponent({
   props: {
