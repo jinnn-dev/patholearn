@@ -40,7 +40,7 @@ export abstract class Annotation {
    * @param viewer The current OpenSeadragon Viewer
    * @param scale The viewer scale
    */
-  abstract select(viewer: OpenSeadragon.Viewer, scale: number): void;
+  abstract select(viewer: OpenSeadragon.Viewer, scale: number, trackable?: boolean): void;
 
   /**
    * Unselects the annotation

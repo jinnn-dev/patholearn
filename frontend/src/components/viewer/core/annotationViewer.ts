@@ -696,11 +696,11 @@ export class AnnotationViewer {
    * @param annotationId ID of the annotation to select
    * @returns The selected annotation
    */
-  selectAnnotation(annotationId: string): Annotation {
+  selectAnnotation(annotationId: string, trackable: boolean = false): Annotation {
     const polygon = this._annotationManager.findByIdAndUnselect(annotationId);
 
     if (polygon) {
-      polygon.select(this._viewer, this.scale);
+      polygon.select(this._viewer, this.scale, trackable);
     }
 
     return polygon;

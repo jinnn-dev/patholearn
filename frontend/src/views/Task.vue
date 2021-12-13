@@ -115,11 +115,13 @@ export default defineComponent({
 
     onMounted(() => {
       loadTaskDetails();
+      document.body.style.overflow = 'hidden';
     });
 
     onUnmounted(() => {
       viewerLoadingState.dataLoaded = false;
       viewerLoadingState.tilesLoaded = false;
+      document.body.style.overflow = 'auto';
     });
 
     const setSelectedTask = (task: Task) => {

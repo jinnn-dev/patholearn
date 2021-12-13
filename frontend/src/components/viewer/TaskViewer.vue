@@ -45,6 +45,8 @@
     @focus="focusAnnotation"
   ></background-annotation-switcher>
 
+  <info-tooltip @hide-tooltip="unselectAnnotation"></info-tooltip>
+
   <confirm-dialog
     :show="showDeleteAnnotationDialog"
     header="Soll die Annotation gelöscht werden?"
@@ -395,6 +397,11 @@ export default defineComponent({
       }
     };
 
+    const unselectAnnotation = () => {
+      selectedPolygon.value?.unselect();
+      selectedPolygon.value = undefined;
+    };
+
     const deleteAnnotation = async () => {
       isTaskSaving.value = true;
       await drawingViewer.value?.deleteAnnotationByID(props.task!, annotationToBeDeleted.value);
@@ -533,7 +540,8 @@ export default defineComponent({
       updateAnnotationName,
       showDeleteAnnotationDialog,
       isTaskSaving,
-      changeToolTo
+      changeToolTo,
+      unselectAnnotation
     };
   }
 });

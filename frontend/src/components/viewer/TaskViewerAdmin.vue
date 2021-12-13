@@ -108,6 +108,8 @@
     @focus="focusAnnotation"
   ></background-annotation-switcher>
 
+  <info-tooltip @hide-tooltip="unselectAnnotation"></info-tooltip>
+
   <confirm-dialog
     :show="showDeleteAnnotationDialog"
     header="Soll die Annotation gelöscht werden?"
@@ -571,7 +573,7 @@ export default defineComponent({
         return;
       }
 
-      selectedPolygon.value = drawingViewer.value?.selectAnnotation(annotationId);
+      selectedPolygon.value = drawingViewer.value?.selectAnnotation(annotationId, true);
 
       selectedPolygonData.color = selectedPolygon.value!.color;
 
@@ -599,6 +601,11 @@ export default defineComponent({
           updateAnnotationPointOffsetRadius(newOffset);
         }
       }
+    };
+
+    const unselectAnnotation = () => {
+      selectedPolygon.value?.unselect();
+      selectedPolygon.value = undefined;
     };
 
     const moveHandler = (event: any) => {
@@ -710,7 +717,8 @@ export default defineComponent({
       showDeleteAnnotationDialog,
       isTaskSaving,
       deleteAnnotation,
-      changeToolTo
+      changeToolTo,
+      unselectAnnotation
     };
   }
 });

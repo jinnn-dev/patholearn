@@ -121,8 +121,10 @@ export class AnnotationPoint extends Annotation {
     this._element?.style('fill', strokeColor);
   }
 
-  select(viewer: OpenSeadragon.Viewer, scale: number): void {
-    this.addTracking(viewer);
+  select(viewer: OpenSeadragon.Viewer, scale: number, trackable: boolean = true): void {
+    if (trackable) {
+      this.addTracking(viewer);
+    }
     this._element?.attr('stroke', '#000').attr('stroke-width', POLYGON_STROKE_WIDTH / scale);
     if (this.reactive) polygonChanged.polygon = this;
   }

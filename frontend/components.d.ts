@@ -37,6 +37,7 @@ declare module 'vue' {
     HintOverlay: typeof import('./src/components/task/hint/HintOverlay.vue')['default']
     HintOverlayItem: typeof import('./src/components/task/hint/HintOverlayItem.vue')['default']
     Icon: typeof import('./src/components/Icon.vue')['default']
+    InfoTooltip: typeof import('./src/components/InfoTooltip.vue')['default']
     InputArea: typeof import('./src/components/form/InputArea.vue')['default']
     InputField: typeof import('./src/components/form/InputField.vue')['default']
     LazyImage: typeof import('./src/components/LazyImage.vue')['default']
