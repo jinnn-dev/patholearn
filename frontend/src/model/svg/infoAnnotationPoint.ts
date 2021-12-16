@@ -54,11 +54,11 @@ export default class InfoAnnotationPoint extends AnnotationPoint implements Info
 
   select(viewer: Viewer, scale: number, trackable: boolean = false): void {
     super.select(viewer, scale, trackable);
-    InfoTooltipGenerator.showTooltip(this.id, this.headerText, this.detailText, this.images);
     this.element
       ?.attr('stroke', this.color)
       .attr('stroke-width', (POLYGON_STROKE_WIDTH / scale) * InfoAnnotationPoint.STROKE_WIDTH_FACTOR);
     this.element?.style('fill', this.color);
+    InfoTooltipGenerator.showTooltip(this.id, this.headerText, this.detailText, this.images);
   }
 
   unselect(): void {

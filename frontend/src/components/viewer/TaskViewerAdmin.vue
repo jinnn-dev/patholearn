@@ -108,7 +108,11 @@
     @focus="focusAnnotation"
   ></background-annotation-switcher>
 
-  <info-tooltip @hide-tooltip="unselectAnnotation"></info-tooltip>
+  <info-tooltip
+    @hide-tooltip="unselectAnnotation"
+    @update-tooltip="updateInfoAnnotation"
+    :is-admin="true"
+  ></info-tooltip>
 
   <confirm-dialog
     :show="showDeleteAnnotationDialog"
@@ -674,11 +678,23 @@ export default defineComponent({
       }
     };
 
+    const updateInfoAnnotation = async (updateContent: { id: string; headerText: string; detailText: string }) => {
+      isTaskSaving.value = true;
+      await drawingViewer.value?.updateInfoAnnotation(
+        updateContent.id,
+        updateContent.headerText,
+        updateContent.detailText,
+        props.task!
+      );
+      isTaskSaving.value = false;
+    };
+
     return {
       toolbarTools,
       handleKeyup,
       setTool,
       saveTask,
+      updateInfoAnnotation,
       updateSelectedAnnotation,
       showGroup,
       hideGroup,

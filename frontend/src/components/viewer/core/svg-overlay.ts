@@ -10,6 +10,7 @@ export class SvgOverlay {
   private _solutionNode: HTMLElement;
   private _backgroundNode: HTMLElement;
   private _userSolutionNode: HTMLElement;
+  private _infoNode: HTMLElement;
 
   private static svgNS = 'http://www.w3.org/2000/svg';
 
@@ -36,6 +37,10 @@ export class SvgOverlay {
     this._solutionNode = document.createElementNS(SvgOverlay.svgNS, 'g') as HTMLElement;
     this._solutionNode.id = 'solution';
     this._svg.appendChild(this._solutionNode);
+
+    this._infoNode = document.createElementNS(SvgOverlay.svgNS, 'g') as HTMLElement;
+    this._infoNode.id = 'info';
+    this._svg.appendChild(this._infoNode);
 
     this._userSolutionNode = document.createElementNS(SvgOverlay.svgNS, 'g') as HTMLElement;
     this._userSolutionNode.id = 'userSolution';
@@ -72,6 +77,10 @@ export class SvgOverlay {
     return this._backgroundNode;
   }
 
+  infoNode(): HTMLElement {
+    return this._infoNode;
+  }
+
   userSolutionNode(): HTMLElement {
     return this._userSolutionNode;
   }
@@ -99,6 +108,12 @@ export class SvgOverlay {
       'transform',
       'translate(' + p.x + ',' + p.y + ') scale(' + scale + ') rotate(' + rotation + ')'
     );
+
+    this._infoNode.setAttribute(
+      'transform',
+      'translate(' + p.x + ',' + p.y + ') scale(' + scale + ') rotate(' + rotation + ')'
+    );
+
     this._userSolutionNode.setAttribute(
       'transform',
       'translate(' + p.x + ',' + p.y + ') scale(' + scale + ') rotate(' + rotation + ')'

@@ -68,7 +68,7 @@ export async function userMouseClickHandler(
         TooltipGenerator.destoyAll();
 
         select('#' + SVG_ID)
-          .select('#userSolution')
+          .select('#userSolution, #info')
           .selectAll('polyline, circle, rect')
           .on('click', function () {
             const selectionId = select(this).attr('id');

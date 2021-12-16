@@ -11,16 +11,23 @@ export class AnnotationManager {
   private _backgroundNode: HTMLElement;
   private _solutionNode: HTMLElement;
   private _userSolutionNode: HTMLElement;
+  private _infoNode: HTMLElement;
 
   private _backgroundAnnotations: Annotation[];
   private _solutionAnnotations: Annotation[];
   private _userSolutionAnnotations: Annotation[];
   private _infoAnnotations: Annotation[];
 
-  constructor(backgroundNode: HTMLElement, solutionNode: HTMLElement, userSolutionNode: HTMLElement) {
+  constructor(
+    backgroundNode: HTMLElement,
+    solutionNode: HTMLElement,
+    infoNode: HTMLElement,
+    userSolutionNode: HTMLElement
+  ) {
     this._backgroundNode = backgroundNode;
     this._solutionNode = solutionNode;
     this._userSolutionNode = userSolutionNode;
+    this._infoNode = infoNode;
 
     this._backgroundAnnotations = [];
     this._solutionAnnotations = [];
@@ -235,6 +242,10 @@ export class AnnotationManager {
   getNode(type: ANNOTATION_TYPE): HTMLElement {
     if (type === ANNOTATION_TYPE.BASE) {
       return this._backgroundNode;
+    } else if (isInfoAnnotation(type)) {
+      console.log('IS INFO');
+
+      return this._infoNode;
     } else if (isSolution(type)) {
       return this._solutionNode;
     } else {
@@ -266,6 +277,15 @@ export class AnnotationManager {
         return annotation;
       }
     }
+  }
+
+  getInfoAnnotation(annotationId: string) {
+    for (const annotation of this._infoAnnotations) {
+      if (annotation.id === annotationId) {
+        return annotation;
+      }
+    }
+    return undefined;
   }
 
   /**

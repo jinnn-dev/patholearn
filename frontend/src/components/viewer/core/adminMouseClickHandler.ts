@@ -41,6 +41,7 @@ export async function adminMouseClickHandler(
     if (event.quick) {
       isTaskSaving.value = true;
       const point = await annotationViewer.addInfoAnnotation(event.position.x, event.position.y, task);
+      selectionCallback(point.id);
       isTaskSaving.value = false;
     }
   } else if (currentTool === Tool.POINT_SOLUTION) {

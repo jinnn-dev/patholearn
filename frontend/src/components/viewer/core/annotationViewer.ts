@@ -71,6 +71,7 @@ export class AnnotationViewer {
     this._annotationManager = new AnnotationManager(
       this._overlay.backgroundNode(),
       this._overlay.solutionNode(),
+      this._overlay.infoNode(),
       this._overlay.userSolutionNode()
     );
 
@@ -330,8 +331,8 @@ export class AnnotationViewer {
    */
   async addInfoAnnotation(x: number, y: number, task: Task): Promise<Annotation> {
     const point = new InfoAnnotationPoint(
-      'Test',
-      'Das ist eine Info',
+      'Kein Inhalt',
+      '',
       [],
       this._annotationManager.backgroundNode,
       ANNOTATION_TYPE.INFO_POINT
@@ -341,6 +342,16 @@ export class AnnotationViewer {
     this._annotationManager.pushAnnotation(point);
     await this.saveTaskAnnotation(task, point);
     return point;
+  }
+
+  async updateInfoAnnotation(id: string, headerText: string, detailText: string, task: Task): Promise<Annotation> {
+    const annotation = this._annotationManager.getInfoAnnotation(id)!;
+
+    const infoAnnotation = annotation as InfoAnnotationPoint;
+    infoAnnotation.headerText = headerText;
+    infoAnnotation.detailText = detailText;
+    await this.updateAnnotation(task, annotation);
+    return annotation;
   }
 
   /**
