@@ -1,33 +1,34 @@
 <template>
   <div
     v-if="infotooltipState.show"
-    class="absolute z-[3] max-w-[40%] p-2 rounded-xl bg-gray-700/60 filter backdrop-blur-md"
+    class="absolute z-[3] max-w-[40%] px-4 py-2 rounded-xl bg-gray-700/60 filter backdrop-blur-md"
     :style="{ transform: translateAttribute }"
     ref="containerRef"
   >
     <div class="flex justify-end"></div>
 
     <div class="flex flex-col">
-      <div class="flex justify-end gap-4 mb-2">
-        <Icon
-          v-if="isAdmin"
-          name="pencil"
-          class="cursor-pointer hover:text-gray-200"
-          :strokeWidth="22"
-          @click="
-            showEdit = true;
-            infotooltipState.show = false;
-          "
-        ></Icon>
-
-        <Icon name="x" @click="hideTooltip" class="cursor-pointer hover:text-gray-200" :strokeWidth="28"></Icon>
-      </div>
-      <div class="flex justify-between items-center gap-4">
-        <h2 class="text-2xl">
-          {{ headerText }}
+      <div class="flex justify-between items-start gap-4">
+        <h2 class="text-2xl break-word">
+          {{ headerText || 'Kein Inhalt' }}
         </h2>
+
+        <div class="flex justify-end gap-2">
+          <Icon
+            v-if="isAdmin"
+            name="pencil"
+            class="cursor-pointer hover:text-gray-200"
+            :strokeWidth="22"
+            @click="
+              showEdit = true;
+              infotooltipState.show = false;
+            "
+          ></Icon>
+
+          <Icon name="x" @click="hideTooltip" class="cursor-pointer hover:text-gray-200" :strokeWidth="28"></Icon>
+        </div>
       </div>
-      <p v-if="detailText" class="max-h-[300px] overflow-auto mt-2">
+      <p v-if="detailText" class="max-h-[300px] overflow-auto mt-2 break-words text-lg">
         {{ detailText }}
       </p>
     </div>
@@ -35,10 +36,13 @@
   <modal-dialog :show="showEdit" customClasses="w-[40rem]">
     <h2 class="text-3xl">Info bearbeiten</h2>
     <input-field v-model="headerText" label="Titel" type="text" :required="true"> </input-field>
-    <input-area v-model="detailText" label="Details" class="h-[15rem]"></input-area>
+    <input-area v-model="detailText" label="Details" class="h-[18rem]"></input-area>
     <div class="flex justify-end">
       <primary-button
-        @click.prevent="showEdit = false"
+        @click.prevent="
+          showEdit = false;
+          infotooltipState.show = true;
+        "
         class="mr-2 w-32"
         name="Abbrechen"
         bgColor="bg-gray-500"

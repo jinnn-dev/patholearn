@@ -331,7 +331,7 @@ export class AnnotationViewer {
    */
   async addInfoAnnotation(x: number, y: number, task: Task): Promise<Annotation> {
     const point = new InfoAnnotationPoint(
-      'Kein Inhalt',
+      '',
       '',
       [],
       this._annotationManager.backgroundNode,
