@@ -29,6 +29,7 @@ from app.schemas.task import (TaskCreate, TaskType, Task, TaskUpdate, Annotation
 from app.schemas.task_hint import TaskHint, TaskHintCreate, TaskHintUpdate
 from app.schemas.user_solution import (UserSolutionUpdate)
 from app.utils.annotation_type import is_info_annotation
+from app.utils.annotation_validator import check_if_annotation_is_valid
 from app.utils.colored_printer import ColoredPrinter
 from app.utils.minio_client import MinioClient, minio_client
 from app.utils.timer import Timer
@@ -179,6 +180,14 @@ def add_task_annotation(*, db: Session = Depends(get_db), task_id: int,
     task = crud_task.get(db, id=task_id)
 
     check_if_user_can_access_task(db, user_id=current_user.id, base_task_id=task.base_task_id)
+
+    # annotation_is_valid = check_if_annotation_is_valid(annotation)
+
+    # if annotation_is_valid is not None and not annotation_is_valid:
+    #     raise HTTPException(
+    #         status_code=400,
+    #         detail="Annotation is invalid"
+    #     )
 
     if annotation.type == AnnotationType.BASE:
         if task.task_data is None:
