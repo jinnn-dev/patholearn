@@ -243,8 +243,6 @@ export class AnnotationManager {
     if (type === ANNOTATION_TYPE.BASE) {
       return this._backgroundNode;
     } else if (isInfoAnnotation(type)) {
-      console.log('IS INFO');
-
       return this._infoNode;
     } else if (isSolution(type)) {
       return this._solutionNode;

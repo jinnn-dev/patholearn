@@ -139,7 +139,14 @@ import { OffsetAnnotationPolygon } from '../../model/svg/offsetPolygon';
 import { AnnotationGroup, Task, TaskType } from '../../model/task';
 import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
 import { ANNOTATION_COLOR } from '../../model/viewer/colors';
-import { isDrawingTool, isInfoAnnotation, isSolution, Tool, TOOL_POLYGON } from '../../model/viewer/tools';
+import {
+  isDrawingTool,
+  isInfoAnnotation,
+  isSolution,
+  Tool,
+  TOOL_KEYBOARD_SHORTCUTS,
+  TOOL_POLYGON
+} from '../../model/viewer/tools';
 import { TaskService } from '../../services/task.service';
 import { ParseResult } from '../../utils/annotation-parser';
 import { adminMouseClickHandler } from './core/adminMouseClickHandler';
@@ -508,6 +515,11 @@ export default defineComponent({
 
       if (e.key === 'Backspace') {
         drawingViewer.value?.removeLastVertex();
+      }
+
+      const tool = TOOL_KEYBOARD_SHORTCUTS[e.key];
+      if (toolbarTools.value.includes(tool)) {
+        changeToolTo.value = tool;
       }
     };
 

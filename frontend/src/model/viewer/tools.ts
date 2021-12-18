@@ -84,6 +84,17 @@ export const TOOL_HINTS: ToolComponent = {
   [Tool.ADD_INFO]: 'Füge einen Infotext hinzu'
 };
 
+type KEYBOARD_TOOL_SHORTCUTS = {
+  [index: string]: Tool;
+};
+
+export const TOOL_KEYBOARD_SHORTCUTS: KEYBOARD_TOOL_SHORTCUTS = {
+  m: Tool.MOVE,
+  s: Tool.SELECT,
+  Delete: Tool.DELETE,
+  e: Tool.DELETE_ANNOTATION
+};
+
 type ToolAnnotation = {
   [key in Tool]?: ANNOTATION_TYPE;
 };

@@ -15,7 +15,6 @@
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, PropType, ref, watch } from 'vue';
-
 import { Tool, TOOL_COMPONENTS, TOOL_HINTS } from '../../model/viewer/tools';
 import { userSolutionLocked, viewerLoadingState } from './core/viewerState';
 

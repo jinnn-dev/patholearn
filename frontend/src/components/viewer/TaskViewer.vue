@@ -68,7 +68,14 @@ import { AnnotationGroup, Task } from '../../model/task';
 import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
 import { ANNOTATION_COLOR } from '../../model/viewer/colors';
 import { AnnotationData } from '../../model/viewer/export/annotationData';
-import { isDrawingTool, isUserSolution, Tool, TOOL_COLORS, TOOL_POLYGON } from '../../model/viewer/tools';
+import {
+  isDrawingTool,
+  isUserSolution,
+  Tool,
+  TOOL_COLORS,
+  TOOL_KEYBOARD_SHORTCUTS,
+  TOOL_POLYGON
+} from '../../model/viewer/tools';
 import { TaskService } from '../../services/task.service';
 import { ParseResult } from '../../utils/annotation-parser';
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
@@ -336,6 +343,11 @@ export default defineComponent({
 
       if (e.key === 'Backspace') {
         drawingViewer.value?.removeLastVertex();
+      }
+
+      const tool = TOOL_KEYBOARD_SHORTCUTS[e.key];
+      if (toolbarTools.value.includes(tool)) {
+        changeToolTo.value = tool;
       }
     };
 
