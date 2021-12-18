@@ -56,6 +56,9 @@ export class AnnotationViewer {
 
   constructor(viewerOptions: OpenSeadragon.Options) {
     this._viewer = OpenSeadragon(viewerOptions);
+
+    this._viewer.innerTracker.keyHandler = null;
+
     new OpenSeadragon.TileCache({
       maxImageCacheCount: 500
     });
