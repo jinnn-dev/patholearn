@@ -29,7 +29,7 @@
     <div class="flex justify-between items-center text-right text-sm font-semibold gap-4 mt-6">
       <save-button
         name="Zusammenfassung"
-        bgColor="bg-gray-300"
+        bgColor="bg-gray-300 w-48"
         @click.stop="loadSummary(baseTask.short_name)"
         :loading="summaryDataLoading"
       ></save-button>
