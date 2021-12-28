@@ -1,6 +1,7 @@
 import uuid
 from typing import List
 
+import pyvips
 from fastapi import APIRouter, HTTPException, UploadFile
 from fastapi.params import Query, Form, File, Depends
 from pymongo.collection import Collection
@@ -8,7 +9,6 @@ from starlette.background import BackgroundTasks
 
 from app import app
 from app.crud.crud_slide import crud_slide
-# from app.db.database import slide_db, Slide, SlideStatus, CreateSlide
 from app.db.deps import get_slide_collection
 from app.schemas.slide import CreateSlide, SlideStatus, Slide
 from app.utils.util import convert_binary_metadata_to_base64, write_slide_to_disk
@@ -20,14 +20,14 @@ router = APIRouter()
 def create_slide(*, collection: Collection = Depends(get_slide_collection), background_tasks: BackgroundTasks,
                  name: str = Form(...), file: UploadFile = File(...)):
     file_id = str(uuid.uuid4())
+    file_type = file.filename.split('.')[-1]
+    file_name = f"{file_id}.{file_type}"
 
-    file_name = f"{file_id}.{file.filename.split('.')[1]}"
-
-    if crud_slide.slide_with_name_exists(collection=collection, name=name):
-        raise HTTPException(
-            status_code=400,
-            detail="Slide with this name already exists"
-        )
+    # if crud_slide.slide_with_name_exists(collection=collection, name=name):
+    #    raise HTTPException(
+    #        status_code=400,
+    #        detail="Slide with this name already exists"
+    #    )
 
     try:
         # slide_db.insert_slide(CreateSlide(
@@ -37,7 +37,7 @@ def create_slide(*, collection: Collection = Depends(get_slide_collection), back
         # ))
         crud_slide.create(collection, obj_in=CreateSlide(
             slide_id=file_id,
-            name=name,
+            name=str(uuid.uuid4()),
             status=SlideStatus.RUNNING
         ))
 

@@ -10,12 +10,13 @@
       :key="tool"
       :comp="TOOL_COMPONENTS[tool]"
       :hint="TOOL_HINTS[tool]"
+      :children="CHILD_TOOL[tool]"
     ></tool-item>
   </div>
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, PropType, ref, watch } from 'vue';
-import { Tool, TOOL_COMPONENTS, TOOL_HINTS } from '../../model/viewer/tools';
+import { CHILD_TOOL, Tool, TOOL_COMPONENTS, TOOL_HINTS } from '../../model/viewer/tools';
 import { userSolutionLocked, viewerLoadingState } from './core/viewerState';
 
 export default defineComponent({
@@ -61,6 +62,7 @@ export default defineComponent({
       TOOL_HINTS,
       currentTool,
       changeTool,
+      CHILD_TOOL,
       userSolutionLocked,
       viewerLoadingState
     };
