@@ -2,11 +2,15 @@ import glob
 import os
 import shutil
 
+import numpy
+import numpy as np
 import pyvips
 from celery import Celery
 from celery.utils.log import get_task_logger
 
 # from app.db.database import update_slide
+from pydicom.data import get_testdata_file
+
 from app.crud import crud_slide
 from app.db.deps import get_slide_collection
 from app.persistance.custom_minio_client import MinioClient
@@ -56,7 +60,7 @@ def convert_slide(file_name: str):
                 image = pyvips.Image.openslideload(file_path)
                 thumbnail = image.thumbnail_image(400)
             thumbnail.write_to_file(fr"./data/{file_id}/thumbnail.jpeg")
-        elif file_extension == '.dcm':
+        elif file_extension.lower() == '.dcm':
             pass
         else:
             image = pyvips.Image.new_from_file(file_path)
@@ -65,19 +69,25 @@ def convert_slide(file_name: str):
 
         if can_openslide_load:
             image = pyvips.Image.openslideload(file_path)
-        elif file_extension == '.dcm':
+        elif file_extension.lower() == '.dcm':
 
             # image = pyvips.Image.magickload(file_path)
             # logger.info(image)
-
+            # path = get_testdata_file("CT_small.dcm")
+            # path = get_testdata_file(file_path)
             ds = dcmread(file_path)
-            ds.fix_mismatch()
-            logger.info(type(ds))
-            print(ds)
+            logger.info(ds)
             pixel_arr = ds.pixel_array
-            plt.imshow(pixel_arr, cmap="gray")
-            plt.show()
-            # plt.savefig(pixel_arr, cmap=plt.cm.bone)
+            series_shape = pixel_arr.shape
+
+            if len(series_shape) == 3:
+                for i in range(len(pixel_arr)):
+                    # plt.savefig(f"./data/{frame}", cmap=plt.cm.bone)
+                    frame = pixel_arr[i].astype(float)
+                    frame_scaled = (np.maximum(frame, 0) / frame.max()) * 255.0
+                    frame_scaled = np.uint8(frame_scaled)
+                    im = Image.fromarray(frame_scaled, 'L')
+                    im.save(f"./data/{file_id}/{str(i)}.jpeg")
         else:
             image = pyvips.Image.new_from_file(file_path)
 
@@ -121,4 +131,5 @@ def convert_slide(file_name: str):
         logger.error(exc)
         return {"status": "error"}
     finally:
-        shutil.rmtree(fr"./data/{file_id}")
+        pass
+        # shutil.rmtree(fr"./data/{file_id}")
