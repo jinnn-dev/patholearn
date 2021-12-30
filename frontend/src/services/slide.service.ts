@@ -21,6 +21,17 @@ export class SlideService {
     return response!.data;
   }
 
+  public static async getSlide(slide_id: string): Promise<Slide> {
+    const [_, response] = await handleError(
+      ApiService.get<Slide[]>({
+        resource: `/slides/${slide_id}`,
+        host: SLIDE_API_URL
+      }),
+      'Slide could not be loaded'
+    );
+    return response!.data;
+  }
+
   /**
    * Creates a new Slide and triggers the image pyramid conversion
    *

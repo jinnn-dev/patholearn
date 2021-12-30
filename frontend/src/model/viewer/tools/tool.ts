@@ -50,3 +50,5 @@ export const Tools: ToolType = {
 };
 
 export type ToolT = keyof typeof Tools;
+
+const item: ToolT = ToolT.Move;

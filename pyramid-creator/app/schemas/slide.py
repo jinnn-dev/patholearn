@@ -1,10 +1,9 @@
 from enum import IntEnum
-from typing import Optional, Dict, List
-
-from bson import ObjectId
-from pydantic import BaseModel, Field
+from typing import Dict, List, Optional
 
 from app.db.pydantic_objectid import PydanticObjectId
+from bson import ObjectId
+from pydantic import BaseModel, Field
 
 
 class SlideStatus(IntEnum):
@@ -58,6 +57,7 @@ class CreateSlide(BaseModel):
 
 
 class UpdateSlide(BaseModel):
+    slide_id: Optional[str]
     name: Optional[str]
     status: Optional[SlideStatus]
     metadata: Optional[Dict]

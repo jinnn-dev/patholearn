@@ -76,6 +76,7 @@ declare module 'vue' {
     UpdateTask: typeof import('./src/components/task/UpdateTask.vue')['default']
     ViewerBackButton: typeof import('./src/components/viewer/ViewerBackButton.vue')['default']
     ViewerLoading: typeof import('./src/components/viewer/ViewerLoading.vue')['default']
+    ZSlider: typeof import('./src/components/viewer/ZSlider.vue')['default']
   }
 }
 
