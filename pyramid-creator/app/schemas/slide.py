@@ -1,5 +1,5 @@
 from enum import IntEnum
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 from bson import ObjectId
 from pydantic import BaseModel, Field
@@ -18,6 +18,7 @@ class Slide(BaseModel):
     slide_id: str
     status: SlideStatus
     metadata: Optional[Dict]
+    children: Optional[List[str]]
 
 
 class DatabaseSlide(Slide):
@@ -60,3 +61,4 @@ class UpdateSlide(BaseModel):
     name: Optional[str]
     status: Optional[SlideStatus]
     metadata: Optional[Dict]
+    children: Optional[List[str]]
