@@ -1,19 +1,8 @@
-import glob
 import os
 import shutil
-import time
 
-import matplotlib.pyplot as plt
-import numpy
-import numpy as np
-import pydicom
-import pyvips
 from celery import Celery
 from celery.utils.log import get_task_logger
-from PIL import Image
-from pydicom import dcmread
-# from app.db.database import update_slide
-from pydicom.data import get_testdata_file
 
 from app.config import Config
 from app.crud import crud_slide
@@ -22,6 +11,7 @@ from app.persistance.custom_minio_client import MinioClient
 from app.persistance.minio_wrapper import MinioWrapper
 from app.schemas.slide import SlideStatus, UpdateSlide
 from app.utils.dicom import Dicom
+from app.utils.slide_converter import SlideConverter
 
 celery_app = Celery(__name__)
 celery_app.conf.broker_url = os.environ.get(
@@ -37,119 +27,69 @@ minio_client.create_bucket("pyramids")
 
 
 @celery_app.task(name="convert_slide")
-def convert_slide(file_name: str):
+def convert_slide(source_file_with_extension: str):
     """
        Converts any image to a image pyramid.
        Image has to be stored on the disk beforehand.
        Otherwise, the conversion will not work.
 
-       :param file_name: Name of the file
+       :param source_file: Name of the file
        :return: The convert status
        """
-    file_id, file_extension = os.path.splitext(file_name)
+    slide_uuid, file_extension = os.path.splitext(source_file_with_extension)
 
     try:
-        # Save thumbnail
-        can_openslide_load = file_extension in OPENSLIDE_FORMATS
 
-        folder_path = fr"{Config.TEMP_IMAGES_FOLDER}/{file_id}"
-        file_path = fr"{Config.TEMP_IMAGES_FOLDER}/{file_id}/{file_name}"
-
-        if can_openslide_load:
-            try:
-                thumbnail = pyvips.Image.openslideload(
-                    file_path, associated="thumbnail")
-            except:
-                image = pyvips.Image.openslideload(file_path)
-                thumbnail = image.thumbnail_image(400)
-            thumbnail.write_to_file(
-                fr"{Config.TEMP_IMAGES_FOLDER}/{file_id}/thumbnail.jpeg")
-        elif file_extension.lower() == '.dcm':
-            pass
-        else:
-            image = pyvips.Image.new_from_file(file_path)
-            thumbnail = image.thumbnail_image(400)
-            thumbnail.write_to_file(fr"./data/{file_id}/thumbnail.jpeg")
+        path_to_slide_folder = fr"{Config.TEMP_IMAGES_FOLDER}/{slide_uuid}"
+        path_to_origin_file = fr"{Config.TEMP_IMAGES_FOLDER}/{slide_uuid}/{source_file_with_extension}"
 
         if file_extension.lower() == '.dcm':
 
-            frame_uuids = Dicom.save_dicom_frames(file_path, file_id)
-            logger.info(frame_uuids)
-            logger.info(len(frame_uuids) // 2)
+            frame_uuids = Dicom.save_dicom_frames(path_to_origin_file, slide_uuid)
+
             thumbnail_uuid = frame_uuids[len(frame_uuids) // 2]
 
-            thumbnail = pyvips.Image.new_from_file(
-                f"{folder_path}/{thumbnail_uuid}/{thumbnail_uuid}.jpeg")
-            thumbnail_path = fr"{folder_path}/thumbnail.jpeg"
-            thumbnail.write_to_file(thumbnail_path)
+            thumbnail_path = f"{path_to_slide_folder}/{thumbnail_uuid}/{thumbnail_uuid}.jpeg"
 
-            minio_client.create_object(bucket_name=MinioWrapper.pyramid_bucket, file_name=f"{file_id}/thumbnail.jpeg",
-                                       file_content=thumbnail_path,
-                                       content_type="image/jpeg")
-            for frame_uuid in frame_uuids:
-                image = pyvips.Image.new_from_file(
-                    f"{folder_path}/{frame_uuid}/{frame_uuid}.jpeg")
-                image.dzsave("dzi", dirname=fr"{folder_path}/{frame_uuid}")
+            SlideConverter.save_thumbnail(
+                file_path=thumbnail_path,
+                file_name_with_extension=source_file_with_extension,
+                minio_client=minio_client,
+            )
 
             for frame_uuid in frame_uuids:
-                files = [f for f in glob.glob(
-                    fr"{folder_path}/{frame_uuid}/dzi_files/" + "**/*.jpeg", recursive=True)]
-                for f in files:
-                    file = f.removeprefix("./data")
-                    minio_client.create_object(bucket_name=MinioWrapper.pyramid_bucket, file_name=str(file),
-                                               file_content=f,
-                                               content_type="image/jpeg")
-                minio_client.create_object(bucket_name=MinioWrapper.pyramid_bucket,
-                                           file_name=f"{file_id}/{frame_uuid}/dzi.dzi",
-                                           file_content=fr"./data/{file_id}/{frame_uuid}/dzi.dzi",
-                                           content_type="text/xml")
-
-            for connection in get_slide_collection():
-                crud_slide.crud_slide.update(connection, entity_id_value=file_id, obj_in=UpdateSlide(
-                    status=SlideStatus.SUCCESS,
-                    metadata={},
-                    children=frame_uuids
-                ))
+                frame_path = f"{path_to_slide_folder}/{frame_uuid}/{frame_uuid}.jpeg"
+                SlideConverter.save_deep_zoom(
+                    file_path=frame_path,
+                    dzi_folder_path=f"{path_to_slide_folder}/{frame_uuid}",
+                    file_name_with_extension=source_file_with_extension,
+                    minio_client=minio_client,
+                    children=frame_uuids,
+                    metadata={}
+                )
         else:
-            if can_openslide_load:
-                image = pyvips.Image.openslideload(file_path)
-            else:
-                image = pyvips.Image.new_from_file(file_path)
-            image.dzsave("dzi", dirname=fr"./data/{file_id}", tile_size=512)
-            logger.info(image.get_fields())
-            extracted_meta_data = {}
+            SlideConverter.save_thumbnail(
+                file_path=path_to_origin_file,
+                file_name_with_extension=source_file_with_extension,
+                minio_client=minio_client
+            )
 
-            for field in image.get_fields():
-                extracted_meta_data[field] = image.get(field)
+            SlideConverter.save_deep_zoom(
+                file_path=path_to_origin_file,
+                dzi_folder_path=path_to_slide_folder,
+                file_name_with_extension=source_file_with_extension,
+                minio_client=minio_client
+            )
 
-            files = [f for f in glob.glob(
-                fr"./data/{file_id}/" + "**/*.jpeg", recursive=True)]
-
-            for f in files:
-                file = f.removeprefix("./data/")
-                minio_client.create_object(bucket_name=MinioWrapper.pyramid_bucket, file_name=str(file), file_content=f,
-                                           content_type="image/jpeg")
-            minio_client.create_object(bucket_name=MinioWrapper.pyramid_bucket, file_name=f"{file_id}/dzi.dzi",
-                                       file_content=fr"./data/{file_id}/dzi.dzi", content_type="text/xml")
-
-            for connection in get_slide_collection():
-                crud_slide.crud_slide.update(connection, entity_id_value=file_id, obj_in=UpdateSlide(
-                    status=SlideStatus.SUCCESS,
-                    metadata=extracted_meta_data
-                ))
         return {"status": "success"}
     except Exception as exc:
-        # minio_client.delete_folder(f"{file_id}")
+        minio_client.delete_folder(bucket_name=MinioWrapper.pyramid_bucket, folder_path=f"{slide_uuid}")
         for connection in get_slide_collection():
-            crud_slide.crud_slide.update(connection, entity_id_value=file_id, obj_in=UpdateSlide(
+            crud_slide.crud_slide.update(connection, entity_id_value=slide_uuid, obj_in=UpdateSlide(
                 status=SlideStatus.ERROR
             ))
-        # crud_slide.update_slide(slide_id=file_id, slide_update=UpdateSlide(
-        #     status=SlideStatus.ERROR
-        # ))
 
         logger.error(exc)
         return {"status": "error"}
     finally:
-        pass
-        # shutil.rmtree(fr"./data/{file_id}")
+        shutil.rmtree(fr"{Config.TEMP_IMAGES_FOLDER}/{slide_uuid}")

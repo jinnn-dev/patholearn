@@ -1,11 +1,10 @@
-from typing import TypeVar, Generic, Type, Any, List, Dict
+from typing import Any, Dict, Generic, List, Type, TypeVar
 
+from app.utils.slide_utils import remove_truth_values_from_dict
 from bson import ObjectId
 from pydantic import BaseModel, parse_obj_as
 from pymongo.collection import Collection
-from pymongo.results import UpdateResult, DeleteResult
-
-from app.utils.util import remove_truth_values_from_dict
+from pymongo.results import DeleteResult, UpdateResult
 
 ModelSchemaType = TypeVar("ModelSchemaType", bound=BaseModel)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
@@ -27,7 +26,7 @@ class CRUDBase(Generic[ModelSchemaType, CreateSchemaType, UpdateSchemaType]):
         return parse_obj_as(List[self.model], list(collection.find({}, remove_truth_values_from_dict(filter_query))))
 
     def get_multi_by_ids(self, collection: Collection, ids: List[Any], filter_query: Dict[str, Any] = None) -> List[
-        ModelSchemaType]:
+            ModelSchemaType]:
         return parse_obj_as(List[self.model], list(collection.find({self.entity_id_name: {'$in': ids}},
                                                                    remove_truth_values_from_dict(filter_query))))
 

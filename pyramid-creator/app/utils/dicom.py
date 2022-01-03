@@ -5,7 +5,6 @@ import numpy as np
 from PIL import Image
 from pydicom import dcmread
 from pydicom.pixel_data_handlers.util import apply_color_lut
-from pydicom.util.fixer import fix_mismatch
 
 
 class Dicom:
@@ -14,7 +13,6 @@ class Dicom:
         frame_uuids = []
 
         ds = dcmread(path_to_dicom)
-        # print(ds)
 
         photo_metric_interpretation = ds[0x0028, 0x0004].value
 

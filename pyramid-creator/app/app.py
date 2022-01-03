@@ -29,4 +29,5 @@ app.add_middleware(
 def test():
     return {"Hello": "World"}
 
+
 app.include_router(api_router)
