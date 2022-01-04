@@ -68,9 +68,10 @@ def read_slides(*, collection: Collection = Depends(get_slide_collection), slide
 
 
 @router.get('/{slide_id}')
-def get_slide_by_id(*, collection: Collection = Depends(get_slide_collection), slide_id: str):
-    slide = crud_slide.get(collection, entity_id_value=slide_id)
-    slide = convert_slide_binary_metadata_to_base64(slide)
+def get_slide_by_id(*, collection: Collection = Depends(get_slide_collection), slide_id: str, metadata: bool = Query(True)):
+    slide = crud_slide.get_slide(collection=collection, slide_id=slide_id, with_metadata=metadata)
+    if metadata:
+        slide = convert_slide_binary_metadata_to_base64(slide)
     return slide
 
 

@@ -32,7 +32,7 @@ export default defineComponent({
       const route = useRoute();
       // OpenSeadragon(options('viewerImage', getSlideUrl(route.params.id as string)));
       const slide_id = route.params.id as string;
-      slide.value = await SlideService.getSlide(slide_id);
+      slide.value = await SlideService.getSlide(slide_id, false);
 
       slideUrls.value = [getSlideUrl(slide_id)];
 

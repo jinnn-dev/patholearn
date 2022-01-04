@@ -19,8 +19,8 @@ class CRUDBase(Generic[ModelSchemaType, CreateSchemaType, UpdateSchemaType]):
     def get_by_objectId(self, collection: Collection, *, object_id: ObjectId) -> ModelSchemaType:
         return parse_obj_as(self.model, collection.find_one({'_id': object_id}))
 
-    def get(self, collection: Collection, *, entity_id_value: Any) -> ModelSchemaType:
-        return parse_obj_as(self.model, collection.find_one({self.entity_id_name: entity_id_value}))
+    def get(self, collection: Collection, *, entity_id_value: Any, filter_qurey: Dict[str, Any] = None) -> ModelSchemaType:
+        return parse_obj_as(self.model, collection.find_one({self.entity_id_name: entity_id_value}, remove_truth_values_from_dict(filter_qurey)))
 
     def get_multi(self, collection: Collection, filter_query: Dict[str, Any] = None) -> List[ModelSchemaType]:
         return parse_obj_as(List[self.model], list(collection.find({}, remove_truth_values_from_dict(filter_query))))
