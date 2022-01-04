@@ -10,11 +10,12 @@
 
 <script lang="ts">
 import OpenSeadragon, { TiledImage, Viewer } from 'openseadragon';
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { getSlideUrl } from '../../config';
 import { Slide } from '../../model/slide';
 import { SlideService } from '../../services/slide.service';
+import { debounceRef } from '../../utils/debounceRef';
 import { options } from './core/options';
 
 export default defineComponent({
@@ -26,7 +27,11 @@ export default defineComponent({
 
     const tiledImageMap = new Map<Number, TiledImage>();
 
+    const shouldPrefetchImages = debounceRef(false, 300);
+
     const preFetchRange = 1;
+
+    const currentIndex = ref(0);
 
     const tiledImages = onMounted(async () => {
       const route = useRoute();
@@ -55,22 +60,38 @@ export default defineComponent({
       }
     });
 
-    const changeTile = (event: { newIndex: number; oldIndex: number }) => {
-      // for (let i = event.newIndex + 1; i <= Math.min(event.newIndex + preFetchRange, slideUrls.value.length); i++) {
-      //   console.log('PRELOAD');
+    watch(
+      () => shouldPrefetchImages.value,
+      () => {
+        if (shouldPrefetchImages.value) {
+          console.log('PRELOAD');
 
-      //   if (!tiledImageMap.get(i)) {
-      //     viewer.value?.addTiledImage({
-      //       tileSource: slideUrls.value[i],
-      //       index: event.newIndex - 1,
-      //       opacity: 0,
-      //       preload: true,
-      //       success: (obj: any) => {
-      //         tiledImageMap.set(i, obj.item);
-      //       }
-      //     });
-      //   }
-      // }
+          shouldPrefetchImages.value = false;
+
+          if (currentIndex.value) {
+            const max_prefetch_index = Math.min(currentIndex.value + preFetchRange, slideUrls.value.length - 1);
+            for (let i = currentIndex.value + 1; i <= max_prefetch_index; i++) {
+              if (!tiledImageMap.get(i)) {
+                viewer.value?.addTiledImage({
+                  tileSource: slideUrls.value[i],
+                  index: currentIndex.value - 1,
+                  opacity: 0,
+                  preload: true,
+                  success: (obj: any) => {
+                    tiledImageMap.set(i, obj.item);
+                  }
+                });
+              }
+            }
+          }
+        }
+      }
+    );
+
+    const changeTile = (event: { newIndex: number; oldIndex: number }) => {
+      // shouldPrefetchImages.value = true;
+
+      currentIndex.value = event.newIndex;
 
       if (!tiledImageMap.get(event.newIndex)) {
         viewer.value?.addTiledImage({

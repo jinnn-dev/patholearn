@@ -1,7 +1,9 @@
 import os
 import uuid
+from typing import Dict, List, Tuple
 
 import numpy as np
+from app.utils.slide_utils import delete_keys_from_dict
 from PIL import Image
 from pydicom import dcmread
 from pydicom.pixel_data_handlers.util import apply_color_lut
@@ -9,7 +11,7 @@ from pydicom.pixel_data_handlers.util import apply_color_lut
 
 class Dicom:
     @staticmethod
-    def save_dicom_frames(path_to_dicom: str, folder_name: str):
+    def save_dicom_frames(path_to_dicom: str, folder_name: str) -> Tuple[List[str], Dict]:
         frame_uuids = []
 
         ds = dcmread(path_to_dicom)
@@ -19,12 +21,10 @@ class Dicom:
         pixel_arr = ds.pixel_array
         series_shape = pixel_arr.shape
         color_space = 'L'
-        print("Color space: ", photo_metric_interpretation)
+
         if photo_metric_interpretation == 'PALETTE COLOR':
             pixel_arr = apply_color_lut(pixel_arr, ds)
             color_space = 'RGB'
-
-        print(pixel_arr.shape)
 
         if len(series_shape) < 3:
             pixel_arr = [pixel_arr]
@@ -41,4 +41,8 @@ class Dicom:
 
             frame_uuids.append(str(frame_uuid))
 
-        return frame_uuids
+        metadata = delete_keys_from_dict(dict_del=ds.to_json_dict(), keys_to_delete=["InlineBinary"])
+
+        print(metadata)
+
+        return frame_uuids, metadata

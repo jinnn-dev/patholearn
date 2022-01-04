@@ -45,7 +45,7 @@ def convert_slide(source_file_with_extension: str):
 
         if file_extension.lower() == '.dcm':
 
-            frame_uuids = Dicom.save_dicom_frames(path_to_origin_file, slide_uuid)
+            frame_uuids, metadata_dict = Dicom.save_dicom_frames(path_to_origin_file, slide_uuid)
 
             thumbnail_uuid = frame_uuids[len(frame_uuids) // 2]
 
@@ -65,7 +65,7 @@ def convert_slide(source_file_with_extension: str):
                     file_name_with_extension=source_file_with_extension,
                     minio_client=minio_client,
                     children=frame_uuids,
-                    metadata={}
+                    metadata=metadata_dict
                 )
         else:
             SlideConverter.save_thumbnail(

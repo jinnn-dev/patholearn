@@ -84,3 +84,22 @@ def remove_truth_values_from_dict(dict_to_be_filtered: Dict[Any, Any]) -> Dict[A
                 query[key] = dict_to_be_filtered[key]
 
     return query
+
+
+def delete_keys_from_dict(dict_del: Dict, keys_to_delete: List[str]) -> Dict:
+    """
+    Delets the given keys from the given dict
+    :param dict_del: dict to delete keys from
+    :param keys_to_delete:  All Keys that should be deleted
+    :return: The dict without the deleted keys
+    """
+    for k in keys_to_delete:
+        try:
+            del dict_del[k]
+        except KeyError:
+            pass
+    for v in dict_del.values():
+        if isinstance(v, dict):
+            delete_keys_from_dict(v, keys_to_delete)
+
+    return dict_del
