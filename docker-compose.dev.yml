@@ -1,0 +1,123 @@
+version: '3.3'
+services:
+  lern_api:
+    build:
+      context: ./backend/.
+      dockerfile: dev.dockerfile
+      args:
+        - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
+    volumes:
+      - ./backend/app:/app
+    environment:
+      - DATABASE_URL=${DATABASE_DRIVER}://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_IP}/${DATABASE_DB}?${DATABASE_QUERY_PARAMETERS}
+      - RABBIT_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
+      - SLIDE_URL=${SLIDE_API_URL}
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - SENTRY_METRICS=${SENTRY_METRICS}
+      - SENTRY_PATH=${SENTRY_PATH}
+      - SENTRY_ENVIRONMENT_TAG=${SENTRY_ENVIRONMENT_TAG}
+    ports:
+      - '8000:8000'
+    depends_on:
+      - lern_db
+      - rabbit
+    links:
+      - lern_db
+
+  lern_db:
+    image: mysql:8.0
+    platform: linux/x86_64
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=${DATABASE_DB}
+      - MYSQL_USER=${DATABASE_USER}
+      - MYSQL_PASSWORD=${DATABASE_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
+    ports:
+      - '3306:${DATABASE_PORT}'
+    volumes:
+      - my-db:/var/lib/mysql
+
+  frontend:
+    image: node:16
+    command: bash -c "npm install && npm run dev"
+    environment:
+      - BASE_API_URL=${BASE_API_URL}
+      - SLIDE_IMAGE_URL=${SLIDE_IMAGE_URL}
+      - SLIDE_API_URL=${SLIDE_API_URL}
+      - APP_TITLE=${APP_TITLE}
+      - APP_FAVICON_URL=${APP_FAVICON_URL}
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend:/srv/frontend:rw
+    working_dir: /srv/frontend
+    depends_on:
+      - slide_api
+      - lern_api
+
+  slide_api:
+    image: slide_api
+    build:
+      context: ./pyramid-creator/.
+      dockerfile: dev.dockerfile
+    ports:
+      - '8001:8000'
+    command: uvicorn app.app:app --reload --host 0.0.0.0 --port 8000
+    environment:
+      - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
+      - DATABASE_URL=${MONGO_DRIVER}://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_DB}:${MONGO_PORT}
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    volumes:
+      - ./pyramid-creator/app:/app
+      - ./pyramid-creator/data:/data
+    depends_on:
+      - slide_db
+
+  slide_worker:
+    image: slide_api
+    depends_on:
+      - slide_api
+    command: watchmedo auto-restart --recursive --directory="./app" --patterns="*.py" -- celery worker --app=worker.celery_app --loglevel=info
+    volumes:
+      - ./pyramid-creator/app:/app
+      - ./pyramid-creator/data:/data
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
+      - DATABASE_URL=${MONGO_DRIVER}://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_DB}:${MONGO_PORT}
+
+  slide_db:
+    image: mongo:latest
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+    ports:
+      - '27017:${MONGO_PORT}'
+    volumes:
+      - mongodb_data:/mongodb
+    command: --quiet
+
+  minio:
+    image: minio/minio
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - ./minio_data:/data
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    command: server --console-address ":9001" /data
+
+  rabbit:
+    image: rabbitmq:latest
+    ports:
+      - '5672:5672'
+
+volumes:
+  my-db:
+  mongodb_data:
