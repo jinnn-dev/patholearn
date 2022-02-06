@@ -179,7 +179,7 @@ export default defineComponent({
       Tool.DELETE,
       Tool.DELETE_ANNOTATION,
       Tool.BASE_DRAWING,
-      Tool.INFO
+      Tool.ADD_INFO_POINT
     ]);
     const currentTool = ref<Tool>();
 

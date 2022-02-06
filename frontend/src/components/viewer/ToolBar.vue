@@ -10,7 +10,6 @@
       :key="tool"
       :comp="TOOL_COMPONENTS[tool]"
       :hint="TOOL_HINTS[tool]"
-      :children="CHILD_TOOL[tool]"
     ></tool-item>
   </div>
 </template>
