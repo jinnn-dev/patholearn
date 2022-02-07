@@ -13,11 +13,5 @@ To be able to develop the frontend additional environment variables need to be s
 To start the development environment run
 
 ```bash
-docker-compose -f docker-compose.dev up
-```
-
-To rebuild all docker containers run
-
-```bash
-docker-compose -f docker-compose.dev up --build
+./start-development.sh
 ```
