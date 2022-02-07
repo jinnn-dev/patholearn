@@ -1,16 +1,14 @@
 #!/bin/sh
-while ! mysql --host=lern_db --port=3306 -u root -p"$MYSQL_ROOT_PASSWORD" -e "show databases;" > /dev/null 2>&1; do
+while ! mysql --host=$MYSQL_HOST --port=3306 -u root -p"$MYSQL_ROOT_PASSWORD" -e "show databases;" > /dev/null 2>&1; do
     echo "Waiting for MySQL..."
     sleep 1
 done
 
 echo "Running migrations..."
 alembic upgrade head
-# init database
 
 echo "Creating initial data..."
 python3 -m app.initial_data
 
 echo "Starting the api server..."
-# start web server
-/usr/bin/supervisord
+/usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
