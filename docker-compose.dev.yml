@@ -6,6 +6,7 @@ services:
       dockerfile: dev.dockerfile
       args:
         - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
+        - MYSQL_HOST=lern_db
     volumes:
       - ./backend/app:/app
     environment:
@@ -58,10 +59,10 @@ services:
       - lern_api
 
   slide_api:
-    image: slide_api
     build:
       context: ./pyramid-creator/.
       dockerfile: dev.dockerfile
+    image: ${DOCKER_PREFIX}/${DOCKER_APPLICATION_TITLE}-slide_api:dev
     ports:
       - '8001:8000'
     command: uvicorn app.app:app --reload --host 0.0.0.0 --port 8000
@@ -77,7 +78,7 @@ services:
       - slide_db
 
   slide_worker:
-    image: slide_api
+    image: ${DOCKER_PREFIX}/${DOCKER_APPLICATION_TITLE}-slide_api:dev
     depends_on:
       - slide_api
     command: watchmedo auto-restart --recursive --directory="./app" --patterns="*.py" -- celery worker --app=worker.celery_app --loglevel=info
