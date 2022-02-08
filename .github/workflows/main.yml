@@ -61,7 +61,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./pyramid-creator/
-          file: prod.dockerfile
+          file: ./pyramid-creator/prod.dockerfile
           push: true
           tags: hub.noxz.dev/slide-api-demo:latest
   build-lern-frontend:
@@ -91,6 +91,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./frontend/
-          file: prod.dockerfile
+          file: ./frontend/prod.dockerfile
           push: true
           tags: hub.noxz.dev/lern-frontend-demo:latest
