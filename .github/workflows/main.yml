@@ -41,7 +41,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./backend/
-          file: prod.dockerfile
+          file: ./prod.dockerfile
           push: true
           tags: hub.noxz.dev/lern-api-demo:latest
   build-slide-api:
