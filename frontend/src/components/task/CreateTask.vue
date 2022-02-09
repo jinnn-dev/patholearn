@@ -120,9 +120,6 @@
 
           <div v-if="selectedTaskType === 1">
             <div class="my-2 flex gap-2 flex-col">
-              <!-- <div class="h-20 w-20 bg-gray-500 rounded-lg" v-for="image in tempPreviewImages" :key="image">
-                <HintImage :imgSrc="SLIDE_IMAGE_URL + '/' + image.image_name" @click="deleteImage(image.image_name)" />
-              </div> -->
               <div class="mt-2">Wähle eine Reihe von Bilder:</div>
               <div>
                 <div
@@ -130,7 +127,7 @@
                   v-for="(image, index) in tempPreviewImages"
                   :key="image"
                 >
-                  <HintImage :imgSrc="image" @click="deleteImage(index)" />
+                  <UploadPreviewImage :imgSrc="image" @click="deleteImage(index)" />
                 </div>
                 <div
                   class="h-20 w-20 mx-2 my-2 bg-highlight-900 rounded-lg flex items-center justify-center cursor-pointer hover:bg-highlight-800 transition"
@@ -162,16 +159,15 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue';
+import Slider from '@vueform/slider';
 import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
-import Slider from '@vueform/slider';
+import { defineComponent, reactive, ref } from 'vue';
+import { SLIDE_IMAGE_URL } from '../../config';
 import { Task, TaskCreate, TaskType } from '../../model/task';
+import { TaskImageService } from '../../services/task-image.service';
 import { TaskService } from '../../services/task.service';
 import { knowledgeLevel, taskTypes } from './task-config';
-import { create } from 'd3-selection';
-import { SLIDE_IMAGE_URL } from '../../config';
-import { TaskImageService } from '../../services/task-image.service';
 
 export default defineComponent({
   components: { Slider },

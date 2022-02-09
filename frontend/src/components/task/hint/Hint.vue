@@ -20,17 +20,17 @@
     </div>
     <div class="my-2 flex gap-2">
       <div class="h-20 w-20 bg-gray-500 rounded-lg" v-for="image in hint.images" :key="image.id">
-        <HintImage :preview="true" :imgSrc="SLIDE_IMAGE_URL + '/' + image.image_name" />
+        <UploadPreviewImage :preview="true" :imgSrc="SLIDE_IMAGE_URL + '/' + image.image_name" />
       </div>
     </div>
   </div>
 </template>
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-
+import { SLIDE_IMAGE_URL } from '../../../config';
 import { TaskHint } from '../../../model/taskHint';
 import { TaskService } from '../../../services/task.service';
-import { SLIDE_IMAGE_URL } from '../../../config';
+
 export default defineComponent({
   emits: ['edit', 'delete'],
   props: {
@@ -44,7 +44,6 @@ export default defineComponent({
       await TaskService.removeHint(props.hint.id);
       emit('delete', props.hint.id);
     }
-
     return {
       deleteHint,
       SLIDE_IMAGE_URL

@@ -82,7 +82,7 @@
                 v-for="(image, index) in tempPreviewImages"
                 :key="image"
               >
-                <HintImage :imgSrc="image" @click="deleteImage(index)" />
+                <UploadPreviewImage :imgSrc="image" @click="deleteImage(index)" />
               </div>
               <div
                 class="h-20 w-20 mx-2 my-2 bg-highlight-900 rounded-lg flex items-center justify-center cursor-pointer hover:bg-highlight-800 transition"
