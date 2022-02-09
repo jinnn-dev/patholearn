@@ -30,7 +30,7 @@
           @click.prevent="downloadUserSolutions(taskgroup.short_name)"
         >
           <Icon name="download-simple" v-if="!downloadUserSolutionsLoading" />
-          <spinner v-else></spinner>
+          <Spinner v-else></Spinner>
         </div>
       </div>
     </skeleton-card>
@@ -87,11 +87,11 @@
   </role-only>
 </template>
 <script lang="ts">
-import { TaskGroup, UpdateTaskGroup } from '../model/taskGroup';
-import { defineComponent, PropType, ref } from 'vue';
-import { TaskGroupService } from '../services/task-group.service';
-import Icon from './Icon.vue';
 import { onClickOutside } from '@vueuse/core';
+import { defineComponent, PropType, ref } from 'vue';
+import { TaskGroup, UpdateTaskGroup } from '../model/taskGroup';
+import { TaskGroupService } from '../services/task-group.service';
+import Icon from './general/Icon.vue';
 export default defineComponent({
   props: {
     taskgroup: {

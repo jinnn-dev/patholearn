@@ -4,7 +4,7 @@ import 'viewerjs/dist/viewer.css';
 import { createApp } from 'vue';
 import * as icons from '../icons';
 import App from './App.vue';
-import Icon from './components/Icon.vue';
+import Icon from './components/general/Icon.vue';
 import './index.css';
 import router from './router';
 import { ApiService } from './services/api.service';

@@ -14,7 +14,7 @@
 </template>
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue';
-import { Icon, IconNames } from '../../icons';
+import { Icon, IconNames } from '../../../icons';
 
 let lib: Icon[] = [];
 
