@@ -2,9 +2,9 @@ import { Options } from 'openseadragon';
 
 export const SVG_ID = 'drawingSvg';
 
-export const options: (id: string, tileSource: string) => Options = (
+export const options: (id: string, tileSource: string | string[]) => Options = (
   id: string,
-  tileSources: string = 'http://127.0.0.1:8000/data/Session1_Test1.svs/1024/dzi.dzi'
+  tileSources: string | string[] = 'http://127.0.0.1:8000/data/Session1_Test1.svs/1024/dzi.dzi'
 ): Options => {
   return {
     id,

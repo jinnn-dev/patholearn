@@ -9,13 +9,15 @@
       :min="min"
       :max="max"
       :tooltips="tooltips"
+      :orientation="orientation"
+      :direction="direction"
     ></Slider>
   </form-field>
 </template>
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue';
 import Slider from '@vueform/slider';
-
+import { defineComponent, PropType, ref, watch } from 'vue';
+type Direction = 'ltr' | 'rtl';
 export default defineComponent({
   components: { Slider },
   emits: ['valueChanged', 'isReleased'],
@@ -28,6 +30,14 @@ export default defineComponent({
     initialPosition: {
       type: Number,
       default: 0
+    },
+    orientation: {
+      type: String,
+      default: 'horizontal'
+    },
+    direction: {
+      type: String as PropType<Direction>,
+      default: 'ltr'
     }
   },
   setup(props) {

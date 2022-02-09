@@ -18,7 +18,9 @@ export enum Tool {
   RECT_USER_SOLUTION,
   ADD_POINT_USER_SOLUTION,
   ADD_POINT_SOLUTION,
-  ADD_INFO
+  ADD_INFO_POINT,
+  ADD_INFO_LINE,
+  ADD_INFO_POLYGON
 }
 
 type ToolComponent = {
@@ -42,7 +44,9 @@ export const TOOL_COMPONENTS: ToolComponent = {
   [Tool.RECT_USER_SOLUTION]: 'rectangle',
   [Tool.ADD_POINT_USER_SOLUTION]: 'plus-circle',
   [Tool.ADD_POINT_SOLUTION]: 'plus-circle',
-  [Tool.ADD_INFO]: 'info'
+  [Tool.ADD_INFO_POINT]: 'info',
+  [Tool.ADD_INFO_LINE]: 'info',
+  [Tool.ADD_INFO_POLYGON]: 'info'
 };
 
 type ToolColors = {
@@ -61,7 +65,7 @@ export const TOOL_COLORS: ToolColors = {
   [Tool.RECT_USER_SOLUTION]: ANNOTATION_COLOR.USER_SOLUTION_COLOR,
   [Tool.ADD_POINT_USER_SOLUTION]: ANNOTATION_COLOR.USER_SOLUTION_COLOR,
   [Tool.ADD_POINT_SOLUTION]: ANNOTATION_COLOR.SOLUTION_COLOR,
-  [Tool.ADD_INFO]: ANNOTATION_COLOR.INFO_COLOR
+  [Tool.ADD_INFO_POINT]: ANNOTATION_COLOR.INFO_COLOR
 };
 
 export const TOOL_HINTS: ToolComponent = {
@@ -81,7 +85,7 @@ export const TOOL_HINTS: ToolComponent = {
   [Tool.RECT_USER_SOLUTION]: 'Zeichne ein Rechteck',
   [Tool.ADD_POINT_SOLUTION]: 'Füge einen Punkt zu einer Annotation hinzu',
   [Tool.ADD_POINT_USER_SOLUTION]: 'Füge einen Punkt zu einer Annotation hinzu',
-  [Tool.ADD_INFO]: 'Füge einen Infotext hinzu'
+  [Tool.ADD_INFO_POINT]: 'Füge einen Infotext hinzu'
 };
 
 type KEYBOARD_TOOL_SHORTCUTS = {
@@ -109,6 +113,14 @@ export const TOOL_POLYGON: ToolAnnotation = {
   [Tool.BASE_DRAWING]: ANNOTATION_TYPE.BASE,
   [Tool.RECT_SOLUTION]: ANNOTATION_TYPE.SOLUTION_RECT,
   [Tool.RECT_USER_SOLUTION]: ANNOTATION_TYPE.USER_SOLUTION_RECT
+};
+
+type ChildTool = {
+  [key in Tool]?: Tool[];
+};
+
+export const CHILD_TOOL: ChildTool = {
+  [Tool.ADD_INFO_POINT]: [Tool.ADD_INFO_POINT, Tool.ADD_INFO_LINE, Tool.ADD_INFO_POLYGON]
 };
 
 export const isInfoAnnotation = (type: ANNOTATION_TYPE) => {
