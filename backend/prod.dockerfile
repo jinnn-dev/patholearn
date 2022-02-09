@@ -9,7 +9,7 @@ ENV MYSQL_HOST=${MYSQL_HOST}
 
 RUN apt-get update && apt-get install -y supervisor && apt-get install -y libvips && apt-get install -y default-mysql-client
 
-COPY supervisord.dev.conf /etc/supervisor/conf.d/supervisord.conf
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 COPY requirements.txt /
 RUN pip install -r /requirements.txt
