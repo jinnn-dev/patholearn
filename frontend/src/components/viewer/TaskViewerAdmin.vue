@@ -179,7 +179,7 @@ export default defineComponent({
       Tool.DELETE,
       Tool.DELETE_ANNOTATION,
       Tool.BASE_DRAWING,
-      Tool.ADD_INFO
+      Tool.ADD_INFO_POINT
     ]);
     const currentTool = ref<Tool>();
 
@@ -377,7 +377,7 @@ export default defineComponent({
     });
 
     const setToolbarTools = () => {
-      const tools = [Tool.MOVE, Tool.SELECT, Tool.DELETE, Tool.DELETE_ANNOTATION, Tool.BASE_DRAWING, Tool.ADD_INFO];
+      const tools = [Tool.MOVE, Tool.SELECT, Tool.DELETE, Tool.DELETE_ANNOTATION, Tool.BASE_DRAWING, Tool.INFO];
       if (toolbarTools.value.length === 0) {
         toolbarTools.value = [...tools];
       }

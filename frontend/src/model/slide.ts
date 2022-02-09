@@ -6,4 +6,5 @@ export interface Slide {
   name: string;
   status: SLIDE_STATUS;
   metadata: [];
+  children?: string[];
 }
