@@ -26,6 +26,7 @@ interface Put {
 interface Delete {
   resource: string;
   host?: string;
+  data?: any;
 }
 
 export class ApiService {
@@ -108,8 +109,10 @@ export class ApiService {
    * @param resource The rest resource to call
    * @returns The Promise with the retur = BASE_API_URL data
    */
-  public static delete<T>({ resource, host = BASE_API_URL }: Delete): Promise<AxiosResponse<T>> {
-    return axios.delete(host + resource);
+  public static delete<T>({ resource, host = BASE_API_URL, data }: Delete): Promise<AxiosResponse<T>> {
+    return axios.delete(host + resource, {
+      ...(data && { data: data })
+    });
   }
 
   /**

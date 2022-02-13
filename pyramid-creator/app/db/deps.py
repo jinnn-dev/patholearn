@@ -1,9 +1,11 @@
 import os
-from collections import Generator, Collection
+from collections import Collection, Generator
+from sqlite3 import connect
 
 from pymongo import MongoClient
 
 DB = "slidedb"
+
 
 def get_slide_collection() -> Generator:
     global client
@@ -21,6 +23,16 @@ def get_task_image_collection() -> Generator:
     try:
         client = MongoClient(os.getenv("DATABASE_URL"), serverSelectionTimeoutMS=5000, connect=False)
         yield client[DB]["task-images"]
+    finally:
+        client.close()
+
+
+def get_info_image_collection() -> Generator:
+    global client
+
+    try:
+        client = MongoClient(os.getenv("DATABASE_URL"), serverSelectionTimeoutMS=5000, connect=False)
+        yield client[DB]["info-images"]
     finally:
         client.close()
 

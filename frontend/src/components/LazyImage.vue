@@ -1,8 +1,8 @@
 <template>
-  <div class="overflow-hidden w-full h-full flex justify-center items-center">
+  <div class="overflow-hidden w-full h-full flex justify-center items-center relative select-none">
     <svg
       v-if="!loaded && !imageLoadError"
-      class="animate-spin h-5 w-5 text-white absolute"
+      class="absolute animate-spin h-5 w-5 text-white"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
@@ -39,7 +39,10 @@ export default defineComponent({
     alt: String,
     imageClasses: String
   },
-  setup(props) {
+
+  emits: ['imageLoaded'],
+
+  setup(props, { emit }) {
     const loaded = ref<Boolean>(false);
 
     const url = ref(props.imageUrl);
@@ -49,6 +52,7 @@ export default defineComponent({
 
     const onLoaded = () => {
       loaded.value = true;
+      emit('imageLoaded');
     };
 
     const handleError = () => {

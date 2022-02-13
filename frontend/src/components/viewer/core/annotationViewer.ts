@@ -347,14 +347,21 @@ export class AnnotationViewer {
     return point;
   }
 
-  async updateInfoAnnotation(id: string, headerText: string, detailText: string, task: Task): Promise<Annotation> {
+  async updateInfoAnnotation(
+    id: string,
+    headerText: string,
+    detailText: string,
+    images: string[],
+    task: Task
+  ): Promise<Annotation> {
     const annotation = this._annotationManager.getInfoAnnotation(id)!;
 
     const infoAnnotation = annotation as InfoAnnotationPoint;
     infoAnnotation.headerText = headerText;
     infoAnnotation.detailText = detailText;
-    await this.updateAnnotation(task, annotation);
-    return annotation;
+    infoAnnotation.images = images;
+    await this.updateAnnotation(task, infoAnnotation);
+    return infoAnnotation;
   }
 
   /**

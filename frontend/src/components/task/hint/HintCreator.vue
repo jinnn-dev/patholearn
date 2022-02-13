@@ -21,6 +21,9 @@
       label="Inhalt des Tipps"
       tip="Hier muss der Inhalt des Tipps hinterlegt werden den die lernenden Person angezeigt wird "
     />
+
+    <!-- <MultiImageUpload label="Füge optional eine Reihe von Bildern hinzu:" @images-dropped=""> </MultiImageUpload> -->
+
     <div class="my-2 flex gap-2" v-viewer>
       <div class="h-20 w-20 bg-gray-500 rounded-lg" v-for="image in hint.images" :key="image">
         <UploadPreviewImage :imgSrc="SLIDE_IMAGE_URL + '/' + image.image_name" @click="deleteImage(image.image_name)" />
@@ -121,6 +124,10 @@ export default defineComponent({
       formData.append('image', image);
 
       return await TaskService.uploadHintImage(hint.id, formData);
+    }
+
+    function setImages(images: { fileUrl: string; file: File }[]) {
+      hint.images = images.map;
     }
 
     function closeCreator() {

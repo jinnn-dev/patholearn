@@ -47,7 +47,7 @@ export default class InfoAnnotationPoint extends AnnotationPoint implements Info
 
   update(r: number, strokeWidth: number): void {
     super.update(r, strokeWidth);
-    InfoTooltipGenerator.updateTooltip(this.id);
+    InfoTooltipGenerator.updateTooltip(this.id, false);
 
     this.element?.attr('stroke-width', strokeWidth * InfoAnnotationPoint.STROKE_WIDTH_FACTOR);
   }
@@ -58,6 +58,7 @@ export default class InfoAnnotationPoint extends AnnotationPoint implements Info
       ?.attr('stroke', this.color)
       .attr('stroke-width', (POLYGON_STROKE_WIDTH / scale) * InfoAnnotationPoint.STROKE_WIDTH_FACTOR);
     this.element?.style('fill', this.color);
+
     InfoTooltipGenerator.showTooltip(this.id, this.headerText, this.detailText, this.images);
   }
 

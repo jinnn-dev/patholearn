@@ -19,6 +19,7 @@ import { OffsetAnnotationPointData } from '../../../model/viewer/export/offsetAn
 import { OffsetAnnotationPolygonData } from '../../../model/viewer/export/offsetAnnotationPolygonData';
 import { OffsetAnnotationRectangleData } from '../../../model/viewer/export/offsetAnnotationRectangleData';
 import { isInfoAnnotation, isSolution, isUserSolution } from '../../../model/viewer/tools';
+import { InfoImageService } from '../../../services/info-image.service';
 import { TaskService } from '../../../services/task.service';
 import { viewportToImage } from '../../../utils/seadragon.utils';
 
@@ -65,7 +66,7 @@ export class TaskSaver {
    * @param annotation Annotation that should be deleted
    * @returns Promise with delete status
    */
-  public static deleteAnnotation(task: Task, annotation: Annotation): Promise<any> {
+  public static async deleteAnnotation(task: Task, annotation: Annotation): Promise<any> {
     if (annotation.type === ANNOTATION_TYPE.BASE) {
       const index = (task.task_data as AnnotationData[])?.findIndex(
         (data: AnnotationData) => data.id === annotation.id
@@ -87,7 +88,13 @@ export class TaskSaver {
       const index = (task.info_annotations as AnnotationData[]).findIndex(
         (item: AnnotationData) => item.id === annotation.id
       );
-      task.info_annotations?.splice(index, 1);
+      const deletedAnnotation = task.info_annotations?.splice(index, 1);
+      if (deletedAnnotation?.length == 1) {
+        const annotation = deletedAnnotation[0] as InfoAnnotationPoint;
+        if (annotation.images) {
+          await InfoImageService.deleteMultipleInfoImages(annotation.images);
+        }
+      }
       return TaskService.deleteAnnotation(task.id, annotation.id);
     }
 

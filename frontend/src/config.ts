@@ -16,4 +16,17 @@ const getThumbnailUrl = (slide_id: string) => {
   return `${SLIDE_URL}/${slide_id}/thumbnail.jpeg`;
 };
 
-export { BASE_API_URL, SLIDE_API_URL, SLIDE_IMAGE_URL, SLIDE_URL, getSlideUrl, getThumbnailUrl, APP_LOGO_URL };
+const getInfoImageUrl = (image_id: string) => {
+  return `${SLIDE_IMAGE_URL}/info-images/${image_id}.jpeg`;
+};
+
+export {
+  BASE_API_URL,
+  SLIDE_API_URL,
+  SLIDE_IMAGE_URL,
+  SLIDE_URL,
+  getSlideUrl,
+  getThumbnailUrl,
+  getInfoImageUrl,
+  APP_LOGO_URL
+};

@@ -41,7 +41,7 @@
     </template>
   </content-container>
 
-  <modal-dialog :show="showModal" customClasses="max-w-[50%]">
+  <modal-dialog :show="showModal" customClasses="max-w-[50%] min-w-[30rem]">
     <div class="relative">
       <h1 class="text-2xl text-center">Erstelle eine neue Aufgabe</h1>
       <form @submit.prevent="onSubmit" class="w-full">
@@ -74,25 +74,12 @@
           </div>
 
           <div v-if="formData.csv_file">
-            <div>Füge die entsprechenden Bilder der CSV-Datei hinzu:</div>
-
-            <div class="max-h-[300px] overflow-auto mb-4">
-              <div
-                class="h-20 w-20 bg-gray-500 rounded-lg inline-block mx-2 my-2"
-                v-for="(image, index) in tempPreviewImages"
-                :key="image"
-              >
-                <UploadPreviewImage :imgSrc="image" @click="deleteImage(index)" />
-              </div>
-              <div
-                class="h-20 w-20 mx-2 my-2 bg-highlight-900 rounded-lg flex items-center justify-center cursor-pointer hover:bg-highlight-800 transition"
-                @click="fileRef?.click()"
-              >
-                <Icon name="plus" width="30" height="30" stroke-width="25" />
-              </div>
-            </div>
+            <MultiImageUpload
+              label="Füge die entsprechenden Bilder der CSV-Datei hinzu:"
+              @images-dropped="setUploadImages"
+            >
+            </MultiImageUpload>
           </div>
-          <input type="file" ref="fileRef" v-show="false" @change="onFileChange($event)" multiple="multiple" />
         </div>
         <div v-if="taskLoading">
           <div class="flex gap-3 mb-3 items-center">
@@ -188,10 +175,7 @@ import { TaskService } from '../services/task.service';
 
 export default defineComponent({
   setup() {
-    const fileRef = ref<HTMLInputElement>();
-    const tempPreviewImages = ref<string[]>([]);
-    const tempImages = ref<File[]>([]);
-    const noImageSelectedError = ref(false);
+    const uploadImages = ref<{ fileUrl: string; file: File }[]>([]);
 
     const showDeleteBaseTask = ref<Boolean>(false);
     const deleteBaseLoading = ref<Boolean>(false);
@@ -237,8 +221,9 @@ export default defineComponent({
 
     const onSubmit = async () => {
       taskLoading.value = true;
-      if (formData.csv_file && tempImages.value.length !== 0) {
-        const images = await uploadMultipleImages(tempImages.value);
+
+      if (formData.csv_file && uploadImages.value.length !== 0) {
+        const images = await uploadMultipleImages(uploadImages.value);
 
         try {
           const response = await TaskService.createBaseTaskFromCsv(
@@ -325,29 +310,15 @@ export default defineComponent({
         });
     };
 
-    function deleteImage(imageIndex: number) {
-      tempPreviewImages.value.splice(imageIndex, 1);
-      tempImages.value.splice(imageIndex, 1);
-    }
+    const setUploadImages = (images: { fileUrl: string; file: File }[]) => {
+      uploadImages.value = images;
+    };
 
-    function onFileChange(e: any) {
-      const files = e.target.files || e.dataTransfer.files;
-      noImageSelectedError.value = false;
-
-      if (!files.length) return;
-      const names = [];
-      for (const file of files) {
-        tempPreviewImages.value.push(URL.createObjectURL(file));
-        tempImages.value.push(file);
-        names.push(file.name);
-      }
-    }
-
-    const uploadMultipleImages = async (images: File[]) => {
+    const uploadMultipleImages = async (images: { fileUrl: string; file: File }[]) => {
       const formData = new FormData();
       for (const image of images) {
-        formData.append('images', image);
-        formData.append('names', image.name);
+        formData.append('images', image.file);
+        formData.append('names', image.file.name);
       }
       return await TaskImageService.uploadMultipleTaskImages(formData, (event) => {
         uploadProgress.value = Math.round((100 * event.loaded) / event.total);
@@ -369,22 +340,20 @@ export default defineComponent({
       showModal,
       formData,
       taskLoading,
-      fileRef,
       taskError,
       showTaskgroupDelete,
       deleteLoading,
-      deleteImage,
-      tempPreviewImages,
+      deleteBaseTaskItem,
       onTaskClose,
       deleteTaskGroup,
       onSubmit,
-      onFileChange,
       setSlide,
       showDeleteBaseTask,
       deleteBaseLoading,
       onFileUpload,
       deleteBaseTask,
-      uploadProgress
+      uploadProgress,
+      setUploadImages
     };
   }
 });

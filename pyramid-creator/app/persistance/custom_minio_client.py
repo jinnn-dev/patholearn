@@ -51,6 +51,7 @@ class MinioClient:
         except Exception as exc:
             print(f"❌ {file_name} couldn't be created")
             print(exc)
+            raise Exception(f"{file_name} could not be created")
 
     def delete_object(self, *, bucket_name: str, file_name: str):
         print(f"🚮 {file_name} has been deleted")

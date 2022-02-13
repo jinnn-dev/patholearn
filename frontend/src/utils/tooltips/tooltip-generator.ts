@@ -86,17 +86,20 @@ export class TooltipGenerator {
   public static addGeneralTooltip({
     target,
     content,
-    placement
+    placement,
+    delay
   }: {
     target: string;
     content: string;
     placement: Placement;
+    delay?: number | [number, number];
   }) {
     this.instances.push(
       ...tippy(target, {
         content,
         placement,
-        theme: 'myDark'
+        theme: 'myDark',
+        delay: delay || 0
       })
     );
     // tippy(target, { content, placement, theme: 'myDark' });

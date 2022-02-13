@@ -4,15 +4,10 @@ import uuid
 from typing import Any, Dict, List, Union
 
 import pyvips
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.datastructures import UploadFile
-from fastapi.params import File
-from sqlalchemy.orm import Session
-from starlette.responses import StreamingResponse
-
 from app.api.deps import (check_if_user_can_access_course,
+                          check_if_user_can_access_task,
                           get_current_active_superuser,
-                          get_current_active_user, get_db, check_if_user_can_access_task)
+                          get_current_active_user, get_db)
 from app.core.export.task_exporter import TaskExporter
 from app.crud.crud_base_task import crud_base_task
 from app.crud.crud_course import crud_course
@@ -23,16 +18,24 @@ from app.crud.crud_task_statistic import crud_task_statistic
 from app.crud.crud_user_solution import crud_user_solution
 from app.models.user import User
 from app.schemas.hint_image import HintImageCreate
-from app.schemas.polygon_data import OffsetRectangleData, OffsetPolygonData, OffsetPointData, AnnotationData, \
-    OffsetLineData, AnnotationType, RectangleData, InfoAnnotationData
-from app.schemas.task import (TaskCreate, TaskType, Task, TaskUpdate, AnnotationGroup, AnnotationGroupUpdate)
+from app.schemas.polygon_data import (AnnotationData, AnnotationType,
+                                      InfoAnnotationData, OffsetLineData,
+                                      OffsetPointData, OffsetPolygonData,
+                                      OffsetRectangleData, RectangleData)
+from app.schemas.task import (AnnotationGroup, AnnotationGroupUpdate, Task,
+                              TaskCreate, TaskType, TaskUpdate)
 from app.schemas.task_hint import TaskHint, TaskHintCreate, TaskHintUpdate
-from app.schemas.user_solution import (UserSolutionUpdate)
+from app.schemas.user_solution import UserSolutionUpdate
 from app.utils.annotation_type import is_info_annotation
 from app.utils.annotation_validator import check_if_annotation_is_valid
 from app.utils.colored_printer import ColoredPrinter
 from app.utils.minio_client import MinioClient, minio_client
 from app.utils.timer import Timer
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.datastructures import UploadFile
+from fastapi.params import File
+from sqlalchemy.orm import Session
+from starlette.responses import StreamingResponse
 
 router = APIRouter()
 
@@ -142,7 +145,6 @@ def delete_task(*, db: Session = Depends(get_db), task_id: int,
 
         task = crud_task.remove(db, model_id=task_id)
 
-
     except Exception as e:
         print(e)
         raise HTTPException(
@@ -197,7 +199,7 @@ def add_task_annotation(*, db: Session = Depends(get_db), task_id: int,
             data.append(annotation)
         crud_task.update(db, db_obj=task, obj_in=TaskUpdate(task_data=data))
 
-    elif annotation.type == AnnotationType.INFO_POINT:
+    elif is_info_annotation(annotation.type):
         if task.info_annotations is None:
             data = [annotation]
         else:

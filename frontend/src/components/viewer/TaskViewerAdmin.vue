@@ -690,12 +690,18 @@ export default defineComponent({
       }
     };
 
-    const updateInfoAnnotation = async (updateContent: { id: string; headerText: string; detailText: string }) => {
+    const updateInfoAnnotation = async (updateContent: {
+      id: string;
+      headerText: string;
+      detailText: string;
+      images: string[];
+    }) => {
       isTaskSaving.value = true;
       await drawingViewer.value?.updateInfoAnnotation(
         updateContent.id,
         updateContent.headerText,
         updateContent.detailText,
+        updateContent.images,
         props.task!
       );
       isTaskSaving.value = false;

@@ -4,8 +4,9 @@ import 'tippy.js/dist/tippy.css';
 import { infotooltipState } from './info-tooltip-state';
 
 export class InfoTooltipGenerator {
-  public static updateTooltip(id: string) {
+  public static updateTooltip(id: string, animate: boolean = false) {
     if (infotooltipState.show && id === infotooltipState.id) {
+      infotooltipState.animate = animate;
       const element = document.getElementById(id);
       if (element) {
         const rect = element.getBoundingClientRect();
@@ -22,7 +23,7 @@ export class InfoTooltipGenerator {
     infotooltipState.images = images;
     infotooltipState.show = true;
 
-    this.updateTooltip(id);
+    this.updateTooltip(id, false);
   }
 
   public static hideTooltip(id: string): void {

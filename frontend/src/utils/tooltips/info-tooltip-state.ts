@@ -7,6 +7,7 @@ export const infotooltipState = reactive<{
   y: number;
   headerText: string;
   detailText: string;
+  animate: boolean;
   images?: string[];
 }>({
   id: '',
@@ -14,5 +15,6 @@ export const infotooltipState = reactive<{
   x: 100,
   y: 100,
   headerText: '',
-  detailText: ''
+  detailText: '',
+  animate: false
 });

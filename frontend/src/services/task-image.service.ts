@@ -7,7 +7,7 @@ export class TaskImageService {
   public static async uploadTaskImage(formData: FormData): Promise<TaskImage> {
     const [_, response] = await handleError(
       ApiService.post<TaskImage>({
-        resource: '/task-images',
+        resource: '/taskImages',
         host: SLIDE_API_URL,
         data: formData
       }),
@@ -22,7 +22,7 @@ export class TaskImageService {
   ): Promise<TaskImage[]> {
     const [_, response] = await handleError(
       ApiService.post<TaskImage[]>({
-        resource: '/task-images',
+        resource: '/taskImages',
         host: SLIDE_API_URL,
         data: formData,
         config: { onUploadProgress }

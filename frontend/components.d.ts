@@ -41,6 +41,7 @@ declare module 'vue' {
     InputField: typeof import('./src/components/form/InputField.vue')['default']
     LazyImage: typeof import('./src/components/LazyImage.vue')['default']
     ModalDialog: typeof import('./src/components/containers/ModalDialog.vue')['default']
+    MultiImageUpload: typeof import('./src/components/form/MultiImageUpload.vue')['default']
     Navigation: typeof import('./src/components/Navigation.vue')['default']
     NewTaskBadge: typeof import('./src/components/NewTaskBadge.vue')['default']
     NoContent: typeof import('./src/components/NoContent.vue')['default']

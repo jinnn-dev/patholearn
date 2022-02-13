@@ -3,14 +3,13 @@ import uuid
 from typing import List
 
 import pyvips
-from fastapi import APIRouter, Depends, Form, UploadFile, HTTPException
-from fastapi.params import File, Query
-from pymongo.collection import Collection
-
 from app import app
 from app.crud.crud_task_image import crud_task_image
 from app.db.deps import get_task_image_collection
 from app.schemas.task_image import CreateTaskImage, TaskImage, UpdateTaskImage
+from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile
+from fastapi.params import File, Query
+from pymongo.collection import Collection
 
 router = APIRouter()
 
