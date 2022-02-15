@@ -4,7 +4,7 @@ services:
     build:
       context: ./frontend/.
       dockerfile: prod.dockerfile
-    image: ${DOCKER_PREFIX}/${DOCKER_APPLICATION_TITLE}-frontend:${FRONT_END_VERSION}
+    image: ${DOCKER_PREFIX}/${DOCKER_APPLICATION_TITLE}-frontend:${FRONTEND_VERSION}
     restart: unless-stopped
     environment:
       - BASE_API_URL=${BASE_API_URL}
@@ -12,6 +12,7 @@ services:
       - SLIDE_API_URL=${SLIDE_API_URL}
       - APP_TITLE=${APP_TITLE}
       - APP_FAVICON_URL=${APP_FAVICON_URL}
+      - FRONTEND_VERSION=${FRONTEND_VERSION}
     ports:
       - '3000:80'
     depends_on:

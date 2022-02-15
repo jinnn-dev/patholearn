@@ -49,6 +49,7 @@ services:
       - SLIDE_API_URL=${SLIDE_API_URL}
       - APP_TITLE=${APP_TITLE}
       - APP_FAVICON_URL=${APP_FAVICON_URL}
+      - FRONTEND_VERSION=${FRONTEND_VERSION}
     ports:
       - 3000:3000
     volumes:
