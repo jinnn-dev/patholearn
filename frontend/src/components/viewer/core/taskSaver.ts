@@ -92,7 +92,7 @@ export class TaskSaver {
       if (deletedAnnotation?.length == 1) {
         const annotation = deletedAnnotation[0] as InfoAnnotationPoint;
         if (annotation.images) {
-          await InfoImageService.deleteMultipleInfoImages(annotation.images);
+          await InfoImageService.deleteInfoImages(annotation.images);
         }
       }
       return TaskService.deleteAnnotation(task.id, annotation.id);
