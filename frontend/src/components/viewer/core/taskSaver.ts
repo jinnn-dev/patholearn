@@ -3,6 +3,7 @@ import { Annotation } from '../../../model/svg/annotation';
 import { AnnotationLine } from '../../../model/svg/annotationLine';
 import { AnnotationPoint } from '../../../model/svg/annotationPoint';
 import { AnnotationRectangle } from '../../../model/svg/annotationRect';
+import InfoAnnotationLine from '../../../model/svg/infoAnnotationLine';
 import InfoAnnotationPoint from '../../../model/svg/infoAnnotationPoint';
 import { OffsetAnnotationLine } from '../../../model/svg/offsetAnnotationLine';
 import { OffsetAnnotationPoint } from '../../../model/svg/offsetAnnotationPoint';
@@ -179,6 +180,11 @@ export class TaskSaver {
         task.task_data = [];
       }
       (task.task_data as AnnotationData[])?.push(serializedTask);
+    } else if (isInfoAnnotation(annotation.type)) {
+      if (!task.info_annotations) {
+        task.info_annotations = [];
+      }
+      task.info_annotations.push(serializedTask);
     } else {
       if (!task.solution) {
         task.solution = [];
@@ -335,7 +341,7 @@ export class TaskSaver {
       }
     }
 
-    if (annotation instanceof InfoAnnotationPoint) {
+    if (annotation instanceof InfoAnnotationPoint || annotation instanceof InfoAnnotationLine) {
       let data = elem as InfoAnnotatationData;
 
       data.headerText = annotation.headerText;

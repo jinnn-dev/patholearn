@@ -68,7 +68,7 @@ import { AnnotationGroup, Task } from '../../model/task';
 import { ANNOTATION_TYPE, isUserSolution } from '../../model/viewer/annotationType';
 import { ANNOTATION_COLOR } from '../../model/viewer/colors';
 import { AnnotationData } from '../../model/viewer/export/annotationData';
-import { isDrawingTool, Tool, TOOL_COLORS, TOOL_KEYBOARD_SHORTCUTS, TOOL_POLYGON } from '../../model/viewer/tools';
+import { isDrawingTool, Tool, TOOL_ANNOTATION, TOOL_COLORS, TOOL_KEYBOARD_SHORTCUTS } from '../../model/viewer/tools';
 import { TaskService } from '../../services/task.service';
 import { ParseResult } from '../../utils/annotation-parser';
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
@@ -287,7 +287,7 @@ export default defineComponent({
         drawingViewer.value?.removeMouseCircle();
       }
 
-      if (isUserSolution(TOOL_POLYGON[currentTool.value!]!) || currentTool.value! === Tool.ADD_POINT_USER_SOLUTION) {
+      if (isUserSolution(TOOL_ANNOTATION[currentTool.value!]!) || currentTool.value! === Tool.ADD_POINT_USER_SOLUTION) {
         drawingViewer.value?.updateColor(ANNOTATION_COLOR.USER_SOLUTION_COLOR);
       }
 
@@ -347,7 +347,7 @@ export default defineComponent({
     const saveUserSolution = async (type?: ANNOTATION_TYPE, annotation?: Annotation) => {
       isTaskSaving.value = true;
       if (
-        isUserSolution(TOOL_POLYGON[currentTool.value!]!) &&
+        isUserSolution(TOOL_ANNOTATION[currentTool.value!]!) &&
         (props.task?.user_solution === undefined || props.task?.user_solution?.solution_data === undefined)
       ) {
         const res = await drawingViewer.value!.saveUserSolution(

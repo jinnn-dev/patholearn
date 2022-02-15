@@ -139,7 +139,7 @@ import { OffsetAnnotationPolygon } from '../../model/svg/offsetPolygon';
 import { AnnotationGroup, Task, TaskType } from '../../model/task';
 import { ANNOTATION_TYPE, isInfoAnnotation, isSolution } from '../../model/viewer/annotationType';
 import { ANNOTATION_COLOR } from '../../model/viewer/colors';
-import { isDrawingTool, Tool, TOOL_KEYBOARD_SHORTCUTS, TOOL_POLYGON } from '../../model/viewer/tools';
+import { isDrawingTool, Tool, TOOL_ANNOTATION, TOOL_COLORS, TOOL_KEYBOARD_SHORTCUTS } from '../../model/viewer/tools';
 import { TaskService } from '../../services/task.service';
 import { ParseResult } from '../../utils/annotation-parser';
 import { adminMouseClickHandler } from './core/adminMouseClickHandler';
@@ -166,14 +166,7 @@ export default defineComponent({
 
     const viewerRef = ref();
 
-    const toolbarTools = ref<Tool[]>([
-      Tool.MOVE,
-      Tool.SELECT,
-      Tool.DELETE,
-      Tool.DELETE_ANNOTATION,
-      Tool.BASE_DRAWING,
-      Tool.ADD_INFO_POINT
-    ]);
+    const toolbarTools = ref<Tool[]>([]);
     const currentTool = ref<Tool>();
 
     const drawingViewer = ref<AnnotationViewer>();
@@ -376,7 +369,8 @@ export default defineComponent({
         Tool.DELETE,
         Tool.DELETE_ANNOTATION,
         Tool.BASE_DRAWING,
-        Tool.ADD_INFO_POINT
+        Tool.ADD_INFO_POINT,
+        Tool.ADD_INFO_LINE
       ];
       if (toolbarTools.value.length === 0) {
         toolbarTools.value = [...tools];
@@ -443,16 +437,16 @@ export default defineComponent({
       currentTool.value = data.tool;
       setMoving.value = false;
 
-      if (isDrawingTool(currentTool.value!)) {
+      if (isDrawingTool(currentTool.value!) || currentTool.value === Tool.ADD_INFO_LINE) {
         drawingViewer.value?.update(data.event.screenX, data.event.screenY);
         drawingViewer.value?.appendMouseCirlce();
-        drawingViewer.value?.updateType(TOOL_POLYGON[currentTool.value!]!);
+        drawingViewer.value?.updateType(TOOL_ANNOTATION[currentTool.value!]!);
       } else {
         drawingViewer.value?.removeMouseCircle();
       }
 
-      if (isSolution(TOOL_POLYGON[currentTool.value!]!) || currentTool.value === Tool.ADD_POINT_SOLUTION) {
-        drawingViewer.value?.updateColor(ANNOTATION_COLOR.SOLUTION_COLOR);
+      if (isSolution(TOOL_ANNOTATION[currentTool.value!]!) || isInfoAnnotation(TOOL_ANNOTATION[currentTool.value!]!)) {
+        drawingViewer.value?.updateColor(TOOL_COLORS[currentTool.value!]!);
       } else {
         drawingViewer.value?.updateColor(ANNOTATION_COLOR.BACKGORUND_COLOR);
       }
@@ -465,7 +459,8 @@ export default defineComponent({
       if (
         currentTool.value === Tool.LINE_SOLUTION ||
         currentTool.value === Tool.SOLUTION_DRAWING ||
-        currentTool.value === Tool.BASE_DRAWING
+        currentTool.value === Tool.BASE_DRAWING ||
+        currentTool.value === Tool.ADD_INFO_LINE
       ) {
         viewerRef.value.style.cursor = 'none';
       } else if (currentTool.value === Tool.MOVE) {
@@ -488,7 +483,7 @@ export default defineComponent({
       if (e.key === 'Escape') {
         const annotation = drawingViewer.value?.stopDrawing();
 
-        if (currentTool.value === Tool.LINE_SOLUTION) {
+        if (currentTool.value === Tool.LINE_SOLUTION || currentTool.value === Tool.ADD_INFO_LINE) {
           if (drawingViewer.value?.drawingAnnotation) {
             if (drawingViewer.value!.drawingAnnotation!.vertice.length < 2) {
               drawingViewer.value?.removeDrawingAnnotation();

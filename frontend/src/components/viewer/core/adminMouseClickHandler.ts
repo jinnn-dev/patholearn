@@ -1,7 +1,7 @@
 import { select } from 'd3-selection';
 import { Task } from '../../../model/task';
 import { ANNOTATION_TYPE } from '../../../model/viewer/annotationType';
-import { isDrawingTool, Tool, TOOL_POLYGON } from '../../../model/viewer/tools';
+import { isDrawingTool, Tool, TOOL_ANNOTATION } from '../../../model/viewer/tools';
 import { AnnotationViewer } from './annotationViewer';
 import { SVG_ID } from './options';
 import { isTaskSaving, polygonChanged, selectedPolygon } from './viewerState';
@@ -24,9 +24,9 @@ export async function adminMouseClickHandler(
         return Tool.SELECT;
       }
     }
-  } else if (isDrawingTool(currentTool)) {
+  } else if (isDrawingTool(currentTool) || currentTool === Tool.ADD_INFO_LINE) {
     if (event.quick) {
-      annotationViewer.addDrawingAnnotation(TOOL_POLYGON[currentTool]!);
+      annotationViewer.addDrawingAnnotation(TOOL_ANNOTATION[currentTool]!);
 
       annotationViewer.updateDrawingAnnotation();
       if (annotationViewer.drawingPolygonIsClosed) {
@@ -34,13 +34,13 @@ export async function adminMouseClickHandler(
           selectionCallback(annotationViewer.drawingAnnotation.id);
         }
         saveCallback();
-        annotationViewer.addDrawingAnnotation(TOOL_POLYGON[currentTool]!);
+        annotationViewer.addDrawingAnnotation(TOOL_ANNOTATION[currentTool]!);
       }
     }
   } else if (currentTool === Tool.ADD_INFO_POINT) {
     if (event.quick) {
       isTaskSaving.value = true;
-      const point = await annotationViewer.addInfoAnnotation(event.position.x, event.position.y, task);
+      const point = await annotationViewer.addInfoAnnotationPoint(event.position.x, event.position.y, task);
       selectionCallback(point.id);
       isTaskSaving.value = false;
     }

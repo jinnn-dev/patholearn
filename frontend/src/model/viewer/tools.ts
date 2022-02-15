@@ -46,7 +46,7 @@ export const TOOL_COMPONENTS: ToolComponent = {
   [Tool.ADD_POINT_USER_SOLUTION]: 'plus-circle',
   [Tool.ADD_POINT_SOLUTION]: 'plus-circle',
   [Tool.ADD_INFO_POINT]: 'info',
-  [Tool.ADD_INFO_LINE]: 'info',
+  [Tool.ADD_INFO_LINE]: 'at',
   [Tool.ADD_INFO_POLYGON]: 'info'
 };
 
@@ -110,7 +110,7 @@ type ToolAnnotation = {
   [key in Tool]?: ANNOTATION_TYPE;
 };
 
-export const TOOL_POLYGON: ToolAnnotation = {
+export const TOOL_ANNOTATION: ToolAnnotation = {
   [Tool.USER_SOLUTION_DRAWING]: ANNOTATION_TYPE.USER_SOLUTION,
   [Tool.POINT_USER_SOLUTION]: ANNOTATION_TYPE.USER_SOLUTION_POINT,
   [Tool.POINT_SOLUTION]: ANNOTATION_TYPE.SOLUTION_POINT,
@@ -119,15 +119,9 @@ export const TOOL_POLYGON: ToolAnnotation = {
   [Tool.SOLUTION_DRAWING]: ANNOTATION_TYPE.SOLUTION,
   [Tool.BASE_DRAWING]: ANNOTATION_TYPE.BASE,
   [Tool.RECT_SOLUTION]: ANNOTATION_TYPE.SOLUTION_RECT,
-  [Tool.RECT_USER_SOLUTION]: ANNOTATION_TYPE.USER_SOLUTION_RECT
-};
-
-type ChildTool = {
-  [key in Tool]?: Tool[];
-};
-
-export const CHILD_TOOL: ChildTool = {
-  [Tool.ADD_INFO_POINT]: [Tool.ADD_INFO_POINT, Tool.ADD_INFO_LINE, Tool.ADD_INFO_POLYGON]
+  [Tool.RECT_USER_SOLUTION]: ANNOTATION_TYPE.USER_SOLUTION_RECT,
+  [Tool.ADD_INFO_LINE]: ANNOTATION_TYPE.INFO_LINE,
+  [Tool.ADD_INFO_POLYGON]: ANNOTATION_TYPE.INFO_POLYGON
 };
 
 export const isDrawingTool = (tool: Tool) => {

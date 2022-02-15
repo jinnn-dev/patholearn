@@ -69,6 +69,9 @@ export class AnnotationLine extends Annotation {
     };
 
     this._vertice.push(vertex);
+
+    console.log(this._vertice);
+
     this._polylinePoints.push(vertex.viewport.x + ',' + vertex.viewport.y);
 
     if (this.vertice.length === 1) {
@@ -225,7 +228,7 @@ export class AnnotationLine extends Annotation {
     this.redrawPolyline();
   }
 
-  select(viewer: OpenSeadragon.Viewer, scale: number): void {
+  select(viewer: OpenSeadragon.Viewer, scale: number, trackable: boolean = true): void {
     if (this._isClosed && !this.isSelected) {
       this.isSelected = true;
       const self = this;
@@ -235,9 +238,11 @@ export class AnnotationLine extends Annotation {
         vertice.element.updateRadius(POLYGON_VERTICE_RADIUS / scale);
         vertice.element.updateStrokeWidth((POLYGON_VERTICE_RADIUS - 2) / scale);
         vertice.element.updateStrokeColor(this.color);
-        select('[id ="' + vertice.element.id + '"]').each(function () {
-          self.addTracking(this as HTMLElement, viewer);
-        });
+        if (trackable) {
+          select('[id ="' + vertice.element.id + '"]').each(function () {
+            self.addTracking(this as HTMLElement, viewer);
+          });
+        }
       });
 
       if (this.reactive) {

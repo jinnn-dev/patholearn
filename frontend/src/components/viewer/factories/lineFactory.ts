@@ -1,12 +1,28 @@
 import { Point } from 'openseadragon';
 import { AnnotationLine } from '../../../model/svg/annotationLine';
+import InfoAnnotationLine from '../../../model/svg/infoAnnotationLine';
 import { OffsetAnnotationLine } from '../../../model/svg/offsetAnnotationLine';
+import { InfoAnnotatationData } from '../../../model/viewer/export/infoAnnotationData';
 import { OffsetAnnotationLineData } from '../../../model/viewer/export/offsetAnnotationLineData';
 import { AnnotationBaseData, AnnotationBaseOffsetData, AnnotationFactory } from './annotationFactory';
 
 export class LineFactory extends AnnotationFactory<AnnotationLine> {
   public createInfo(annotationData: AnnotationBaseData): AnnotationLine {
-    throw new Error('Method not implemented.');
+    const infoData = annotationData.data as InfoAnnotatationData;
+
+    const points: Point[] = this.convertToPoints(annotationData.data.coord.viewport || []);
+
+    let annotationLine: InfoAnnotationLine = new InfoAnnotationLine(
+      infoData.headerText,
+      infoData.detailText,
+      infoData.images,
+      annotationData.node,
+      infoData.type,
+      annotationData.strokeColor,
+      infoData.id
+    );
+    annotationLine.addClosedLine(points, annotationData.radius, annotationData.strokeWidth);
+    return annotationLine;
   }
   public create(annotationData: AnnotationBaseData): AnnotationLine {
     const points: Point[] = this.convertToPoints(annotationData.data.coord.viewport || []);

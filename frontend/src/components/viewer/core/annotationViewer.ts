@@ -4,6 +4,7 @@ import { Annotation } from '../../../model/svg/annotation';
 import { AnnotationLine } from '../../../model/svg/annotationLine';
 import { AnnotationPoint } from '../../../model/svg/annotationPoint';
 import { AnnotationRectangle } from '../../../model/svg/annotationRect';
+import InfoAnnotationLine from '../../../model/svg/infoAnnotationLine';
 import InfoAnnotationPoint from '../../../model/svg/infoAnnotationPoint';
 import { MouseCircle } from '../../../model/svg/mouseCircle';
 import { OffsetAnnotationLine } from '../../../model/svg/offsetAnnotationLine';
@@ -200,7 +201,15 @@ export class AnnotationViewer {
           // this._drawingAnnotation = new AnnotationPolygon(node, type, 'none', this._currentColor);
           this._drawingAnnotation = new AnnotationRectangle(node, type, 'none', this._currentColor);
           break;
-
+        case ANNOTATION_TYPE.INFO_LINE:
+          this._drawingAnnotation = new InfoAnnotationLine(
+            '',
+            '',
+            [],
+            this._annotationManager.backgroundNode,
+            ANNOTATION_TYPE.INFO_LINE
+          );
+          break;
         default:
           this._drawingAnnotation = new AnnotationPolygon(
             node,
@@ -208,7 +217,6 @@ export class AnnotationViewer {
             this._currentColor + ANNOTATION_COLOR.FILL_OPACITY,
             this._currentColor
           );
-          break;
       }
     }
   }
@@ -331,7 +339,7 @@ export class AnnotationViewer {
    * @param task Task to add the info annotation to
    * @returns The created and saved info annotation
    */
-  async addInfoAnnotation(x: number, y: number, task: Task): Promise<Annotation> {
+  async addInfoAnnotationPoint(x: number, y: number, task: Task): Promise<Annotation> {
     const point = new InfoAnnotationPoint(
       '',
       '',
@@ -532,6 +540,7 @@ export class AnnotationViewer {
    */
   updateColor(color: ANNOTATION_COLOR) {
     this._currentColor = color;
+
     this._mouseCircle.updateFillColor(this._currentColor + ANNOTATION_COLOR.FILL_OPACITY);
     this._mouseCircle.updateStrokeColor(this._currentColor);
     this._drawingAnnotation?.updateColor(this._currentColor, this._currentColor);

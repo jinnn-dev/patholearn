@@ -1,9 +1,9 @@
 import { select } from 'd3-selection';
 import { ANNOTATION_TYPE } from '../../../model/viewer/annotationType';
-import { isDrawingTool, Tool, TOOL_POLYGON } from '../../../model/viewer/tools';
+import { isDrawingTool, Tool, TOOL_ANNOTATION } from '../../../model/viewer/tools';
 import { TooltipGenerator } from '../../../utils/tooltips/tooltip-generator';
 import { AnnotationViewer } from './annotationViewer';
-import { SVG_ID } from './options';
+import { INFO_NODE_ID, SVG_ID, USER_SOLUTION_NODE_ID } from './svg-overlay';
 import { polygonChanged, selectedPolygon, userSolutionLocked } from './viewerState';
 
 export async function userMouseClickHandler(
@@ -27,7 +27,7 @@ export async function userMouseClickHandler(
     if (event.quick) {
       TooltipGenerator.destoyAll();
 
-      annotationViewer.addDrawingAnnotation(TOOL_POLYGON[currentTool!]!);
+      annotationViewer.addDrawingAnnotation(TOOL_ANNOTATION[currentTool!]!);
       annotationViewer.updateDrawingAnnotation();
       if (annotationViewer.drawingPolygonIsClosed) {
         if (annotationViewer.drawingAnnotation) {
@@ -35,7 +35,7 @@ export async function userMouseClickHandler(
         }
 
         saveCallback();
-        annotationViewer.addDrawingAnnotation(TOOL_POLYGON[currentTool!]!);
+        annotationViewer.addDrawingAnnotation(TOOL_ANNOTATION[currentTool!]!);
         return Tool.SELECT;
       }
     }
@@ -56,7 +56,7 @@ export async function userMouseClickHandler(
     }
   } else if (currentTool === Tool.DELETE_ANNOTATION) {
     select('#' + SVG_ID)
-      .select('#userSolution')
+      .select(`#${USER_SOLUTION_NODE_ID}`)
       .selectAll('polyline, circle, rect')
       .on('click', async function () {
         const selectionId = select(this).attr('id');
@@ -68,7 +68,7 @@ export async function userMouseClickHandler(
         TooltipGenerator.destoyAll();
 
         select('#' + SVG_ID)
-          .select('#userSolution, #info')
+          .select(`#${USER_SOLUTION_NODE_ID}, #${INFO_NODE_ID}`)
           .selectAll('polyline, circle, rect')
           .on('click', function () {
             const selectionId = select(this).attr('id');

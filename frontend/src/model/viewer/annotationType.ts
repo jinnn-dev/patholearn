@@ -9,11 +9,14 @@ export enum ANNOTATION_TYPE {
   SOLUTION_RECT,
   USER_SOLUTION_RECT,
   INFO_POINT,
-  INFO_LINE
+  INFO_LINE,
+  INFO_POLYGON
 }
 
 export const isInfoAnnotation = (type: ANNOTATION_TYPE) => {
-  return type === ANNOTATION_TYPE.INFO_POINT || type === ANNOTATION_TYPE.INFO_LINE;
+  return (
+    type === ANNOTATION_TYPE.INFO_POINT || type === ANNOTATION_TYPE.INFO_LINE || type === ANNOTATION_TYPE.INFO_POLYGON
+  );
 };
 
 export const isSolution = (type: ANNOTATION_TYPE) => {
