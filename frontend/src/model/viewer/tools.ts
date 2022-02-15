@@ -1,3 +1,4 @@
+import { IconNames } from '../../../icons';
 import { ANNOTATION_TYPE } from './annotationType';
 import { ANNOTATION_COLOR } from './colors';
 
@@ -24,7 +25,7 @@ export enum Tool {
 }
 
 type ToolComponent = {
-  [key in Tool]?: string;
+  [key in Tool]?: IconNames;
 };
 
 export const TOOL_COMPONENTS: ToolComponent = {
@@ -69,7 +70,11 @@ export const TOOL_COLORS: ToolColors = {
   [Tool.ADD_INFO_LINE]: ANNOTATION_COLOR.INFO_COLOR
 };
 
-export const TOOL_HINTS: ToolComponent = {
+type ToolHints = {
+  [key in Tool]?: string;
+};
+
+export const TOOL_HINTS: ToolHints = {
   [Tool.SELECT]: 'Annotation auswählen/bearbeiten',
   [Tool.MOVE]: 'Navigiere im Viewer',
   [Tool.DELETE_ANNOTATION]: 'Annotation löschen',
