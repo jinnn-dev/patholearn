@@ -69,7 +69,7 @@
       :resetArray="!isSaving"
       @imagesDropped="setImages"
     ></MultiImageUpload>
-    <div v-if="uploadLoading">
+    <!-- <div v-if="uploadLoading">
       <div class="flex gap-3 mb-3 items-center">
         <div class="flex-1">
           <div
@@ -82,7 +82,7 @@
         <div>{{ uploadProgress }}%</div>
       </div>
       <div v-if="uploadProgress == 100.0" class="font-semibold">Wird gespeichert...</div>
-    </div>
+    </div> -->
 
     <div class="flex justify-end">
       <primary-button
