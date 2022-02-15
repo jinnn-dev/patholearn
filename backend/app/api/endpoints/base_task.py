@@ -9,13 +9,6 @@ from typing import Any, Dict, List
 import pandas as pd
 import pyvips
 import requests
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.datastructures import UploadFile
-from fastapi.params import File, Form
-from pydantic.tools import parse_obj_as
-from sqlalchemy.orm import Session
-from starlette.responses import StreamingResponse
-
 from app.api.deps import (check_if_user_can_access_course,
                           get_current_active_superuser,
                           get_current_active_user, get_db)
@@ -34,9 +27,11 @@ from app.schemas.base_task import (BaseTask, BaseTaskCreate, BaseTaskDetail,
                                    BaseTaskUpdate)
 from app.schemas.membersolution_summary import (MembersolutionSummary,
                                                 SummaryRow, SummaryUser)
-from app.schemas.statistic import ImageSelectStatistic, WrongImageStatistic, WrongLabelStatistic, \
-    WrongLabelDetailStatistic
-from app.schemas.task import (TaskCreate, TaskStatus, TaskType, TaskAnnotationType)
+from app.schemas.statistic import (ImageSelectStatistic, WrongImageStatistic,
+                                   WrongLabelDetailStatistic,
+                                   WrongLabelStatistic)
+from app.schemas.task import (TaskAnnotationType, TaskCreate, TaskStatus,
+                              TaskType)
 from app.schemas.task_hint import TaskHint
 from app.schemas.task_statistic import TaskStatisticCreate
 from app.schemas.user_solution import (UserSolution, UserSolutionCreate,
@@ -44,6 +39,12 @@ from app.schemas.user_solution import (UserSolution, UserSolutionCreate,
 from app.utils.colored_printer import ColoredPrinter
 from app.utils.minio_client import MinioClient, minio_client
 from app.utils.timer import Timer
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.datastructures import UploadFile
+from fastapi.params import File, Form
+from pydantic.tools import parse_obj_as
+from sqlalchemy.orm import Session
+from starlette.responses import StreamingResponse
 
 router = APIRouter()
 
@@ -466,9 +467,14 @@ def get_statistic_to_base_task(*, db: Session = Depends(get_db), short_name: str
         if task.task_data:
             task_data.extend(task.task_data)
 
-    image_query = '&taskimageid='.join(task_data)
-    loaded_images = requests.get(settings.SLIDE_URL + '/task-images?taskimageid=' + image_query).json()
-
+    if len(task_data) > 0:
+        image_query = '&taskimageid='.join(task_data)
+        loaded_images = requests.get(settings.SLIDE_URL + '/task-images?taskimageid=' + image_query).json()
+    else:
+        return ImageSelectStatistic(
+            wrong_image_statistics=[],
+            wrong_label_statistics=[]
+        )
     most_wrong_picked_images = {}
     most_wrong_classified_images = {}
 
@@ -511,10 +517,10 @@ def get_statistic_to_base_task(*, db: Session = Depends(get_db), short_name: str
             sorted(most_wrong_classified_images[item].items(), key=lambda elem: elem[1], reverse=True))
 
     most_wrong_classified_images = dict(
-            sorted(most_wrong_classified_images.items(), key=lambda elem: list(elem[1].values())[0], reverse=True))
+        sorted(most_wrong_classified_images.items(), key=lambda elem: list(elem[1].values())[0], reverse=True))
 
     most_wrong_classified_images = {key: most_wrong_classified_images[key] for key in
-                                       list(most_wrong_classified_images)[0:5]}
+                                    list(most_wrong_classified_images)[0:5]}
 
     result_wrong_classified = []
     for key, value in most_wrong_classified_images.items():
