@@ -112,9 +112,14 @@
             </div>
             <div class="my-4" v-if="taskCreationForm.task_type === 0">
               <div>Wie viele Annotationen müssen die Lernenden mindestens richtig treffen:</div>
-              <div class="pb-4 pt-11">
-                <Slider v-model="taskCreationForm.min_correct" :min="0" :max="50" :tooltips="true"></Slider>
-              </div>
+              <CustomSlider
+                :initial-position="taskCreationForm.min_correct"
+                @is-released="taskCreationForm.min_correct = $event"
+                :min="0"
+                :max="50"
+                :tooltips="true"
+                class="pb-4 pt-11"
+              ></CustomSlider>
             </div>
           </div>
 
@@ -159,7 +164,6 @@
   </div>
 </template>
 <script lang="ts">
-import Slider from '@vueform/slider';
 import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 import { defineComponent, reactive, ref } from 'vue';
@@ -170,7 +174,6 @@ import { TaskService } from '../../services/task.service';
 import { knowledgeLevel, taskTypes } from './task-config';
 
 export default defineComponent({
-  components: { Slider },
   emits: ['close', 'taskCreated'],
   props: {
     layerIndex: {

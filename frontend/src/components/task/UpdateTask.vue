@@ -22,9 +22,15 @@
         >
           <div class="my-8" v-if="taskUpdateForm.task_type === 0">
             <div>Wie viele Annotationen müssen die Lernenden mindestens richtig treffen:</div>
-            <div class="pb-4 pt-11">
-              <Slider v-model="taskUpdateForm.min_correct" :min="0" :max="50" :tooltips="true"></Slider>
-            </div>
+            <CustomSlider
+              :min="0"
+              :max="50"
+              :tooltips="true"
+              :initialPosition="taskUpdateForm.min_correct"
+              @isReleased="updateMinCorrect"
+              class="pb-4 pt-11"
+            >
+            </CustomSlider>
           </div>
 
           <div class="my-8">
@@ -79,15 +85,12 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref, reactive, PropType, watch } from 'vue';
-import Slider from '@vueform/slider';
-
-import { knowledgeLevel, taskTypes } from './task-config';
-import { TaskService } from '../../services/task.service';
+import { defineComponent, PropType, reactive, ref, watch } from 'vue';
 import { Task, TaskType } from '../../model/task';
+import { TaskService } from '../../services/task.service';
+import { knowledgeLevel, taskTypes } from './task-config';
 
 export default defineComponent({
-  components: { Slider },
   props: {
     task: {
       type: Object as PropType<Task>
@@ -147,14 +150,20 @@ export default defineComponent({
     const changeCanBeSolved = (value: boolean) => {
       taskUpdateForm.can_be_solved = value;
     };
+
+    const updateMinCorrect = (value: number) => {
+      taskUpdateForm.min_correct = value;
+    };
+
     return {
       taskUpdateForm,
-      updateTask,
       taskUpdateLoading,
       knowledgeLevel,
       taskTypes,
       TaskType,
-      changeCanBeSolved
+      changeCanBeSolved,
+      updateMinCorrect,
+      updateTask
     };
   }
 });
