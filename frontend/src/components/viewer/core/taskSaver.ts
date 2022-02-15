@@ -10,7 +10,7 @@ import { OffsetAnnotationRectangle } from '../../../model/svg/offsetAnnotationRe
 import { OffsetAnnotationPolygon } from '../../../model/svg/offsetPolygon';
 import { Task } from '../../../model/task';
 import { UserSolution, UserSolutionCreate } from '../../../model/userSolution';
-import { ANNOTATION_TYPE } from '../../../model/viewer/annotationType';
+import { ANNOTATION_TYPE, isInfoAnnotation, isSolution, isUserSolution } from '../../../model/viewer/annotationType';
 import { AnnotationData } from '../../../model/viewer/export/annotationData';
 import { AnnotationRectangleData } from '../../../model/viewer/export/annotationRectangleData';
 import { InfoAnnotatationData } from '../../../model/viewer/export/infoAnnotationData';
@@ -18,7 +18,6 @@ import { OffsetAnnotationLineData } from '../../../model/viewer/export/offsetAnn
 import { OffsetAnnotationPointData } from '../../../model/viewer/export/offsetAnnotationPointData';
 import { OffsetAnnotationPolygonData } from '../../../model/viewer/export/offsetAnnotationPolygonData';
 import { OffsetAnnotationRectangleData } from '../../../model/viewer/export/offsetAnnotationRectangleData';
-import { isInfoAnnotation, isSolution, isUserSolution } from '../../../model/viewer/tools';
 import { InfoImageService } from '../../../services/info-image.service';
 import { TaskService } from '../../../services/task.service';
 import { viewportToImage } from '../../../utils/seadragon.utils';

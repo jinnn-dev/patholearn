@@ -13,7 +13,7 @@ import { OffsetAnnotationPolygon } from '../../../model/svg/offsetPolygon';
 import { AnnotationPolygon } from '../../../model/svg/polygon';
 import { Task } from '../../../model/task';
 import { UserSolution, UserSolutionCreate } from '../../../model/userSolution';
-import { ANNOTATION_TYPE } from '../../../model/viewer/annotationType';
+import { ANNOTATION_TYPE, isUserSolution } from '../../../model/viewer/annotationType';
 import { ANNOTATION_COLOR } from '../../../model/viewer/colors';
 import {
   ANNOTATION_OFFSET_SCALAR,
@@ -26,7 +26,6 @@ import { AnnotationData } from '../../../model/viewer/export/annotationData';
 import { AnnotationRectangleData } from '../../../model/viewer/export/annotationRectangleData';
 import { OffsetAnnotationPolygonData } from '../../../model/viewer/export/offsetAnnotationPolygonData';
 import { PointData } from '../../../model/viewer/export/pointData';
-import { isUserSolution } from '../../../model/viewer/tools';
 import { AnnotationParser } from '../../../utils/annotation-parser';
 import { imageToViewport, pointIsInImage, webToViewport } from '../../../utils/seadragon.utils';
 import { TooltipGenerator } from '../../../utils/tooltips/tooltip-generator';

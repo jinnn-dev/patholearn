@@ -65,17 +65,10 @@ import { getSlideUrl } from '../../config';
 import { RESULT_POLYGON_COLOR, TaskResult, TaskStatus } from '../../model/result';
 import { Annotation } from '../../model/svg/annotation';
 import { AnnotationGroup, Task } from '../../model/task';
-import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
+import { ANNOTATION_TYPE, isUserSolution } from '../../model/viewer/annotationType';
 import { ANNOTATION_COLOR } from '../../model/viewer/colors';
 import { AnnotationData } from '../../model/viewer/export/annotationData';
-import {
-  isDrawingTool,
-  isUserSolution,
-  Tool,
-  TOOL_COLORS,
-  TOOL_KEYBOARD_SHORTCUTS,
-  TOOL_POLYGON
-} from '../../model/viewer/tools';
+import { isDrawingTool, Tool, TOOL_COLORS, TOOL_KEYBOARD_SHORTCUTS, TOOL_POLYGON } from '../../model/viewer/tools';
 import { TaskService } from '../../services/task.service';
 import { ParseResult } from '../../utils/annotation-parser';
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';

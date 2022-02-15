@@ -65,7 +65,8 @@ export const TOOL_COLORS: ToolColors = {
   [Tool.RECT_USER_SOLUTION]: ANNOTATION_COLOR.USER_SOLUTION_COLOR,
   [Tool.ADD_POINT_USER_SOLUTION]: ANNOTATION_COLOR.USER_SOLUTION_COLOR,
   [Tool.ADD_POINT_SOLUTION]: ANNOTATION_COLOR.SOLUTION_COLOR,
-  [Tool.ADD_INFO_POINT]: ANNOTATION_COLOR.INFO_COLOR
+  [Tool.ADD_INFO_POINT]: ANNOTATION_COLOR.INFO_COLOR,
+  [Tool.ADD_INFO_LINE]: ANNOTATION_COLOR.INFO_COLOR
 };
 
 export const TOOL_HINTS: ToolComponent = {
@@ -85,7 +86,8 @@ export const TOOL_HINTS: ToolComponent = {
   [Tool.RECT_USER_SOLUTION]: 'Zeichne ein Rechteck',
   [Tool.ADD_POINT_SOLUTION]: 'Füge einen Punkt zu einer Annotation hinzu',
   [Tool.ADD_POINT_USER_SOLUTION]: 'Füge einen Punkt zu einer Annotation hinzu',
-  [Tool.ADD_INFO_POINT]: 'Füge einen Infotext hinzu'
+  [Tool.ADD_INFO_POINT]: 'Füge einen Infopunkt hinzu',
+  [Tool.ADD_INFO_LINE]: 'Füge eine Infolinie hinzu'
 };
 
 type KEYBOARD_TOOL_SHORTCUTS = {
@@ -123,10 +125,6 @@ export const CHILD_TOOL: ChildTool = {
   [Tool.ADD_INFO_POINT]: [Tool.ADD_INFO_POINT, Tool.ADD_INFO_LINE, Tool.ADD_INFO_POLYGON]
 };
 
-export const isInfoAnnotation = (type: ANNOTATION_TYPE) => {
-  return type === ANNOTATION_TYPE.INFO_POINT;
-};
-
 export const isDrawingTool = (tool: Tool) => {
   return (
     tool === Tool.SOLUTION_DRAWING ||
@@ -138,23 +136,5 @@ export const isDrawingTool = (tool: Tool) => {
     tool === Tool.RECT_SOLUTION ||
     tool === Tool.ADD_POINT_SOLUTION ||
     tool === Tool.ADD_POINT_USER_SOLUTION
-  );
-};
-
-export const isSolution = (type: ANNOTATION_TYPE) => {
-  return (
-    type === ANNOTATION_TYPE.SOLUTION ||
-    type === ANNOTATION_TYPE.SOLUTION_POINT ||
-    type === ANNOTATION_TYPE.SOLUTION_LINE ||
-    type === ANNOTATION_TYPE.SOLUTION_RECT
-  );
-};
-
-export const isUserSolution = (type: ANNOTATION_TYPE) => {
-  return (
-    type === ANNOTATION_TYPE.USER_SOLUTION ||
-    type === ANNOTATION_TYPE.USER_SOLUTION_POINT ||
-    type === ANNOTATION_TYPE.USER_SOLUTION_LINE ||
-    type === ANNOTATION_TYPE.USER_SOLUTION_RECT
   );
 };

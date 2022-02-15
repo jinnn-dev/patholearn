@@ -1,10 +1,9 @@
 import { select } from 'd3-selection';
 import { Annotation } from '../../../model/svg/annotation';
-import { ANNOTATION_TYPE } from '../../../model/viewer/annotationType';
+import { ANNOTATION_TYPE, isInfoAnnotation, isSolution, isUserSolution } from '../../../model/viewer/annotationType';
 import { ANNOTATION_COLOR, getFillColor } from '../../../model/viewer/colors';
 import { POLYGON_STROKE_WIDTH, POLYGON_VERTICE_RADIUS } from '../../../model/viewer/config';
 import { AnnotationData } from '../../../model/viewer/export/annotationData';
-import { isInfoAnnotation, isSolution, isUserSolution } from '../../../model/viewer/tools';
 import { generateAnnotation } from '../factories/generateAnnotation';
 
 export class AnnotationManager {

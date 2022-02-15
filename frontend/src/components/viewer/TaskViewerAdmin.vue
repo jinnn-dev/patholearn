@@ -137,16 +137,9 @@ import { OffsetAnnotationPoint } from '../../model/svg/offsetAnnotationPoint';
 import { OffsetAnnotationRectangle } from '../../model/svg/offsetAnnotationRect';
 import { OffsetAnnotationPolygon } from '../../model/svg/offsetPolygon';
 import { AnnotationGroup, Task, TaskType } from '../../model/task';
-import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
+import { ANNOTATION_TYPE, isInfoAnnotation, isSolution } from '../../model/viewer/annotationType';
 import { ANNOTATION_COLOR } from '../../model/viewer/colors';
-import {
-  isDrawingTool,
-  isInfoAnnotation,
-  isSolution,
-  Tool,
-  TOOL_KEYBOARD_SHORTCUTS,
-  TOOL_POLYGON
-} from '../../model/viewer/tools';
+import { isDrawingTool, Tool, TOOL_KEYBOARD_SHORTCUTS, TOOL_POLYGON } from '../../model/viewer/tools';
 import { TaskService } from '../../services/task.service';
 import { ParseResult } from '../../utils/annotation-parser';
 import { adminMouseClickHandler } from './core/adminMouseClickHandler';
@@ -377,7 +370,14 @@ export default defineComponent({
     });
 
     const setToolbarTools = () => {
-      const tools = [Tool.MOVE, Tool.SELECT, Tool.DELETE, Tool.DELETE_ANNOTATION, Tool.BASE_DRAWING, Tool.INFO];
+      const tools = [
+        Tool.MOVE,
+        Tool.SELECT,
+        Tool.DELETE,
+        Tool.DELETE_ANNOTATION,
+        Tool.BASE_DRAWING,
+        Tool.ADD_INFO_POINT
+      ];
       if (toolbarTools.value.length === 0) {
         toolbarTools.value = [...tools];
       }

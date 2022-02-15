@@ -8,5 +8,28 @@ export enum ANNOTATION_TYPE {
   BASE,
   SOLUTION_RECT,
   USER_SOLUTION_RECT,
-  INFO_POINT
+  INFO_POINT,
+  INFO_LINE
 }
+
+export const isInfoAnnotation = (type: ANNOTATION_TYPE) => {
+  return type === ANNOTATION_TYPE.INFO_POINT || type === ANNOTATION_TYPE.INFO_LINE;
+};
+
+export const isSolution = (type: ANNOTATION_TYPE) => {
+  return (
+    type === ANNOTATION_TYPE.SOLUTION ||
+    type === ANNOTATION_TYPE.SOLUTION_POINT ||
+    type === ANNOTATION_TYPE.SOLUTION_LINE ||
+    type === ANNOTATION_TYPE.SOLUTION_RECT
+  );
+};
+
+export const isUserSolution = (type: ANNOTATION_TYPE) => {
+  return (
+    type === ANNOTATION_TYPE.USER_SOLUTION ||
+    type === ANNOTATION_TYPE.USER_SOLUTION_POINT ||
+    type === ANNOTATION_TYPE.USER_SOLUTION_LINE ||
+    type === ANNOTATION_TYPE.USER_SOLUTION_RECT
+  );
+};
