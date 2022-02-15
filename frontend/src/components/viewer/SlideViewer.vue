@@ -64,8 +64,6 @@ export default defineComponent({
       () => shouldPrefetchImages.value,
       () => {
         if (shouldPrefetchImages.value) {
-          console.log('PRELOAD');
-
           shouldPrefetchImages.value = false;
 
           if (currentIndex.value) {

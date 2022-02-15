@@ -300,9 +300,6 @@ export default defineComponent({
 
     const deleteExistingImage = (index: number) => {
       const imageInArray = existingImages.value[index];
-      console.log(imageInArray);
-      console.log(uploadImages.value);
-
       existingImages.value = existingImages.value.filter((image) => image.info_image_id !== imageInArray.info_image_id);
       imagesToDelete.value.push(imageInArray);
     };
