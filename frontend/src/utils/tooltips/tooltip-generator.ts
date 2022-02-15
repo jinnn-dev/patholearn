@@ -1,7 +1,8 @@
 import { select } from 'd3-selection';
-import tippy, { animateFill, followCursor, Instance, Placement, Props } from 'tippy.js';
+import tippy, { animateFill, followCursor, Instance, Placement, Props, roundArrow } from 'tippy.js';
 import 'tippy.js/animations/shift-away.css';
 import 'tippy.js/dist/backdrop.css';
+import 'tippy.js/dist/svg-arrow.css';
 import 'tippy.js/dist/tippy.css';
 import { RESULT_RESPONSE_DETAIL, RESULT_RESPONSE_NAME, TaskResultDetail, TaskStatus } from '../../model/result';
 export class TooltipGenerator {
@@ -37,6 +38,7 @@ export class TooltipGenerator {
         delay: 200,
         followCursor: 'initial',
         allowHTML: true,
+        arrow: roundArrow + roundArrow,
         plugins: [animateFill, followCursor]
       })
     );
@@ -99,7 +101,8 @@ export class TooltipGenerator {
         content,
         placement,
         theme: 'myDark',
-        delay: delay || 0
+        delay: delay || 0,
+        arrow: roundArrow + roundArrow
       })
     );
     // tippy(target, { content, placement, theme: 'myDark' });

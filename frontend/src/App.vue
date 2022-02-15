@@ -174,20 +174,21 @@ input[type='color']::-webkit-color-swatch {
 }
 
 .tippy-box[data-theme~='myDark'] {
-  @apply bg-gray-700 !important;
+  @apply bg-gray-900 !important;
   @apply text-gray-100;
+  @apply shadow-lg;
 }
 .tippy-backdrop {
-  @apply bg-gray-700 !important;
+  @apply bg-gray-900 !important;
   @apply text-gray-100;
 }
 
 .tippy-content[data-theme~='myDark'] {
-  @apply bg-gray-700 !important;
+  @apply bg-gray-900 !important;
   @apply text-gray-100;
 }
 
-.tippy-box[data-theme~='myDark'][data-placement^='top'] > .tippy-arrow::before {
+/* .tippy-box[data-theme~='myDark'][data-placement^='top'] > .tippy-arrow::before {
   @apply border-t-gray-700 !important;
 }
 .tippy-box[data-theme~='myDark'][data-placement^='bottom'] > .tippy-arrow::before {
@@ -198,6 +199,12 @@ input[type='color']::-webkit-color-swatch {
 }
 .tippy-box[data-theme~='myDark'][data-placement^='right'] > .tippy-arrow::before {
   @apply border-r-gray-700 !important;
+} */
+
+/* The fill */
+.tippy-box[data-theme~='myDark'] > .tippy-svg-arrow > svg:last-child {
+  fill: black;
+  @apply shadow-lg;
 }
 
 .tippy-array {

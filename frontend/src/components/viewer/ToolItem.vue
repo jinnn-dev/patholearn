@@ -4,11 +4,11 @@
   </div>
 </template>
 <script lang="ts">
-import tippy from 'tippy.js';
 import 'tippy.js/animations/shift-away.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/dist/tippy.css';
 import { defineComponent, onMounted } from 'vue';
+import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
 
 export default defineComponent({
   props: {
@@ -17,11 +17,17 @@ export default defineComponent({
   },
   setup(props) {
     onMounted(() => {
-      tippy('#' + props.comp, {
-        content: props.hint,
-        placement: 'right',
-        theme: 'myDark'
+      TooltipGenerator.addGeneralTooltip({
+        target: '#' + props.comp,
+        content: props.hint || '',
+        placement: 'right'
       });
+
+      // tippy('#' + props.comp, {
+      //   content: props.hint,
+      //   placement: 'right',
+      //   theme: 'myDark'
+      // });
     });
   }
 });
