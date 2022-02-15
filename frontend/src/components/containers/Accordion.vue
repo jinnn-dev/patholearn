@@ -2,9 +2,8 @@
   <slot></slot>
 </template>
 <script lang="ts">
-import { defineComponent, ref, provide } from 'vue';
+import { defineComponent, provide, ref } from 'vue';
 export default defineComponent({
-  props: {},
   setup(_, { slots }) {
     const selectedIndex = ref(0);
 
