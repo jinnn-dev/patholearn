@@ -5,6 +5,7 @@ import { AnnotationPoint } from '../../../model/svg/annotationPoint';
 import { AnnotationRectangle } from '../../../model/svg/annotationRect';
 import InfoAnnotationLine from '../../../model/svg/infoAnnotationLine';
 import InfoAnnotationPoint from '../../../model/svg/infoAnnotationPoint';
+import InfoAnnotationPolygon from '../../../model/svg/infoAnnotationPolygon';
 import { OffsetAnnotationLine } from '../../../model/svg/offsetAnnotationLine';
 import { OffsetAnnotationPoint } from '../../../model/svg/offsetAnnotationPoint';
 import { OffsetAnnotationRectangle } from '../../../model/svg/offsetAnnotationRect';
@@ -341,7 +342,11 @@ export class TaskSaver {
       }
     }
 
-    if (annotation instanceof InfoAnnotationPoint || annotation instanceof InfoAnnotationLine) {
+    if (
+      annotation instanceof InfoAnnotationPoint ||
+      annotation instanceof InfoAnnotationLine ||
+      annotation instanceof InfoAnnotationPolygon
+    ) {
       let data = elem as InfoAnnotatationData;
 
       data.headerText = annotation.headerText;

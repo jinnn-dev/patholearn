@@ -47,7 +47,7 @@ export const TOOL_COMPONENTS: ToolComponent = {
   [Tool.ADD_POINT_SOLUTION]: 'plus-circle',
   [Tool.ADD_INFO_POINT]: 'info',
   [Tool.ADD_INFO_LINE]: 'at',
-  [Tool.ADD_INFO_POLYGON]: 'info'
+  [Tool.ADD_INFO_POLYGON]: 'check-circle'
 };
 
 type ToolColors = {
@@ -67,7 +67,8 @@ export const TOOL_COLORS: ToolColors = {
   [Tool.ADD_POINT_USER_SOLUTION]: ANNOTATION_COLOR.USER_SOLUTION_COLOR,
   [Tool.ADD_POINT_SOLUTION]: ANNOTATION_COLOR.SOLUTION_COLOR,
   [Tool.ADD_INFO_POINT]: ANNOTATION_COLOR.INFO_COLOR,
-  [Tool.ADD_INFO_LINE]: ANNOTATION_COLOR.INFO_COLOR
+  [Tool.ADD_INFO_LINE]: ANNOTATION_COLOR.INFO_COLOR,
+  [Tool.ADD_INFO_POLYGON]: ANNOTATION_COLOR.INFO_COLOR
 };
 
 type ToolHints = {
@@ -92,7 +93,8 @@ export const TOOL_HINTS: ToolHints = {
   [Tool.ADD_POINT_SOLUTION]: 'Füge einen Punkt zu einer Annotation hinzu',
   [Tool.ADD_POINT_USER_SOLUTION]: 'Füge einen Punkt zu einer Annotation hinzu',
   [Tool.ADD_INFO_POINT]: 'Füge einen Infopunkt hinzu',
-  [Tool.ADD_INFO_LINE]: 'Füge eine Infolinie hinzu'
+  [Tool.ADD_INFO_LINE]: 'Füge eine Infolinie hinzu',
+  [Tool.ADD_INFO_POLYGON]: 'Füge ein Infopolygon hinzu'
 };
 
 type KEYBOARD_TOOL_SHORTCUTS = {

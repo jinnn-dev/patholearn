@@ -370,7 +370,8 @@ export default defineComponent({
         Tool.DELETE_ANNOTATION,
         Tool.BASE_DRAWING,
         Tool.ADD_INFO_POINT,
-        Tool.ADD_INFO_LINE
+        Tool.ADD_INFO_LINE,
+        Tool.ADD_INFO_POLYGON
       ];
       if (toolbarTools.value.length === 0) {
         toolbarTools.value = [...tools];
@@ -432,12 +433,18 @@ export default defineComponent({
     };
 
     const setTool = (data: { tool: Tool; event: any }) => {
+      console.log(props.task);
+
       drawingViewer.value?.removeDrawingAnnotation();
       changeToolTo.value = undefined;
       currentTool.value = data.tool;
       setMoving.value = false;
 
-      if (isDrawingTool(currentTool.value!) || currentTool.value === Tool.ADD_INFO_LINE) {
+      if (
+        isDrawingTool(currentTool.value!) ||
+        currentTool.value === Tool.ADD_INFO_LINE ||
+        currentTool.value === Tool.ADD_INFO_POLYGON
+      ) {
         drawingViewer.value?.update(data.event.screenX, data.event.screenY);
         drawingViewer.value?.appendMouseCirlce();
         drawingViewer.value?.updateType(TOOL_ANNOTATION[currentTool.value!]!);
@@ -460,7 +467,8 @@ export default defineComponent({
         currentTool.value === Tool.LINE_SOLUTION ||
         currentTool.value === Tool.SOLUTION_DRAWING ||
         currentTool.value === Tool.BASE_DRAWING ||
-        currentTool.value === Tool.ADD_INFO_LINE
+        currentTool.value === Tool.ADD_INFO_LINE ||
+        currentTool.value === Tool.ADD_INFO_POLYGON
       ) {
         viewerRef.value.style.cursor = 'none';
       } else if (currentTool.value === Tool.MOVE) {

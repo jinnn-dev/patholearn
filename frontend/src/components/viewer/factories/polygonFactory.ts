@@ -1,13 +1,31 @@
 import { Point } from 'openseadragon';
+import InfoAnnotationPolygon from '../../../model/svg/infoAnnotationPolygon';
 import { OffsetAnnotationPolygon } from '../../../model/svg/offsetPolygon';
 import { AnnotationPolygon } from '../../../model/svg/polygon';
 import { ANNOTATION_OFFSET_SCALAR, POLYGON_INFLATE_OFFSET } from '../../../model/viewer/config';
 import { OffsetAnnotationPolygonData } from '../../../model/viewer/export/offsetAnnotationPolygonData';
+import { InfoAnnotatationData } from '../../../viewer/export/infoAnnotationData';
 import { AnnotationBaseData, AnnotationBaseOffsetData, AnnotationFactory } from './annotationFactory';
 
 export class PolygonFactory extends AnnotationFactory<AnnotationPolygon> {
   public createInfo(annotationData: AnnotationBaseData): AnnotationPolygon {
-    throw new Error('Method not implemented.');
+    const infoData = annotationData.data as InfoAnnotatationData;
+
+    const points: Point[] = this.convertToPoints(annotationData.data.coord.viewport || []);
+    let annotationPolygon = new InfoAnnotationPolygon(
+      infoData.headerText,
+      infoData.detailText,
+      infoData.images,
+      annotationData.node,
+      annotationData.data.type,
+      annotationData.fillColor,
+      annotationData.strokeColor,
+      annotationData.data.id
+    );
+    annotationPolygon.name = annotationData.data.name;
+    annotationPolygon.addClosedPolygon(points, annotationData.radius, annotationData.strokeWidth);
+
+    return annotationPolygon;
   }
   public create(annotationData: AnnotationBaseData): AnnotationPolygon {
     const points: Point[] = this.convertToPoints(annotationData.data.coord.viewport || []);

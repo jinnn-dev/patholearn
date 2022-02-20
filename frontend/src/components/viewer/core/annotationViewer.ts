@@ -6,6 +6,7 @@ import { AnnotationPoint } from '../../../model/svg/annotationPoint';
 import { AnnotationRectangle } from '../../../model/svg/annotationRect';
 import InfoAnnotationLine from '../../../model/svg/infoAnnotationLine';
 import InfoAnnotationPoint from '../../../model/svg/infoAnnotationPoint';
+import InfoAnnotationPolygon from '../../../model/svg/infoAnnotationPolygon';
 import { MouseCircle } from '../../../model/svg/mouseCircle';
 import { OffsetAnnotationLine } from '../../../model/svg/offsetAnnotationLine';
 import { OffsetAnnotationPoint } from '../../../model/svg/offsetAnnotationPoint';
@@ -210,6 +211,18 @@ export class AnnotationViewer {
             ANNOTATION_TYPE.INFO_LINE
           );
           break;
+        case ANNOTATION_TYPE.INFO_POLYGON:
+          this._drawingAnnotation = new InfoAnnotationPolygon(
+            '',
+            '',
+            [],
+            this._annotationManager.backgroundNode,
+            ANNOTATION_TYPE.INFO_POLYGON,
+            this._currentColor + ANNOTATION_COLOR.FILL_OPACITY,
+            this._currentColor
+          );
+          break;
+
         default:
           this._drawingAnnotation = new AnnotationPolygon(
             node,

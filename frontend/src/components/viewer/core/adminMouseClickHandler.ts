@@ -24,7 +24,11 @@ export async function adminMouseClickHandler(
         return Tool.SELECT;
       }
     }
-  } else if (isDrawingTool(currentTool) || currentTool === Tool.ADD_INFO_LINE) {
+  } else if (
+    isDrawingTool(currentTool) ||
+    currentTool === Tool.ADD_INFO_LINE ||
+    currentTool === Tool.ADD_INFO_POLYGON
+  ) {
     if (event.quick) {
       annotationViewer.addDrawingAnnotation(TOOL_ANNOTATION[currentTool]!);
 

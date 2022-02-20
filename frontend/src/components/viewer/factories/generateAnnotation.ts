@@ -130,6 +130,16 @@ export function generateAnnotation(
         strokeColor: strokeColor
       });
       break;
+    case ANNOTATION_TYPE.INFO_POLYGON:
+      generatedAnnotation = PolygonFactory.getInstance().createInfo({
+        data: data,
+        node: node,
+        radius: radius,
+        strokeWidth: strokeWidth,
+        fillColor: fillColor,
+        strokeColor: strokeColor
+      });
+      break;
     default:
       generatedAnnotation = PolygonFactory.getInstance().create({
         data: data,
