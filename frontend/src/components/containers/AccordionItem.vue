@@ -28,7 +28,7 @@
 </template>
 <script lang="ts">
 import { nanoid } from 'nanoid';
-import { defineComponent, ref, watch, inject, Ref } from 'vue';
+import { defineComponent, inject, ref, Ref, watch } from 'vue';
 export default defineComponent({
   props: {
     title: {
