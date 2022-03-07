@@ -182,6 +182,8 @@ export class TaskSaver {
       }
       (task.task_data as AnnotationData[])?.push(serializedTask);
     } else if (isInfoAnnotation(annotation.type)) {
+      console.log('isInfoAnnotation');
+
       if (!task.info_annotations) {
         task.info_annotations = [];
       }

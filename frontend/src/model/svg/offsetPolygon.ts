@@ -133,6 +133,11 @@ export class OffsetAnnotationPolygon extends AnnotationPolygon {
     this.createPath(scale);
   }
 
+  addClosedInsetPolygonFromPoints(annotationPoints: OpenSeadragon.Point[], scale: number) {
+    super.addClosedPolygon(annotationPoints, POLYGON_VERTICE_RADIUS / scale, POLYGON_STROKE_WIDTH / scale);
+    this.createInflation(scale);
+  }
+
   /**
    * Updates the inner offset and rerenders element
    *

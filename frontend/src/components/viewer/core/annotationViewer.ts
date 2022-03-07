@@ -863,6 +863,45 @@ export class AnnotationViewer {
     }
   }
 
+  convertBackgroundAnnotationToSolutionAnnotation(annotation: AnnotationRectangle) {
+    const vertexElements = annotation.getAllVertices();
+    const newAnnotation = new OffsetAnnotationPolygon(
+      this._annotationManager.solutionNode,
+      ANNOTATION_TYPE.SOLUTION,
+      ANNOTATION_COLOR.SOLUTION_COLOR + ANNOTATION_COLOR.FILL_OPACITY,
+      ANNOTATION_COLOR.SOLUTION_COLOR,
+      (POLYGON_INFLATE_OFFSET / this.scale) * ANNOTATION_OFFSET_SCALAR,
+      (POLYGON_INFLATE_OFFSET / this.scale) * ANNOTATION_OFFSET_SCALAR
+    );
+    newAnnotation.addClosedInsetPolygonFromPoints(vertexElements, this.scale);
+
+    this._annotationManager.pushSolutionAnnotation(newAnnotation);
+    return newAnnotation;
+  }
+
+  convertSolutionAnnotationToBackgroundAnnotation(annotation: OffsetAnnotationPolygon) {
+    const bbox = annotation.getBoundingBox();
+
+    const rectangle = new AnnotationRectangle(
+      this._annotationManager.backgroundNode,
+      ANNOTATION_TYPE.BASE,
+      'none',
+      ANNOTATION_COLOR.BACKGORUND_COLOR
+    );
+    rectangle.width = bbox!.width;
+    rectangle.height = bbox!.height;
+
+    rectangle.addClosedRectangle(
+      [new Point(bbox!.x, bbox!.y)],
+      POLYGON_VERTICE_RADIUS / this.scale,
+      POLYGON_STROKE_WIDTH / this.scale
+    );
+
+    this._annotationManager.pushAnnotation(rectangle);
+
+    return rectangle;
+  }
+
   resetZoom() {
     this._viewer.viewport.fitBounds(this._viewer.viewport.getHomeBounds());
   }

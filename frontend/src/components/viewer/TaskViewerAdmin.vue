@@ -18,7 +18,7 @@
     ></color-picker>
 
     <custom-select
-      v-else
+      v-if="task?.task_type === 1"
       :isSearchable="false"
       displayType="small"
       label="Annotationsklasse:"
@@ -78,6 +78,24 @@
     <div v-if="isAnnotationChangedManually" class="my-4">
       <primary-button bgColor="bg-gray-500" @click="resetAnnotationTolerance">Toleranz zurücksetzen</primary-button>
     </div>
+
+    <primary-button
+      class="w-64"
+      bgColor="bg-gray-500"
+      v-if="isBackgroundPolygon"
+      name="Zu Lösungsannotation konvertieren (Polygon)"
+      @click.prevent="convertToSolutionAnnotation()"
+    >
+    </primary-button>
+
+    <primary-button
+      v-if="isOffsetAnnotationPolygon"
+      class="w-64"
+      bgColor="bg-gray-500"
+      name="Zu Hintergrundannotation konvertieren (Rechteck)"
+      @click.prevent="convertToBackgroundAnnotation()"
+    >
+    </primary-button>
   </annotation-settings>
 
   <tool-bar :tools="toolbarTools" @toolUpdate="setTool" :setMoving="setMoving" :changeToolTo="changeToolTo"></tool-bar>
@@ -127,6 +145,7 @@
 
 <script lang="ts">
 import { select, selectAll } from 'd3-selection';
+import { AnnotationRectangle } from 'model/svg/annotationRect';
 import { AnnotationData } from 'model/viewer/export/annotationData';
 import OpenSeadragon from 'openseadragon';
 import { computed, defineComponent, onMounted, PropType, reactive, ref, watch } from 'vue';
@@ -710,6 +729,38 @@ export default defineComponent({
       isTaskSaving.value = false;
     };
 
+    const convertToSolutionAnnotation = async () => {
+      isTaskSaving.value = true;
+
+      const annotationToConvert = selectedPolygon.value! as AnnotationRectangle;
+
+      unselectAnnotation();
+
+      const annotation = drawingViewer.value?.convertBackgroundAnnotationToSolutionAnnotation(annotationToConvert);
+
+      await drawingViewer.value?.deleteAnnotationByID(props.task!, annotationToConvert.id);
+      await drawingViewer.value?.saveTaskAnnotation(props.task!, annotation);
+      selectAnnotation(annotation?.id!);
+      isTaskSaving.value = false;
+    };
+
+    const convertToBackgroundAnnotation = async () => {
+      isTaskSaving.value = true;
+
+      const annotationToConvert = selectedPolygon.value! as OffsetAnnotationPolygon;
+
+      unselectAnnotation();
+
+      const annotation = drawingViewer.value?.convertSolutionAnnotationToBackgroundAnnotation(annotationToConvert);
+
+      await drawingViewer.value?.deleteAnnotationByID(props.task!, annotationToConvert.id);
+      await drawingViewer.value?.saveTaskAnnotation(props.task!, annotation);
+
+      selectAnnotation(annotation?.id!);
+
+      isTaskSaving.value = false;
+    };
+
     return {
       toolbarTools,
       handleKeyup,
@@ -721,6 +772,8 @@ export default defineComponent({
       hideGroup,
       updateGroup,
       onApplyAnnotations,
+      convertToSolutionAnnotation,
+      convertToBackgroundAnnotation,
       file,
       focusAnnotation,
       maxRadius,

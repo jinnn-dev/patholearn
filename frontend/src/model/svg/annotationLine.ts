@@ -2,6 +2,7 @@ import { select, Selection } from 'd3-selection';
 import { nanoid } from 'nanoid';
 import OpenSeadragon, { Point } from 'openseadragon';
 import { polygonChanged } from '../../components/viewer/core/viewerState';
+import { BoundingBox } from '../../model/boundingBox';
 import { POLYGON_VERTICE_RADIUS } from '../../model/viewer/config';
 import { ANNOTATION_TYPE } from '../viewer/annotationType';
 import { ANNOTATION_COLOR, COLOR } from '../viewer/colors';
@@ -380,6 +381,44 @@ export class AnnotationLine extends Annotation {
    */
   remove(): void {
     this.polyline?.remove();
+  }
+
+  public getBoundingBox(): BoundingBox | null {
+    if (this.vertice.length < 2) {
+      return null;
+    }
+
+    let minX = this.vertice[0].viewport.x;
+    let minY = this.vertice[0].viewport.y;
+    let maxX = this.vertice[1].viewport.x;
+    let maxY = this.vertice[1].viewport.y;
+
+    for (const vertex of this.vertice) {
+      const x = vertex.viewport.x;
+      const y = vertex.viewport.y;
+
+      if (x < minX) {
+        minX = x;
+      }
+      if (x > maxX) {
+        maxX = x;
+      }
+
+      if (y < minY) {
+        minY = y;
+      }
+
+      if (y > maxY) {
+        maxY = y;
+      }
+    }
+
+    return {
+      x: minX,
+      y: minY,
+      width: maxX - minX,
+      height: maxY - minY
+    };
   }
 
   get isClosed() {

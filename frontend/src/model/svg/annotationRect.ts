@@ -329,6 +329,12 @@ export class AnnotationRectangle extends Annotation {
     return this.width * this.height;
   }
 
+  getAllVertices(): OpenSeadragon.Point[] {
+    const topRight = this.vertice[0].viewport.plus(new OpenSeadragon.Point(this.width, 0));
+    const bottomLeft = this.vertice[0].viewport.plus(new OpenSeadragon.Point(0, this.height));
+    return [this.vertice[0].viewport, bottomLeft, this.vertice[1].viewport, topRight];
+  }
+
   get polyline(): Selection<SVGRectElement, unknown, null, undefined> | undefined {
     return this._polyline;
   }
