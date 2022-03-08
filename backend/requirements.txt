@@ -2,7 +2,7 @@ fastapi>=0.70.0
 python-multipart
 python-jose[cryptography]
 passlib[bcrypt]~=1.7.4
-celery~=4.4.7
+celery~=5.2.3
 uvicorn~=0.13.4
 pyvips>=2.1.14
 pydantic~=1.8.1
