@@ -3,7 +3,7 @@ python-multipart
 python-jose[cryptography]
 passlib[bcrypt]~=1.7.4
 celery~=5.2.3
-uvicorn~=0.13.4
+uvicorn~=0.17.5
 pyvips>=2.1.14
 pydantic~=1.8.1
 aiofiles~=0.6.0
