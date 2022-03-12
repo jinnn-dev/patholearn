@@ -104,8 +104,6 @@ def create_base_task_from_csv(*, db: Session = Depends(get_db), base_task_in: st
         divider_options = [9, 12]
 
         labels = df['class'].unique()
-        print("LABELS", labels)
-        print("SIZE", len(df.index))
         index = 0
         curr_divider = divider_options[0]
         task_index = 0
@@ -153,12 +151,10 @@ def create_base_task_from_csv(*, db: Session = Depends(get_db), base_task_in: st
         db.refresh(base_task)
         base_task.task_count = len(tasks)
         response = requests.put(settings.SLIDE_URL + '/task-images', json=label_update_dict)
-        print(response.json())
         return base_task
 
     except Exception as e:
         print(e)
-        print(traceback.format_exc())
         if image_dicts:
             for image in image_dicts:
                 minio_client.bucket_name = MinioClient.task_bucket
@@ -215,7 +211,6 @@ def read_task_details(*, db: Session = Depends(get_db), short_name: str,
         task.user_solution = crud_user_solution.get_solution_to_task_and_user(db, task_id=task.id,
                                                                               user_id=current_user.id)
         delattr(task, 'solution')
-        print(task.info_annotations)
 
     task_group = crud_task_group.get(db=db, id=base_task.task_group_id)
     base_task.task_group_short_name = task_group.short_name

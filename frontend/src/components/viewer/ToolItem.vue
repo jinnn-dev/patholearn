@@ -1,9 +1,10 @@
 <template>
-  <div :id="comp" class="transition cursor-pointer flex justify-center items-center p-2 hover:bg-gray-300">
+  <div :id="comp + id" class="transition cursor-pointer flex justify-center items-center p-2 hover:bg-gray-300">
     <Icon :name="comp" class="fill-white" />
   </div>
 </template>
 <script lang="ts">
+import { nanoid } from 'nanoid';
 import 'tippy.js/animations/shift-away.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/dist/tippy.css';
@@ -16,9 +17,10 @@ export default defineComponent({
     hint: String
   },
   setup(props) {
+    const id = nanoid(4);
     onMounted(() => {
       TooltipGenerator.addGeneralTooltip({
-        target: '#' + props.comp,
+        target: '#' + props.comp + id,
         content: props.hint || '',
         placement: 'right'
       });
@@ -29,6 +31,10 @@ export default defineComponent({
       //   theme: 'myDark'
       // });
     });
+
+    return {
+      id
+    };
   }
 });
 </script>

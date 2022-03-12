@@ -200,12 +200,12 @@ export default defineComponent({
       {
         index: 1,
         type: 'Linie',
-        icon: 'activity'
+        icon: 'line-segments'
       },
       {
         index: 2,
         type: 'Polygon',
-        icon: 'triangle'
+        icon: 'polygon-segments'
       }
     ];
 

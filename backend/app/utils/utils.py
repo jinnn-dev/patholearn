@@ -2,14 +2,14 @@ import csv
 import json
 from io import StringIO
 from math import hypot
-from typing import Any, Dict, List, Union, Iterator
-
-from fastapi import UploadFile, File
+from typing import Any, Dict, Iterator, List, Union
 
 from app.schemas.polygon_data import Point
 from app.schemas.solver_result import LineResult, PointResult, PolygonResult
+from fastapi import File, UploadFile
 
-point_diff = lambda p1, p2: (p1.x - p2.x, p1.y - p2.y)
+
+def point_diff(p1, p2): return (p1.x - p2.x, p1.y - p2.y)
 
 
 def get_path_length(vertices: List[Point]) -> float:
@@ -45,7 +45,6 @@ def print_python_dict(matched_ids: Dict[str, List[Union[PointResult, LineResult,
         result[key] = []
         for annotation_result in matched_ids[key]:
             result[key].append(annotation_result.dict())
-    print(json.dumps(result))
 
 
 def get_csv_iterator(csv_file: UploadFile = File(...), skip_headers=False) -> [Iterator, str]:

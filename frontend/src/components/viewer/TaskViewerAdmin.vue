@@ -452,8 +452,6 @@ export default defineComponent({
     };
 
     const setTool = (data: { tool: Tool; event: any }) => {
-      console.log(props.task);
-
       drawingViewer.value?.removeDrawingAnnotation();
       changeToolTo.value = undefined;
       currentTool.value = data.tool;

@@ -71,8 +71,6 @@ export class AnnotationLine extends Annotation {
 
     this._vertice.push(vertex);
 
-    console.log(this._vertice);
-
     this._polylinePoints.push(vertex.viewport.x + ',' + vertex.viewport.y);
 
     if (this.vertice.length === 1) {

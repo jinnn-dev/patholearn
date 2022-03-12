@@ -43,6 +43,4 @@ class Dicom:
 
         metadata = delete_keys_from_dict(dict_del=ds.to_json_dict(), keys_to_delete=["InlineBinary"])
 
-        print(metadata)
-
         return frame_uuids, metadata

@@ -40,7 +40,6 @@ def create_task_image(*, collection: Collection = Depends(get_task_image_collect
         pyvips_image.jpegsave(task_image_file_name, Q=75)
 
         try:
-            print("TASK_IMAGE_ID", task_image_id)
             task_image_object_id = crud_task_image.create(collection=collection, obj_in=CreateTaskImage(
                 task_image_id=task_image_id,
                 name=names[index]

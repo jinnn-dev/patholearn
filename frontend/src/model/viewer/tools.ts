@@ -32,22 +32,22 @@ export const TOOL_COMPONENTS: ToolComponent = {
   [Tool.SELECT]: 'hand-pointing',
   [Tool.MOVE]: 'hand-grabbing',
   [Tool.DELETE_ANNOTATION]: 'eraser',
-  [Tool.SOLUTION_DRAWING]: 'pen-nib',
-  [Tool.USER_SOLUTION_DRAWING]: 'pen-nib',
+  [Tool.SOLUTION_DRAWING]: 'polygon-segments',
+  [Tool.USER_SOLUTION_DRAWING]: 'polygon-segments',
   [Tool.BASE_DRAWING]: 'selection-all',
   [Tool.POINT_SOLUTION]: 'push-pin',
   [Tool.POINT_USER_SOLUTION]: 'push-pin',
-  [Tool.LINE_SOLUTION]: 'activity',
-  [Tool.LINE_USER_SOLUTION]: 'activity',
+  [Tool.LINE_SOLUTION]: 'line-segments',
+  [Tool.LINE_USER_SOLUTION]: 'line-segments',
   [Tool.UPLOAD]: 'upload',
   [Tool.DELETE]: 'trash',
   [Tool.RECT_SOLUTION]: 'rectangle',
   [Tool.RECT_USER_SOLUTION]: 'rectangle',
   [Tool.ADD_POINT_USER_SOLUTION]: 'plus-circle',
   [Tool.ADD_POINT_SOLUTION]: 'plus-circle',
-  [Tool.ADD_INFO_POINT]: 'info',
-  [Tool.ADD_INFO_LINE]: 'at',
-  [Tool.ADD_INFO_POLYGON]: 'check-circle'
+  [Tool.ADD_INFO_POINT]: 'push-pin',
+  [Tool.ADD_INFO_LINE]: 'line-segments',
+  [Tool.ADD_INFO_POLYGON]: 'polygon-segments'
 };
 
 type ToolColors = {
@@ -139,3 +139,7 @@ export const isDrawingTool = (tool: Tool) => {
     tool === Tool.ADD_POINT_USER_SOLUTION
   );
 };
+
+export function isInfoTool(tool: Tool) {
+  return tool === Tool.ADD_INFO_POINT || tool === Tool.ADD_INFO_LINE || tool === Tool.ADD_INFO_POLYGON;
+}
