@@ -190,7 +190,6 @@ def add_task_annotation(*, db: Session = Depends(get_db), task_id: int,
     #         status_code=400,
     #         detail="Annotation is invalid"
     #     )
-    print(annotation.type)
     if annotation.type == AnnotationType.BASE:
         if task.task_data is None:
             data = [annotation]
@@ -200,7 +199,6 @@ def add_task_annotation(*, db: Session = Depends(get_db), task_id: int,
         crud_task.update(db, db_obj=task, obj_in=TaskUpdate(task_data=data))
 
     elif is_info_annotation(annotation.type):
-        print("IS INFO")
 
         if task.info_annotations is None:
             data = [annotation]
