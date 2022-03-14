@@ -1,0 +1,1 @@
+docker-compose logs -f lern_api frontend slide_api slide_worker
