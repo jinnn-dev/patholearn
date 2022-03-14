@@ -63,7 +63,10 @@
           <primary-button
             name="Abbrechen"
             type="button"
-            @click.stop="showUpload = false"
+            @click.stop="
+              showUpload = false;
+              resetDialog();
+            "
             bgColor="bg-gray-500"
             class="w-36"
           ></primary-button>
@@ -116,11 +119,9 @@ export default defineComponent({
         progress.value = Math.round((100 * event.loaded) / event.total);
       })
         .then((res) => {
-          progress.value = 0;
-          loading.value = false;
-          showUpload.value = false;
-
           emit('slide-uploaded', res);
+          showUpload.value = false;
+          resetDialog();
         })
         .catch((err) => {
           loading.value = false;
@@ -130,12 +131,19 @@ export default defineComponent({
         });
     };
 
+    const resetDialog = () => {
+      progress.value = 0;
+      formModel.name = '';
+      formModel.file = null;
+    };
+
     return {
       formModel,
       showUpload,
       toggleShowUpload,
       onFileUpload,
       onSubmit,
+      resetDialog,
       progress,
       loading,
       errorMessage

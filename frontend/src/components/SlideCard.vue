@@ -91,6 +91,7 @@
   <confirm-dialog
     header="Bild löschen?"
     :show="showDeleteDialog"
+    :loading="deleteLoading"
     @confirmation="$emit('delete')"
     @reject="showDeleteDialog = false"
   ></confirm-dialog>
@@ -107,6 +108,10 @@ export default defineComponent({
     slide: {
       type: Object as PropType<Slide>,
       required: true
+    },
+    deleteLoading: {
+      type: Boolean,
+      default: false
     }
   },
 

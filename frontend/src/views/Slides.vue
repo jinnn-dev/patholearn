@@ -30,6 +30,7 @@
             v-for="(slide, index) of slides"
             :key="slide.name"
             :slide="slide"
+            :deleteLoading="slideDeleteLoading"
             @delete="deleteSlide(slide, index)"
           >
           </slide-card>
@@ -41,15 +42,16 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue';
-import { SlideService } from '../services/slide.service';
-import { getThumbnailUrl } from '../config';
 import { Slide } from '../model/slide';
+import { SlideService } from '../services/slide.service';
 
 export default defineComponent({
   setup() {
     const slides = ref<Slide[]>([]);
     const slideLoading = ref<Boolean>(true);
     const slideError = ref<Boolean>(false);
+
+    const slideDeleteLoading = ref<Boolean>(false);
 
     onMounted(() => {
       loadSlides();
@@ -76,8 +78,10 @@ export default defineComponent({
     };
 
     const deleteSlide = (slide: Slide, index: number) => {
+      slideDeleteLoading.value = true;
       SlideService.deleteSlide(slide.slide_id).then(
         (_) => {
+          slideDeleteLoading.value = false;
           slides.value.splice(index, 1);
         },
         (err) => {
@@ -91,6 +95,7 @@ export default defineComponent({
       loadSlides,
       slideLoading,
       onUpload,
+      slideDeleteLoading,
       slideError
     };
   }
