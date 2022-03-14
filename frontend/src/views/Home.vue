@@ -98,12 +98,12 @@
 </template>
 
 <script lang="ts">
-import { Course, CreateCourse } from '../model/course';
 import { defineComponent, onMounted, reactive, ref } from 'vue';
+import { Course, CreateCourse } from '../model/course';
 import router from '../router';
-import { appState } from '../utils/app.state';
-import { CourseService } from '../services/course.service';
 import { AuthService } from '../services/auth.service';
+import { CourseService } from '../services/course.service';
+import { appState } from '../utils/app.state';
 
 export default defineComponent({
   name: 'Home',
@@ -169,7 +169,12 @@ export default defineComponent({
     const hideModal = () => {
       showModal.value = false;
       courseAlreadyExists.value = false;
+      resetFormData();
+    };
+
+    const resetFormData = () => {
       formData.name = '';
+      formData.description = '';
     };
 
     const onCourseJoin = (course: Course) => {
