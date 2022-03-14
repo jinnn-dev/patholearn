@@ -79,7 +79,7 @@ services:
   slide_worker:
     image: ${DOCKER_PREFIX}/${DOCKER_APPLICATION_TITLE}-slide_api:${SLIDE_API_VERSION}
     restart: unless-stopped
-    command: celery worker --app=worker.celery_app --loglevel=info
+    command: celery --app worker.celery_app worker --loglevel=info
     environment:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}

@@ -62,7 +62,7 @@ services:
     image: slide_api
     depends_on:
       - slide_api
-    command: watchmedo auto-restart --recursive --directory="./app" --patterns="*.py" -- celery worker --app=worker.celery_app --loglevel=info
+    command: watchmedo auto-restart --recursive --directory="./app" --patterns="*.py" -- celery --app worker.celery_app worker --loglevel=info
     volumes:
       - ./pyramid-creator/app:/app
       - ./pyramid-creator/data:/data
