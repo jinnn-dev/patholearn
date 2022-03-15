@@ -7,6 +7,9 @@ ENV MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
 ARG MYSQL_HOST
 ENV MYSQL_HOST=${MYSQL_HOST}
 
+ARG MYSQL_DATABASE
+ENV MYSQL_DATABASE=${MYSQL_DATABASE}
+
 RUN apt-get update && apt-get install -y supervisor && apt-get install -y libvips && apt-get install -y default-mysql-client
 
 COPY supervisord.dev.conf /etc/supervisor/conf.d/supervisord.conf
@@ -19,4 +22,4 @@ ADD alembic.ini /
 
 COPY ./app /app
 ADD entry.sh /
-CMD /entry.sh
+ENTRYPOINT [ "/entry.sh"]

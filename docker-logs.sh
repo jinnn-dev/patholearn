@@ -1,1 +1,1 @@
-docker-compose logs -f lern_api frontend slide_api slide_worker
+docker-compose logs -f --tail=100 lern_api frontend slide_api slide_worker

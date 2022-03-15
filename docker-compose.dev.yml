@@ -6,7 +6,8 @@ services:
       dockerfile: dev.dockerfile
       args:
         - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
-        - MYSQL_HOST=lern_db
+        - MYSQL_HOST=${DATABASE_IP}
+        - MYSQL_DATABASE=${DATABASE_DB}
     volumes:
       - ./backend/app:/app
     environment:
