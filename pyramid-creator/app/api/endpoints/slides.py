@@ -55,13 +55,21 @@ def create_slide(*, collection: Collection = Depends(get_slide_collection), back
 
 @router.get('', response_model=List[Slide])
 def read_slides(*, collection: Collection = Depends(get_slide_collection), slideid: List[str] = Query(None),
+                status: SlideStatus = Query(None),
                 metadata: bool = Query(True)) -> List[Slide]:
     if slideid:
         slides = crud_slide.get_all_slides_by_ids(
-            collection=collection, slide_ids=slideid, with_metadata=metadata)
+            collection=collection,
+            slide_ids=slideid,
+            status=status,
+            with_metadata=metadata
+        )
     else:
         slides = crud_slide.get_all_slides(
-            collection=collection, with_metadata=metadata)
+            collection=collection,
+            status=status,
+            with_metadata=metadata
+        )
     if metadata:
         slides = convert_binary_metadata_to_base64(slides)
     return slides

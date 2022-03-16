@@ -77,12 +77,17 @@ def get_file_name_and_file_extension(file_name_with_extension: str) -> Tuple[str
 
 
 def remove_truth_values_from_dict(dict_to_be_filtered: Dict[Any, Any]) -> Dict[Any, Any]:
+    """
+    Removes all entries in the given dict which have 'True' as value
+
+    :param: Dict to filter
+    :return: Filtered dict
+    """
     query = {}
     if dict_to_be_filtered:
         for key in dict_to_be_filtered:
             if not dict_to_be_filtered[key]:
                 query[key] = dict_to_be_filtered[key]
-
     return query
 
 
