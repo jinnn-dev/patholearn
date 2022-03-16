@@ -5,10 +5,8 @@ Revises: 5adfbb5e4fd6
 Create Date: 2021-09-22 16:18:03.848194
 
 """
-from alembic import op
 import sqlalchemy as sa
-
-
+from alembic import op
 # revision identifiers, used by Alembic.
 from sqlalchemy.engine import Inspector
 
@@ -33,6 +31,7 @@ def upgrade():
                         sa.PrimaryKeyConstraint('id')
                         )
         op.create_index(op.f('ix_taskhint_id'), 'taskhint', ['id'], unique=False)
+    if not 'hintimage' in tables:
         op.create_table('hintimage',
                         sa.Column('id', sa.Integer(), nullable=False),
                         sa.Column('image_name', sa.String(length=255), nullable=True),
