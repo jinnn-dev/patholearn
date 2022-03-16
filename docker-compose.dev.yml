@@ -70,7 +70,8 @@ services:
     command: uvicorn app.app:app --reload --host 0.0.0.0 --port 8000
     environment:
       - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
-      - DATABASE_URL=${MONGO_DRIVER}://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_DB}:${MONGO_PORT}
+      - DATABASE_URL=${MONGO_DRIVER}://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:${MONGO_PORT}
+      - MONGO_DB=${MONGO_DB}
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
     volumes:
@@ -90,8 +91,9 @@ services:
     environment:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MONGO_DB=${MONGO_DB}
       - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
-      - DATABASE_URL=${MONGO_DRIVER}://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_DB}:${MONGO_PORT}
+      - DATABASE_URL=${MONGO_DRIVER}://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:${MONGO_PORT}
 
   slide_db:
     image: mongo:latest

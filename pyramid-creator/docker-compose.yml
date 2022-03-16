@@ -6,13 +6,13 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
     ports:
-      - "27017:27017"
+      - '27017:27017'
     volumes:
       - mongodb_data:/mongodb
   api:
     build: .
     ports:
-      - "8000:8000"
+      - '8000:8000'
     volumes:
       - ./app:/app
       - ./data:/data
@@ -20,7 +20,6 @@ services:
     environment:
       - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
       - DATABASE_URL=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:${MONGO_PORT}
-
 
   worker:
     build: .
@@ -35,8 +34,8 @@ services:
   minio:
     image: minio/minio
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - '9000:9000'
+      - '9001:9001'
     volumes:
       - ./minio_data:/data
     environment:
@@ -47,7 +46,7 @@ services:
   rabbit:
     image: rabbitmq:latest
     ports:
-      - "5672:5672"
+      - '5672:5672'
     expose:
       - '5672'
     restart: unless-stopped

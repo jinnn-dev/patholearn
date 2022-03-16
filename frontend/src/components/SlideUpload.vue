@@ -135,6 +135,7 @@ export default defineComponent({
       progress.value = 0;
       formModel.name = '';
       formModel.file = null;
+      loading.value = false;
     };
 
     return {

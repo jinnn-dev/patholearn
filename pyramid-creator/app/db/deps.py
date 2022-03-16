@@ -4,7 +4,7 @@ from sqlite3 import connect
 
 from pymongo import MongoClient
 
-DB = "slidedb"
+DB = os.getenv('MONGO_DB') if "MONGO_DB" in os.environ else "slidedb"
 
 
 def get_slide_collection() -> Generator:
