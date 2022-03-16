@@ -1,3 +1,4 @@
+import { SLIDE_STATUS } from 'model/slideStatus';
 import { BASE_API_URL, SLIDE_API_URL } from '../config';
 import { Slide } from '../model/slide';
 import { ExtractionResult } from '../model/viewer/export/extractionResult';
@@ -10,10 +11,16 @@ export class SlideService {
    *
    * @returns All found slides
    */
-  public static async getSlides(): Promise<Slide[]> {
+  public static async getSlides(
+    data: { metadata: boolean; status?: SLIDE_STATUS } = { metadata: true }
+  ): Promise<Slide[]> {
     const [_, response] = await handleError(
       ApiService.get<Slide[]>({
         resource: '/slides',
+        data: {
+          metadata: data.metadata,
+          ...(data.status && { status: data.status })
+        },
         host: SLIDE_API_URL
       }),
       'Slides could not be loaded'

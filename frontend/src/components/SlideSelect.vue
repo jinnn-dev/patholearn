@@ -39,6 +39,7 @@ import { onClickOutside } from '@vueuse/core';
 import { defineComponent, ref, watch } from 'vue';
 import { getThumbnailUrl } from '../config';
 import { Slide } from '../model/slide';
+import { SLIDE_STATUS } from '../model/slideStatus';
 import { SlideService } from '../services/slide.service';
 
 export default defineComponent({
@@ -70,7 +71,7 @@ export default defineComponent({
 
     const loadSlides = () => {
       loading.value = true;
-      SlideService.getSlides().then((res: Slide[]) => {
+      SlideService.getSlides({ status: SLIDE_STATUS.SUCCESS }).then((res: Slide[]) => {
         slides.value = res;
         loading.value = false;
       });
