@@ -6,3 +6,5 @@ export const appState = reactive<{
 }>({
   user: null
 });
+
+export const isSuperUser = (): boolean => appState.user?.is_superuser || false;
