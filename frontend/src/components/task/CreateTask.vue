@@ -126,32 +126,26 @@
           <div v-if="selectedTaskType === 1">
             <div class="my-2 flex gap-2 flex-col">
               <div class="mt-2">Wähle eine Reihe von Bilder:</div>
-              <div>
-                <div
-                  class="h-20 w-20 bg-gray-500 rounded-lg inline-block mx-2 my-2"
-                  v-for="(image, index) in tempPreviewImages"
-                  :key="image"
-                >
-                  <UploadPreviewImage :imgSrc="image" @click="deleteImage(index)" />
-                </div>
-                <div
-                  class="h-20 w-20 mx-2 my-2 bg-highlight-900 rounded-lg flex items-center justify-center cursor-pointer hover:bg-highlight-800 transition"
-                  @click="fileRef?.click()"
-                >
-                  <Icon name="plus" width="30" height="30" stroke-width="25" />
-                </div>
-              </div>
+
+              <MultiImageUpload
+                label="Bilder hochladen"
+                tip="Wähle Bilder aus oder ziehe sie in das Feld"
+                @images-dropped="setImages"
+                :reset-array="resetImageSelectImage"
+              ></MultiImageUpload>
             </div>
             <div v-if="noImageSelectedError" class="text-red-400 font-semibold">
               Bitte wähle mindestens ein Bild aus
             </div>
-            <input type="file" ref="fileRef" v-show="false" @change="onFileChange($event)" multiple="multiple" />
           </div>
         </AccordionItem>
       </Accordion>
       <div class="flex justify-end w-full">
         <primary-button
-          @click.prevent="$emit('close')"
+          @click.prevent="
+            $emit('close');
+            resetForm();
+          "
           class="mr-2 w-32"
           name="Abbrechen"
           bgColor="bg-gray-500"
@@ -186,10 +180,9 @@ export default defineComponent({
     }
   },
   setup(props, { emit }) {
-    const fileRef = ref<HTMLInputElement>();
-    const tempPreviewImages = ref<string[]>([]);
-    const tempImages = ref<File[]>([]);
     const noImageSelectedError = ref(false);
+    const imageSelectImages = ref<{ fileUrl: string; file: File }[]>([]);
+    const resetImageSelectImage = ref(false);
 
     const typeSelection = [
       {
@@ -250,27 +243,24 @@ export default defineComponent({
         taskCreationLoading.value = true;
 
         if (taskCreationForm.task_type === TaskType.IMAGE_SELECT) {
-          if (!tempImages.value.length) {
+          if (!imageSelectImages.value.length) {
             taskCreationLoading.value = false;
             noImageSelectedError.value = true;
           } else {
             noImageSelectedError.value = false;
 
-            const imageNames = [];
-            for await (const img of tempImages.value) {
-              const name = await uploadImage(img);
-              imageNames.push(name.task_image_id);
-            }
+            const taskImages = await uploadImageSelectImages();
+            const taskImageIds = taskImages.map((taskImage) => taskImage.task_image_id);
 
             const createTask: TaskCreate = {
               layer: props.layerIndex,
               task_question: taskCreationForm.task_question!,
               base_task_id: props.baseTaskId as number,
               task_type: taskCreationForm.task_type!,
-              task_data: imageNames,
+              task_data: taskImageIds,
               annotation_type: 0,
               knowledge_level: 1,
-              min_correct: imageNames.length,
+              min_correct: taskImageIds.length,
               hints: []
             };
 
@@ -278,10 +268,8 @@ export default defineComponent({
             emit('taskCreated', task);
             taskCreationLoading.value = false;
             createdTask.value = task;
+            resetForm();
             emit('close');
-
-            tempImages.value = [];
-            tempPreviewImages.value = [];
           }
         } else {
           const createTask: TaskCreate = {
@@ -299,51 +287,49 @@ export default defineComponent({
             emit('taskCreated', res);
             taskCreationLoading.value = false;
             createdTask.value = res;
+            resetForm();
             emit('close');
-            // Object.assign(taskCreationForm, initialState);
           });
         }
       }
     };
 
-    function onFileChange(e: any) {
-      const files = e.target.files || e.dataTransfer.files;
-      noImageSelectedError.value = false;
-
-      if (!files.length) return;
-      for (const file of files) {
-        tempPreviewImages.value.push(URL.createObjectURL(file));
-        tempImages.value.push(file);
-      }
-    }
-
-    function deleteImage(imageIndex: number) {
-      tempPreviewImages.value.splice(imageIndex, 1);
-      tempImages.value.splice(imageIndex, 1);
-    }
-
-    const uploadImage = async (image: File) => {
+    const uploadImageSelectImages = async () => {
       const formData = new FormData();
-      formData.append('images', image);
-      formData.append('names', image.name);
-      return await TaskImageService.uploadTaskImage(formData);
+      for (const image of imageSelectImages.value) {
+        formData.append('images', image.file);
+        formData.append('names', image.file.name);
+      }
+
+      const imageIds = TaskImageService.uploadMultipleTaskImages(formData, (value: any) => {});
+
+      return imageIds;
+    };
+
+    const setImages = (images: { fileUrl: string; file: File }[]) => {
+      imageSelectImages.value = images;
+    };
+
+    const resetForm = () => {
+      Object.assign(taskCreationForm, initialState);
+      resetImageSelectImage.value = true;
+      imageSelectImages.value = [];
     };
 
     return {
+      onSubmit,
+      resetForm,
+      uploadImageSelectImages,
+      setImages,
       taskCreationForm,
       taskCreationLoading,
-      onSubmit,
       knowledgeLevel,
       taskTypes,
       typeSelection,
       expandTaskSettings,
       createdTask,
       selectedTaskType,
-      tempImages,
-      tempPreviewImages,
-      fileRef,
-      onFileChange,
-      deleteImage,
+      resetImageSelectImage,
       SLIDE_IMAGE_URL,
       noImageSelectedError
     };

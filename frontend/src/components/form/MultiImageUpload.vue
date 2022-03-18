@@ -113,6 +113,7 @@ export default defineComponent({
       () => props.resetArray,
       () => {
         images.value = [];
+        emit('imagesDropped', images.value);
       }
     );
 

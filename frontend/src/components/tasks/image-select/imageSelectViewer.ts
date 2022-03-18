@@ -6,7 +6,7 @@ import { ImageSelectFeedback, RESULT_POLYGON_COLOR } from '../../../model/result
 import { ANNOTATION_COLOR } from '../../../model/viewer/colors';
 import { shuffle } from '../../../utils/seadragon.utils';
 import { options, SVG_ID } from '../../viewer/core/options';
-import { SvgOverlay } from '../../viewer/core/svg-overlay';
+import { BACKGROUND_NODE_ID, SvgOverlay } from '../../viewer/core/svg-overlay';
 import { viewerLoadingState } from '../../viewer/core/viewerState';
 
 export class ImageSelectViewer {
@@ -91,7 +91,7 @@ export class ImageSelectViewer {
           ? this._tilesSources[i].split('/')[1].split('.')[0]
           : this._tilesSources[i];
 
-        this._rects[i] = select('#background')
+        this._rects[i] = select(`#${BACKGROUND_NODE_ID}`)
           .append('rect')
           .attr('x', box.x)
           .attr('y', box.y)
@@ -115,7 +115,7 @@ export class ImageSelectViewer {
       element: this._viewer.canvas,
       clickHandler: (event: any) => {
         if (event.quick) {
-          select('#background')
+          select(`#${BACKGROUND_NODE_ID}`)
             .selectAll('rect')
             .on('click', function () {
               if (!self._clickDisabled) {
@@ -132,7 +132,7 @@ export class ImageSelectViewer {
               }
             });
         } else {
-          select('#background').selectAll('rect').on('click', null);
+          select(`#${BACKGROUND_NODE_ID}`).selectAll('rect').on('click', null);
         }
       }
     });

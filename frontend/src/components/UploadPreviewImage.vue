@@ -98,11 +98,15 @@ export default defineComponent({
     const showEdit = ref(false);
 
     const splittedName = computed(() => {
-      const name = props.imageName ? props.imageName : props.image!.name;
+      if (props.imageName || props.image) {
+        const name = props.imageName ? props.imageName : props.image!.name;
 
-      const arr = name.split('.');
-      const extension = arr.pop();
-      return [arr.join('.'), extension];
+        const arr = name.split('.');
+        const extension = arr.pop();
+        return [arr.join('.'), extension];
+      } else {
+        return '';
+      }
     });
 
     const newImageName = ref(splittedName.value[0]);
