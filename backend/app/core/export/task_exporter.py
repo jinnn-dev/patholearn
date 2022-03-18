@@ -1,14 +1,9 @@
 import re
 from io import BytesIO
-from typing import List, Type
+from typing import List, Tuple, Type
 
 import requests
 import xlsxwriter
-from pydantic import BaseModel, parse_obj_as
-from sqlalchemy.orm import Session
-from xlsxwriter import Workbook
-from xlsxwriter.worksheet import Worksheet
-
 from app.core.config import settings
 from app.crud.crud_base_task import crud_base_task
 from app.crud.crud_task_group import crud_task_group
@@ -16,11 +11,15 @@ from app.crud.crud_user import crud_user
 from app.crud.crud_user_solution import crud_user_solution
 from app.models.task import Task
 from app.schemas.base_task import BaseTask, BaseTaskDetail
-from app.schemas.polygon_data import AnnotationType, AnnotationData
+from app.schemas.polygon_data import AnnotationData, AnnotationType
 from app.schemas.task import TaskType
 from app.schemas.task_group import TaskGroup
 from app.schemas.user import User
 from app.schemas.user_solution import UserSolution
+from pydantic import BaseModel, parse_obj_as
+from sqlalchemy.orm import Session
+from xlsxwriter import Workbook
+from xlsxwriter.worksheet import Worksheet
 
 
 class TaskPointRow(BaseModel):
@@ -244,7 +243,7 @@ class TaskExporter:
         return task_point_rows
 
     @staticmethod
-    def initialize_xlsx_file() -> [Workbook, Worksheet, BytesIO]:
+    def initialize_xlsx_file() -> Tuple[Workbook, Worksheet, BytesIO]:
         """
         Initializes a xlsx workbook, worksheet and Bytes Buffer
         :return: Initialized workbook, worksheet and bytes buffer

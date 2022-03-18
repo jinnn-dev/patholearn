@@ -1,5 +1,5 @@
 import uuid
-from typing import List
+from typing import Dict, List
 
 from app import app
 from app.crud.crud_slide import crud_slide
@@ -85,8 +85,7 @@ def get_slide_by_id(*, collection: Collection = Depends(get_slide_collection), s
 
 @router.get('/{slide_id}/name')
 def get_slide(*, collection: Collection = Depends(get_slide_collection), slide_id: str):
-    slide = crud_slide.get(collection, entity_id_value=slide_id)
-    slide
+    slide = crud_slide.get_slide(collection=collection, slide_id=slide_id, with_metadata=False)
     return {"name": slide.name}
 
 
