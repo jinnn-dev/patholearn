@@ -66,16 +66,6 @@ export async function userMouseClickHandler(
     if (!userSolutionLocked.value) {
       if (event.quick) {
         TooltipGenerator.destoyAll();
-        // select('#' + SVG_ID)
-        //   .selectAll('#userSolution, #infoNode')
-        //   .selectAll('circle, polyline, rect')
-        //   .on('click', function () {
-        //     console.log('CLICK', this);
-        //     const selectionId = select(this).attr('id');
-        //     selectedPolygon.value = annotationViewer.selectAnnotation(selectionId, true);
-        //     selectedPolygonData.name = selectedPolygon.value?.name;
-        //   });
-
         const elementsToSelect = 'circle, polyline, rect';
 
         select('#' + SVG_ID)
