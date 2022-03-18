@@ -40,7 +40,7 @@
   <saving-info></saving-info>
 
   <background-annotation-switcher
-    v-if="task?.task_data"
+    v-if="task?.task_data && task.task_data.length !== 0"
     :backgroundAnnotations="task?.task_data?.length"
     @focus="focusAnnotation"
   ></background-annotation-switcher>
