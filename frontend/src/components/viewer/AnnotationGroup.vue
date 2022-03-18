@@ -20,11 +20,13 @@
           </div>
           <!-- <div class="w-4 h-4 mr-3 flex-shrink-0 rounded-full" :style="`background-color:${group.color}`"></div> -->
           <color-picker
+            v-if="isSuperUser()"
             class="w-4 h-4 mr-3 flex-shrink-0"
             @isReleased="updateGroup(group.name, groupUpdateColor, group)"
             @changed="groupUpdateColor = $event"
             :initialColor="group.color"
           ></color-picker>
+          <div v-else class="w-4 h-4 mr-3 flex-shrink-0 rounded-full" :style="`background-color: ${group.color}`"></div>
           <text-edit
             :value="group.name"
             @valueChanged="updateGroup($event, group.color, group)"
@@ -83,6 +85,7 @@
 import { defineComponent, PropType, reactive, ref } from 'vue';
 import { AnnotationGroup } from '../../model/task';
 import { TaskService } from '../../services/task.service';
+import { isSuperUser } from '../../utils/app.state';
 import { isTaskSaving } from './core/viewerState';
 
 export default defineComponent({
@@ -91,6 +94,7 @@ export default defineComponent({
       type: Object as PropType<AnnotationGroup[]>,
       default: []
     },
+
     taskId: Number
   },
 
@@ -163,6 +167,7 @@ export default defineComponent({
       isHidden,
       onSubmit,
       updateGroup,
+      isSuperUser,
       showGroupCreation,
       groupCreationForm,
       groupCreationLoading,
