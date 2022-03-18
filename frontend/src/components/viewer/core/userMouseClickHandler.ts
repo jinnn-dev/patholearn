@@ -18,7 +18,7 @@ export async function userMouseClickHandler(
     if (event.quick) {
       const annotation = annotationViewer.addVertexToAnnotation();
       if (annotation) {
-        selectedPolygon.value = annotationViewer.selectAnnotation(annotation.id);
+        selectedPolygon.value = annotationViewer.selectAnnotation(annotation.id, true);
         polygonChanged.changed = true;
         return Tool.SELECT;
       }
@@ -31,7 +31,7 @@ export async function userMouseClickHandler(
       annotationViewer.updateDrawingAnnotation();
       if (annotationViewer.drawingPolygonIsClosed) {
         if (annotationViewer.drawingAnnotation) {
-          selectedPolygon.value = annotationViewer.selectAnnotation(annotationViewer.drawingAnnotation.id);
+          selectedPolygon.value = annotationViewer.selectAnnotation(annotationViewer.drawingAnnotation.id, true);
         }
 
         saveCallback();
@@ -49,7 +49,7 @@ export async function userMouseClickHandler(
         event.position.y
       );
       if (annotation) {
-        selectedPolygon.value = annotationViewer!.selectAnnotation(annotation.id);
+        selectedPolygon.value = annotationViewer!.selectAnnotation(annotation.id, true);
       }
 
       await saveCallback(ANNOTATION_TYPE.USER_SOLUTION_POINT, annotation);
