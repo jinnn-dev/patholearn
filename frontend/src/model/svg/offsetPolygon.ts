@@ -124,6 +124,8 @@ export class OffsetAnnotationPolygon extends AnnotationPolygon {
     super.updateColor(fillColor, strokeColor);
     this._pathElement?.style('fill', this.fillColor).attr('stroke', this.color);
     this.polyline?.style('fill', 'none');
+    this._outerPolygon?.updateColor(fillColor, strokeColor);
+    this._innerPolygon?.updateColor(fillColor, strokeColor);
   }
 
   update(r: number, strokeWidth: number): void {
