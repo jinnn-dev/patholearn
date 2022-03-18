@@ -24,7 +24,6 @@ import { defineComponent } from 'vue';
 import { isTaskSaving } from './core/viewerState';
 
 export default defineComponent({
-  props: {},
   setup() {
     return { isTaskSaving };
   }

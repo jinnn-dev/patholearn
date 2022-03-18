@@ -136,7 +136,6 @@ export default defineComponent({
         if (group) {
           selectedPolygon.value?.updateAnnotationClass(group.name, group.color);
         }
-        updateSelectedAnnotation();
       }
     );
 
@@ -274,6 +273,7 @@ export default defineComponent({
     };
 
     const setTool = (data: { tool: Tool; event: any }) => {
+      unselectAnnotation();
       drawingViewer.value?.removeDrawingAnnotation();
       changeToolTo.value = undefined;
       currentTool.value = data.tool;
@@ -381,6 +381,7 @@ export default defineComponent({
       if (group) {
         selectedPolygon.value?.updateAnnotationClass(group.name, group.color);
         polygonChanged.changed = true;
+        updateSelectedAnnotation();
       }
     };
 
