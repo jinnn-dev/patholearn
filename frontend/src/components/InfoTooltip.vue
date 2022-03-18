@@ -106,7 +106,7 @@ import { getInfoImageUrl, SLIDE_IMAGE_URL } from '../config';
 import { InfoImage } from '../model/infoImage';
 import { InfoImageService } from '../services/info-image.service';
 import { InfoTooltipGenerator } from '../utils/tooltips/info-tooltip-generator';
-import { infotooltipState } from '../utils/tooltips/info-tooltip-state';
+import { infotooltipState, resetInfoTooltipState } from '../utils/tooltips/info-tooltip-state';
 export default defineComponent({
   props: {
     isAdmin: {
@@ -219,7 +219,8 @@ export default defineComponent({
     });
 
     const hideTooltip = () => {
-      infotooltipState.show = false;
+      // infotooltipState.show = false;
+      resetInfoTooltipState();
       emit('hideTooltip', infotooltipState.id);
     };
 

@@ -18,3 +18,13 @@ export const infotooltipState = reactive<{
   detailText: '',
   animate: false
 });
+
+export const resetInfoTooltipState = () => {
+  infotooltipState.id = '';
+  infotooltipState.show = false;
+  infotooltipState.x = 100;
+  infotooltipState.y = 100;
+  infotooltipState.headerText = '';
+  infotooltipState.detailText = '';
+  infotooltipState.animate = false;
+};
