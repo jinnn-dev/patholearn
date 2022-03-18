@@ -34,19 +34,19 @@ export class SvgOverlay {
     this._viewer.canvas.appendChild(this._svg);
 
     this._backgroundNode = document.createElementNS(SvgOverlay.svgNS, 'g') as HTMLElement;
-    this._backgroundNode.id = 'background';
+    this._backgroundNode.id = BACKGROUND_NODE_ID;
     this._svg.appendChild(this._backgroundNode);
 
     this._solutionNode = document.createElementNS(SvgOverlay.svgNS, 'g') as HTMLElement;
-    this._solutionNode.id = 'solution';
+    this._solutionNode.id = SOLUTION_NODE_ID;
     this._svg.appendChild(this._solutionNode);
 
     this._infoNode = document.createElementNS(SvgOverlay.svgNS, 'g') as HTMLElement;
-    this._infoNode.id = 'infoNode';
+    this._infoNode.id = INFO_NODE_ID;
     this._svg.appendChild(this._infoNode);
 
     this._userSolutionNode = document.createElementNS(SvgOverlay.svgNS, 'g') as HTMLElement;
-    this._userSolutionNode.id = 'userSolution';
+    this._userSolutionNode.id = USER_SOLUTION_NODE_ID;
     this._svg.appendChild(this._userSolutionNode);
 
     this._viewer.addHandler('animation', function () {

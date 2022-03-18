@@ -728,7 +728,7 @@ export class AnnotationViewer {
   removeListener() {
     select('#' + SVG_ID)
       .selectAll('*')
-      .selectAll('polyline, circle, path')
+      .selectAll('polyline, circle, path, rect')
       .on('click', null);
   }
 
