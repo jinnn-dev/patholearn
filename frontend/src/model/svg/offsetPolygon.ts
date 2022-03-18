@@ -98,8 +98,23 @@ export class OffsetAnnotationPolygon extends AnnotationPolygon {
 
   dragHandler(event: OpenSeadragon.OSDEvent<any>, node: HTMLElement, viewer: OpenSeadragon.Viewer): void {
     super.dragHandler(event, node, viewer);
+    const scale = viewer.viewport._containerInnerSize.x * viewer.viewport.getZoom(true);
+
     if (!this.changedManual) {
-      this.unselectSelectPolygons();
+      this._outerPolygon?.unselect();
+      this._innerPolygon?.unselect();
+      this._outerPolygon?.updatePolygonPoints(
+        this._outerPoints,
+        POLYGON_VERTICE_RADIUS / scale,
+        POLYGON_STROKE_WIDTH / scale
+      );
+      this._innerPolygon?.updatePolygonPoints(
+        this._innerPoints,
+        POLYGON_VERTICE_RADIUS / scale,
+        POLYGON_STROKE_WIDTH / scale
+      );
+      this._outerPolygon?.select(viewer, scale);
+      this._innerPolygon?.select(viewer, scale);
     }
 
     this.createInflation(viewer.viewport._containerInnerSize.x * viewer.viewport.getZoom(true));

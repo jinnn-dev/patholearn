@@ -292,9 +292,11 @@ export default defineComponent({
 
       if (currentTool.value === Tool.LINE_USER_SOLUTION || currentTool.value === Tool.USER_SOLUTION_DRAWING) {
         viewerRef.value.style.cursor = 'none';
+        unselectAnnotation();
       } else if (currentTool.value === Tool.MOVE) {
         viewerRef.value.style.cursor = 'grab';
         drawingViewer.value?.removeListener();
+        unselectAnnotation();
       } else {
         viewerRef.value.style.cursor = 'pointer';
       }
@@ -302,9 +304,10 @@ export default defineComponent({
         showUploadDialog.value = true;
       }
       if (currentTool.value !== Tool.SELECT) {
-        polygonChanged.polygon?.unselect();
+        unselectAnnotation();
       }
       if (currentTool.value === Tool.DELETE) {
+        unselectAnnotation();
         showDeleteAnnotationsModal.value = true;
       }
     };
