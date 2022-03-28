@@ -23,6 +23,7 @@ class Settings(BaseSettings):
 
     MINIO_ROOT_USER = os.environ["MINIO_ROOT_USER"] if "MINIO_ROOT_USER" in os.environ else "minio"
     MINIO_ROOT_PASSWORD = os.environ["MINIO_ROOT_PASSWORD"] if "MINIO_ROOT_PASSWORD" in os.environ else "minioKey1234"
+    MINIO_URL = os.environ["MINIO_URL"] if "MINIO_URL" in os.environ else "minio:9000"
 
     FIRST_SUPERUSER_EMAIL: EmailStr = "admin@admin.de"
     FIRST_SUPERUSER_PASSWORD: str = "admin"

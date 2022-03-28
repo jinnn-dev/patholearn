@@ -9,7 +9,7 @@
 
     <task-container :baseTask="baseTask" :isOwner="true" @taskSelected="selectTask($event)"></task-container>
 
-    <hint-overlay :taskId="selectedTask?.id" />
+    <!-- <hint-overlay :taskId="selectedTask?.id" /> -->
 
     <select-images-task
       v-if="selectedTask?.task_type === TaskType.IMAGE_SELECT"

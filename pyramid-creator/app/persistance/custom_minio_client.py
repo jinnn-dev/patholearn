@@ -26,7 +26,7 @@ class MinioClient:
 
     def __init__(self):
         self.instance = Minio(
-            endpoint="minio:9000",
+            endpoint=os.environ["MINIO_URL"] if "MINIO_URL" in os.environ else "minio:9000",
             access_key=os.environ["MINIO_ROOT_USER"],
             secret_key=os.environ["MINIO_ROOT_PASSWORD"],
             secure=False

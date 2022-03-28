@@ -3,6 +3,7 @@
     v-if="task?.task_type === 1"
     :annotationGroups="task.annotation_groups"
     :taskId="task.id"
+    :is-admin="true"
     @showGroup="showGroup"
     @hideGroup="hideGroup"
     @groupUpdated="updateGroup"

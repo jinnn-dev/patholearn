@@ -1,5 +1,5 @@
 <template>
-  <nav class="sticky text-sm lg:text-lg xl:text-xl bg-gray-800 py-4 top-0">
+  <nav class="sticky text-sm lg:text-lg xl:text-xl bg-gray-800 py-4 top-0 z-50">
     <div class="absolute left-8 bottom-4 flex items-center">
       <div class="flex flex-col ml-2">
         <img v-if="getEnv('APP_LOGO_URL')" :src="`/${getEnv('APP_LOGO_URL')}`" alt="logo" class="h-12 rounded-lg" />

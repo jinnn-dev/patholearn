@@ -22,15 +22,14 @@
       tip="Hier muss der Inhalt des Tipps hinterlegt werden den die lernenden Person angezeigt wird "
     />
 
-    <!-- <MultiImageUpload label="Füge optional eine Reihe von Bildern hinzu:" @images-dropped=""> </MultiImageUpload> -->
-
     <div class="my-2 flex gap-2" v-viewer>
       <div class="h-20 w-20 bg-gray-500 rounded-lg" v-for="image in hint.images" :key="image">
         <UploadPreviewImage :imgSrc="SLIDE_IMAGE_URL + '/' + image.image_name" @click="deleteImage(image.image_name)" />
       </div>
-      <div class="h-20 w-20 bg-gray-500 rounded-lg" v-for="image in tempPreviewImages" :key="image">
+
+      <!-- <div class="h-20 w-20 bg-gray-500 rounded-lg" v-for="image in tempPreviewImages" :key="image">
         <UploadPreviewImage :imgSrc="image" @click="deleteImage(image)" />
-      </div>
+      </div> -->
       <div
         class="h-20 w-20 bg-green-600 rounded-lg flex items-center justify-center cursor-pointer hover:bg-green-500 transition"
         @click="fileRef?.click()"
@@ -38,6 +37,12 @@
         <Icon name="plus" width="30" height="30" stroke-width="25" />
       </div>
     </div>
+    <MultiImageUpload
+      label="Füge Bilder hinzu"
+      tip="Wähle Bilder aus oder ziehe sie in das Feld"
+      :resetArray="true"
+      @imagesDropped="setImages"
+    ></MultiImageUpload>
 
     <div class="flex justify-end">
       <save-button type="button" name="Tipp speichern" class="w-48" @click="createHint"></save-button>
@@ -71,6 +76,8 @@ export default defineComponent({
     const fileRef = ref<HTMLInputElement>();
     const tempPreviewImages = ref<string[]>([]);
     const tempImages = ref<string[]>([]);
+
+    const uploadImages = ref<{ file: File; fileUrl: string }[]>([]);
 
     const hint = reactive<TaskHint>({
       id: props.hint?.id || 0,
@@ -126,9 +133,13 @@ export default defineComponent({
       return await TaskService.uploadHintImage(hint.id, formData);
     }
 
-    function setImages(images: { fileUrl: string; file: File }[]) {
-      hint.images = images.map;
-    }
+    // function setImages(images: { fileUrl: string; file: File }[]) {
+    //   hint.images = images.map;
+    // }
+
+    const setImages = (images: { file: File; fileUrl: string }[]) => {
+      uploadImages.value = images;
+    };
 
     function closeCreator() {
       emit('closeMe');
@@ -142,6 +153,7 @@ export default defineComponent({
       fileRef,
       onFileChange,
       deleteImage,
+      setImages,
       SLIDE_IMAGE_URL,
       closeCreator
     };

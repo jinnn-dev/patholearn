@@ -118,10 +118,11 @@ def update_annotation_group(*, db: Session = Depends(get_db), task_id: int,
         crud_user_solution.update(db, obj_in=UserSolutionUpdate(solution_data=user_solution.solution_data),
                                   db_obj=user_solution)
 
-    for annotation in task.solution:
-        if annotation["name"] == annotation_group_update.oldName:
-            annotation["name"] = annotation_group_update.name
-            annotation["color"] = annotation_group_update.color
+    if task.solution != None:
+        for annotation in task.solution:
+            if annotation["name"] == annotation_group_update.oldName:
+                annotation["name"] = annotation_group_update.name
+                annotation["color"] = annotation_group_update.color
     crud_task.update(db, db_obj=task, obj_in=TaskUpdate(annotation_groups=groups, solution=task.solution))
     return annotation_group
 

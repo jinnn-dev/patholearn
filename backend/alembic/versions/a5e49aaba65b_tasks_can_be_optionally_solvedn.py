@@ -23,9 +23,23 @@ def upgrade():
     inspector = Inspector.from_engine(conn)
     tables = inspector.get_table_names()
     if 'slide' in tables:
-        op.drop_index('ix_slide_file_id', table_name='slide')
-        op.drop_index('ix_slide_id', table_name='slide')
-        op.drop_index('name', table_name='slide')
+        try:
+            op.drop_index('ix_slide_id', table_name='slide')
+            op.drop_index('name', table_name='slide')
+        except Exception as e:
+            print(e)
+
+        try:
+            op.drop_index('name', table_name='slide')
+        except Exception as e:
+            print(e)
+
+        try:
+            op.drop_index('ix_slide_file_id', table_name='slide')
+            op.drop_index('name', table_name='slide')
+        except Exception as e:
+            print(e)
+
         op.drop_table('slide')
 
     try:

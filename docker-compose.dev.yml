@@ -19,6 +19,9 @@ services:
       - SENTRY_METRICS=${SENTRY_METRICS}
       - SENTRY_PATH=${SENTRY_PATH}
       - SENTRY_ENVIRONMENT_TAG=${SENTRY_ENVIRONMENT_TAG}
+      - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
+      - MYSQL_HOST=${DATABASE_IP}
+      - MYSQL_DATABASE=${DATABASE_DB}
     ports:
       - '8000:8000'
     depends_on:
@@ -41,24 +44,24 @@ services:
     volumes:
       - my-db:/var/lib/mysql
 
-  frontend:
-    image: node:16
-    command: bash -c "npm install && npm run dev"
-    environment:
-      - BASE_API_URL=${BASE_API_URL}
-      - SLIDE_IMAGE_URL=${SLIDE_IMAGE_URL}
-      - SLIDE_API_URL=${SLIDE_API_URL}
-      - APP_TITLE=${APP_TITLE}
-      - APP_FAVICON_URL=${APP_FAVICON_URL}
-      - FRONTEND_VERSION=${FRONTEND_VERSION}
-    ports:
-      - 3000:3000
-    volumes:
-      - ./frontend:/srv/frontend:rw
-    working_dir: /srv/frontend
-    depends_on:
-      - slide_api
-      - lern_api
+  # frontend:
+  #   image: node:16
+  #   command: bash -c "npm install && npm run dev"
+  #   environment:
+  #     - BASE_API_URL=${BASE_API_URL}
+  #     - SLIDE_IMAGE_URL=${SLIDE_IMAGE_URL}
+  #     - SLIDE_API_URL=${SLIDE_API_URL}
+  #     - APP_TITLE=${APP_TITLE}
+  #     - APP_FAVICON_URL=${APP_FAVICON_URL}
+  #     - FRONTEND_VERSION=${FRONTEND_VERSION}
+  #   ports:
+  #     - 3000:3000
+  #   volumes:
+  #     - ./frontend:/srv/frontend:rw
+  #   working_dir: /srv/frontend
+  #   depends_on:
+  #     - slide_api
+  #     - lern_api
 
   slide_api:
     build:

@@ -20,7 +20,7 @@
           </div>
           <!-- <div class="w-4 h-4 mr-3 flex-shrink-0 rounded-full" :style="`background-color:${group.color}`"></div> -->
           <color-picker
-            v-if="isSuperUser()"
+            v-if="isSuperUser() && isAdmin"
             class="w-4 h-4 mr-3 flex-shrink-0"
             @isReleased="updateGroup(group.name, groupUpdateColor, group)"
             @changed="groupUpdateColor = $event"
@@ -28,15 +28,18 @@
           ></color-picker>
           <div v-else class="w-4 h-4 mr-3 flex-shrink-0 rounded-full" :style="`background-color: ${group.color}`"></div>
           <text-edit
+            v-if="isSuperUser() && isAdmin"
             :value="group.name"
             @valueChanged="updateGroup($event, group.color, group)"
             class="w-full items-center"
           ></text-edit>
+          <div v-else class="w-full items-center">{{ group.name }}</div>
         </div>
       </div>
     </div>
     <role-only class="pt-2">
       <primary-button
+        v-if="isAdmin"
         name="Neue Klasse"
         class="py-1"
         bgColor="bg-gray-400"
@@ -93,6 +96,11 @@ export default defineComponent({
     annotationGroups: {
       type: Object as PropType<AnnotationGroup[]>,
       default: []
+    },
+
+    isAdmin: {
+      type: Boolean,
+      default: false
     },
 
     taskId: Number

@@ -65,9 +65,9 @@
             ></toggle-button>
           </div>
         </AccordionItem>
-        <AccordionItem title="Tipps (optional)">
+        <!-- <AccordionItem title="Tipps (optional)">
           <HintList :task="task" :isUpdate="true" />
-        </AccordionItem>
+        </AccordionItem> -->
       </Accordion>
 
       <div class="flex justify-end w-full">

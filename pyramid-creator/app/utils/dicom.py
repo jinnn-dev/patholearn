@@ -3,6 +3,7 @@ import uuid
 from typing import Dict, List, Tuple
 
 import numpy as np
+from app.config import Config
 from app.utils.slide_utils import delete_keys_from_dict
 from PIL import Image
 from pydicom import dcmread
@@ -36,8 +37,8 @@ class Dicom:
             im = Image.fromarray(frame_scaled, color_space)
 
             frame_uuid = uuid.uuid4()
-            os.mkdir(f"./data/{folder_name}/{frame_uuid}")
-            im.save(f"./data/{folder_name}/{frame_uuid}/{frame_uuid}.jpeg")
+            os.mkdir(f"{Config.TEMP_IMAGES_FOLDER}/{folder_name}/{frame_uuid}")
+            im.save(f"{Config.TEMP_IMAGES_FOLDER}/{folder_name}/{frame_uuid}/{frame_uuid}.jpeg")
 
             frame_uuids.append(str(frame_uuid))
 

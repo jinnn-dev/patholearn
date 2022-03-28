@@ -12,7 +12,7 @@
 
         <task-container :baseTask="baseTask" @taskSelected="setSelectedTask($event)"></task-container>
 
-        <hint-overlay :taskId="selectedTask?.id" />
+        <!-- <hint-overlay :taskId="selectedTask?.id" /> -->
 
         <div class="fixed z-10 bottom-8 right-8">
           <save-button

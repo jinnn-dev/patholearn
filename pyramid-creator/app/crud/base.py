@@ -27,8 +27,8 @@ class CRUDBase(Generic[ModelSchemaType, CreateSchemaType, UpdateSchemaType]):
 
     def get_multi_by_ids(self, collection: Collection, ids: List[Any], where_query: Dict[str, Any] = {}, filter_query: Dict[str, Any] = None) -> List[
             ModelSchemaType]:
-        return parse_obj_as(List[self.model], list(collection.find({self.entity_id_name: {'$in': ids}.update(where_query)},
-                                                                   remove_truth_values_from_dict(filter_query))))
+        find_query = {self.entity_id_name: {"$in": ids}} | where_query
+        return parse_obj_as(List[self.model], list(collection.find(find_query, remove_truth_values_from_dict(filter_query))))
 
     def create(self, collection: Collection, *, obj_in: CreateSchemaType, exclude_unset=True) -> ObjectId:
         return collection.insert_one(obj_in.dict(exclude_unset=exclude_unset)).inserted_id

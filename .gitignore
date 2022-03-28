@@ -1,2 +1,6 @@
 .env
 minio_data/
+convert.py
+result.json
+sequia_merged.sql
+input.json

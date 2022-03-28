@@ -1,6 +1,7 @@
 import os
 
 import aiofiles
+from app.config import Config
 from app.worker import convert_slide
 from fastapi.datastructures import UploadFile
 from fastapi.param_functions import File
@@ -17,7 +18,7 @@ async def write_file(folder_name: str, file_name: str, file: UploadFile = File(.
     :param file: The file to save on the disk
     :return: The coroutine which can be awaited
     """
-    async with aiofiles.open(f"/data/{folder_name}/{file_name}", "wb") as out_file:
+    async with aiofiles.open(f"{Config.TEMP_IMAGES_FOLDER}/{folder_name}/{file_name}", "wb") as out_file:
         while content := await file.read(1024):
             await out_file.write(content)
 
@@ -31,6 +32,6 @@ async def write_slide_to_disk(folder_name: str, file_name: str, file: UploadFile
     :param file_name: The name of the file
     :param file: The file to save an create a slide from
     """
-    os.mkdir(f"/data/{folder_name}")
+    os.mkdir(f"{Config.TEMP_IMAGES_FOLDER}/{folder_name}")
     await write_file(folder_name, file_name, file)
     convert_slide.delay(file_name)

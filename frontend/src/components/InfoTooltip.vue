@@ -47,7 +47,6 @@
     <h2 class="text-3xl">Info bearbeiten</h2>
     <input-field v-model="headerText" label="Titel" type="text" :required="true"> </input-field>
     <input-area v-model="detailText" label="Details" class="h-[18rem]"></input-area>
-
     <FormField v-if="existingImages.length > 0" label="Vorhandene Bilder">
       <div class="flex flex-wrap max-h-[300px] overflow-auto gap-4">
         <div v-for="(image, index) in existingImages">
@@ -229,6 +228,7 @@ export default defineComponent({
       uploadImages.value = [];
 
       infotooltipState.show = false;
+
       if (infotooltipState.images && infotooltipState.images.length > 0) {
         existingImages.value = await InfoImageService.getInfoImagesById(infotooltipState.images);
       }

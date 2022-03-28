@@ -2,26 +2,25 @@ import json
 import os
 from typing import Any
 
+from app.core.config import settings
 from minio import Minio
 from minio.deleteobjects import DeleteObject
 
-from app.core.config import settings
-
 
 def policy(bucket_name):
-    return  {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Principal": {
-                "AWS": ["*"]
-            },
-            "Action": "s3:GetObject",
-            "Resource": "arn:aws:s3:::" + bucket_name + "/*"
-        }
-    ]
-}
+    return {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Principal": {
+                    "AWS": ["*"]
+                },
+                "Action": "s3:GetObject",
+                "Resource": "arn:aws:s3:::" + bucket_name + "/*"
+            }
+        ]
+    }
 
 
 class MinioClient:
@@ -31,7 +30,7 @@ class MinioClient:
     def __init__(self):
 
         self.instance = Minio(
-            endpoint="minio:9000",
+            endpoint=settings.MINIO_URL,
             access_key=settings.MINIO_ROOT_USER,
             secret_key=settings.MINIO_ROOT_PASSWORD,
             secure=False
@@ -65,7 +64,6 @@ class MinioClient:
     def delete_object(self, file_name: str):
         self.instance.remove_object(self.bucket_name, file_name)
         print(f"❌ {file_name} has ben deleted")
-
 
     def delete_slide(self, slide_id: str):
         # self.instance.remove_object(self.bucket_name, slide_id + '/')
