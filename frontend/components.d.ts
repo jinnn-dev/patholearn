@@ -59,6 +59,7 @@ declare module 'vue' {
     SlideViewer: typeof import('./src/components/viewer/SlideViewer.vue')['default']
     Spinner: typeof import('./src/components/Spinner.vue')['default']
     Subheader: typeof import('./src/components/Subheader.vue')['default']
+    SyncButton: typeof import('./src/components/task/SyncButton.vue')['default']
     TaskContainer: typeof import('./src/components/task/TaskContainer.vue')['default']
     TaskCountBadge: typeof import('./src/components/TaskCountBadge.vue')['default']
     TaskGroupAdminCard: typeof import('./src/components/TaskGroupAdminCard.vue')['default']

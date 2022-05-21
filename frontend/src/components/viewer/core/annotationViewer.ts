@@ -28,6 +28,7 @@ import { AnnotationData } from '../../../model/viewer/export/annotationData';
 import { AnnotationRectangleData } from '../../../model/viewer/export/annotationRectangleData';
 import { OffsetAnnotationPolygonData } from '../../../model/viewer/export/offsetAnnotationPolygonData';
 import { PointData } from '../../../model/viewer/export/pointData';
+import { TaskSocket } from '../../../services/sockets/task.socket';
 import { AnnotationParser } from '../../../utils/annotation-parser';
 import { imageToViewport, pointIsInImage, webToViewport } from '../../../utils/seadragon.utils';
 import { TooltipGenerator } from '../../../utils/tooltips/tooltip-generator';
@@ -35,6 +36,7 @@ import { snapAnnotation, SnapResult } from './annotation-snapper';
 import { AnnotationManager } from './annotationManager';
 import { SVG_ID } from './options';
 import { SvgOverlay } from './svg-overlay';
+import { SyncMouseCircleIndicators } from './syncMouseCircleIndicators';
 import { TaskSaver } from './taskSaver';
 import { viewerLoadingState, viewerScale, viewerZoom } from './viewerState';
 
@@ -55,7 +57,9 @@ export class AnnotationViewer {
 
   private _snapResult: SnapResult | undefined;
 
-  constructor(viewerOptions: OpenSeadragon.Options) {
+  private _syncMouseCircleIndicator: SyncMouseCircleIndicators;
+
+  constructor(viewerOptions: OpenSeadragon.Options, syncMouseCircleIndicator: SyncMouseCircleIndicators) {
     this._viewer = OpenSeadragon(viewerOptions);
 
     this._viewer.innerTracker.keyHandler = null;
@@ -70,6 +74,7 @@ export class AnnotationViewer {
     this._overlay = this._viewer.svgOverlay();
 
     this._currentColor = ANNOTATION_COLOR.USER_SOLUTION_COLOR;
+    this._syncMouseCircleIndicator = syncMouseCircleIndicator;
     viewerLoadingState.tilesLoaded = false;
 
     this._annotationManager = new AnnotationManager(
@@ -96,6 +101,11 @@ export class AnnotationViewer {
 
       this._annotationManager.updateAnnotation(opacity, this.scale);
       this._mouseCircle.updateScale(POLYGON_VERTICE_RADIUS / this.scale, POLYGON_STROKE_WIDTH / this.scale);
+      this._syncMouseCircleIndicator.updateScale(
+        POLYGON_VERTICE_RADIUS / this.scale,
+        POLYGON_STROKE_WIDTH / this.scale
+      );
+
       if (this._drawingAnnotation) {
         this._drawingAnnotation.update(POLYGON_VERTICE_RADIUS / this.scale, POLYGON_STROKE_WIDTH / this.scale);
       }
@@ -117,6 +127,12 @@ export class AnnotationViewer {
 
       this._annotationManager.updateAnnotation(opacity, this.scale);
       this._mouseCircle.updateScale(POLYGON_VERTICE_RADIUS / this.scale, POLYGON_STROKE_WIDTH / this.scale);
+
+      this._syncMouseCircleIndicator.updateScale(
+        POLYGON_VERTICE_RADIUS / this.scale,
+        POLYGON_STROKE_WIDTH / this.scale
+      );
+
       if (this._drawingAnnotation) {
         this._drawingAnnotation.update(POLYGON_VERTICE_RADIUS / this.scale, POLYGON_STROKE_WIDTH / this.scale);
       }
@@ -544,6 +560,7 @@ export class AnnotationViewer {
     if (this._mouseCircle.isAttached) {
       this._mouseCircle.updatePosition(viewport.x, viewport.y);
     }
+    TaskSocket.getInstance().emitUpdateUserIndicator(viewport.x, viewport.y);
   }
 
   /**
@@ -968,5 +985,9 @@ export class AnnotationViewer {
 
   get maxZoom() {
     return this._viewer.viewport.getMaxZoom();
+  }
+
+  get annotationManager() {
+    return this._annotationManager;
   }
 }

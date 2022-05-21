@@ -20,7 +20,6 @@ reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_STR}/login/access-token"
 )
 
-
 # def get_db() -> Generator:
 #     """
 #     Creates a new DB Session.

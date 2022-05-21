@@ -9,6 +9,7 @@ import './index.css';
 import router from './router';
 import { ApiService } from './services/api.service';
 import { TokenService } from './services/token.service';
+
 Icon.add(Object.values({ ...icons }));
 
 if (TokenService.getToken()) {

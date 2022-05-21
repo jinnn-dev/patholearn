@@ -1,5 +1,4 @@
 import vue from '@vitejs/plugin-vue';
-import { visualizer } from 'rollup-plugin-visualizer';
 import Components from 'unplugin-vue-components/vite';
 import { defineConfig } from 'vite';
 
@@ -9,7 +8,7 @@ export default defineConfig({
     Components({
       dts: true
     }),
-    visualizer(),
+    // visualizer(),
     vue()
   ]
 });

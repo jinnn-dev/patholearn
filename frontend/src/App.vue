@@ -14,15 +14,14 @@
 
 <script lang="ts">
 import { detect } from 'detect-browser';
-import { defineComponent, onMounted, ref } from 'vue';
+import { socketState } from './services/socket.service';
+import { computed, defineComponent, onMounted, ref, watch } from 'vue';
 import { getEnv } from './config';
 
 export default defineComponent({
   name: 'App',
 
   setup() {
-    onMounted(async () => {});
-
     const title = getEnv('APP_TITLE');
     document.title = title || '';
 
@@ -53,7 +52,7 @@ export default defineComponent({
       }
     }
 
-    return { showBrowserWarning };
+    return { showBrowserWarning, socketState };
   }
 });
 </script>

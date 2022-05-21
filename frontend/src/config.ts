@@ -7,6 +7,7 @@ const BASE_API_URL = getEnv('BASE_API_URL');
 const SLIDE_IMAGE_URL = getEnv('SLIDE_IMAGE_URL');
 const APP_LOGO_URL = getEnv('APP_LOGO_URL');
 const SLIDE_URL = `${SLIDE_IMAGE_URL}/pyramids`;
+const SOCKET_URL = getEnv('SOCKET_URL');
 
 const getSlideUrl = (slide_id: string) => {
   return `${SLIDE_URL}/${slide_id}/dzi.dzi`;
@@ -28,5 +29,6 @@ export {
   getSlideUrl,
   getThumbnailUrl,
   getInfoImageUrl,
-  APP_LOGO_URL
+  APP_LOGO_URL,
+  SOCKET_URL
 };

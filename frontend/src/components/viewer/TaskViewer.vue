@@ -20,12 +20,18 @@
     />
   </annotation-settings>
 
-  <tool-bar
-    :tools="toolbarTools"
-    @toolUpdate="setTool"
-    :setMoving="is_solving || setMoving"
-    :changeToolTo="changeToolTo"
-  ></tool-bar>
+  <div class="fixed z-10 top-1/2 transform -translate-y-1/2">
+    <div class="flex flex-col gap-8">
+      <sync-button :baseTask="baseTask" :task="task" @joined="registerEvents"></sync-button>
+
+      <tool-bar
+        :tools="toolbarTools"
+        @toolUpdate="setTool"
+        :setMoving="is_solving || setMoving"
+        :changeToolTo="changeToolTo"
+      ></tool-bar>
+    </div>
+  </div>
 
   <confirm-dialog
     :show="showDeleteAnnotationsModal"
@@ -59,6 +65,7 @@
 </template>
 <script lang="ts">
 import { selectAll } from 'd3-selection';
+import { BaseTask } from '../../model/baseTask';
 import OpenSeadragon from 'openseadragon';
 import { computed, defineComponent, onMounted, onUnmounted, PropType, reactive, ref, watch } from 'vue';
 import { getSlideUrl } from '../../config';
@@ -83,6 +90,8 @@ import {
   viewerLoadingState
 } from './core/viewerState';
 import { focusBackgroundAnnotation, updateAnnotation } from './taskViewerHelper';
+import { SyncMouseCircleIndicators } from './core/syncMouseCircleIndicators';
+import { TaskSocket, taskSocketState } from '../../services/sockets/task.socket';
 
 export default defineComponent({
   props: {
@@ -92,6 +101,7 @@ export default defineComponent({
       required: false
     },
     base_task_id: Number,
+    baseTask: Object as PropType<BaseTask>,
     task_group_id: Number,
     course_id: Number,
     solve_result: Object as PropType<TaskResult | undefined>,
@@ -236,10 +246,12 @@ export default defineComponent({
       }
     );
 
+    const syncMouseCirlceIndicator = new SyncMouseCircleIndicators();
+
     onMounted(() => {
       const viewerOptions = options('viewerImage', getSlideUrl(props.slide_name as string));
 
-      drawingViewer.value = new AnnotationViewer(viewerOptions);
+      drawingViewer.value = new AnnotationViewer(viewerOptions, syncMouseCirlceIndicator);
 
       new OpenSeadragon.MouseTracker({
         element: drawingViewer.value?.viewer.canvas,
@@ -249,6 +261,28 @@ export default defineComponent({
 
       setToolbarTools();
     });
+
+    const updateSyncMouseInidicator = (username: string, x: number, y: number) => {
+      syncMouseCirlceIndicator.updatePostion(username, x, y);
+    };
+
+    const addMouseIndicator = (username: string) => {
+      syncMouseCirlceIndicator.appendNewCircle(
+        drawingViewer.value?.annotationManager.solutionNode!,
+        drawingViewer.value?.scale!,
+        username
+      );
+    };
+
+    const registerEvents = () => {
+      console.log(taskSocketState.isConnected);
+
+      if (taskSocketState.isConnected) {
+        TaskSocket.getInstance().registerUpdateUserIndicatorReceivedEvent(updateSyncMouseInidicator);
+        TaskSocket.getInstance().registerUserJoinedEvent(addMouseIndicator);
+        TaskSocket.getInstance().createOrJoinTaskRoom(props.baseTask!, props.task!);
+      }
+    };
 
     const setToolbarTools = () => {
       toolbarTools.value = toolbarTools.value.slice(0, 4);
@@ -549,7 +583,8 @@ export default defineComponent({
       showDeleteAnnotationDialog,
       isTaskSaving,
       changeToolTo,
-      unselectAnnotation
+      unselectAnnotation,
+      registerEvents
     };
   }
 });

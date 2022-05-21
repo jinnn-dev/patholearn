@@ -41,6 +41,7 @@
             :slide_name="baseTask?.slide_id"
             :task="selectedTask"
             :base_task_id="baseTask?.id"
+            :baseTask="baseTask"
             :task_group_id="baseTask?.task_group_id"
             :course_id="baseTask?.course_id"
             :solve_result="solve_result || selectedTask?.user_solution?.task_result"
@@ -52,10 +53,17 @@
       </div>
     </div>
   </div>
+
+  <div class="absolute bottom-0 right-0 bg-gray-500 px-2 text-gray-100 rounded-l-lg">
+    Socket status:
+    {{ selectedTask?.id }}
+    <span :class="socketIsConnected === 'connected' ? 'text-green-500' : 'text-red-500'">{{ socketIsConnected }}</span>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineAsyncComponent, defineComponent, onMounted, onUnmounted, ref, watch } from 'vue';
+import { TaskSocket, taskSocketState } from '../services/sockets/task.socket';
+import { computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { showSolution, userSolutionLocked, viewerLoadingState } from '../components/viewer/core/viewerState';
 import { BaseTask } from '../model/baseTask';
@@ -91,6 +99,8 @@ export default defineComponent({
     const course = ref<Course>();
 
     const show_solution = ref<boolean>(false);
+
+    const socketIsConnected = computed(() => (taskSocketState.isConnected ? 'connected' : 'disconnected'));
 
     watch(
       () => userSolutionLocked.value,
@@ -219,7 +229,8 @@ export default defineComponent({
       resetTaskResult,
       viewerLoadingState,
       TaskType,
-      userSolutionLocked
+      userSolutionLocked,
+      socketIsConnected
     };
   }
 });

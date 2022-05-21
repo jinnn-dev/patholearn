@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed z-10 top-1/2 transform -translate-y-1/2 overflow-hidden flex flex-col gap-8">
+  <div class="overflow-hidden flex flex-col gap-8">
     <div
       class="bg-gray-600/70 filter backdrop-blur-md text-white rounded-r-lg overflow-hidden"
       v-if="!userSolutionLocked && !viewerLoadingState.solveResultLoading"

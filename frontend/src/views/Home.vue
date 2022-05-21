@@ -98,6 +98,7 @@
 </template>
 
 <script lang="ts">
+import { SocketService } from '../services/socket.service';
 import { defineComponent, onMounted, reactive, ref } from 'vue';
 import { Course, CreateCourse } from '../model/course';
 import router from '../router';
@@ -132,6 +133,8 @@ export default defineComponent({
         ownerCourses.value = await CourseService.getMyCourses();
       }
       loading.value = false;
+
+      SocketService.getInstance().connectToSocket();
     });
 
     const onLogout = () => {
