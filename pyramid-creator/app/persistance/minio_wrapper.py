@@ -19,22 +19,36 @@ class MinioWrapper:
         self.minio_client.create_bucket(MinioWrapper.info_bucket)
 
     def delete_slide(self, slide_id: str):
-        self.minio_client.delete_folder(bucket_name=MinioWrapper.pyramid_bucket, folder_path=slide_id)
+        self.minio_client.delete_folder(
+            bucket_name=MinioWrapper.pyramid_bucket, folder_path=slide_id
+        )
 
-    def create_task_image(self, *, file_name: str, file_content: Any, content_type: str = "image/jpeg"):
-        self.minio_client.create_object(bucket_name=MinioWrapper.task_bucket,
-                                        file_name=file_name,
-                                        file_content=file_content,
-                                        content_type=content_type)
+    def create_task_image(
+        self, *, file_name: str, file_content: Any, content_type: str = "image/jpeg"
+    ):
+        self.minio_client.create_object(
+            bucket_name=MinioWrapper.task_bucket,
+            file_name=file_name,
+            file_content=file_content,
+            content_type=content_type,
+        )
 
     def delete_task_image(self, *, file_name: str):
-        self.minio_client.delete_object(bucket_name=MinioWrapper.task_bucket, file_name=file_name)
+        self.minio_client.delete_object(
+            bucket_name=MinioWrapper.task_bucket, file_name=file_name
+        )
 
-    def create_info_image(self, *, file_name: str, file_content: Any, content_type: str = "image/jpeg"):
-        self.minio_client.create_object(bucket_name=MinioWrapper.info_bucket,
-                                        file_name=file_name,
-                                        file_content=file_content,
-                                        content_type=content_type)
+    def create_info_image(
+        self, *, file_name: str, file_content: Any, content_type: str = "image/jpeg"
+    ):
+        self.minio_client.create_object(
+            bucket_name=MinioWrapper.info_bucket,
+            file_name=file_name,
+            file_content=file_content,
+            content_type=content_type,
+        )
 
     def delete_info_image(self, *, file_name: str):
-        self.minio_client.delete_object(bucket_name=MinioWrapper.info_bucket, file_name=file_name)
+        self.minio_client.delete_object(
+            bucket_name=MinioWrapper.info_bucket, file_name=file_name
+        )

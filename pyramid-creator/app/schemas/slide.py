@@ -21,26 +21,22 @@ class Slide(BaseModel):
 
 
 class DatabaseSlide(Slide):
-    id: Optional[PydanticObjectId] = Field(alias='_id')
+    id: Optional[PydanticObjectId] = Field(alias="_id")
 
     class Config:
         arbitrary_types_allowed = True
-        json_encoders = {
-            ObjectId: str
-        }
+        json_encoders = {ObjectId: str}
 
 
 class DatabaseSlideNoMetadata(BaseModel):
-    id: Optional[PydanticObjectId] = Field(alias='_id')
+    id: Optional[PydanticObjectId] = Field(alias="_id")
     name: str
     slide_id: str
     status: SlideStatus
 
     class Config:
         arbitrary_types_allowed = True
-        json_encoders = {
-            ObjectId: str
-        }
+        json_encoders = {ObjectId: str}
 
 
 class SlideNoMetadata(BaseModel):

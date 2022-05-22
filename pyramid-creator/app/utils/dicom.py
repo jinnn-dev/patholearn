@@ -12,7 +12,9 @@ from pydicom.pixel_data_handlers.util import apply_color_lut
 
 class Dicom:
     @staticmethod
-    def save_dicom_frames(path_to_dicom: str, folder_name: str) -> Tuple[List[str], Dict]:
+    def save_dicom_frames(
+        path_to_dicom: str, folder_name: str
+    ) -> Tuple[List[str], Dict]:
         frame_uuids = []
 
         ds = dcmread(path_to_dicom)
@@ -21,11 +23,11 @@ class Dicom:
 
         pixel_arr = ds.pixel_array
         series_shape = pixel_arr.shape
-        color_space = 'L'
+        color_space = "L"
 
-        if photo_metric_interpretation == 'PALETTE COLOR':
+        if photo_metric_interpretation == "PALETTE COLOR":
             pixel_arr = apply_color_lut(pixel_arr, ds)
-            color_space = 'RGB'
+            color_space = "RGB"
 
         if len(series_shape) < 3:
             pixel_arr = [pixel_arr]
@@ -38,10 +40,14 @@ class Dicom:
 
             frame_uuid = uuid.uuid4()
             os.mkdir(f"{Config.TEMP_IMAGES_FOLDER}/{folder_name}/{frame_uuid}")
-            im.save(f"{Config.TEMP_IMAGES_FOLDER}/{folder_name}/{frame_uuid}/{frame_uuid}.jpeg")
+            im.save(
+                f"{Config.TEMP_IMAGES_FOLDER}/{folder_name}/{frame_uuid}/{frame_uuid}.jpeg"
+            )
 
             frame_uuids.append(str(frame_uuid))
 
-        metadata = delete_keys_from_dict(dict_del=ds.to_json_dict(), keys_to_delete=["InlineBinary"])
+        metadata = delete_keys_from_dict(
+            dict_del=ds.to_json_dict(), keys_to_delete=["InlineBinary"]
+        )
 
         return frame_uuids, metadata

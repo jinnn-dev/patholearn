@@ -7,7 +7,9 @@ from fastapi.datastructures import UploadFile
 from fastapi.param_functions import File
 
 
-async def write_file(folder_name: str, file_name: str, file: UploadFile = File(...)) -> None:
+async def write_file(
+    folder_name: str, file_name: str, file: UploadFile = File(...)
+) -> None:
     """
     Writes the given file asynchronously in a chunkwise manner to the disk.
     File must be stored in a separate folder.
@@ -18,12 +20,16 @@ async def write_file(folder_name: str, file_name: str, file: UploadFile = File(.
     :param file: The file to save on the disk
     :return: The coroutine which can be awaited
     """
-    async with aiofiles.open(f"{Config.TEMP_IMAGES_FOLDER}/{folder_name}/{file_name}", "wb") as out_file:
+    async with aiofiles.open(
+        f"{Config.TEMP_IMAGES_FOLDER}/{folder_name}/{file_name}", "wb"
+    ) as out_file:
         while content := await file.read(1024):
             await out_file.write(content)
 
 
-async def write_slide_to_disk(folder_name: str, file_name: str, file: UploadFile = File(...)) -> None:
+async def write_slide_to_disk(
+    folder_name: str, file_name: str, file: UploadFile = File(...)
+) -> None:
     """
     Creates a image pyramid from the given file.
     All images are stored in the given folder name

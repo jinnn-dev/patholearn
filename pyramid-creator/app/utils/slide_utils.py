@@ -32,8 +32,7 @@ def convert_slide_binary_metadata_to_base64(slide: Slide) -> List[Slide]:
     if slide.metadata is not None:
         for metadata_key, metadata_value in slide.metadata.items():
             if is_byte_data(metadata_value):
-                slide.metadata[metadata_key] = convert_binary_to_base64(
-                    metadata_value)
+                slide.metadata[metadata_key] = convert_binary_to_base64(metadata_value)
     return slide
 
 
@@ -49,7 +48,8 @@ def convert_binary_metadata_to_base64(slides: List[Slide]) -> List[Slide]:
             for metadata_key, metadata_value in slide.metadata.items():
                 if is_byte_data(metadata_value):
                     slide.metadata[metadata_key] = convert_binary_to_base64(
-                        metadata_value)
+                        metadata_value
+                    )
     return slides
 
 
@@ -60,8 +60,18 @@ def openslide_can_load(file_extension: str) -> bool:
     :param file_extension: The file extension should be checked
     :return: If the file extension can be loaded by openslide or not
     """
-    OPENSLIDE_FORMATS = ["svs", "tif", "vms", "vmu",
-                         "ndpi", "scn", "mrxs", "tiff", "svslide", "bif"]
+    OPENSLIDE_FORMATS = [
+        "svs",
+        "tif",
+        "vms",
+        "vmu",
+        "ndpi",
+        "scn",
+        "mrxs",
+        "tiff",
+        "svslide",
+        "bif",
+    ]
 
     return file_extension.lower() in OPENSLIDE_FORMATS
 
@@ -76,7 +86,9 @@ def get_file_name_and_file_extension(file_name_with_extension: str) -> Tuple[str
     return os.path.splitext(file_name_with_extension)
 
 
-def remove_truth_values_from_dict(dict_to_be_filtered: Dict[Any, Any]) -> Dict[Any, Any]:
+def remove_truth_values_from_dict(
+    dict_to_be_filtered: Dict[Any, Any]
+) -> Dict[Any, Any]:
     """
     Removes all entries in the given dict which have 'True' as value
 
