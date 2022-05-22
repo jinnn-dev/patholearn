@@ -9,7 +9,8 @@ from app.schemas.solver_result import LineResult, PointResult, PolygonResult
 from fastapi import File, UploadFile
 
 
-def point_diff(p1, p2): return (p1.x - p2.x, p1.y - p2.y)
+def point_diff(p1, p2):
+    return (p1.x - p2.x, p1.y - p2.y)
 
 
 def get_path_length(vertices: List[Point]) -> float:
@@ -36,7 +37,9 @@ def get_max_value_length(arr_dict: Dict[Any, List[Any]]) -> int:
     return max(list_of_item_length)
 
 
-def print_python_dict(matched_ids: Dict[str, List[Union[PointResult, LineResult, PolygonResult]]]):
+def print_python_dict(
+    matched_ids: Dict[str, List[Union[PointResult, LineResult, PolygonResult]]]
+):
     """
     Prints dict with different annotation result lists
     """
@@ -47,7 +50,9 @@ def print_python_dict(matched_ids: Dict[str, List[Union[PointResult, LineResult,
             result[key].append(annotation_result.dict())
 
 
-def get_csv_iterator(csv_file: UploadFile = File(...), skip_headers=False) -> [Iterator, str]:
+def get_csv_iterator(
+    csv_file: UploadFile = File(...), skip_headers=False
+) -> [Iterator, str]:
     """
     Returns an iterator and the csv delimiter for the given file
 
@@ -56,15 +61,15 @@ def get_csv_iterator(csv_file: UploadFile = File(...), skip_headers=False) -> [I
     :return Iterator and delimiter
     """
     csv_file.file.seek(0)
-    csv_reader = csv.reader(StringIO(str(csv_file.file.read(), 'utf-8')))
+    csv_reader = csv.reader(StringIO(str(csv_file.file.read(), "utf-8")))
     headers = next(csv_reader)
 
-    delimiter = ';'
-    if '\t' in headers[0]:
-        delimiter = '\t'
+    delimiter = ";"
+    if "\t" in headers[0]:
+        delimiter = "\t"
 
     csv_file.file.seek(0)
-    csv_reader = csv.reader(StringIO(str(csv_file.file.read(), 'utf-8')))
+    csv_reader = csv.reader(StringIO(str(csv_file.file.read(), "utf-8")))
 
     if skip_headers:
         next(csv_reader)

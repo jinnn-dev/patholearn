@@ -40,7 +40,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         :return: All found Entities
         """
         return db.query(self.model).all()
-        
+
     def create(self, db: Session, *, obj_in: CreateSchemaType) -> ModelType:
         """
         Creates a new Entity.
@@ -57,11 +57,11 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return db_obj
 
     def update(
-            self,
-            db: Session,
-            *,
-            db_obj: ModelType,
-            obj_in: Union[UpdateSchemaType, Dict[str, Any]]
+        self,
+        db: Session,
+        *,
+        db_obj: ModelType,
+        obj_in: Union[UpdateSchemaType, Dict[str, Any]]
     ) -> ModelType:
         """
         Updates the given entity.

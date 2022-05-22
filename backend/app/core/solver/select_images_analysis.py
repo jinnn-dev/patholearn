@@ -3,7 +3,9 @@ from typing import List, Tuple
 
 class SelectImagesAnalysis:
     @staticmethod
-    def check_select_images(*, task_solution: List[str], user_solution: List[str]) -> Tuple[List[str], List[str]]:
+    def check_select_images(
+        *, task_solution: List[str], user_solution: List[str]
+    ) -> Tuple[List[str], List[str]]:
         """
         Checks whether the user selected all images in the task solution or not.
         Returns all correcty and wrongly selected image indices.

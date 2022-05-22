@@ -2,6 +2,7 @@ from datetime import datetime
 
 import shortuuid
 from app.db.base_class import Base
+
 # noinspection PyUnresolvedReferences
 from app.models.task_group import TaskGroup
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text

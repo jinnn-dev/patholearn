@@ -10,12 +10,14 @@ def test_get_path_length_one():
     points.append(Point(x=0, y=0))
     assert get_path_length(points) == 1
 
+
 def test_get_path_length_multiple():
     points = []
     points.append(Point(x=0, y=0))
     points.append(Point(x=0, y=1))
     points.append(Point(x=1, y=1))
     assert get_path_length(points) == 2
+
 
 def test_get_path_diagonal():
     points = []

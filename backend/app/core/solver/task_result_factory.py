@@ -35,7 +35,9 @@ class TaskResultFactory:
         :return: The TaskResult with wrong status
         """
         task_result.task_status = TaskStatus.WRONG
-        task_result.response_text = "Deine Annotationen sind nicht an der richtigen Stelle."
+        task_result.response_text = (
+            "Deine Annotationen sind nicht an der richtigen Stelle."
+        )
         return task_result
 
     @staticmethod
@@ -51,8 +53,13 @@ class TaskResultFactory:
         return task_result
 
     @staticmethod
-    def append_result_detail(*, annotation_id: str, status: TaskStatus, percentage: float,
-                             task_result: TaskFeedback) -> TaskFeedback:
+    def append_result_detail(
+        *,
+        annotation_id: str,
+        status: TaskStatus,
+        percentage: float,
+        task_result: TaskFeedback
+    ) -> TaskFeedback:
         """
         Appends a new TaskResultDetail to the given TaskResult
 
@@ -62,6 +69,7 @@ class TaskResultFactory:
         :param task_result: TaskResult where the TaskResultDetail should be added to
         :return: The TaskResult with the added TaskResultDetail
         """
-        task_result.result_detail.append(AnnotationFeedback(id=annotation_id, status=status, percentage=percentage))
+        task_result.result_detail.append(
+            AnnotationFeedback(id=annotation_id, status=status, percentage=percentage)
+        )
         return task_result
-

@@ -1,6 +1,7 @@
 from logging.config import fileConfig
 
 from app.core.config import settings
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 from app.db.base_class import Base
@@ -25,7 +26,7 @@ target_metadata = Base.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
-config.set_main_option('sqlalchemy.url', settings.DATABASE_URL)
+config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
 
 def run_migrations_offline():
@@ -68,7 +69,8 @@ def run_migrations_online():
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata,
+            connection=connection,
+            target_metadata=target_metadata,
             compare_type=True,
             dialect_opts={"paramstyle": "named"},
         )

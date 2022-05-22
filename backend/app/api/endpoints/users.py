@@ -17,8 +17,8 @@ router = APIRouter()
 
 @router.get("/", response_model=List[UserSchema])
 def read_users(
-        db: Session = Depends(deps.get_db),
-        current_user: models.user.User = Depends(deps.get_current_active_superuser),
+    db: Session = Depends(deps.get_db),
+    current_user: models.user.User = Depends(deps.get_current_active_superuser),
 ) -> Any:
     """
     Retrieve users.
@@ -28,17 +28,19 @@ def read_users(
 
 
 @router.get("/admin", response_model=List[UserSchema])
-def read_admin_users(db: Session = Depends(deps.get_db),
-                     current_user: models.user.User = Depends(deps.get_current_active_superuser)):
+def read_admin_users(
+    db: Session = Depends(deps.get_db),
+    current_user: models.user.User = Depends(deps.get_current_active_superuser),
+):
     return crud_user.get_admin_users(db)
 
 
 @router.post("/admin", response_model=UserSchema)
 def create_admin_user(
-        *,
-        db: Session = Depends(deps.get_db),
-        user_in: UserCreate,
-        current_user: models.user.User = Depends(deps.get_current_active_superuser),
+    *,
+    db: Session = Depends(deps.get_db),
+    user_in: UserCreate,
+    current_user: models.user.User = Depends(deps.get_current_active_superuser),
 ) -> Any:
     """
     Create new user.
@@ -56,12 +58,12 @@ def create_admin_user(
 
 @router.put("/me", response_model=UserSchema)
 def update_user_me(
-        *,
-        db: Session = Depends(deps.get_db),
-        password: str = Body(None),
-        full_name: str = Body(None),
-        email: EmailStr = Body(None),
-        current_user: models.user.User = Depends(deps.get_current_user),
+    *,
+    db: Session = Depends(deps.get_db),
+    password: str = Body(None),
+    full_name: str = Body(None),
+    email: EmailStr = Body(None),
+    current_user: models.user.User = Depends(deps.get_current_user),
 ) -> Any:
     """
     Update own user.
@@ -80,8 +82,8 @@ def update_user_me(
 
 @router.get("/me", response_model=UserSchema)
 def read_user_me(
-        db: Session = Depends(deps.get_db),
-        current_user: models.user.User = Depends(deps.get_current_active_user),
+    db: Session = Depends(deps.get_db),
+    current_user: models.user.User = Depends(deps.get_current_active_user),
 ) -> Any:
     """
     Get current user.
@@ -90,11 +92,7 @@ def read_user_me(
 
 
 @router.post("/open", response_model=UserSchema)
-def create_user_open(
-        *,
-        db: Session = Depends(deps.get_db),
-        user_in: UserCreate
-) -> Any:
+def create_user_open(*, db: Session = Depends(deps.get_db), user_in: UserCreate) -> Any:
     """
     Create new user without the need to be logged in.
     """
@@ -115,9 +113,9 @@ def create_user_open(
 
 @router.get("/{user_id}", response_model=UserSchema)
 def read_user_by_id(
-        user_id: int,
-        current_user: models.user.User = Depends(deps.get_current_active_user),
-        db: Session = Depends(deps.get_db),
+    user_id: int,
+    current_user: models.user.User = Depends(deps.get_current_active_user),
+    db: Session = Depends(deps.get_db),
 ) -> Any:
     """
     Get a specific user by id.
@@ -134,11 +132,11 @@ def read_user_by_id(
 
 @router.put("/{user_id}", response_model=UserSchema)
 def update_user(
-        *,
-        db: Session = Depends(deps.get_db),
-        user_id: int,
-        user_in: UserUpdate,
-        current_user: models.user.User = Depends(deps.get_current_active_superuser),
+    *,
+    db: Session = Depends(deps.get_db),
+    user_id: int,
+    user_in: UserUpdate,
+    current_user: models.user.User = Depends(deps.get_current_active_superuser),
 ) -> Any:
     """
     Update a user.

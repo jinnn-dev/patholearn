@@ -10,8 +10,9 @@ from app.schemas.user_solution import UserSolutionCreate, UserSolutionUpdate
 
 
 class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUpdate]):
-
-    def get_solution_to_task_and_user(self, db: Session, *, user_id: int, task_id: int) -> SchemaSolution:
+    def get_solution_to_task_and_user(
+        self, db: Session, *, user_id: int, task_id: int
+    ) -> SchemaSolution:
         """
         Returns the UserSolution to the given user and task.
 
@@ -20,10 +21,16 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         :param task_id: id of the task
         :return: The found UserSolution
         """
-        return db.query(self.model).filter(UserSolution.user_id == user_id).filter(
-            UserSolution.task_id == task_id).first()
+        return (
+            db.query(self.model)
+            .filter(UserSolution.user_id == user_id)
+            .filter(UserSolution.task_id == task_id)
+            .first()
+        )
 
-    def get_solution_to_task(self, db: Session, *, task_id: int) -> List[SchemaSolution]:
+    def get_solution_to_task(
+        self, db: Session, *, task_id: int
+    ) -> List[SchemaSolution]:
         """
         Returns all user solutions to the given task
 
@@ -33,7 +40,9 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         """
         return db.query(self.model).filter(UserSolution.task_id == task_id).all()
 
-    def remove_by_user_id_and_task_id(self, db: Session, *, user_id: int, task_id: int) -> SchemaSolution:
+    def remove_by_user_id_and_task_id(
+        self, db: Session, *, user_id: int, task_id: int
+    ) -> SchemaSolution:
         """
         Removes Solution of the given user to the given task.
 
@@ -42,13 +51,19 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         :param task_id: id of the task
         :return:
         """
-        db_obj = db.query(self.model).filter(UserSolution.user_id == user_id).filter(
-            UserSolution.task_id == task_id).first()
+        db_obj = (
+            db.query(self.model)
+            .filter(UserSolution.user_id == user_id)
+            .filter(UserSolution.task_id == task_id)
+            .first()
+        )
         db.delete(db_obj)
         db.commit()
         return db_obj
 
-    def remove_all_by_task_id(self, db: Session, *, task_id: int) -> List[SchemaSolution]:
+    def remove_all_by_task_id(
+        self, db: Session, *, task_id: int
+    ) -> List[SchemaSolution]:
         """
         Removes all UserSolutions to the task.
 
@@ -62,7 +77,9 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
             db.commit()
         return db_objs
 
-    def remove_all_by_user_to_course(self, db: Session, user_id: int, course_id: int) -> List[SchemaSolution]:
+    def remove_all_by_user_to_course(
+        self, db: Session, user_id: int, course_id: int
+    ) -> List[SchemaSolution]:
         """
         Removes all UserSolution of the User to a Course.
 
@@ -71,8 +88,12 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         :param course_id: Id of the Course
         :return: The deleted UserSolution
         """
-        db_objs = db.query(self.model).filter(UserSolution.course_id == course_id).filter(
-            UserSolution.user_id == user_id).all()
+        db_objs = (
+            db.query(self.model)
+            .filter(UserSolution.course_id == course_id)
+            .filter(UserSolution.user_id == user_id)
+            .all()
+        )
         for obj in db_objs:
             db.delete(obj)
         db.commit()
@@ -91,33 +112,45 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         db.commit()
         return db_objs
 
-    def remove_all_to_task_group(self, db: Session, task_group_id: int) -> List[SchemaSolution]:
+    def remove_all_to_task_group(
+        self, db: Session, task_group_id: int
+    ) -> List[SchemaSolution]:
         """
         Removes all UserSolutions to the TaskGroup
         :param db: DB-Session
         :param task_group_id: Id of the TaskGroup
         :return: The deleted UserSolutions
         """
-        db_objs = db.query(self.model).filter(UserSolution.task_group_id == task_group_id).all()
+        db_objs = (
+            db.query(self.model)
+            .filter(UserSolution.task_group_id == task_group_id)
+            .all()
+        )
         for obj in db_objs:
             db.delete(obj)
         db.commit()
         return db_objs
 
-    def remove_all_to_base_task(self, db: Session, base_task_id: int) -> List[SchemaSolution]:
+    def remove_all_to_base_task(
+        self, db: Session, base_task_id: int
+    ) -> List[SchemaSolution]:
         """
         Removes all UserSolutions to the BaseTask
         :param db: DB-Session
         :param base_task_id: Id of the BaseTask
         :return: The deleted UserSolutions
         """
-        db_objs = db.query(self.model).filter(UserSolution.base_task_id == base_task_id).all()
+        db_objs = (
+            db.query(self.model).filter(UserSolution.base_task_id == base_task_id).all()
+        )
         for obj in db_objs:
             db.delete(obj)
         db.commit()
         return db_objs
 
-    def get_solved_percentage_to_task_group(self, db: Session, *, user_id: int, task_group_id: int) -> Tuple:
+    def get_solved_percentage_to_task_group(
+        self, db: Session, *, user_id: int, task_group_id: int
+    ) -> Tuple:
         """
         Returns the percentage of the user solved tasks to the given TaskGroup.
 
@@ -126,12 +159,16 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         :param task_group_id: id of the TaskGroup
         :return: Tuple with percentage as Decimal
         """
-        query = db.query(func.sum(self.model.percentage_solved).label('percentage_solved')).filter(
-            self.model.user_id == user_id).filter(
-            self.model.task_group_id == task_group_id)
+        query = (
+            db.query(func.sum(self.model.percentage_solved).label("percentage_solved"))
+            .filter(self.model.user_id == user_id)
+            .filter(self.model.task_group_id == task_group_id)
+        )
         return query.first()
 
-    def get_solved_percentage_to_base_task(self, db: Session, *, user_id: int, base_task_id: int) -> Tuple:
+    def get_solved_percentage_to_base_task(
+        self, db: Session, *, user_id: int, base_task_id: int
+    ) -> Tuple:
         """
         Returns the percentage of the user solved tasks to the given BaseTask.
 
@@ -140,11 +177,16 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         :param base_task_id: id of the BaseTask
         :return: Tuple with the percentage as Decimal
         """
-        return db.query(func.sum(self.model.percentage_solved).label('percentage_solved')).filter(
-            self.model.user_id == user_id).filter(
-            self.model.base_task_id == base_task_id).first()
+        return (
+            db.query(func.sum(self.model.percentage_solved).label("percentage_solved"))
+            .filter(self.model.user_id == user_id)
+            .filter(self.model.base_task_id == base_task_id)
+            .first()
+        )
 
-    def get_solved_percentage_to_course(self, db: Session, *, user_id: int, course_id: int) -> int:
+    def get_solved_percentage_to_course(
+        self, db: Session, *, user_id: int, course_id: int
+    ) -> int:
         """
         Returns the percentage of the user solved tasks to the given Course
 
@@ -153,11 +195,17 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         :param course_id: id of the course
         :return: The solved percentage
         """
-        return db.query(func.sum(self.model.percentage_solved).label('percentage_solved')).filter(
-            self.model.user_id == user_id).filter(
-            self.model.course_id == course_id).first()[0] or 0.0
+        return (
+            db.query(func.sum(self.model.percentage_solved).label("percentage_solved"))
+            .filter(self.model.user_id == user_id)
+            .filter(self.model.course_id == course_id)
+            .first()[0]
+            or 0.0
+        )
 
-    def get_amount_of_correct_solutions_to_course(self, db: Session, *, user_id: int, course_id: int) -> int:
+    def get_amount_of_correct_solutions_to_course(
+        self, db: Session, *, user_id: int, course_id: int
+    ) -> int:
         """
         Returns the amount correct solved tasks to the course
 
@@ -166,9 +214,13 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         :param course_id: id of the course
         :return: The amount of correct solutions
         """
-        return self.__get_amount_of_correct_solution(db, user_id=user_id, id_name="course_id", id_value=course_id)
+        return self.__get_amount_of_correct_solution(
+            db, user_id=user_id, id_name="course_id", id_value=course_id
+        )
 
-    def get_amount_of_wrong_solutions_to_course(self, db: Session, *, user_id: int, course_id: int) -> int:
+    def get_amount_of_wrong_solutions_to_course(
+        self, db: Session, *, user_id: int, course_id: int
+    ) -> int:
         """
         Returns the amount wrong solved tasks to the course
 
@@ -177,9 +229,13 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         :param course_id: id of the course
         :return: The amount auf wrong solutions
         """
-        return self.__get_amount_of_wrong_solutions(db, user_id=user_id, id_name="course_id", id_value=course_id)
+        return self.__get_amount_of_wrong_solutions(
+            db, user_id=user_id, id_name="course_id", id_value=course_id
+        )
 
-    def get_amount_of_correct_solutions_to_task_group(self, db: Session, *, user_id: int, task_group_id: int) -> int:
+    def get_amount_of_correct_solutions_to_task_group(
+        self, db: Session, *, user_id: int, task_group_id: int
+    ) -> int:
         """
         Returns the amount correct solved tasks to the task group
 
@@ -188,10 +244,13 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         :param task_group_id: id of the course
         :return: The amount of correct solutions
         """
-        return self.__get_amount_of_correct_solution(db, user_id=user_id, id_name="task_group_id",
-                                                     id_value=task_group_id)
+        return self.__get_amount_of_correct_solution(
+            db, user_id=user_id, id_name="task_group_id", id_value=task_group_id
+        )
 
-    def get_amount_of_wrong_solutions_to_task_group(self, db: Session, *, user_id: int, task_group_id: int) -> int:
+    def get_amount_of_wrong_solutions_to_task_group(
+        self, db: Session, *, user_id: int, task_group_id: int
+    ) -> int:
         """
         Returns the amount wrong solved tasks to the task group
 
@@ -200,10 +259,13 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         :param task_group_id: id of the task group
         :return: The amount of wrong solutions
         """
-        return self.__get_amount_of_wrong_solutions(db, user_id=user_id, id_name="task_group_id",
-                                                    id_value=task_group_id)
+        return self.__get_amount_of_wrong_solutions(
+            db, user_id=user_id, id_name="task_group_id", id_value=task_group_id
+        )
 
-    def get_amount_of_correct_solutions_to_base_task(self, db: Session, *, user_id: int, base_task_id: int) -> int:
+    def get_amount_of_correct_solutions_to_base_task(
+        self, db: Session, *, user_id: int, base_task_id: int
+    ) -> int:
         """
         Returns the amount correct solved tasks to the base task
 
@@ -212,9 +274,13 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         :param base_task_id: id of the course
         :return: The amount of correct solutions
         """
-        return self.__get_amount_of_correct_solution(db, user_id=user_id, id_name="base_task_id", id_value=base_task_id)
+        return self.__get_amount_of_correct_solution(
+            db, user_id=user_id, id_name="base_task_id", id_value=base_task_id
+        )
 
-    def get_amount_of_wrong_solutions_to_base_task(self, db: Session, *, user_id: int, base_task_id: int) -> int:
+    def get_amount_of_wrong_solutions_to_base_task(
+        self, db: Session, *, user_id: int, base_task_id: int
+    ) -> int:
         """
         Returns the amount wrong solved tasks to the base task
 
@@ -223,8 +289,9 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         :param base_task_id: id of the base task
         :return: The amount of wrong solutions
         """
-        return self.__get_amount_of_wrong_solutions(db, user_id=user_id, id_name="base_task_id",
-                                                    id_value=base_task_id)
+        return self.__get_amount_of_wrong_solutions(
+            db, user_id=user_id, id_name="base_task_id", id_value=base_task_id
+        )
 
     def increment_failed_attempts(self, db: Session, user_id: int, task_id: int) -> int:
         model = self.get_solution_to_task_and_user(db, user_id=user_id, task_id=task_id)
@@ -235,15 +302,34 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         db.refresh(model)
         return new_attempts
 
-    def __get_amount_of_wrong_solutions(self, db: Session, *, user_id: int, id_name: str, id_value: int) -> int:
-        return db.query(func.count()).filter(
-            self.model.user_id == user_id).filter(getattr(self.model, id_name) == id_value).filter(and_(
-            func.JSON_LENGTH(self.model.task_result) != 1, self.model.percentage_solved != 1.00)).first()[0] or 0.0
+    def __get_amount_of_wrong_solutions(
+        self, db: Session, *, user_id: int, id_name: str, id_value: int
+    ) -> int:
+        return (
+            db.query(func.count())
+            .filter(self.model.user_id == user_id)
+            .filter(getattr(self.model, id_name) == id_value)
+            .filter(
+                and_(
+                    func.JSON_LENGTH(self.model.task_result) != 1,
+                    self.model.percentage_solved != 1.00,
+                )
+            )
+            .first()[0]
+            or 0.0
+        )
 
-    def __get_amount_of_correct_solution(self, db: Session, user_id: int, id_name: str, id_value: int) -> int:
-        return db.query(func.count()).filter(
-            self.model.user_id == user_id).filter(getattr(self.model, id_name) == id_value).filter(
-            self.model.percentage_solved == 1.00).first()[0] or 0.0
+    def __get_amount_of_correct_solution(
+        self, db: Session, user_id: int, id_name: str, id_value: int
+    ) -> int:
+        return (
+            db.query(func.count())
+            .filter(self.model.user_id == user_id)
+            .filter(getattr(self.model, id_name) == id_value)
+            .filter(self.model.percentage_solved == 1.00)
+            .first()[0]
+            or 0.0
+        )
 
 
 crud_user_solution = CRUDUserSolution(UserSolution)

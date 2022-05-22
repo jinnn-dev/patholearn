@@ -9,10 +9,13 @@ from app.models.user import User
 
 router = APIRouter()
 
-@router.post('/convert')
-async def convert_image(*, file: UploadFile = File(...),
-                        current_user: User = Depends(get_current_active_user)) -> Any:
+
+@router.post("/convert")
+async def convert_image(
+    *,
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_active_user)
+) -> Any:
     contents = await file.read()
     result = convert_image_to_annotations(contents)
     return result
-

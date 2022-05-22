@@ -3,6 +3,7 @@ from sqlalchemy import Integer, Column, String, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base
+
 # noinspection PyUnresolvedReferences
 from app.models.task import Task
 

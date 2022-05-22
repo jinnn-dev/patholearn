@@ -6,4 +6,5 @@ from app.schemas.hint_image import HintImageCreate, HintImageUpdate
 class CrudHintImage(CRUDBase[HintImage, HintImageCreate, HintImageUpdate]):
     pass
 
+
 crud_hint_image = CrudHintImage(HintImage)

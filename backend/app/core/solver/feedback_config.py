@@ -6,7 +6,9 @@ class FeedbackConfig:
     PERCENTAGE_OUTSIDE = 0.1
 
     @staticmethod
-    def get_weighted_border(*, border: float, knowledge_level: int, decent_value: float = BORDER_DECENT) -> float:
+    def get_weighted_border(
+        *, border: float, knowledge_level: int, decent_value: float = BORDER_DECENT
+    ) -> float:
         """
         Returns the new border weighted by the given knowledge level and decent value.
         Multiplies knowledge level with decent value to get the new border

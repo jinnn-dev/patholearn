@@ -6,14 +6,19 @@ from sqlalchemy.orm import Session
 
 from app.crud.base import CRUDBase
 from app.models.task_statistic import TaskStatistic
-from app.schemas.task_statistic import TaskStatisticCreate, TaskStatisticUpdate, TaskStatistic as TaskStatisticSchema
+from app.schemas.task_statistic import (
+    TaskStatisticCreate,
+    TaskStatisticUpdate,
+    TaskStatistic as TaskStatisticSchema,
+)
 
 
-class CRUDTaskStatistic(CRUDBase[TaskStatistic, TaskStatisticCreate, TaskStatisticUpdate]):
-
-    def get_oldest_task_statistics_to_base_task_id(self, db: Session, *, base_task_id: int) -> [List[
-                                                                                                    TaskStatisticSchema],
-                                                                                                List[int]]:
+class CRUDTaskStatistic(
+    CRUDBase[TaskStatistic, TaskStatisticCreate, TaskStatisticUpdate]
+):
+    def get_oldest_task_statistics_to_base_task_id(
+        self, db: Session, *, base_task_id: int
+    ) -> [List[TaskStatisticSchema], List[int]]:
         """
         Returns all statistics to the given base task
 
@@ -21,13 +26,15 @@ class CRUDTaskStatistic(CRUDBase[TaskStatistic, TaskStatisticCreate, TaskStatist
         :param base_task_id: Id of the base task
         :return: All found task statistics and task ids
         """
-        sql = text("""SELECT ts.* FROM taskstatistic as ts
+        sql = text(
+            """SELECT ts.* FROM taskstatistic as ts
          join (SELECT user_id, task_id, min(solved_date) as smallest_date
                FROM taskstatistic
                where base_task_id = :base_task_id
                GROUP BY task_id, user_id) as smallest
               on ts.user_id = smallest.user_id and ts.task_id = smallest.task_id and
-                 ts.solved_date = smallest.smallest_date;""")
+                 ts.solved_date = smallest.smallest_date;"""
+        )
         result = db.execute(sql, {"base_task_id": base_task_id}).fetchall()
         task_statistics = []
 
@@ -43,13 +50,15 @@ class CRUDTaskStatistic(CRUDBase[TaskStatistic, TaskStatisticCreate, TaskStatist
                     solved_date=row[4],
                     percentage_solved=float(row[5]),
                     solution_data=json.loads(row[6]),
-                    task_result=json.loads(row[7])
+                    task_result=json.loads(row[7]),
                 )
             )
             task_ids.add(row[2])
         return task_statistics, task_ids
 
-    def remove_all_by_task_id(self, db: Session, *, task_id: int) -> List[TaskStatistic]:
+    def remove_all_by_task_id(
+        self, db: Session, *, task_id: int
+    ) -> List[TaskStatistic]:
         """
         Removes all task statistic to the given task
 
@@ -63,7 +72,9 @@ class CRUDTaskStatistic(CRUDBase[TaskStatistic, TaskStatisticCreate, TaskStatist
             db.commit()
         return db_objs
 
-    def remove_all_by_base_task_id(self, db: Session, *, base_task_id: int) -> List[TaskStatistic]:
+    def remove_all_by_base_task_id(
+        self, db: Session, *, base_task_id: int
+    ) -> List[TaskStatistic]:
         """
         Removes all task statistics to the given base task
 
@@ -71,7 +82,9 @@ class CRUDTaskStatistic(CRUDBase[TaskStatistic, TaskStatisticCreate, TaskStatist
         :param base_task_id: Id of the base task
         :return: The deleted task statistics
         """
-        db_objs = db.query(self.model).filter(self.model.base_task_id == base_task_id).all()
+        db_objs = (
+            db.query(self.model).filter(self.model.base_task_id == base_task_id).all()
+        )
         for obj in db_objs:
             db.delete(obj)
             db.commit()

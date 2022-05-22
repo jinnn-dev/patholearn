@@ -40,7 +40,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         return user
 
     def update(
-            self, db: Session, *, db_obj: User, obj_in: Union[UserUpdate, Dict[str, Any]]
+        self, db: Session, *, db_obj: User, obj_in: Union[UserUpdate, Dict[str, Any]]
     ) -> User:
         """
         Updates the given user.

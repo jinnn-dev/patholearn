@@ -8,9 +8,11 @@ class SummaryUser(BaseModel):
     middlename: Optional[str]
     lastname: Optional[str]
 
+
 class SummaryRow(BaseModel):
     user: Optional[SummaryUser]
     summary: Optional[List[int]]
+
 
 class MembersolutionSummary(BaseModel):
     tasks: Optional[List[str]]

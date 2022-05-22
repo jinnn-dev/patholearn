@@ -5,8 +5,7 @@ from sqlalchemy.orm import Session
 from app.crud.base import CRUDBase
 from app.models.course import Course
 from app.models.course_members import CourseMembers
-from app.schemas.course import (CourseAdmin, CourseCreate, CourseDetail,
-                                CourseUpdate)
+from app.schemas.course import CourseAdmin, CourseCreate, CourseDetail, CourseUpdate
 
 
 def set_member_status(*, courses: List[Course], user_id: int) -> None:
@@ -17,8 +16,9 @@ def set_member_status(*, courses: List[Course], user_id: int) -> None:
 
 
 class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
-
-    def create_with_owner(self, db: Session, *, obj_in: CourseCreate, owner_id: int) -> Course:
+    def create_with_owner(
+        self, db: Session, *, obj_in: CourseCreate, owner_id: int
+    ) -> Course:
         """
         Creates a new course with the given user as owner.
 
@@ -36,7 +36,9 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
         db.refresh(db_obj)
         return db_obj
 
-    def join_course(self, db: Session, *, short_name: str, user_id: int) -> Optional[Course]:
+    def join_course(
+        self, db: Session, *, short_name: str, user_id: int
+    ) -> Optional[Course]:
         """
         Join the given course.
 
@@ -47,8 +49,13 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
         """
         course = db.query(self.model).filter(Course.short_name == short_name).first()
 
-        exists = db.query(CourseMembers).filter(CourseMembers.course_id == course.id,
-                                                CourseMembers.user_id == user_id).first()
+        exists = (
+            db.query(CourseMembers)
+            .filter(
+                CourseMembers.course_id == course.id, CourseMembers.user_id == user_id
+            )
+            .first()
+        )
         if exists:
             return None
 
@@ -68,8 +75,12 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
         :param course_id: Id of the course
         :param user_id: Id of the user
         """
-        membership = db.query(self.model).filter(self.model.course_id == course_id).filter(
-            self.model.user_id == user_id).first()
+        membership = (
+            db.query(self.model)
+            .filter(self.model.course_id == course_id)
+            .filter(self.model.user_id == user_id)
+            .first()
+        )
         db.delete(membership)
         db.commit()
 
@@ -114,7 +125,9 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
         """
         return db.query(self.model).filter(Course.name == name).first()
 
-    def get_multi_by_name(self, db: Session, *, search: str, user_id: int) -> List[Course]:
+    def get_multi_by_name(
+        self, db: Session, *, search: str, user_id: int
+    ) -> List[Course]:
         """
         Returns all Courses where the name contains the search string
 
@@ -123,7 +136,11 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
         :param user_id: id of the user
         :return: All Courses where search string is included
         """
-        courses = db.query(self.model).filter(self.model.name.ilike('%{0}%'.format(search))).all()
+        courses = (
+            db.query(self.model)
+            .filter(self.model.name.ilike("%{0}%".format(search)))
+            .all()
+        )
         set_member_status(courses=courses, user_id=user_id)
         return courses
 

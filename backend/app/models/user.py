@@ -15,4 +15,6 @@ class User(Base):
     is_superuser = Column(Boolean(), default=False)
     last_login = Column(DateTime, nullable=True)
     owned_courses = relationship("Course", back_populates="owner")
-    courses = relationship("Course", secondary="coursemembers", back_populates="members")
+    courses = relationship(
+        "Course", secondary="coursemembers", back_populates="members"
+    )

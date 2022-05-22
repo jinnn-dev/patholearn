@@ -34,6 +34,7 @@ reusable_oauth2 = OAuth2PasswordBearer(
 #     finally:
 #         db.close()
 
+
 def get_db(background_tasks: BackgroundTasks):
     with SessionManager() as db:
         background_tasks.add_task(close_session, db)
@@ -41,7 +42,7 @@ def get_db(background_tasks: BackgroundTasks):
 
 
 def get_current_user(
-        db: Session = Depends(get_db), token: str = Depends(reusable_oauth2)
+    db: Session = Depends(get_db), token: str = Depends(reusable_oauth2)
 ) -> User:
     """
     Returns the current user.
@@ -68,7 +69,7 @@ def get_current_user(
 
 
 def get_current_active_user(
-        current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
 ) -> User:
     """
     Returns the current user if it is active.
@@ -82,7 +83,7 @@ def get_current_active_user(
 
 
 def get_current_active_superuser(
-        current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
 ) -> User:
     """
     Returns the current user if it is super user.
@@ -100,11 +101,12 @@ def get_current_active_superuser(
 def check_if_user_can_access_course(db: Session, user_id: int, course_id: int) -> None:
     if not crud_course.user_is_course_owner(db, user_id=user_id, course_id=course_id):
         raise HTTPException(
-            status_code=403,
-            detail="The user doesn't have enough privileges"
+            status_code=403, detail="The user doesn't have enough privileges"
         )
 
 
-def check_if_user_can_access_task(db: Session, *, user_id: int, base_task_id: int) -> None:
-    base_task = crud_base_task.get(db, id=base_task_id);
+def check_if_user_can_access_task(
+    db: Session, *, user_id: int, base_task_id: int
+) -> None:
+    base_task = crud_base_task.get(db, id=base_task_id)
     check_if_user_can_access_course(db, user_id=user_id, course_id=base_task.course_id)

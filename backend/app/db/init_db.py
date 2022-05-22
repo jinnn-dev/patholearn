@@ -1,6 +1,7 @@
 import app.schemas.user
 from app.core.config import settings
 from app.crud.crud_user import crud_user
+
 # noinspection PyUnresolvedReferences
 from app.db import base  # Import needed SQL Alchemy models
 from app.db.base_class import Base

@@ -36,23 +36,34 @@ def convert_image_to_annotations(file_contents: Union[bytes, str]) -> Extraction
 
     for gray_value in available_gray_values:
         img_mask = cv2.inRange(img_gray, np.array(gray_value), np.array(gray_value))
-        found_contours = cv2.findContours(img_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        found_contours = cv2.findContours(
+            img_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE
+        )
         found_contours = imutils.grab_contours(found_contours)
         (found_contours, _) = contours.sort_contours(found_contours)
         annotations = []
         for contour in found_contours:
             size = cv2.contourArea(contour)
-            corners = cv2.approxPolyDP(contour, 0.004 * cv2.arcLength(contour, True),
-                                       True)  # Uses Douglas-Peucker algorithm
+            corners = cv2.approxPolyDP(
+                contour, 0.004 * cv2.arcLength(contour, True), True
+            )  # Uses Douglas-Peucker algorithm
             corners = corners.ravel()
-            if len(corners) > 2 and size > 200.0:  # Maybe use different Threshold for robuster noise removal
+            if (
+                len(corners) > 2 and size > 200.0
+            ):  # Maybe use different Threshold for robuster noise removal
                 annotation = []
                 for x, y in zip(corners[0::2], corners[1::2]):
                     annotation.append(Point(x=float(x), y=float(y)))
                 annotations.append(annotation)
-        annotation_groups.append(GrayGroup(gray_value=int(gray_value), annotations=annotations))
-    ColoredPrinter.print_lined_info(f"Feature extraction needed {timer.time_elapsed - time_hist}s")
+        annotation_groups.append(
+            GrayGroup(gray_value=int(gray_value), annotations=annotations)
+        )
+    ColoredPrinter.print_lined_info(
+        f"Feature extraction needed {timer.time_elapsed - time_hist}s"
+    )
     timer.stop()
     ColoredPrinter.print_lined_info(f"Total conversion time {timer.total_run_time}s")
     height, width = img_gray.shape
-    return ExtractionResult(image=ImageDimension(height=height, width=width), annotations=annotation_groups)
+    return ExtractionResult(
+        image=ImageDimension(height=height, width=width), annotations=annotation_groups
+    )

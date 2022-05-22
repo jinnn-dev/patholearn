@@ -11,7 +11,9 @@ from app.schemas.task_hint import TaskHintCreate, TaskHintUpdate
 class CRUDTaskHint(CRUDBase[TaskHint, TaskHintCreate, TaskHintUpdate]):
     pass
 
-    def get_hints_by_task(self, db: Session, task_id: int, mistakes: int) -> List[TaskHint]:
+    def get_hints_by_task(
+        self, db: Session, task_id: int, mistakes: int
+    ) -> List[TaskHint]:
         """
         Returns all hints that should be shown for the given mistake amount
 
@@ -20,8 +22,13 @@ class CRUDTaskHint(CRUDBase[TaskHint, TaskHintCreate, TaskHintUpdate]):
         :param mistakes: Amount of mistakes
         :return: All found hints
         """
-        result = db.query(self.model).filter(self.model.task_id == task_id).filter(
-            self.model.needed_mistakes <= mistakes).order_by(asc(self.model.needed_mistakes)).all()
+        result = (
+            db.query(self.model)
+            .filter(self.model.task_id == task_id)
+            .filter(self.model.needed_mistakes <= mistakes)
+            .order_by(asc(self.model.needed_mistakes))
+            .all()
+        )
 
         return result
 

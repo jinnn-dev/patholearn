@@ -8,7 +8,6 @@ from app.schemas.task_group import TaskGroupCreate, TaskGroupUpdate
 
 
 class CRUDTaskGroup(CRUDBase[TaskGroup, TaskGroupCreate, TaskGroupUpdate]):
-
     def get_multi_by_course_id(self, db: Session, *, course_id: int) -> List[TaskGroup]:
         """
         Returns all TaskGroups to the given course.
@@ -38,7 +37,12 @@ class CRUDTaskGroup(CRUDBase[TaskGroup, TaskGroupCreate, TaskGroupUpdate]):
         :param course_id: Id of the Course
         :return: The found TaskGroup
         """
-        return db.query(self.model).filter(TaskGroup.name == name).filter(TaskGroup.course_id == course_id).first()
+        return (
+            db.query(self.model)
+            .filter(TaskGroup.name == name)
+            .filter(TaskGroup.course_id == course_id)
+            .first()
+        )
 
 
 crud_task_group = CRUDTaskGroup(TaskGroup)

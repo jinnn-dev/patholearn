@@ -13,13 +13,11 @@ def policy(bucket_name):
         "Statement": [
             {
                 "Effect": "Allow",
-                "Principal": {
-                    "AWS": ["*"]
-                },
+                "Principal": {"AWS": ["*"]},
                 "Action": "s3:GetObject",
-                "Resource": "arn:aws:s3:::" + bucket_name + "/*"
+                "Resource": "arn:aws:s3:::" + bucket_name + "/*",
             }
-        ]
+        ],
     }
 
 
@@ -33,7 +31,7 @@ class MinioClient:
             endpoint=settings.MINIO_URL,
             access_key=settings.MINIO_ROOT_USER,
             secret_key=settings.MINIO_ROOT_PASSWORD,
-            secure=False
+            secure=False,
         )
         self.bucket = None
         self.bucket_name = None
@@ -42,9 +40,11 @@ class MinioClient:
         self.bucket = self.instance.bucket_exists(bucket_name)
         self.bucket_name = bucket_name
         if not self.bucket:
-            self.bucket = self.instance.make_bucket(bucket_name, 'eu')
+            self.bucket = self.instance.make_bucket(bucket_name, "eu")
             print("✔️ Bucket created")
-            self.instance.set_bucket_policy(self.bucket_name, json.dumps(policy(self.bucket_name)))
+            self.instance.set_bucket_policy(
+                self.bucket_name, json.dumps(policy(self.bucket_name))
+            )
             print("✔️ Bucket policy created")
         else:
             print("Bucket already exists")
@@ -53,8 +53,12 @@ class MinioClient:
         try:
 
             print(file_name, self.bucket_name)
-            self.instance.fput_object(self.bucket_name, file_name, file_content,
-                                      metadata={'Content-type': content_type})
+            self.instance.fput_object(
+                self.bucket_name,
+                file_name,
+                file_content,
+                metadata={"Content-type": content_type},
+            )
             print(f"✔️ {file_name} has been created")
         except Exception as exc:
             print(f"❌ {file_name} couldn't be created")
@@ -74,7 +78,9 @@ class MinioClient:
         # objects_to_delete = self.instance.list_objects(self.bucket_name, prefix=folder_path, recursive=True)
         delete_object_list = map(
             lambda x: DeleteObject(x.object_name),
-            self.instance.list_objects(self.bucket_name, prefix=folder_path, recursive=True)
+            self.instance.list_objects(
+                self.bucket_name, prefix=folder_path, recursive=True
+            ),
         )
         errors = self.instance.remove_objects(self.bucket_name, delete_object_list)
 

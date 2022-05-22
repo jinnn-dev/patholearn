@@ -50,8 +50,7 @@ class Timer(object):
         This is used for checking how much time has elapsed while the timer is
         still running.
         """
-        assert not self.stop_time, \
-            "Can't check `time_elapsed` on an ended `Stopwatch`."
+        assert not self.stop_time, "Can't check `time_elapsed` on an ended `Stopwatch`."
         return time.time() - self.start_time
 
     @property

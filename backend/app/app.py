@@ -1,5 +1,6 @@
 import sentry_sdk
 from fastapi import FastAPI
+
 # from sentry_sdk import set_tag
 # from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from starlette.middleware.cors import CORSMiddleware
@@ -22,8 +23,7 @@ app = FastAPI()
 origins = [
     "http://10.168.2.105:3000",
     "http://localhost:3000",
-    "http://localhost:8001"
-    "*"
+    "http://localhost:8001" "*",
 ]
 
 app.add_middleware(GZipMiddleware, minimum_size=500)
