@@ -6,7 +6,7 @@ from minio import Minio
 from minio.deleteobjects import DeleteObject
 from loguru import logger
 
-logger.add("minio_client.log")
+logger.add("minio_client.log", retention="1 week")
 
 
 def policy(bucket_name):
@@ -39,13 +39,13 @@ class MinioClient:
 
         if not bucket:
             self.instance.make_bucket(bucket_name, "eu")
-            logger.info("✔️ Bucket created")
+            logger.info("Bucket {} created", bucket_name)
             self.instance.set_bucket_policy(
                 bucket_name, json.dumps(policy(bucket_name))
             )
-            logger.info("✔️ Bucket policy created")
+            logger.info("Policy for Bucket {} created", bucket_name)
         else:
-            logger.info("Bucket already exists")
+            logger.info("Bucket {} already exists", bucket_name)
 
     def create_object(
         self, *, bucket_name: str, file_name: str, file_content: Any, content_type: Any
@@ -73,10 +73,14 @@ class MinioClient:
             lambda x: DeleteObject(x.object_name),
             self.instance.list_objects(bucket_name, prefix=folder_path, recursive=True),
         )
-        errors = self.instance.remove_objects(bucket_name, delete_object_list)
 
+        errors = self.instance.remove_objects(bucket_name, delete_object_list)
+        error_count = 0
         for error in errors:
             logger.error(error)
+            error_count += 1
+        if error_count == 0:
+            logger.info("Deleted folder {}", folder_path)
 
     def delete_all_objects(self, *, bucket_name: str):
         objects = self.instance.list_objects(bucket_name)

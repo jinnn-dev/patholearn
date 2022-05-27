@@ -44,11 +44,11 @@ def convert_slide(source_file_with_extension: str):
     Image has to be stored on the disk beforehand.
     Otherwise, the conversion will not work.
 
-    :param source_file: Name of the file
+    :param source_file_with_extension: Name of the file
     :return: The convert status
     """
     slide_uuid, file_extension = os.path.splitext(source_file_with_extension)
-
+    logger.info(f"Received task for file: {source_file_with_extension}")
     try:
 
         path_to_slide_folder = rf"{Config.TEMP_IMAGES_FOLDER}/{slide_uuid}"
