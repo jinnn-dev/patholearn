@@ -110,7 +110,7 @@
     :drawingViewer='drawingViewer'
     :loading='applyAnnotationsLoading'
     @applyAnnotations='onApplyAnnotations'
-    @closeDialog='showUploadDialog = false'
+    @closeDialog='groundTruthDialogClosed'
   ></ground-truth-dialog>
 
   <confirm-dialog
@@ -248,10 +248,7 @@ export default defineComponent({
         selectedPolygon.value = undefined;
         if (!newVal) {
           toolbarTools.value = [];
-          setTool({
-            tool: Tool.MOVE,
-            event: undefined
-          });
+          changeToolTo.value = Tool.MOVE;
           return;
         }
 
@@ -430,6 +427,7 @@ export default defineComponent({
     };
 
     const onApplyAnnotations = async (result: ParseResult[]) => {
+      changeToolTo.value = Tool.MOVE;
       applyAnnotationsLoading.value = true;
 
       props.task!.solution = [];
@@ -764,6 +762,11 @@ export default defineComponent({
       isTaskSaving.value = false;
     };
 
+    const groundTruthDialogClosed = () => {
+      showUploadDialog.value = false;
+      changeToolTo.value = Tool.MOVE;
+    };
+
     return {
       toolbarTools,
       handleKeyup,
@@ -811,7 +814,8 @@ export default defineComponent({
       isTaskSaving,
       deleteAnnotation,
       changeToolTo,
-      unselectAnnotation
+      unselectAnnotation,
+      groundTruthDialogClosed
     };
   }
 });
