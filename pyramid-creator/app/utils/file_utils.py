@@ -5,6 +5,7 @@ from app.config import Config
 from app.worker import convert_slide
 from fastapi.datastructures import UploadFile
 from fastapi.param_functions import File
+from loguru import logger
 
 
 async def write_file(

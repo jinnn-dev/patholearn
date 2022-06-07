@@ -4,6 +4,9 @@ from typing import Any
 
 from minio import Minio
 from minio.deleteobjects import DeleteObject
+from loguru import logger
+
+logger.add("minio_client.log", retention="1 week")
 
 
 def policy(bucket_name):
@@ -35,14 +38,14 @@ class MinioClient:
         bucket = self.instance.bucket_exists(bucket_name)
 
         if not bucket:
-            bucket = self.instance.make_bucket(bucket_name, "eu")
-            print("✔️ Bucket created")
+            self.instance.make_bucket(bucket_name, "eu")
+            logger.info("Bucket {} created", bucket_name)
             self.instance.set_bucket_policy(
                 bucket_name, json.dumps(policy(bucket_name))
             )
-            print("✔️ Bucket policy created")
+            logger.info("Policy for Bucket {} created", bucket_name)
         else:
-            print("Bucket already exists")
+            logger.info("Bucket {} already exists", bucket_name)
 
     def create_object(
         self, *, bucket_name: str, file_name: str, file_content: Any, content_type: Any
@@ -54,14 +57,15 @@ class MinioClient:
                 file_content,
                 metadata={"Content-type": content_type},
             )
-            print(f"✔️ {file_name} has been created")
+            logger.info("✔️ {} has been created", file_name)
         except Exception as exc:
-            print(f"❌ {file_name} couldn't be created")
-            print(exc)
+            logger.error(
+                "{file_name} couldn't be created: \n{err}", file_name=file_name, err=exc
+            )
             raise Exception(f"{file_name} could not be created")
 
     def delete_object(self, *, bucket_name: str, file_name: str):
-        print(f"🚮 {file_name} has been deleted")
+        logger.info("{} has been deleted", file_name)
         self.instance.remove_object(bucket_name, file_name)
 
     def delete_folder(self, *, bucket_name: str, folder_path: str):
@@ -69,16 +73,20 @@ class MinioClient:
             lambda x: DeleteObject(x.object_name),
             self.instance.list_objects(bucket_name, prefix=folder_path, recursive=True),
         )
-        errors = self.instance.remove_objects(bucket_name, delete_object_list)
 
+        errors = self.instance.remove_objects(bucket_name, delete_object_list)
+        error_count = 0
         for error in errors:
-            print(error)
+            logger.error(error)
+            error_count += 1
+        if error_count == 0:
+            logger.info("Deleted folder {}", folder_path)
 
     def delete_all_objects(self, *, bucket_name: str):
         objects = self.instance.list_objects(bucket_name)
         for item in objects:
             self.instance.remove_object(bucket_name, item.object_name)
-        print("✔️ All Objects deleted")
+        logger.info("✔️ All Objects deleted")
 
     def get_object(self, *, bucket_name: str, file_name: str):
         return self.instance.get_object(bucket_name, object_name=file_name)

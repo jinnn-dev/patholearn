@@ -1,39 +1,39 @@
 <template>
   <viewer-loading
-    :show="!viewerLoadingState.dataLoaded || !viewerLoadingState.tilesLoaded || !viewerLoadingState.annotationsLoaded"
+    :show='!viewerLoadingState.dataLoaded || !viewerLoadingState.tilesLoaded || !viewerLoadingState.annotationsLoaded'
   ></viewer-loading>
-  <div v-if="viewerLoadingState.dataLoaded">
-    <viewer-back-button :routeName="`/group/${baseTask?.task_group_short_name}/admin`"></viewer-back-button>
+  <div v-if='viewerLoadingState.dataLoaded'>
+    <viewer-back-button :routeName='`/group/${baseTask?.task_group_short_name}/admin`'></viewer-back-button>
 
-    <task-header :selectedTask="selectedTask"></task-header>
+    <task-header :selectedTask='selectedTask'></task-header>
 
-    <task-container :baseTask="baseTask" :isOwner="true" @taskSelected="selectTask($event)"></task-container>
+    <task-container :baseTask='baseTask' :isOwner='true' @taskSelected='selectTask($event)'></task-container>
 
     <!-- <hint-overlay :taskId="selectedTask?.id" /> -->
 
     <select-images-task
-      v-if="selectedTask?.task_type === TaskType.IMAGE_SELECT"
-      :task="selectedTask"
-      :base_task_id="baseTask?.id"
-      :task_group_id="baseTask?.task_group_id"
-      :course_id="baseTask?.course_id"
-      :isAdmin="true"
+      v-if='selectedTask?.task_type === TaskType.IMAGE_SELECT'
+      :task='selectedTask'
+      :base_task_id='baseTask?.id'
+      :task_group_id='baseTask?.task_group_id'
+      :course_id='baseTask?.course_id'
+      :isAdmin='true'
     ></select-images-task>
 
     <div v-else>
       <task-viewer-admin
-        v-if="baseTask?.tasks.length === 0 || selectedTask?.task_type !== TaskType.IMAGE_SELECT"
-        :slide_name="baseTask?.slide_id"
-        :task="selectedTask"
-        :base_task_id="baseTask?.id"
-        :task_group_id="baseTask?.task_group_id"
-        :course_id="baseTask?.course_id"
+        v-if='baseTask?.tasks.length === 0 || selectedTask?.task_type !== TaskType.IMAGE_SELECT'
+        :slide_name='baseTask?.slide_id'
+        :task='selectedTask'
+        :base_task_id='baseTask?.id'
+        :task_group_id='baseTask?.task_group_id'
+        :course_id='baseTask?.course_id'
       ></task-viewer-admin>
     </div>
   </div>
 </template>
 
-<script lang="ts">
+<script lang='ts'>
 import { defineAsyncComponent, defineComponent, onMounted, onUnmounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { viewerLoadingState } from '../components/viewer/core/viewerState';
@@ -64,6 +64,8 @@ export default defineComponent({
             viewerLoadingState.annotationsLoaded = false;
           }
         }
+      } else {
+        selectedTask.value = undefined;
       }
     };
 

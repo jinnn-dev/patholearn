@@ -14,6 +14,9 @@ from fastapi import APIRouter, HTTPException, UploadFile
 from fastapi.params import Depends, File, Form, Query
 from pymongo.collection import Collection
 from starlette.background import BackgroundTasks
+from loguru import logger
+
+logger.add("endpoints.slides.log", rotation="1 week")
 
 router = APIRouter()
 
@@ -40,10 +43,10 @@ def create_slide(
             collection,
             obj_in=CreateSlide(slide_id=file_id, name=name, status=SlideStatus.RUNNING),
         )
-
+        logger.info("Saving {} to disk", file_name)
         background_tasks.add_task(write_slide_to_disk, file_id, file_name, file=file)
     except Exception as e:
-        print(e)
+        logger.error(e)
         crud_slide.delete(collection, entity_id_value=file_id)
         raise HTTPException(status_code=500, detail="Slide couldn't be saved")
 
@@ -106,5 +109,5 @@ def delete_slide(
         crud_slide.delete(collection, entity_id_value=slide_id)
         # slide_db.delete_slide(slide_id=slide_id)
     except Exception as e:
-        print(e)
+        logger.error(e)
         raise HTTPException(status_code=500, detail="Slide could not be deleted")
