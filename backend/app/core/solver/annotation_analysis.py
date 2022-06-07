@@ -12,12 +12,10 @@ from app.schemas.polygon_data import (
     RectangleData,
 )
 from app.schemas.solver_result import LineResult, PointResult, PolygonResult
-from app.utils.colored_printer import ColoredPrinter
 from app.utils.timer import Timer
 from app.utils.utils import get_path_length
 from shapely.errors import TopologicalError
 from shapely.geometry import LinearRing, LineString, Polygon
-from shapely.validation import explain_validity
 
 
 class AnnotationAnalysis:
@@ -84,8 +82,6 @@ class AnnotationAnalysis:
         """
         correct_line_ids = {}
         no_match_ids = []
-        timer = Timer()
-        timer.start()
 
         for user_annotation in user_annotation_data:
             user_line_string = LineString(
@@ -144,13 +140,6 @@ class AnnotationAnalysis:
                         no_match_ids.remove(user_annotation.id)
                     correct_line_ids[solution_annotation.id].append(annotation_result)
 
-                ColoredPrinter.print_lined_info(
-                    f"Line analysis needed {(timer.time_elapsed - time_before) * 1000}ms"
-                )
-        timer.stop()
-        ColoredPrinter.print_lined_info(
-            f"Complete Line Check needed: {timer.total_run_time * 1000}ms"
-        )
         return correct_line_ids, no_match_ids
 
     @staticmethod
@@ -292,7 +281,6 @@ class AnnotationAnalysis:
                             annotation_result
                         )
 
-                    # ColoredPrinter.print_lined_info(f"Polygon check needed {(timer.time_elapsed - time_before) * 1000}ms")
                 except TopologicalError as e:
 
                     print(e)
@@ -302,7 +290,6 @@ class AnnotationAnalysis:
                     invalid_ids.append(user_annotation.id)
         timer.stop()
 
-        # ColoredPrinter.print_lined_info(f"Complete Polygon Check needed {timer.total_run_time * 1000}ms")
         return correct_polygon_ids, no_match_ids, invalid_ids
 
     @staticmethod

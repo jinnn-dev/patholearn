@@ -42,8 +42,6 @@ from app.schemas.task import (
 from app.schemas.task_hint import TaskHint, TaskHintCreate, TaskHintUpdate
 from app.schemas.user_solution import UserSolutionUpdate
 from app.utils.annotation_type import is_info_annotation
-from app.utils.annotation_validator import check_if_annotation_is_valid
-from app.utils.colored_printer import ColoredPrinter
 from app.utils.minio_client import MinioClient, minio_client
 from app.utils.timer import Timer
 from fastapi import APIRouter, Depends, HTTPException
@@ -474,7 +472,6 @@ def update_user_solution_annotation(
     user_solution = crud_user_solution.get_solution_to_task_and_user(
         db=db, user_id=current_user.id, task_id=task_id
     )
-    ColoredPrinter.print_lined_info(f"{timer.time_elapsed}")
 
     old_annotation_index = next(
         (
@@ -485,15 +482,12 @@ def update_user_solution_annotation(
         None,
     )
 
-    ColoredPrinter.print_lined_info(f"{timer.time_elapsed}")
-
     user_solution.solution_data[old_annotation_index] = annotation
     crud_user_solution.update(
         db,
         db_obj=user_solution,
         obj_in=UserSolutionUpdate(solution_data=user_solution.solution_data),
     )
-    ColoredPrinter.print_lined_info(f"{timer.time_elapsed}")
     timer.stop()
 
     return {"Status", "Ok"}
