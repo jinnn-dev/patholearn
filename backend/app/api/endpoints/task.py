@@ -171,8 +171,10 @@ def update_annotation_group(
             db_obj=user_solution,
         )
 
-    if task.solution != None:
+    if task.solution is not None:
         for annotation in task.solution:
+            if "name" not in annotation:
+                continue
             if annotation["name"] == annotation_group_update.oldName:
                 annotation["name"] = annotation_group_update.name
                 annotation["color"] = annotation_group_update.color
