@@ -19,6 +19,7 @@
     ></color-picker>
 
     <custom-select
+      class='mb-2'
       v-if='task?.task_type === 1'
       :isSearchable='false'
       displayType='small'
@@ -80,23 +81,25 @@
       <primary-button bgColor='bg-gray-500' @click='resetAnnotationTolerance'>Toleranz zurücksetzen</primary-button>
     </div>
 
-    <primary-button
-      class='w-64'
-      bgColor='bg-gray-500'
-      v-if='isBackgroundPolygon'
-      name='Zu Lösungsannotation konvertieren (Polygon)'
-      @click.prevent='convertToSolutionAnnotation()'
-    >
-    </primary-button>
+    <div>
+      <primary-button
+        class='w-64'
+        bgColor='bg-gray-500'
+        v-if='isBackgroundPolygon'
+        name='Zu Lösungsannotation konvertieren (Polygon)'
+        @click.prevent='convertToSolutionAnnotation()'
+      >
+      </primary-button>
 
-    <primary-button
-      v-if='isOffsetAnnotationPolygon'
-      class='w-64'
-      bgColor='bg-gray-500'
-      name='Zu Hintergrundannotation konvertieren (Rechteck)'
-      @click.prevent='convertToBackgroundAnnotation()'
-    >
-    </primary-button>
+      <primary-button
+        v-if='isOffsetAnnotationPolygon'
+        class='w-64'
+        bgColor='bg-gray-500'
+        name='Zu Hintergrundannotation konvertieren (Rechteck)'
+        @click.prevent='convertToBackgroundAnnotation()'
+      >
+      </primary-button>
+    </div>
   </annotation-settings>
 
   <tool-bar :tools='toolbarTools' @toolUpdate='setTool' :setMoving='setMoving' :changeToolTo='changeToolTo'></tool-bar>
