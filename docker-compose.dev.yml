@@ -70,7 +70,7 @@ services:
     image: ${DOCKER_PREFIX}/${DOCKER_APPLICATION_TITLE}-slide_api:dev
     ports:
       - '8001:8000'
-    command: uvicorn app.app:app --reload --host 0.0.0.0 --port 8000
+    command: uvicorn app.app:app --reload --host 0.0.0.0 --port 8000 --no-server-header
     environment:
       - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
       - DATABASE_URL=${MONGO_DRIVER}://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:${MONGO_PORT}
