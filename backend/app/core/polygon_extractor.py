@@ -7,7 +7,7 @@ from imutils import contours
 
 from app.schemas.extractor import GrayGroup, ExtractionResult, ImageDimension
 from app.schemas.polygon_data import Point
-from app.utils.colored_printer import ColoredPrinter
+from app.utils.logger import logger
 from app.utils.timer import Timer
 
 
@@ -25,13 +25,13 @@ def convert_image_to_annotations(file_contents: Union[bytes, str]) -> Extraction
     img_gray = cv2.imdecode(np_arr, cv2.IMREAD_GRAYSCALE)
 
     time = timer.time_elapsed
-    ColoredPrinter.print_lined_info(f"Image-Loading needed {timer.time_elapsed}s")
+    logger.debug(f"Loading image into cv2 took {timer.time_elapsed}s")
 
     hist = cv2.calcHist([img_gray], [0], None, [256], [0, 256])
     available_gray_values = np.unique(np.nonzero(hist))
     available_gray_values = available_gray_values[available_gray_values != 0]
     time_hist = timer.time_elapsed
-    ColoredPrinter.print_lined_info(f"Histo needed {timer.time_elapsed - time}s")
+    logger.debug(f"Calculating Histogram took {timer.time_elapsed - time}s")
     annotation_groups = []
 
     for gray_value in available_gray_values:
@@ -58,11 +58,10 @@ def convert_image_to_annotations(file_contents: Union[bytes, str]) -> Extraction
         annotation_groups.append(
             GrayGroup(gray_value=int(gray_value), annotations=annotations)
         )
-    ColoredPrinter.print_lined_info(
-        f"Feature extraction needed {timer.time_elapsed - time_hist}s"
-    )
+    logger.debug(f"Feature extraction took {timer.time_elapsed - time_hist}s")
     timer.stop()
-    ColoredPrinter.print_lined_info(f"Total conversion time {timer.total_run_time}s")
+    logger.debug(f"Annotation extraction took {timer.total_run_time}s")
+
     height, width = img_gray.shape
     return ExtractionResult(
         image=ImageDimension(height=height, width=width), annotations=annotation_groups

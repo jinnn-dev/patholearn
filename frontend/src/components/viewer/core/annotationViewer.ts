@@ -58,6 +58,7 @@ export class AnnotationViewer {
   constructor(viewerOptions: OpenSeadragon.Options) {
     this._viewer = OpenSeadragon(viewerOptions);
 
+    // @ts-ignore
     this._viewer.innerTracker.keyHandler = null;
 
     new OpenSeadragon.TileCache({
@@ -959,6 +960,7 @@ export class AnnotationViewer {
   }
 
   get scale(): number {
+    // @ts-ignore
     return this._viewer.viewport._containerInnerSize.x * this._viewer.viewport.getZoom(true);
   }
 

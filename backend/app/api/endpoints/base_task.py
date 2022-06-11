@@ -51,7 +51,7 @@ from app.schemas.user_solution import (
     UserSolutionCreate,
     UserSolutionUpdate,
 )
-from app.utils.colored_printer import ColoredPrinter
+from app.utils.logger import logger
 from app.utils.minio_client import MinioClient, minio_client
 from app.utils.timer import Timer
 from fastapi import APIRouter, Depends, HTTPException
@@ -502,7 +502,7 @@ def solve_task(
     )
 
     timer.stop()
-    ColoredPrinter.print_lined_info(f"Completet in {timer.total_run_time * 1000}ms")
+    logger.debug(f"Solving task completed in {timer.total_run_time * 1000}ms")
     return task_result
 
 

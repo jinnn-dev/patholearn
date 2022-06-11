@@ -15,7 +15,7 @@ from app.schemas.polygon_data import (
     RectangleData,
 )
 from app.schemas.task import Task, TaskFeedback, TaskStatus, TaskType
-from app.utils.colored_printer import ColoredPrinter
+from app.utils.logger import logger
 from app.utils.timer import Timer
 
 
@@ -139,7 +139,5 @@ class Solver:
                 )
 
         current_timer.stop()
-        ColoredPrinter.print_lined_info(
-            f"Solver needed {current_timer.total_run_time * 1000}ms"
-        )
+        logger.debug(f"Solver needed {current_timer.total_run_time * 1000}ms")
         return task_result
