@@ -1,36 +1,36 @@
 <template>
-  <div class="fixed z-10 top-1/2 transform -translate-y-1/2 overflow-hidden flex flex-col gap-8">
+  <div class='fixed z-10 top-1/2 transform -translate-y-1/2 overflow-hidden flex flex-col gap-8'>
     <div
-      class="bg-gray-600/70 filter backdrop-blur-md text-white rounded-r-lg overflow-hidden"
-      v-if="!userSolutionLocked && !viewerLoadingState.solveResultLoading"
+      class='bg-gray-600/70 backdrop-blur-md text-white rounded-r-lg overflow-hidden'
+      v-if='!userSolutionLocked && !viewerLoadingState.solveResultLoading'
     >
       <tool-item
-        @click="changeTool(tool, $event)"
+        @click='changeTool(tool, $event)'
         :class="currentTool === tool ? 'bg-gray-300' : ''"
-        v-for="tool in defaultTools"
-        :key="tool"
-        :comp="TOOL_COMPONENTS[tool]"
-        :hint="TOOL_HINTS[tool]"
+        v-for='tool in defaultTools'
+        :key='tool'
+        :comp='TOOL_COMPONENTS[tool]'
+        :hint='TOOL_HINTS[tool]'
       ></tool-item>
     </div>
 
     <div
-      v-if="infoTools && infoTools?.length > 0"
-      class="bg-gray-600/70 filter backdrop-blur-md text-white rounded-r-lg overflow-hidden"
+      v-if='infoTools && infoTools?.length > 0'
+      class='bg-gray-600/70 backdrop-blur-md text-white rounded-r-lg overflow-hidden'
     >
-      <div id="infoHeader" class="py-1 text-gray-200 bg-gray-700 text-center px-0.5 select-none">INFO</div>
+      <div id='infoHeader' class='py-1 text-gray-200 bg-gray-700 text-center px-0.5 select-none'>INFO</div>
       <tool-item
-        @click="changeTool(tool, $event)"
+        @click='changeTool(tool, $event)'
         :class="currentTool === tool ? 'bg-gray-300' : ''"
-        v-for="tool in infoTools"
-        :key="tool"
-        :comp="TOOL_COMPONENTS[tool]"
-        :hint="TOOL_HINTS[tool]"
+        v-for='tool in infoTools'
+        :key='tool'
+        :comp='TOOL_COMPONENTS[tool]'
+        :hint='TOOL_HINTS[tool]'
       ></tool-item>
     </div>
   </div>
 </template>
-<script lang="ts">
+<script lang='ts'>
 import { computed, defineComponent, nextTick, onMounted, PropType, ref, watch } from 'vue';
 import { isInfoTool, Tool, TOOL_COMPONENTS, TOOL_HINTS } from '../../model/viewer/tools';
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
