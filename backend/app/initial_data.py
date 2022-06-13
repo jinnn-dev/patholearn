@@ -1,6 +1,7 @@
 from app.db.init_db import init_db
 from app.db.session import SessionLocal
-from app.utils.colored_printer import ColoredPrinter
+from app.utils.logger import logger
+from app.utils.timer import Timer
 
 
 def init() -> None:
@@ -12,9 +13,12 @@ def init() -> None:
 
 
 def main() -> None:
-    ColoredPrinter.print_info("Creating initial data")
+    logger.info("Creating initial data")
+    timer = Timer()
+    timer.start()
     init()
-    ColoredPrinter.print_info("Initial data created")
+    timer.stop()
+    logger.info(f"Initial data created in {timer.total_run_time}s")
 
 
 if __name__ == "__main__":

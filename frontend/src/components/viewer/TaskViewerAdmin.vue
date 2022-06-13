@@ -80,23 +80,25 @@
       <primary-button bgColor='bg-gray-500' @click='resetAnnotationTolerance'>Toleranz zurücksetzen</primary-button>
     </div>
 
-    <primary-button
-      class='w-64'
-      bgColor='bg-gray-500'
-      v-if='isBackgroundPolygon'
-      name='Zu Lösungsannotation konvertieren (Polygon)'
-      @click.prevent='convertToSolutionAnnotation()'
-    >
-    </primary-button>
+    <div>
+      <primary-button
+        class='w-64'
+        bgColor='bg-gray-500'
+        v-if='isBackgroundPolygon'
+        name='Zu Lösungsannotation konvertieren (Polygon)'
+        @click.prevent='convertToSolutionAnnotation()'
+      >
+      </primary-button>
 
-    <primary-button
-      v-if='isOffsetAnnotationPolygon'
-      class='w-64'
-      bgColor='bg-gray-500'
-      name='Zu Hintergrundannotation konvertieren (Rechteck)'
-      @click.prevent='convertToBackgroundAnnotation()'
-    >
-    </primary-button>
+      <primary-button
+        v-if='isOffsetAnnotationPolygon'
+        class='w-64'
+        bgColor='bg-gray-500'
+        name='Zu Hintergrundannotation konvertieren (Rechteck)'
+        @click.prevent='convertToBackgroundAnnotation()'
+      >
+      </primary-button>
+    </div>
   </annotation-settings>
 
   <tool-bar :tools='toolbarTools' @toolUpdate='setTool' :setMoving='setMoving' :changeToolTo='changeToolTo'></tool-bar>
@@ -249,8 +251,9 @@ export default defineComponent({
       (newVal, _) => {
         drawingViewer.value?.clear();
         selectedPolygon.value = undefined;
-        if (newVal === null) {
+        if (!newVal) {
           toolbarTools.value = [];
+          changeToolTo.value = Tool.MOVE;
           return;
         }
 
@@ -429,6 +432,7 @@ export default defineComponent({
     };
 
     const onApplyAnnotations = async (result: ParseResult[]) => {
+      changeToolTo.value = Tool.MOVE;
       applyAnnotationsLoading.value = true;
 
       props.task!.solution = [];
@@ -763,6 +767,11 @@ export default defineComponent({
       isTaskSaving.value = false;
     };
 
+    const groundTruthDialogClosed = () => {
+      showUploadDialog.value = false;
+      changeToolTo.value = Tool.MOVE;
+    };
+
     return {
       toolbarTools,
       handleKeyup,
@@ -810,7 +819,8 @@ export default defineComponent({
       isTaskSaving,
       deleteAnnotation,
       changeToolTo,
-      unselectAnnotation
+      unselectAnnotation,
+      groundTruthDialogClosed
     };
   }
 });

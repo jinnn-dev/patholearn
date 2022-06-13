@@ -1,8 +1,6 @@
 <template>
-  <modal-dialog :show='showDialog' custom-classes='w-full h-screen'>
+  <modal-dialog :show='showDialog'>
     <h1 class='text-2xl'>Musterlösung hinzufügen</h1>
-
-
     <div class='my-2'>
       <form-field label='Ground Thruth' tip='Wähle eine XML- oder PNG-Datei mit der Musterlösung aus'>
         <div class='flex items-center'>
