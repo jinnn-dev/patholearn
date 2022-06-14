@@ -1,53 +1,53 @@
 <template>
   <div>
-    <h1 class="text-2xl text-center">
+    <h1 class='text-2xl text-center'>
       Füge eine neue Aufgabe der
       {{ taskUpdateForm.layer }}. Ebene hinzu
     </h1>
-    <form @submit.prevent="updateTask" class="w-full">
+    <form @submit.prevent='updateTask' class='w-full'>
       <input-field
-        v-model="taskUpdateForm.task_question"
-        label="Fragestellung"
-        placeholder="Markiere..."
-        type="text"
-        :required="true"
+        v-model='taskUpdateForm.task_question'
+        label='Fragestellung'
+        placeholder='Markiere...'
+        type='text'
+        :required='true'
       >
       </input-field>
 
       <Accordion>
         <AccordionItem
-          title="Aufgabeneinstellungen"
-          :first="true"
-          v-if="taskUpdateForm.task_type !== TaskType.IMAGE_SELECT"
+          title='Aufgabeneinstellungen'
+          :first='true'
+          v-if='taskUpdateForm.task_type !== TaskType.IMAGE_SELECT'
         >
-          <div class="my-8" v-if="taskUpdateForm.task_type === 0">
+          <div class='my-8' v-if='taskUpdateForm.task_type === 0'>
             <div>Wie viele Annotationen müssen die Lernenden mindestens richtig treffen:</div>
             <CustomSlider
-              :min="0"
-              :max="50"
-              :tooltips="true"
-              :initialPosition="taskUpdateForm.min_correct"
-              @isReleased="updateMinCorrect"
-              class="pb-4 pt-11"
+              :min='0'
+              :max='50'
+              :tooltips='true'
+              :initialPosition='taskUpdateForm.min_correct'
+              @isReleased='updateMinCorrect'
+              class='pb-4 pt-11'
             >
             </CustomSlider>
           </div>
 
-          <div class="my-8">
+          <div class='my-8'>
             <div>Welches Vorwissen ist bei den Lernenden vorhanden:</div>
-            <div class="my-2 break-words text-sm text-gray-200 py-2">
+            <div class='my-2 break-words text-sm text-gray-200 py-2'>
               Die Vorwissensstufe bestimmt den Schwierigkeitsgrad der Aufgabe. Mit steigender Stufe wird das Feedback
               weniger unterstützend. Außerdem wird die Aufgabenüberprüfung strenger.
             </div>
-            <div class="flex w-full justify-evenly gap-2 my-2">
+            <div class='flex w-full justify-evenly gap-2 my-2'>
               <div
-                class="transition flex justify-center items-center bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg p-2"
-                v-for="level in knowledgeLevel"
-                :key="level.index"
+                class='transition flex justify-center items-center bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg p-2'
+                v-for='level in knowledgeLevel'
+                :key='level.index'
                 :class="taskUpdateForm.knowledge_level === level.index && 'bg-gray-500 ring-2 ring-highlight-900'"
-                @click="taskUpdateForm.knowledge_level = level.index"
+                @click='taskUpdateForm.knowledge_level = level.index'
               >
-                <div class="flex flex-col gap-3 justify-center items-center text-center">
+                <div class='flex flex-col gap-3 justify-center items-center text-center'>
                   <div>
                     {{ level.name }}
                   </div>
@@ -56,12 +56,12 @@
             </div>
           </div>
 
-          <div class="my-8">
+          <div class='my-8'>
             <div>Soll die Aufgabe von Nutzern lösbar sein?</div>
             <toggle-button
-              class="my-2"
-              :enabled="taskUpdateForm.can_be_solved"
-              @changed="changeCanBeSolved"
+              class='my-2'
+              :enabled='taskUpdateForm.can_be_solved'
+              @changed='changeCanBeSolved'
             ></toggle-button>
           </div>
         </AccordionItem>
@@ -70,21 +70,21 @@
         </AccordionItem> -->
       </Accordion>
 
-      <div class="flex justify-end w-full">
+      <div class='flex justify-end w-full mt-4'>
         <primary-button
           @click.prevent="$emit('close')"
-          class="mr-2 w-32"
-          name="Abbrechen"
-          bgColor="bg-gray-500"
-          bgHoverColor="bg-gray-700"
-          fontWeight="font-normal"
+          class='mr-2 w-32'
+          name='Abbrechen'
+          bgColor='bg-gray-500'
+          bgHoverColor='bg-gray-700'
+          fontWeight='font-normal'
         ></primary-button>
-        <save-button name="Speichern" type="submit" class="w-36" :loading="taskUpdateLoading"></save-button>
+        <save-button name='Speichern' type='submit' class='w-36' :loading='taskUpdateLoading'></save-button>
       </div>
     </form>
   </div>
 </template>
-<script lang="ts">
+<script lang='ts'>
 import { defineComponent, PropType, reactive, ref, watch } from 'vue';
 import { Task, TaskType } from '../../model/task';
 import { TaskService } from '../../services/task.service';

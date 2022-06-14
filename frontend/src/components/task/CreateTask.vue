@@ -1,163 +1,163 @@
 <template>
   <div>
-    <h1 class="text-2xl text-center">
+    <h1 class='text-2xl text-center'>
       Füge eine neue Aufgabe der
       {{ layerIndex }}. Ebene hinzu
     </h1>
-    <form @submit.prevent="onSubmit" class="w-full">
+    <form @submit.prevent='onSubmit' class='w-full'>
       <input-field
-        v-model="taskCreationForm.task_question"
-        label="Fragestellung"
-        placeholder="Markiere..."
-        type="text"
-        :required="true"
+        v-model='taskCreationForm.task_question'
+        label='Fragestellung'
+        placeholder='Markiere...'
+        type='text'
+        :required='true'
       >
       </input-field>
       <Accordion>
-        <AccordionItem title="Aufgabeneinstellungen" :first="true">
+        <AccordionItem title='Aufgabeneinstellungen' :first='true'>
           <div>Wähle einen Aufgabentyp:</div>
 
-          <div class="flex justify-evenly gap-4 mt-4">
+          <div class='flex justify-evenly gap-4 mt-4'>
             <div
-              class="transition flex justify-center items-center w-48 h-20 bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg"
+              class='transition flex justify-center items-center w-48 h-20 bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg'
               :class="selectedTaskType === 0 && 'bg-gray-500 ring-2 ring-highlight-900'"
-              @click="selectedTaskType = 0"
+              @click='selectedTaskType = 0'
             >
-              <div class="flex flex-col justify-center items-center text-center">
-                <Icon name="polygon" size="46" />
+              <div class='flex flex-col justify-center items-center text-center'>
+                <Icon name='polygon' size='46' />
                 Annotationen zeichen
               </div>
             </div>
             <div
-              class="transition flex justify-center items-center w-48 h-20 bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg"
+              class='transition flex justify-center items-center w-48 h-20 bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg'
               :class="selectedTaskType === 1 && 'bg-gray-500 ring-2 ring-highlight-900'"
-              @click="
+              @click='
                 selectedTaskType = 1;
                 taskCreationForm.task_type = 2;
-              "
+              '
             >
-              <div class="flex flex-col justify-center items-center text-center">
-                <Icon name="squares-four" size="46" />
+              <div class='flex flex-col justify-center items-center text-center'>
+                <Icon name='squares-four' size='46' />
                 Bilder auswählen
               </div>
             </div>
           </div>
 
-          <div class="my-4" v-if="selectedTaskType === 0">
+          <div class='my-4' v-if='selectedTaskType === 0'>
             <div>
               <div>Wähle eine Annotationseigenschaft:</div>
-              <div class="flex flex-col w-full justify-evenly gap-2 my-4">
+              <div class='flex flex-col w-full justify-evenly gap-2 my-4'>
                 <div
-                  class="transition flex justify-center items-center bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg p-2"
-                  v-for="taskType in taskTypes"
-                  :key="taskType.index"
+                  class='transition flex justify-center items-center bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg p-2'
+                  v-for='taskType in taskTypes'
+                  :key='taskType.index'
                   :class="taskCreationForm.task_type === taskType.index && 'bg-gray-500 ring-2 ring-highlight-900'"
-                  @click="taskCreationForm.task_type = taskType.index"
+                  @click='taskCreationForm.task_type = taskType.index'
                 >
-                  <div class="flex flex-col gap-3 justify-center items-center">
+                  <div class='flex flex-col gap-3 justify-center items-center'>
                     {{ taskType.description }}
                   </div>
                 </div>
               </div>
-              <div class="text-gray-200 flex text-sm items-center">
-                <Icon name="info" width="20" height="20" />
-                <div class="ml-2">Annotationsklassen geben einer Annotation einen bestimmten Typ / Namen.</div>
+              <div class='text-gray-200 flex text-sm items-center'>
+                <Icon name='info' width='20' height='20' />
+                <div class='ml-2'>Annotationsklassen geben einer Annotation einen bestimmten Typ / Namen.</div>
               </div>
             </div>
 
-            <div class="my-8">
-              <div class="mb-4">Welche Art von Annotation soll für die Aufgabe verwendet werden:</div>
-              <div class="flex w-full justify-evenly">
+            <div class='my-8'>
+              <div class='mb-4'>Welche Art von Annotation soll für die Aufgabe verwendet werden:</div>
+              <div class='flex w-full justify-evenly'>
                 <div
-                  class="transition flex justify-center items-center w-32 h-20 bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg"
-                  v-for="item in typeSelection"
-                  :key="item.index"
+                  class='transition flex justify-center items-center w-32 h-20 bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg'
+                  v-for='item in typeSelection'
+                  :key='item.index'
                   :class="taskCreationForm.annotation_type === item.index && 'bg-gray-500 ring-2 ring-highlight-900'"
-                  @click="taskCreationForm.annotation_type = item.index"
+                  @click='taskCreationForm.annotation_type = item.index'
                 >
-                  <div class="flex flex-col gap-2 justify-center items-center">
-                    <Icon :name="item.icon" :width="30" :height="30" />
+                  <div class='flex flex-col gap-2 justify-center items-center'>
+                    <Icon :name='item.icon' :width='30' :height='30' />
                     {{ item.type }}
                   </div>
                 </div>
               </div>
-              <div class="h-8 mt-4">
-                <div class="text-gray-200 flex text-sm items-center">
-                  <Icon name="info" width="20" height="20" />
-                  <div class="ml-2">
+              <div class='h-8 mt-4'>
+                <div class='text-gray-200 flex text-sm items-center'>
+                  <Icon name='info' width='20' height='20' />
+                  <div class='ml-2'>
                     Polygon: Die Annotationen können aus Polygonen, Rechtecken und Ellipsen bestehen
                   </div>
                 </div>
               </div>
             </div>
-            <div class="my-8">
+            <div class='my-8'>
               <div>Welches Vorwissen ist bei den Lernenden vorhanden:</div>
-              <div class="my-2 mb-4 break-words text-sm text-gray-200 py-2">
+              <div class='my-2 mb-4 break-words text-sm text-gray-200 py-2'>
                 Die Vorwissensstufe bestimmt den Schwierigkeitsgrad der Aufgabe. Mit steigender Stufe wird das Feedback
                 weniger unterstützend. Außerdem wird die Aufgabenüberprüfung strenger.
               </div>
-              <div class="flex w-full justify-evenly gap-2 my-2">
+              <div class='flex w-full justify-evenly gap-2 my-2'>
                 <div
-                  class="transition flex justify-center items-center bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg p-2"
-                  v-for="level in knowledgeLevel"
-                  :key="level.index"
+                  class='transition flex justify-center items-center bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg p-2'
+                  v-for='level in knowledgeLevel'
+                  :key='level.index'
                   :class="taskCreationForm.knowledge_level === level.index && 'bg-gray-500 ring-2 ring-highlight-900'"
-                  @click="taskCreationForm.knowledge_level = level.index"
+                  @click='taskCreationForm.knowledge_level = level.index'
                 >
-                  <div class="flex gap-3 justify-center items-center text-center">
+                  <div class='flex gap-3 justify-center items-center text-center'>
                     {{ level.name }}
                   </div>
                 </div>
               </div>
             </div>
-            <div class="my-4" v-if="taskCreationForm.task_type === 0">
+            <div class='my-4' v-if='taskCreationForm.task_type === 0'>
               <div>Wie viele Annotationen müssen die Lernenden mindestens richtig treffen:</div>
               <CustomSlider
-                :initial-position="taskCreationForm.min_correct"
-                @is-released="taskCreationForm.min_correct = $event"
-                :min="0"
-                :max="50"
-                :tooltips="true"
-                class="pb-4 pt-11"
+                :initial-position='taskCreationForm.min_correct'
+                @is-released='taskCreationForm.min_correct = $event'
+                :min='0'
+                :max='50'
+                :tooltips='true'
+                class='pb-4 pt-11'
               ></CustomSlider>
             </div>
           </div>
 
-          <div v-if="selectedTaskType === 1">
-            <div class="my-2 flex gap-2 flex-col">
-              <div class="mt-2">Wähle eine Reihe von Bilder:</div>
+          <div v-if='selectedTaskType === 1'>
+            <div class='my-2 flex gap-2 flex-col'>
+              <div class='mt-2'>Wähle eine Reihe von Bilder:</div>
 
               <MultiImageUpload
-                label="Bilder hochladen"
-                tip="Wähle Bilder aus oder ziehe sie in das Feld"
-                @images-dropped="setImages"
-                :reset-array="resetImageSelectImage"
+                label='Bilder hochladen'
+                tip='Wähle Bilder aus oder ziehe sie in das Feld'
+                @images-dropped='setImages'
+                :reset-array='resetImageSelectImage'
               ></MultiImageUpload>
             </div>
-            <div v-if="noImageSelectedError" class="text-red-400 font-semibold">
+            <div v-if='noImageSelectedError' class='text-red-400 font-semibold'>
               Bitte wähle mindestens ein Bild aus
             </div>
           </div>
         </AccordionItem>
       </Accordion>
-      <div class="flex justify-end w-full">
+      <div class='flex justify-end w-full mt-4'>
         <primary-button
           @click.prevent="
             $emit('close');
             resetForm();
           "
-          class="mr-2 w-32"
-          name="Abbrechen"
-          bgColor="bg-gray-500"
-          bgHoverColor="bg-gray-700"
-          fontWeight="font-normal"
+          class='mr-2 w-32'
+          name='Abbrechen'
+          bgColor='bg-gray-500'
+          bgHoverColor='bg-gray-700'
+          fontWeight='font-normal'
         ></primary-button>
-        <save-button name="Speichern" type="submit" class="w-36" :loading="taskCreationLoading"></save-button>
+        <save-button name='Speichern' type='submit' class='w-36' :loading='taskCreationLoading'></save-button>
       </div>
     </form>
   </div>
 </template>
-<script lang="ts">
+<script lang='ts'>
 import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 import { defineComponent, reactive, ref } from 'vue';
@@ -301,7 +301,8 @@ export default defineComponent({
         formData.append('names', image.file.name);
       }
 
-      const imageIds = TaskImageService.uploadMultipleTaskImages(formData, (value: any) => {});
+      const imageIds = TaskImageService.uploadMultipleTaskImages(formData, (value: any) => {
+      });
 
       return imageIds;
     };

@@ -1,16 +1,31 @@
 import { PointData } from './pointData';
+import { AnnotationGroup } from '../../task';
 
 export interface ImageDimensions {
   width: number;
   height: number;
 }
 
-export interface GrayGroup {
-  gray_value: number;
+export interface GreyGroup {
+  grey_value: number;
   annotations: PointData[][];
+  annotation_group: AnnotationGroup;
 }
 
 export interface ExtractionResult {
   image: ImageDimensions;
-  annotations: GrayGroup[];
+  file_name: string;
+  annotation_count: number;
+  grey_groups: GreyGroup[];
+}
+
+export interface GreyGroupSummary {
+  grey_value: number;
+  annotation_count: number;
+  annotation_group: AnnotationGroup;
+}
+
+export interface ExtractionResultList {
+  summary: GreyGroupSummary[];
+  results: ExtractionResult[];
 }

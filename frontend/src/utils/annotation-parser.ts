@@ -4,9 +4,10 @@ import OpenSeadragon, { Point } from 'openseadragon';
 import { ANNOTATION_TYPE } from '../model/viewer/annotationType';
 import { ANNOTATION_COLOR } from '../model/viewer/colors';
 import { AnnotationData } from '../model/viewer/export/annotationData';
-import { ExtractionResult } from '../model/viewer/export/extractionResult';
+import { ExtractionResult, ExtractionResultList } from '../model/viewer/export/extractionResult';
 import { PointData } from '../model/viewer/export/pointData';
 import { imageToViewport } from './seadragon.utils';
+
 export interface ParseResult {
   name: string | null;
   color: string | null;
@@ -117,11 +118,11 @@ export class AnnotationParser {
 
     const width = viewer.world.getItemAt(0).getContentSize().x;
     const factor = width / data.image.width;
-    for (const item of data.annotations) {
-      const color = '#' + item.gray_value.toString().repeat(6);
+    for (const item of data.grey_groups) {
+      const color = '#' + item.grey_value.toString().repeat(6);
       const parseItem: ParseResult = {
         color: color,
-        name: item.gray_value + '',
+        name: item.grey_value + '',
         polygons: []
       };
 
@@ -130,7 +131,7 @@ export class AnnotationParser {
           color: color,
           id: nanoid(),
           type: type,
-          name: item.gray_value + '',
+          name: item.grey_value + '',
           coord: {
             image: [],
             viewport: []
@@ -150,5 +151,53 @@ export class AnnotationParser {
     }
 
     return parseResult;
+  }
+
+  public static convertImagesToAnnotations(
+    data: ExtractionResultList,
+    viewer: OpenSeadragon.Viewer,
+    type: ANNOTATION_TYPE = ANNOTATION_TYPE.SOLUTION
+  ): ParseResult[] {
+    const parseResults: ParseResult[] = [];
+
+    const width = viewer.world.getItemAt(0).getContentSize().x;
+
+    for (const result of data.results) {
+      const factor = width / result.image.width;
+      for (const group of result.grey_groups) {
+        const annotationGroup = group.annotation_group;
+
+        const parseItem: ParseResult = {
+          color: annotationGroup.color,
+          name: annotationGroup.name,
+          polygons: []
+        };
+
+        for (const annotation of group.annotations) {
+          const annotationItem: AnnotationData = {
+            color: annotationGroup.color,
+            id: nanoid(),
+            type: type,
+            name: annotationGroup.name,
+            coord: {
+              image: [],
+              viewport: []
+            }
+          };
+
+          for (const coord of annotation) {
+            const imagePoint = new Point(coord.x * factor, coord.y * factor);
+            const viewportPoint = imageToViewport(imagePoint, viewer);
+            annotationItem.coord.image.push(imagePoint);
+            annotationItem.coord.viewport?.push(viewportPoint);
+          }
+          parseItem.polygons.push(annotationItem);
+        }
+
+        parseResults.push(parseItem);
+      }
+    }
+
+    return parseResults;
   }
 }

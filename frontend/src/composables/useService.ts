@@ -16,5 +16,11 @@ export function useService<T, A extends unknown[]>(asyncFunc: (...args: A) => Pr
     loading.value = false;
   };
 
-  return { loading, result, err, run };
+  const reset = () => {
+    loading.value = false;
+    result.value = undefined;
+    err.value = undefined;
+  };
+
+  return { loading, result, err, run, reset };
 }

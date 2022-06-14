@@ -116,7 +116,11 @@
   <!--    @closeDialog='showUploadDialog = false'-->
   <!--  ></ground-truth-dialog>-->
 
-  <SampleSolutionEditor :show-dialog='showUploadDialog' :slide-id='slide_name'></SampleSolutionEditor>
+  <SampleSolutionEditor :show-dialog='showUploadDialog' :slide-id='slide_name'
+                        @applyAnnotations='parseAnnotations'
+                        @close='closeSampleSolutionEditor'>
+
+  </SampleSolutionEditor>
 
   <confirm-dialog
     :loading='deleteAnnotationsLoading'
@@ -166,12 +170,13 @@ import { ANNOTATION_TYPE, isInfoAnnotation, isSolution } from '../../model/viewe
 import { ANNOTATION_COLOR } from '../../model/viewer/colors';
 import { isDrawingTool, Tool, TOOL_ANNOTATION, TOOL_COLORS, TOOL_KEYBOARD_SHORTCUTS } from '../../model/viewer/tools';
 import { TaskService } from '../../services/task.service';
-import { ParseResult } from '../../utils/annotation-parser';
+import { AnnotationParser, ParseResult } from '../../utils/annotation-parser';
 import { adminMouseClickHandler } from './core/adminMouseClickHandler';
 import { AnnotationViewer } from './core/annotationViewer';
 import { options } from './core/options';
 import { isTaskSaving, polygonChanged, selectedPolygon, viewerLoadingState, viewerZoom } from './core/viewerState';
 import { focusBackgroundAnnotation, updateAnnotation } from './taskViewerHelper';
+import { ExtractionResultList } from '../../model/viewer/export/extractionResult';
 
 export default defineComponent({
   props: {
@@ -429,6 +434,16 @@ export default defineComponent({
           toolbarTools.value.push(Tool.UPLOAD);
         }
       }
+    };
+
+    const parseAnnotations = (extraction: ExtractionResultList) => {
+      const conversionResult = AnnotationParser.convertImagesToAnnotations(
+        extraction,
+        drawingViewer.value!.viewer,
+        ANNOTATION_TYPE.SOLUTION
+      );
+
+      onApplyAnnotations(conversionResult);
     };
 
     const onApplyAnnotations = async (result: ParseResult[]) => {
@@ -767,7 +782,7 @@ export default defineComponent({
       isTaskSaving.value = false;
     };
 
-    const groundTruthDialogClosed = () => {
+    const closeSampleSolutionEditor = () => {
       showUploadDialog.value = false;
       changeToolTo.value = Tool.MOVE;
     };
@@ -820,7 +835,8 @@ export default defineComponent({
       deleteAnnotation,
       changeToolTo,
       unselectAnnotation,
-      groundTruthDialogClosed
+      closeSampleSolutionEditor,
+      parseAnnotations
     };
   }
 });
