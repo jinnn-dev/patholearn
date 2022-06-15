@@ -1,5 +1,5 @@
 <script lang='ts' setup>
-import { defineProps, onMounted, PropType, ref, watch } from 'vue';
+import { defineProps, nextTick, onMounted, PropType, ref, watch } from 'vue';
 import { nanoid } from 'nanoid';
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
 import { IconNames } from '../../../icons';
@@ -18,11 +18,14 @@ const tooltip = ref<Instance>();
 
 const id = nanoid(4);
 onMounted(() => {
-  tooltip.value = TooltipGenerator.addGeneralTooltip({
-    target: '#' + props.comp + id,
-    content: props.hint || '',
-    placement: 'right'
-  });
+  nextTick(() => {
+    tooltip.value = TooltipGenerator.addGeneralTooltip({
+      target: '#' + props.comp + id,
+      content: props.hint || '',
+      placement: 'right'
+    });
+
+  })
 });
 
 </script>

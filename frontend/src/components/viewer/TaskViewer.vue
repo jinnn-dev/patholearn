@@ -112,7 +112,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const viewerRef = ref();
 
-    const toolbarTools = ref<Tool[]>([Tool.MOVE, Tool.SELECT, Tool.DELETE, Tool.DELETE_ANNOTATION]);
+    const toolbarTools = ref<Tool[]>([]);
     const currentTool = ref<Tool>();
 
     const selectedPolygonData = reactive({
@@ -261,6 +261,15 @@ export default defineComponent({
     });
 
     const setToolbarTools = () => {
+
+      const tools = [
+        Tool.MOVE, Tool.SELECT, Tool.DELETE, Tool.DELETE_ANNOTATION
+      ]
+      if (toolbarTools.value.length === 0) {
+        toolbarTools.value = [...tools];
+      }
+
+
       toolbarTools.value = toolbarTools.value.slice(0, 4);
       let tool;
 
