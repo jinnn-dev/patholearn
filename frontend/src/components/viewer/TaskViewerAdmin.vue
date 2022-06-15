@@ -80,7 +80,7 @@
       <primary-button bgColor='bg-gray-500' @click='resetAnnotationTolerance'>Toleranz zurücksetzen</primary-button>
     </div>
 
-    <div>
+    <div class='mt-4'>
       <primary-button
         class='w-64'
         bgColor='bg-gray-500'
