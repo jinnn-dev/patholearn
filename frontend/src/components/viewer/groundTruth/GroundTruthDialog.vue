@@ -56,11 +56,12 @@
   </modal-dialog>
 </template>
 <script lang='ts'>
-import { SlideService } from '../../services/slide.service';
-import { AnnotationParser, ParseResult } from '../../utils/annotation-parser';
+import { SlideService } from '../../../services/slide.service';
+import { AnnotationParser, ParseResult } from '../../../utils/annotation-parser';
 import { defineComponent, onMounted, PropType, ref } from 'vue';
-import { AnnotationViewer } from './core/annotationViewer';
-import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
+import { AnnotationViewer } from '../core/annotationViewer';
+import { ANNOTATION_TYPE } from '../../../model/viewer/annotationType';
+import { TempUploadImage } from '../../../model/TempUploadImage';
 
 export default defineComponent({
   props: {
@@ -70,6 +71,10 @@ export default defineComponent({
     isUserSolution: {
       type: Boolean,
       default: false
+    },
+    slideId: {
+      type: String,
+      required: true
     }
   },
   emits: ['applyAnnotations', 'closeDialog'],
@@ -81,12 +86,15 @@ export default defineComponent({
 
     const isWrongFormat = ref<Boolean>(false);
 
+    const selectedImages = ref<TempUploadImage[]>();
+
     onMounted(() => {
       file.value = undefined;
       convertResult.value = undefined;
       conversionLoading.value = false;
       isWrongFormat.value = false;
     });
+
 
     const updateName = (name: string, group: ParseResult) => {
       group.name = name;

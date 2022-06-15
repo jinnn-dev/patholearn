@@ -5,17 +5,22 @@ import imutils
 import numpy as np
 from imutils import contours
 
-from app.schemas.extractor import GrayGroup, ExtractionResult, ImageDimension
+from app.schemas.extractor import GreyGroup, ExtractionResult, ImageDimension
 from app.schemas.polygon_data import Point
+from app.schemas.task import AnnotationGroup
 from app.utils.logger import logger
 from app.utils.timer import Timer
 
 
-def convert_image_to_annotations(file_contents: Union[bytes, str]) -> ExtractionResult:
+def extract_annotations_from_image(
+    file_name: str, file_contents: Union[bytes, str]
+) -> ExtractionResult:
     """
     Extracts all polygons grouped by gray values of the given file contents.
 
+    :param file_name: Name of the file
     :param file_contents: Content of a file
+
     :return: Conversion result
     """
     timer = Timer()
@@ -27,6 +32,8 @@ def convert_image_to_annotations(file_contents: Union[bytes, str]) -> Extraction
     time = timer.time_elapsed
     logger.debug(f"Loading image into cv2 took {timer.time_elapsed}s")
 
+    annotation_count = 0
+
     hist = cv2.calcHist([img_gray], [0], None, [256], [0, 256])
     available_gray_values = np.unique(np.nonzero(hist))
     available_gray_values = available_gray_values[available_gray_values != 0]
@@ -34,8 +41,8 @@ def convert_image_to_annotations(file_contents: Union[bytes, str]) -> Extraction
     logger.debug(f"Calculating Histogram took {timer.time_elapsed - time}s")
     annotation_groups = []
 
-    for gray_value in available_gray_values:
-        img_mask = cv2.inRange(img_gray, np.array(gray_value), np.array(gray_value))
+    for grey_value in available_gray_values:
+        img_mask = cv2.inRange(img_gray, np.array(grey_value), np.array(grey_value))
         found_contours = cv2.findContours(
             img_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE
         )
@@ -55,8 +62,15 @@ def convert_image_to_annotations(file_contents: Union[bytes, str]) -> Extraction
                 for x, y in zip(corners[0::2], corners[1::2]):
                     annotation.append(Point(x=float(x), y=float(y)))
                 annotations.append(annotation)
+        annotation_count += len(annotations)
         annotation_groups.append(
-            GrayGroup(gray_value=int(gray_value), annotations=annotations)
+            GreyGroup(
+                grey_value=int(grey_value),
+                annotations=annotations,
+                annotation_group=AnnotationGroup(
+                    name=str(grey_value), color="#" + str(grey_value) * 6
+                ),
+            )
         )
     logger.debug(f"Feature extraction took {timer.time_elapsed - time_hist}s")
     timer.stop()
@@ -64,5 +78,8 @@ def convert_image_to_annotations(file_contents: Union[bytes, str]) -> Extraction
 
     height, width = img_gray.shape
     return ExtractionResult(
-        image=ImageDimension(height=height, width=width), annotations=annotation_groups
+        image=ImageDimension(height=height, width=width),
+        annotation_count=annotation_count,
+        file_name=file_name,
+        grey_groups=annotation_groups,
     )

@@ -1,41 +1,41 @@
 <template>
   <div
-    v-if="infotooltipState.show"
-    class="absolute z-[3] max-w-[40%] px-4 py-2 rounded-xl bg-gray-700/60 filter backdrop-blur-md"
+    v-if='infotooltipState.show'
+    class='absolute z-[3] max-w-[40%] px-4 py-2 rounded-xl bg-gray-700/60 backdrop-blur-md'
     :class="infotooltipState.animate ? 'transition-all' : ''"
-    :style="{ transform: translateAttribute }"
-    ref="containerRef"
+    :style='{ transform: translateAttribute }'
+    ref='containerRef'
   >
-    <div class="flex flex-col">
-      <div class="flex justify-between items-start gap-4">
-        <h2 class="text-2xl break-word">
+    <div class='flex flex-col'>
+      <div class='flex justify-between items-start gap-4'>
+        <h2 class='text-2xl break-word'>
           {{ headerText || 'Kein Inhalt' }}
         </h2>
 
-        <div class="flex justify-end gap-2">
+        <div class='flex justify-end gap-2'>
           <Icon
-            v-if="isAdmin"
-            name="pencil"
-            class="cursor-pointer hover:text-gray-200"
-            :strokeWidth="22"
-            @click="openTooltip"
+            v-if='isAdmin'
+            name='pencil'
+            class='cursor-pointer hover:text-gray-200'
+            :strokeWidth='22'
+            @click='openTooltip'
           ></Icon>
 
-          <Icon name="x" @click="hideTooltip" class="cursor-pointer hover:text-gray-200" :strokeWidth="28"></Icon>
+          <Icon name='x' @click='hideTooltip' class='cursor-pointer hover:text-gray-200' :strokeWidth='28'></Icon>
         </div>
       </div>
-      <div class="mt-2 flex w-full">
-        <div v-if="detailText" class="max-h-[300px] w-3/4 overflow-auto break-words text-md">{{ detailText }}</div>
+      <div class='mt-2 flex w-full'>
+        <div v-if='detailText' class='max-h-[300px] w-3/4 overflow-auto break-words text-md'>{{ detailText }}</div>
 
         <div
-          v-if="infotooltipState.images && infotooltipState.images.length > 0"
-          class="max-h-[300px] overflow-auto w-36 min-h-[8rem] px-2"
+          v-if='infotooltipState.images && infotooltipState.images.length > 0'
+          class='max-h-[300px] overflow-auto w-36 min-h-[8rem] px-2'
         >
-          <div v-for="image of infotooltipState.images" :key="image" class="w-full my-2">
+          <div v-for='image of infotooltipState.images' :key='image' class='w-full my-2'>
             <lazy-image
-              :imageUrl="getInfoImageUrl(image)"
-              class="cursor-pointer"
-              @imageLoaded="updateTooltipPosition"
+              :imageUrl='getInfoImageUrl(image)'
+              class='cursor-pointer'
+              @imageLoaded='updateTooltipPosition'
               v-viewer
             ></lazy-image>
           </div>
@@ -43,30 +43,30 @@
       </div>
     </div>
   </div>
-  <modal-dialog :show="showEdit" customClasses="w-[40rem]">
-    <h2 class="text-3xl">Info bearbeiten</h2>
-    <input-field v-model="headerText" label="Titel" type="text" :required="true"> </input-field>
-    <input-area v-model="detailText" label="Details" class="h-[18rem]"></input-area>
-    <FormField v-if="existingImages.length > 0" label="Vorhandene Bilder">
-      <div class="flex flex-wrap max-h-[300px] overflow-auto gap-4">
-        <div v-for="(image, index) in existingImages">
+  <modal-dialog :show='showEdit' customClasses='w-[40rem]'>
+    <h2 class='text-3xl'>Info bearbeiten</h2>
+    <input-field v-model='headerText' label='Titel' type='text' :required='true'></input-field>
+    <input-area v-model='detailText' label='Details' class='h-[18rem]'></input-area>
+    <FormField v-if='existingImages.length > 0' label='Vorhandene Bilder'>
+      <div class='flex flex-wrap max-h-[300px] overflow-auto gap-4'>
+        <div v-for='(image, index) in existingImages'>
           <UploadPreviewImage
-            :key="image.info_image_id"
-            :imgSrc="getInfoImageUrl(image.info_image_id)"
-            :imageName="image.name"
-            :index="index"
-            @imageChanged="updateExistingImage"
-            @deleteImage="deleteExistingImage(index)"
+            :key='image.info_image_id'
+            :imgSrc='getInfoImageUrl(image.info_image_id)'
+            :imageName='image.name'
+            :index='index'
+            @imageChanged='updateExistingImage'
+            @deleteImage='deleteExistingImage(index)'
           />
         </div>
       </div>
     </FormField>
 
     <MultiImageUpload
-      label="Neue Bilder hochladen"
-      tip="Wähle Bilder aus oder ziehe sie in das Feld"
-      :resetArray="!isSaving"
-      @imagesDropped="setImages"
+      label='Neue Bilder hochladen'
+      tip='Wähle Bilder aus oder ziehe sie in das Feld'
+      :resetArray='!isSaving'
+      @imagesDropped='setImages'
     ></MultiImageUpload>
     <!-- <div v-if="uploadLoading">
       <div class="flex gap-3 mb-3 items-center">
@@ -83,29 +83,30 @@
       <div v-if="uploadProgress == 100.0" class="font-semibold">Wird gespeichert...</div>
     </div> -->
 
-    <div class="flex justify-end">
+    <div class='flex justify-end'>
       <primary-button
-        @click.prevent="
+        @click.prevent='
           showEdit = false;
           infotooltipState.show = true;
-        "
-        class="mr-2 w-32"
-        name="Abbrechen"
-        bgColor="bg-gray-500"
-        bgHoverColor="bg-gray-700"
-        fontWeight="font-normal"
+        '
+        class='mr-2 w-32'
+        name='Abbrechen'
+        bgColor='bg-gray-500'
+        bgHoverColor='bg-gray-700'
+        fontWeight='font-normal'
       ></primary-button>
-      <save-button name="Speichern" type="submit" class="w-36" @click="updateTooltip" :loading="isSaving"></save-button>
+      <save-button name='Speichern' type='submit' class='w-36' @click='updateTooltip' :loading='isSaving'></save-button>
     </div>
   </modal-dialog>
 </template>
-<script lang="ts">
+<script lang='ts'>
 import { computed, defineComponent, nextTick, onMounted, ref, watch } from 'vue';
 import { getInfoImageUrl, SLIDE_IMAGE_URL } from '../config';
 import { InfoImage } from '../model/infoImage';
 import { InfoImageService } from '../services/info-image.service';
 import { InfoTooltipGenerator } from '../utils/tooltips/info-tooltip-generator';
 import { infotooltipState, resetInfoTooltipState } from '../utils/tooltips/info-tooltip-state';
+
 export default defineComponent({
   props: {
     isAdmin: {

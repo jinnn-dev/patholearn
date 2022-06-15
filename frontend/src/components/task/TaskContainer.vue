@@ -1,41 +1,41 @@
 <template>
   <div
-    class="transition-all transform cursor-pointer absolute z-10 top-1/2 -translate-y-1/2 bg-gray-700/70 filter backdrop-blur-md text-3xl rounded-l-lg h-12 flex flex-col items-center justify-center"
-    @click="isCollapsed = !isCollapsed"
+    class='transition-all cursor-pointer absolute z-10 top-1/2 -translate-y-1/2 bg-gray-700/70 backdrop-blur-md text-3xl rounded-l-lg h-12 flex flex-col items-center justify-center'
+    @click='isCollapsed = !isCollapsed'
     :title="isCollapsed ? 'Ausklappen' : 'Einklappen'"
     :class="[isCollapsed ? 'right-0' : 'right-80']"
   >
-    <Icon name="caret-left" class="transition-all transform" :class="[isCollapsed ? 'rotate-180' : 'rotate-90']" />
+    <Icon name='caret-left' class='transition-all' :class="[isCollapsed ? 'rotate-180' : 'rotate-90']" />
   </div>
 
   <div
-    class="transition-all w-80 fixed z-10 right-0 top-1/2 transform -translate-y-1/2 rounded-l-lg overflow-hidden bg-gray-700/70 filter backdrop-blur-md"
+    class='transition-all w-80 fixed z-10 right-0 top-1/2 -translate-y-1/2 rounded-l-lg overflow-hidden bg-gray-700/70 backdrop-blur-md'
     :class="[isCollapsed ? '-right-80' : 'right-0']"
   >
-    <div class="flex gap-4 justify-between items-center m-2 text-center text-xl">
+    <div class='flex gap-4 justify-between items-center m-2 text-center text-xl'>
       <h3>{{ baseTask?.name }}</h3>
     </div>
 
-    <div class="relative max-h-[22.5rem] overflow-auto">
-      <div class="flex flex-col justify-center items-center w-full">
-        <div v-for="(layer, index) in taskMap" :key="index" class="w-full">
+    <div class='relative max-h-[22.5rem] overflow-auto'>
+      <div class='flex flex-col justify-center items-center w-full'>
+        <div v-for='(layer, index) in taskMap' :key='index' class='w-full'>
           <task-layer
-            :isOwner="isOwner"
-            :layerIndex="+index"
-            :tasks="layer"
-            :selectedTaskId="selectedTask?.id"
-            :baseTaskId="baseTask.id"
-            @taskSelected="changeTask($event)"
-            @taskCreated="createTask($event)"
-            @taskUpdated="updateTask($event)"
-            @taskDeleted="deleteTask(index, $event)"
-            @layerDeleted="deleteLayer($event)"
+            :isOwner='isOwner'
+            :layerIndex='+index'
+            :tasks='layer'
+            :selectedTaskId='selectedTask?.id'
+            :baseTaskId='baseTask.id'
+            @taskSelected='changeTask($event)'
+            @taskCreated='createTask($event)'
+            @taskUpdated='updateTask($event)'
+            @taskDeleted='deleteTask(index, $event)'
+            @layerDeleted='deleteLayer($event)'
           ></task-layer>
         </div>
 
-        <role-only v-if="isOwner" class="w-full">
-          <div class="p-1.5 py-4 px-20 w-full bg-gray-800">
-            <primary-button bgColor="bg-gray-500" class="p-2" @click="addNewLayer"> Neue Ebene</primary-button>
+        <role-only v-if='isOwner' class='w-full'>
+          <div class='p-1.5 py-4 px-20 w-full bg-gray-800'>
+            <primary-button bgColor='bg-gray-500' class='p-2' @click='addNewLayer'> Neue Ebene</primary-button>
           </div>
         </role-only>
       </div>
@@ -43,25 +43,25 @@
   </div>
 
   <role-only>
-    <modal-dialog :show="showDeleteBaseTask">
-      <div class="relative">
-        <h1 class="text-2xl">Möchtest du die Aufgabe löschen?</h1>
-        <div class="my-4">Alle Aufgaben und Lösungen werden gelöscht.</div>
-        <div class="flex justify-end">
+    <modal-dialog :show='showDeleteBaseTask'>
+      <div class='relative'>
+        <h1 class='text-2xl'>Möchtest du die Aufgabe löschen?</h1>
+        <div class='my-4'>Alle Aufgaben und Lösungen werden gelöscht.</div>
+        <div class='flex justify-end'>
           <primary-button
-            @click.prevent="showDeleteBaseTask = false"
-            class="mr-2 w-28"
-            name="Nein"
-            bgColor="bg-gray-500"
-            bgHoverColor="bg-gray-700"
-            fontWeight="font-normal"
+            @click.prevent='showDeleteBaseTask = false'
+            class='mr-2 w-28'
+            name='Nein'
+            bgColor='bg-gray-500'
+            bgHoverColor='bg-gray-700'
+            fontWeight='font-normal'
           ></primary-button>
           <save-button
-            name="Ja"
-            type="submit"
-            :loading="deleteLoading"
-            @click="deleteBaseTask"
-            class="w-28"
+            name='Ja'
+            type='submit'
+            :loading='deleteLoading'
+            @click='deleteBaseTask'
+            class='w-28'
           ></save-button>
         </div>
       </div>
@@ -69,7 +69,7 @@
   </role-only>
 </template>
 
-<script lang="ts">
+<script lang='ts'>
 import { defineComponent, onMounted, PropType, ref } from 'vue';
 
 import { Task } from '../../model/task';

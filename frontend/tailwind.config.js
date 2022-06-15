@@ -1,7 +1,13 @@
 module.exports = {
   darkMode: 'class',
-  mode: 'jit',
-  purge: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
+  content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
+  safelist: [
+    'bg-gray-700/95',
+
+    {
+      pattern: /^backdrop-blur-/
+    }
+  ],
   theme: {
     extend: {
       animation: {

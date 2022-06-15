@@ -1,20 +1,21 @@
 <template>
-  <div class="fixed bg-gray-600 p-4 z-10 right-0 top-1/2 transform -translate-y-1/2 rounded-l-xl">
-    <div class="flex flex-col justify-center items-center">
+  <div class='fixed bg-gray-600 p-4 z-10 right-0 top-1/2 -translate-y-1/2 rounded-l-xl'>
+    <div class='flex flex-col justify-center items-center'>
       <span>Layer</span>
       <custom-slider
-        @value-changed="valueChanged"
-        :tooltips="true"
-        :min="1"
-        :max="childCount"
-        orientation="vertical"
+        @value-changed='valueChanged'
+        :tooltips='true'
+        :min='1'
+        :max='childCount'
+        orientation='vertical'
         :direction="'rtl'"
       ></custom-slider>
     </div>
   </div>
 </template>
-<script lang="ts">
+<script lang='ts'>
 import { defineComponent, ref } from 'vue';
+
 export default defineComponent({
   props: {
     childCount: Number

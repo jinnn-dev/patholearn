@@ -41,7 +41,7 @@ from app.schemas.task import (
 )
 from app.schemas.task_hint import TaskHint, TaskHintCreate, TaskHintUpdate
 from app.schemas.user_solution import UserSolutionUpdate
-from app.utils.annotation_type import is_info_annotation
+from app.core.annotation_type import is_info_annotation
 from app.utils.minio_client import MinioClient, minio_client
 from app.utils.timer import Timer
 from fastapi import APIRouter, Depends, HTTPException
