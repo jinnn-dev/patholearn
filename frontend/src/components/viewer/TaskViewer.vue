@@ -25,6 +25,8 @@
     @toolUpdate='setTool'
     :setMoving='is_solving || setMoving'
     :changeToolTo='changeToolTo'
+    @hideAnnotations='hideAllAnnotations'
+    @showAnnotations='showAllAnnotations'
   ></tool-bar>
 
   <confirm-dialog
@@ -58,7 +60,6 @@
   <div ref='viewerRef' id='viewerImage' class='h-screen bg-gray-900' @keyup='handleKeyup'></div>
 </template>
 <script lang='ts'>
-import { selectAll } from 'd3-selection';
 import OpenSeadragon from 'openseadragon';
 import { computed, defineComponent, onMounted, onUnmounted, PropType, reactive, ref, watch } from 'vue';
 import { getSlideUrl } from '../../config';
@@ -73,7 +74,7 @@ import { TaskService } from '../../services/task.service';
 import { ParseResult } from '../../utils/annotation-parser';
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
 import { AnnotationViewer } from './core/annotationViewer';
-import { options } from './core/options';
+import { options, SVG_ID } from './core/options';
 import { userMouseClickHandler } from './core/userMouseClickHandler';
 import {
   isTaskSaving,
@@ -82,7 +83,14 @@ import {
   userSolutionLocked,
   viewerLoadingState
 } from './core/viewerState';
-import { focusBackgroundAnnotation, updateAnnotation } from './taskViewerHelper';
+import {
+  focusBackgroundAnnotation,
+  updateAnnotation,
+  hideGroup,
+  showGroup,
+  showAllAnnotations,
+  hideAllAnnotations
+} from './taskViewerHelper';
 
 export default defineComponent({
   props: {
@@ -449,14 +457,6 @@ export default defineComponent({
       }
     };
 
-    const hideGroup = (group: AnnotationGroup) => {
-      selectAll('[name ="' + group.name + '"]').style('visibility', 'hidden');
-    };
-
-    const showGroup = (group: AnnotationGroup) => {
-      selectAll('[name ="' + group.name + '"]').style('visibility', 'visible');
-    };
-
     const groupCreated = (group: AnnotationGroup) => {
       props.task?.annotation_groups.push(group);
     };
@@ -533,9 +533,7 @@ export default defineComponent({
       viewerRef,
       showUploadDialog,
       drawingViewer,
-      hideGroup,
       updateSelectedAnnotation,
-      showGroup,
       groupCreated,
       setMoving,
       selectedPolygon,
@@ -551,7 +549,11 @@ export default defineComponent({
       showDeleteAnnotationDialog,
       isTaskSaving,
       changeToolTo,
-      unselectAnnotation
+      unselectAnnotation,
+      hideGroup,
+      showGroup,
+      showAllAnnotations,
+      hideAllAnnotations
     };
   }
 });

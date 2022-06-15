@@ -101,7 +101,8 @@
     </div>
   </annotation-settings>
 
-  <tool-bar :tools='toolbarTools' @toolUpdate='setTool' :setMoving='setMoving' :changeToolTo='changeToolTo'></tool-bar>
+  <tool-bar :tools='toolbarTools' @toolUpdate='setTool' :setMoving='setMoving' :changeToolTo='changeToolTo'
+            @showAnnotations='showAllAnnotations' @hideAnnotations='hideAllAnnotations'></tool-bar>
 
   <escape-info :show='isPolygonDrawing || isLineDrawing' :isPolygon='isPolygonDrawing'></escape-info>
 
@@ -173,9 +174,16 @@ import { TaskService } from '../../services/task.service';
 import { AnnotationParser, ParseResult } from '../../utils/annotation-parser';
 import { adminMouseClickHandler } from './core/adminMouseClickHandler';
 import { AnnotationViewer } from './core/annotationViewer';
-import { options } from './core/options';
+import { options, SVG_ID } from './core/options';
 import { isTaskSaving, polygonChanged, selectedPolygon, viewerLoadingState, viewerZoom } from './core/viewerState';
-import { focusBackgroundAnnotation, updateAnnotation } from './taskViewerHelper';
+import {
+  focusBackgroundAnnotation,
+  updateAnnotation,
+  showGroup,
+  hideGroup,
+  showAllAnnotations,
+  hideAllAnnotations
+} from './taskViewerHelper';
 import { ExtractionResultList } from '../../model/viewer/export/extractionResult';
 
 export default defineComponent({
@@ -676,13 +684,6 @@ export default defineComponent({
       );
     };
 
-    const hideGroup = (group: AnnotationGroup) => {
-      selectAll('[name ="' + group.name + '"]').style('visibility', 'hidden');
-    };
-
-    const showGroup = (group: AnnotationGroup) => {
-      selectAll('[name ="' + group.name + '"]').style('visibility', 'visible');
-    };
 
     const updateGroup = async (data: { group: AnnotationGroup; newName: string; newColor: string }) => {
       const index = props.task?.annotation_groups.findIndex((item) => data.group.name === item.name);
@@ -836,7 +837,9 @@ export default defineComponent({
       changeToolTo,
       unselectAnnotation,
       closeSampleSolutionEditor,
-      parseAnnotations
+      parseAnnotations,
+      hideAllAnnotations,
+      showAllAnnotations
     };
   }
 });

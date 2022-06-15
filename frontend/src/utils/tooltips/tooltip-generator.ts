@@ -5,8 +5,9 @@ import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/dist/svg-arrow.css';
 import 'tippy.js/dist/tippy.css';
 import { RESULT_RESPONSE_DETAIL, RESULT_RESPONSE_NAME, TaskResultDetail, TaskStatus } from '../../model/result';
+
 export class TooltipGenerator {
-  private static instances: Instance<Props>[] = [];
+  private static instances: Instance[] = [];
 
   /**
    * Creates a new tooltip with the given task result detail
@@ -78,10 +79,10 @@ export class TooltipGenerator {
   }
 
   private static _generateContent(percentage: number, header: string, content?: string): string {
-    return `<h1 class="text-lg text-center font-semibold">${header}</h1>
-    <div class="text-center">
-    <p class="text-sm my-2">${percentage}% Übereinstimmung</p>
-    ${content ? `<p class="font-semibold break-words">${content}</p>` : ''}
+    return `<h1 class='text-lg text-center font-semibold'>${header}</h1>
+    <div class='text-center'>
+    <p class='text-sm my-2'>${percentage}% Übereinstimmung</p>
+    ${content ? `<p class='font-semibold break-words'>${content}</p>` : ''}
     </div>`;
   }
 
@@ -96,15 +97,19 @@ export class TooltipGenerator {
     placement: Placement;
     delay?: number | [number, number];
   }) {
-    this.instances.push(
-      ...tippy(target, {
-        content,
-        placement,
-        theme: 'myDark',
-        delay: delay || 0,
-        arrow: roundArrow + roundArrow
-      })
-    );
+    const instances = tippy(target, {
+      content,
+      placement,
+      theme: 'myDark',
+      delay: delay || 0,
+      arrow: roundArrow + roundArrow
+    });
+
+    if (instances.length == 1) {
+      this.instances.push(instances[0]);
+      return instances[0];
+    }
+
     // tippy(target, { content, placement, theme: 'myDark' });
   }
 
