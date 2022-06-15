@@ -1,63 +1,63 @@
 <template>
   <annotation-group
-    v-if="task?.task_type === 1"
-    :annotationGroups="task.annotation_groups"
-    :taskId="task.id"
-    @hideGroup="hideGroup"
-    @showGroup="showGroup"
-    @groupCreated="groupCreated"
+    v-if='task?.task_type === 1'
+    :annotationGroups='task.annotation_groups'
+    :taskId='task.id'
+    @hideGroup='hideGroup'
+    @showGroup='showGroup'
+    @groupCreated='groupCreated'
   ></annotation-group>
 
-  <annotation-settings v-if="selectedPolygon && task?.task_type === 1" @saved="updateSelectedAnnotation">
+  <annotation-settings v-if='selectedPolygon && task?.task_type === 1' @saved='updateSelectedAnnotation'>
     <custom-select
-      :isSearchable="false"
-      displayType="small"
-      label="Annotationsklasse:"
-      :values="task?.annotation_groups"
-      field="name"
-      :initial-data="selectedPolygon.name"
-      @valueChanged="updateAnnotationName"
+      :isSearchable='false'
+      displayType='small'
+      label='Annotationsklasse:'
+      :values='task?.annotation_groups'
+      field='name'
+      :initial-data='selectedPolygon.name'
+      @valueChanged='updateAnnotationName'
     />
   </annotation-settings>
 
   <tool-bar
-    :tools="toolbarTools"
-    @toolUpdate="setTool"
-    :setMoving="is_solving || setMoving"
-    :changeToolTo="changeToolTo"
+    :tools='toolbarTools'
+    @toolUpdate='setTool'
+    :setMoving='is_solving || setMoving'
+    :changeToolTo='changeToolTo'
   ></tool-bar>
 
   <confirm-dialog
-    :show="showDeleteAnnotationsModal"
-    :loading="deleteAnnotationsLoading"
-    header="Sollen alle Annotationen gelöscht werden?"
-    @reject="showDeleteAnnotationsModal = false"
-    @confirmation="deleteAnnotations"
+    :show='showDeleteAnnotationsModal'
+    :loading='deleteAnnotationsLoading'
+    header='Sollen alle Annotationen gelöscht werden?'
+    @reject='showDeleteAnnotationsModal = false'
+    @confirmation='deleteAnnotations'
   ></confirm-dialog>
 
-  <escape-info :show="isPolygonDrawing || isLineDrawing" :isPolygon="isPolygonDrawing"></escape-info>
+  <escape-info :show='isPolygonDrawing || isLineDrawing' :isPolygon='isPolygonDrawing'></escape-info>
 
   <saving-info></saving-info>
 
   <background-annotation-switcher
-    v-if="task?.task_data && task.task_data.length !== 0"
-    :backgroundAnnotations="task?.task_data?.length"
-    @focus="focusAnnotation"
+    v-if='task?.task_data && task.task_data.length !== 0'
+    :backgroundAnnotations='task?.task_data?.length'
+    @focus='focusAnnotation'
   ></background-annotation-switcher>
 
-  <info-tooltip @hide-tooltip="unselectAnnotation"></info-tooltip>
+  <info-tooltip @hide-tooltip='unselectAnnotation'></info-tooltip>
 
   <confirm-dialog
-    :show="showDeleteAnnotationDialog"
-    header="Soll die Annotation gelöscht werden?"
-    :loading="isTaskSaving"
-    @confirmation="deleteAnnotation"
-    @reject="showDeleteAnnotationDialog = false"
+    :show='showDeleteAnnotationDialog'
+    header='Soll die Annotation gelöscht werden?'
+    :loading='isTaskSaving'
+    @confirmation='deleteAnnotation'
+    @reject='showDeleteAnnotationDialog = false'
   ></confirm-dialog>
 
-  <div ref="viewerRef" id="viewerImage" class="h-screen bg-gray-900" @keyup="handleKeyup"></div>
+  <div ref='viewerRef' id='viewerImage' class='h-screen bg-gray-900' @keyup='handleKeyup'></div>
 </template>
-<script lang="ts">
+<script lang='ts'>
 import { selectAll } from 'd3-selection';
 import OpenSeadragon from 'openseadragon';
 import { computed, defineComponent, onMounted, onUnmounted, PropType, reactive, ref, watch } from 'vue';
@@ -197,8 +197,10 @@ export default defineComponent({
     watch(
       () => polygonChanged.changed,
       async (newVal, oldVal) => {
-        updateSelectedAnnotation();
-        emit('userAnnotationChanged');
+        if (polygonChanged.changed) {
+          await updateSelectedAnnotation();
+          emit('userAnnotationChanged');
+        }
       }
     );
 
