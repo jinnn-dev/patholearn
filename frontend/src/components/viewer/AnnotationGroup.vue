@@ -37,11 +37,11 @@
         </div>
       </div>
     </div>
-    <role-only class='pt-2'>
+    <role-only>
       <primary-button
         v-if='isAdmin'
         name='Neue Klasse'
-        class='py-1'
+        class='py-2'
         bgColor='bg-gray-400'
         @click='showGroupCreation = true'
       ></primary-button>
