@@ -1,3 +1,162 @@
+<script lang='ts' setup>
+import { useVuelidate } from '@vuelidate/core';
+import { required } from '@vuelidate/validators';
+import { reactive, ref } from 'vue';
+import { Task, TaskCreate, TaskType } from '../../model/task';
+import { TaskImageService } from '../../services/task-image.service';
+import { TaskService } from '../../services/task.service';
+import { knowledgeLevel, taskTypes } from './task-config';
+
+const emit = defineEmits(['close', 'taskCreated']);
+
+const props = defineProps({
+  layerIndex: {
+    type: Number,
+    required: true
+  },
+  baseTaskId: {
+    type: Number,
+    required: true
+  }
+});
+
+const noImageSelectedError = ref(false);
+const imageSelectImages = ref<{ fileUrl: string; file: File }[]>([]);
+const resetImageSelectImage = ref(false);
+
+const typeSelection = [
+  {
+    index: 0,
+    type: 'Punkt',
+    icon: 'push-pin'
+  },
+  {
+    index: 1,
+    type: 'Linie',
+    icon: 'line-segments'
+  },
+  {
+    index: 2,
+    type: 'Polygon',
+    icon: 'polygon-segments'
+  }
+];
+
+const taskCreationLoading = ref<Boolean>(false);
+
+const initialState = {
+  layer: null,
+  task_question: null,
+  task_type: 0,
+  annotation_type: 0,
+  knowledge_level: 0,
+  min_correct: 1
+};
+
+const taskCreationForm = reactive<{
+  layer: number | null;
+  task_question: string | null;
+  task_type: number;
+  annotation_type: number;
+  knowledge_level: number;
+  min_correct: number;
+}>({
+  ...initialState
+});
+
+const notNull = (value: any) => value != null;
+
+const rules = {
+  task_type: { required, notNull }
+};
+
+const validator = useVuelidate(rules, taskCreationForm);
+
+const expandTaskSettings = ref(true);
+
+const createdTask = ref<Task>();
+
+const selectedTaskType = ref<number>(0);
+
+const onSubmit = async () => {
+  if (!validator.value.$invalid) {
+    taskCreationLoading.value = true;
+
+    if (taskCreationForm.task_type === TaskType.IMAGE_SELECT) {
+      if (!imageSelectImages.value.length) {
+        taskCreationLoading.value = false;
+        noImageSelectedError.value = true;
+      } else {
+        noImageSelectedError.value = false;
+
+        const taskImages = await uploadImageSelectImages();
+        const taskImageIds = taskImages.map((taskImage) => taskImage.task_image_id);
+
+        const createTask: TaskCreate = {
+          layer: props.layerIndex,
+          task_question: taskCreationForm.task_question!,
+          base_task_id: props.baseTaskId as number,
+          task_type: taskCreationForm.task_type!,
+          task_data: taskImageIds,
+          annotation_type: 0,
+          knowledge_level: 1,
+          min_correct: taskImageIds.length,
+          hints: []
+        };
+
+        const task = await TaskService.createTask(createTask);
+        emit('taskCreated', task);
+        taskCreationLoading.value = false;
+        createdTask.value = task;
+        resetForm();
+        emit('close');
+      }
+    } else {
+      const createTask: TaskCreate = {
+        layer: props.layerIndex,
+        task_question: taskCreationForm.task_question!,
+        base_task_id: props.baseTaskId as number,
+        task_type: taskCreationForm.task_type!,
+        annotation_type: taskCreationForm.annotation_type,
+        knowledge_level: taskCreationForm.knowledge_level,
+        min_correct: taskCreationForm.min_correct,
+        annotation_groups: [],
+        hints: []
+      };
+      TaskService.createTask(createTask).then((res: Task) => {
+        emit('taskCreated', res);
+        taskCreationLoading.value = false;
+        createdTask.value = res;
+        resetForm();
+        emit('close');
+      });
+    }
+  }
+};
+
+const uploadImageSelectImages = async () => {
+  const formData = new FormData();
+  for (const image of imageSelectImages.value) {
+    formData.append('images', image.file);
+    formData.append('names', image.file.name);
+  }
+
+  const imageIds = TaskImageService.uploadMultipleTaskImages(formData, (value: any) => {
+  });
+
+  return imageIds;
+};
+
+const setImages = (images: { fileUrl: string; file: File }[]) => {
+  imageSelectImages.value = images;
+};
+
+const resetForm = () => {
+  Object.assign(taskCreationForm, initialState);
+  resetImageSelectImage.value = true;
+  imageSelectImages.value = [];
+};
+</script>
 <template>
   <div>
     <h1 class='text-2xl text-center'>
@@ -157,184 +316,3 @@
     </form>
   </div>
 </template>
-<script lang='ts'>
-import { useVuelidate } from '@vuelidate/core';
-import { required } from '@vuelidate/validators';
-import { defineComponent, reactive, ref } from 'vue';
-import { SLIDE_IMAGE_URL } from '../../config';
-import { Task, TaskCreate, TaskType } from '../../model/task';
-import { TaskImageService } from '../../services/task-image.service';
-import { TaskService } from '../../services/task.service';
-import { knowledgeLevel, taskTypes } from './task-config';
-
-export default defineComponent({
-  emits: ['close', 'taskCreated'],
-  props: {
-    layerIndex: {
-      type: Number,
-      required: true
-    },
-    baseTaskId: {
-      type: Number,
-      required: true
-    }
-  },
-  setup(props, { emit }) {
-    const noImageSelectedError = ref(false);
-    const imageSelectImages = ref<{ fileUrl: string; file: File }[]>([]);
-    const resetImageSelectImage = ref(false);
-
-    const typeSelection = [
-      {
-        index: 0,
-        type: 'Punkt',
-        icon: 'push-pin'
-      },
-      {
-        index: 1,
-        type: 'Linie',
-        icon: 'line-segments'
-      },
-      {
-        index: 2,
-        type: 'Polygon',
-        icon: 'polygon-segments'
-      }
-    ];
-
-    const taskCreationLoading = ref<Boolean>(false);
-
-    const initialState = {
-      layer: null,
-      task_question: null,
-      task_type: 0,
-      annotation_type: 0,
-      knowledge_level: 0,
-      min_correct: 1
-    };
-
-    const taskCreationForm = reactive<{
-      layer: number | null;
-      task_question: string | null;
-      task_type: number;
-      annotation_type: number;
-      knowledge_level: number;
-      min_correct: number;
-    }>({
-      ...initialState
-    });
-
-    const notNull = (value: any) => value != null;
-
-    const rules = {
-      task_type: { required, notNull }
-    };
-
-    const validator = useVuelidate(rules, taskCreationForm);
-
-    const expandTaskSettings = ref(true);
-
-    const createdTask = ref<Task>();
-
-    const selectedTaskType = ref<number>(0);
-
-    const onSubmit = async () => {
-      if (!validator.value.$invalid) {
-        taskCreationLoading.value = true;
-
-        if (taskCreationForm.task_type === TaskType.IMAGE_SELECT) {
-          if (!imageSelectImages.value.length) {
-            taskCreationLoading.value = false;
-            noImageSelectedError.value = true;
-          } else {
-            noImageSelectedError.value = false;
-
-            const taskImages = await uploadImageSelectImages();
-            const taskImageIds = taskImages.map((taskImage) => taskImage.task_image_id);
-
-            const createTask: TaskCreate = {
-              layer: props.layerIndex,
-              task_question: taskCreationForm.task_question!,
-              base_task_id: props.baseTaskId as number,
-              task_type: taskCreationForm.task_type!,
-              task_data: taskImageIds,
-              annotation_type: 0,
-              knowledge_level: 1,
-              min_correct: taskImageIds.length,
-              hints: []
-            };
-
-            const task = await TaskService.createTask(createTask);
-            emit('taskCreated', task);
-            taskCreationLoading.value = false;
-            createdTask.value = task;
-            resetForm();
-            emit('close');
-          }
-        } else {
-          const createTask: TaskCreate = {
-            layer: props.layerIndex,
-            task_question: taskCreationForm.task_question!,
-            base_task_id: props.baseTaskId as number,
-            task_type: taskCreationForm.task_type!,
-            annotation_type: taskCreationForm.annotation_type,
-            knowledge_level: taskCreationForm.knowledge_level,
-            min_correct: taskCreationForm.min_correct,
-            annotation_groups: [],
-            hints: []
-          };
-          TaskService.createTask(createTask).then((res: Task) => {
-            emit('taskCreated', res);
-            taskCreationLoading.value = false;
-            createdTask.value = res;
-            resetForm();
-            emit('close');
-          });
-        }
-      }
-    };
-
-    const uploadImageSelectImages = async () => {
-      const formData = new FormData();
-      for (const image of imageSelectImages.value) {
-        formData.append('images', image.file);
-        formData.append('names', image.file.name);
-      }
-
-      const imageIds = TaskImageService.uploadMultipleTaskImages(formData, (value: any) => {
-      });
-
-      return imageIds;
-    };
-
-    const setImages = (images: { fileUrl: string; file: File }[]) => {
-      imageSelectImages.value = images;
-    };
-
-    const resetForm = () => {
-      Object.assign(taskCreationForm, initialState);
-      resetImageSelectImage.value = true;
-      imageSelectImages.value = [];
-    };
-
-    return {
-      onSubmit,
-      resetForm,
-      uploadImageSelectImages,
-      setImages,
-      taskCreationForm,
-      taskCreationLoading,
-      knowledgeLevel,
-      taskTypes,
-      typeSelection,
-      expandTaskSettings,
-      createdTask,
-      selectedTaskType,
-      resetImageSelectImage,
-      SLIDE_IMAGE_URL,
-      noImageSelectedError
-    };
-  }
-});
-</script>
-<style></style>

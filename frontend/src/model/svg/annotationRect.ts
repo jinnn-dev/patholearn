@@ -87,10 +87,10 @@ export class AnnotationRectangle extends Annotation {
       this._mouseTrackers.push(
         new OpenSeadragon.MouseTracker({
           element: node,
-          dragHandler: function (event) {
+          dragHandler: function(event) {
             self.dragHandler(event, node, viewer);
           },
-          dragEndHandler: function (event) {
+          dragEndHandler: function(event) {
             if (self.reactive) {
               polygonChanged.changed = true;
             }
@@ -164,7 +164,7 @@ export class AnnotationRectangle extends Annotation {
       vertex.element.updateRadius(POLYGON_VERTICE_RADIUS / scale);
       vertex.element.updateStrokeWidth(POLYGON_VERTICE_RADIUS / scale);
       vertex.element.updateStrokeColor(this.color);
-      select('[id ="' + vertex.element.id + '"]').each(function () {
+      select('[id ="' + vertex.element.id + '"]').each(function() {
         self.addTracking(this as HTMLElement, viewer);
       });
 
@@ -201,11 +201,13 @@ export class AnnotationRectangle extends Annotation {
       polyline.style('stroke-width', strokeWidth);
     }
   }
+
   dragHandler(event: OSDEvent<any>, node: HTMLElement, viewer: Viewer): void {
     if (this.reactive) {
       polygonChanged.changed = false;
     }
 
+    // @ts-ignore
     const viewportDelta = viewer.viewport.deltaPointsFromPixels(event.delta);
     const selected = select(node);
 
@@ -229,6 +231,7 @@ export class AnnotationRectangle extends Annotation {
 
     this.redrawPolyline();
   }
+
   resetColors(): void {
     if (this._polyline) {
       this._polyline.attr('stroke', this.color).attr('fill', this._fillColor);
@@ -237,6 +240,7 @@ export class AnnotationRectangle extends Annotation {
     if (this.isSelected) {
     }
   }
+
   updateColor(fillColor: string, strokeColor: string): void {
     this.color = strokeColor;
     this._polyline?.style('fill', fillColor);

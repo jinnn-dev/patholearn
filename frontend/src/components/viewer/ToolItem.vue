@@ -1,5 +1,5 @@
 <script lang='ts' setup>
-import { defineProps, nextTick, onMounted, PropType, ref, watch } from 'vue';
+import { nextTick, onMounted, PropType, ref, watch } from 'vue';
 import { nanoid } from 'nanoid';
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
 import { IconNames } from '../../../icons';

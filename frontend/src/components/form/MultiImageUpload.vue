@@ -1,3 +1,124 @@
+<script lang='ts' setup>
+import { PropType, ref, watch } from 'vue';
+import { TempUploadImage } from '../../model/TempUploadImage';
+
+const emit = defineEmits(['imagesDropped']);
+
+const props = defineProps({
+  placeholder: String,
+  label: String,
+  tip: String,
+
+  errorMessage: {
+    type: String,
+    required: false
+  },
+
+  marginHor: {
+    type: String,
+    default: 'my-4'
+  },
+
+  images: {
+    type: Array as PropType<string[]>,
+    default: []
+  },
+  resetArray: {
+    type: Boolean,
+    default: false
+  }
+});
+
+const fileRef = ref<HTMLInputElement>();
+
+const images = ref<TempUploadImage[]>([]);
+
+const dropzoneHoverActive = ref(false);
+
+const dragOverTimeout = ref();
+
+watch(
+  () => props.resetArray,
+  () => {
+    images.value = [];
+    emit('imagesDropped', images.value);
+  }
+);
+
+const dropHandler = (event: DragEvent) => {
+  event.preventDefault();
+
+  if (event.dataTransfer?.items) {
+    // Use DataTransferItemList interface to access the file(s)
+    for (let i = 0; i < event.dataTransfer.items.length; i++) {
+      if (event.dataTransfer.items[i].kind === 'file') {
+        const file = event.dataTransfer.items[i].getAsFile();
+
+        if (isFileImage(file)) {
+          addFile(file!);
+        }
+      }
+    }
+  } else {
+    // Use DataTransfer interface to access the file(s)
+    for (let i = 0; i < (event.dataTransfer?.files?.length || 0); i++) {
+      const file = event.dataTransfer?.files[i];
+
+      if (isFileImage(file)) {
+        addFile(file!);
+      }
+    }
+  }
+
+  emit('imagesDropped', images.value);
+};
+
+const addFile = (file: File) => {
+  images.value.push({
+    file: file,
+    fileUrl: URL.createObjectURL(file)
+  });
+};
+
+const dragOverEvent = (event: DragEvent) => {
+  dropzoneHoverActive.value = true;
+
+  event.preventDefault();
+
+  clearTimeout(dragOverTimeout.value);
+
+  dragOverTimeout.value = setTimeout(() => {
+    dropzoneHoverActive.value = false;
+  }, 100);
+};
+
+const onFileChange = (event: any) => {
+  const files = event.target?.files || event.dataTransfer?.files;
+  if (!files.length) return;
+
+  for (const file of files) {
+    addFile(file);
+  }
+  emit('imagesDropped', images.value);
+};
+
+const deleteImage = (index: number) => {
+  images.value.splice(index, 1);
+  emit('imagesDropped', images.value);
+};
+
+const updateImage = (event: { image: File; index: number }) => {
+  images.value[event.index] = {
+    file: event.image,
+    fileUrl: images.value[event.index].fileUrl
+  };
+};
+
+const isFileImage = (file: File | undefined | null) => {
+  return file && file['type'].split('/')[0] === 'image';
+};
+
+</script>
 <template>
   <form-field :label='label' :tip='tip' :errorMessage='errorMessage' :marginHor='marginHor' class='relative'>
     <div class='absolute flex gap-4 bottom-0 z-10 right-2 pr-2 pb-2' v-if='images.length > 0'>
@@ -69,143 +190,6 @@
     />
   </form-field>
 </template>
-<script lang='ts'>
-import { defineComponent, PropType, ref, watch } from 'vue';
-import { getInfoImageUrl } from '../../config';
-import { TempUploadImage } from '../../model/TempUploadImage';
-
-export default defineComponent({
-  emits: ['imagesDropped'],
-
-  props: {
-    placeholder: String,
-    label: String,
-    tip: String,
-
-    errorMessage: {
-      type: String,
-      required: false
-    },
-
-    marginHor: {
-      type: String,
-      default: 'my-4'
-    },
-
-    images: {
-      type: Array as PropType<string[]>,
-      default: []
-    },
-    resetArray: {
-      type: Boolean,
-      default: false
-    }
-  },
-
-  setup(props, { emit }) {
-    const fileRef = ref<HTMLInputElement>();
-
-    const images = ref<TempUploadImage[]>([]);
-
-    const dropzoneHoverActive = ref(false);
-
-    const dragOverTimeout = ref();
-
-    watch(
-      () => props.resetArray,
-      () => {
-        images.value = [];
-        emit('imagesDropped', images.value);
-      }
-    );
-
-    const dropHandler = (event: DragEvent) => {
-      event.preventDefault();
-
-      if (event.dataTransfer?.items) {
-        // Use DataTransferItemList interface to access the file(s)
-        for (let i = 0; i < event.dataTransfer.items.length; i++) {
-          if (event.dataTransfer.items[i].kind === 'file') {
-            const file = event.dataTransfer.items[i].getAsFile();
-
-            if (isFileImage(file)) {
-              addFile(file!);
-            }
-          }
-        }
-      } else {
-        // Use DataTransfer interface to access the file(s)
-        for (let i = 0; i < (event.dataTransfer?.files?.length || 0); i++) {
-          const file = event.dataTransfer?.files[i];
-
-          if (isFileImage(file)) {
-            addFile(file!);
-          }
-        }
-      }
-
-      emit('imagesDropped', images.value);
-    };
-
-    const addFile = (file: File) => {
-      images.value.push({
-        file: file,
-        fileUrl: URL.createObjectURL(file)
-      });
-    };
-
-    const dragOverEvent = (event: DragEvent) => {
-      dropzoneHoverActive.value = true;
-
-      event.preventDefault();
-
-      clearTimeout(dragOverTimeout.value);
-
-      dragOverTimeout.value = setTimeout(() => {
-        dropzoneHoverActive.value = false;
-      }, 100);
-    };
-
-    const onFileChange = (event: any) => {
-      const files = event.target?.files || event.dataTransfer?.files;
-      if (!files.length) return;
-
-      for (const file of files) {
-        addFile(file);
-      }
-      emit('imagesDropped', images.value);
-    };
-
-    const deleteImage = (index: number) => {
-      images.value.splice(index, 1);
-      emit('imagesDropped', images.value);
-    };
-
-    const updateImage = (event: { image: File; index: number }) => {
-      images.value[event.index] = {
-        file: event.image,
-        fileUrl: images.value[event.index].fileUrl
-      };
-    };
-
-    const isFileImage = (file: File | undefined | null) => {
-      return file && file['type'].split('/')[0] === 'image';
-    };
-
-    return {
-      dropHandler,
-      dragOverEvent,
-      dropzoneHoverActive,
-      fileRef,
-      onFileChange,
-      getInfoImageUrl,
-      images,
-      deleteImage,
-      updateImage
-    };
-  }
-});
-</script>
 <style>
 .fadeDropzone-enter-active {
   transition: opacity 0.3s ease-out;

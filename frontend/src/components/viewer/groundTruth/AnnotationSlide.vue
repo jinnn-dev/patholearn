@@ -1,5 +1,4 @@
-<script setup lang='ts'>
-
+<script lang='ts' setup>
 import { useAnnotationSlide } from './useAnnotationSlide';
 import { options } from '../core/options';
 import { getSlideUrl } from '../../../config';
@@ -10,7 +9,7 @@ const props = defineProps({
     required: true
   }
 });
-const { viewer, manager } = useAnnotationSlide(options('annotation-slide-viewer', getSlideUrl(props.slideId)));
+const { viewer } = useAnnotationSlide(options('annotation-slide-viewer', getSlideUrl(props.slideId)));
 
 
 </script>

@@ -1,18 +1,18 @@
 <template>
-  <div class="icon" :id="id">
+  <div class='icon' :id='id'>
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      :width="size || width"
-      :height="size || height"
-      :viewBox.camel="viewBox"
-      v-bind="$attrs"
-      v-html="icon"
-      class="stroke-current fill-current"
-      :stroke-width="strokeWidth"
+      xmlns='http://www.w3.org/2000/svg'
+      :width='size || width'
+      :height='size || height'
+      :viewBox.camel='viewBox'
+      v-bind='$attrs'
+      v-html='icon'
+      class='stroke-current fill-current'
+      :stroke-width='strokeWidth'
     ></svg>
   </div>
 </template>
-<script lang="ts">
+<script lang='ts'>
 import { computed, defineComponent, PropType } from 'vue';
 import { Icon, IconNames } from '../../../icons';
 

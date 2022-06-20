@@ -12,7 +12,7 @@ export class SlideService {
    * @returns All found slides
    */
   public static async getSlides(
-    data: { metadata: boolean; status?: SLIDE_STATUS } = { metadata: true }
+    data: { metadata?: boolean; status?: SLIDE_STATUS } = { metadata: true }
   ): Promise<Slide[]> {
     const [_, response] = await handleError(
       ApiService.get<Slide[]>({

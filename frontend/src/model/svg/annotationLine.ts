@@ -2,8 +2,8 @@ import { select, Selection } from 'd3-selection';
 import { nanoid } from 'nanoid';
 import OpenSeadragon, { Point } from 'openseadragon';
 import { polygonChanged } from '../../components/viewer/core/viewerState';
-import { BoundingBox } from '../../model/boundingBox';
-import { POLYGON_VERTICE_RADIUS } from '../../model/viewer/config';
+import { BoundingBox } from '../boundingBox';
+import { POLYGON_VERTICE_RADIUS } from '../viewer/config';
 import { ANNOTATION_TYPE } from '../viewer/annotationType';
 import { ANNOTATION_COLOR, COLOR } from '../viewer/colors';
 import { Annotation } from './annotation';
@@ -186,10 +186,10 @@ export class AnnotationLine extends Annotation {
       this._mouseTrackers.push(
         new OpenSeadragon.MouseTracker({
           element: node,
-          dragHandler: function (event) {
+          dragHandler: function(event) {
             self.dragHandler(event, node, viewer);
           },
-          dragEndHandler: function (event) {
+          dragEndHandler: function(event) {
             if (self.reactive) {
               polygonChanged.changed = true;
             }
@@ -208,6 +208,7 @@ export class AnnotationLine extends Annotation {
       polygonChanged.changed = false;
     }
 
+    // @ts-ignore
     const viewportDelta = viewer.viewport.deltaPointsFromPixels(event.delta);
     const selected = select(node);
     selected.attr('cx', Number(selected.attr('cx')) + Number(viewportDelta.x));
@@ -238,7 +239,7 @@ export class AnnotationLine extends Annotation {
         vertice.element.updateStrokeWidth((POLYGON_VERTICE_RADIUS - 2) / scale);
         vertice.element.updateStrokeColor(this.color);
         if (trackable) {
-          select('[id ="' + vertice.element.id + '"]').each(function () {
+          select('[id ="' + vertice.element.id + '"]').each(function() {
             self.addTracking(this as HTMLElement, viewer);
           });
         }

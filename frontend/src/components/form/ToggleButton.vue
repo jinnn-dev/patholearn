@@ -1,3 +1,29 @@
+<script lang='ts' setup>
+import { ref, watch } from 'vue';
+
+const emit = defineEmits(['changed']);
+
+const props = defineProps({
+  enabled: {
+    type: Boolean,
+    default: false
+  }
+});
+
+const enabled = ref(props.enabled);
+
+watch(
+  () => props.enabled,
+  () => {
+    enabled.value = props.enabled;
+  }
+);
+
+const toggleEnabledState = () => {
+  enabled.value = !enabled.value;
+  emit('changed', enabled.value);
+};
+</script>
 <template>
   <button
     @click.prevent='toggleEnabledState'
@@ -14,36 +40,3 @@
     ></span>
   </button>
 </template>
-
-<script lang='ts'>
-import { defineComponent, ref, watch } from 'vue';
-
-export default defineComponent({
-  props: {
-    enabled: {
-      type: Boolean,
-      default: false
-    }
-  },
-
-  emits: ['changed'],
-
-  setup(props, { emit }) {
-    const enabled = ref(props.enabled);
-
-    watch(
-      () => props.enabled,
-      () => {
-        enabled.value = props.enabled;
-      }
-    );
-
-    const toggleEnabledState = () => {
-      enabled.value = !enabled.value;
-      emit('changed', enabled.value);
-    };
-
-    return { enabled, toggleEnabledState };
-  }
-});
-</script>

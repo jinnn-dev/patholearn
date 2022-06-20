@@ -1,3 +1,65 @@
+<script lang='ts' setup>
+import { onMounted, PropType, ref } from 'vue';
+import { getThumbnailUrl } from '../../config';
+import { Slide } from '../../model/slide';
+import { SLIDE_STATUS } from '../../model/slideStatus';
+import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
+
+const props = defineProps({
+  slide: {
+    type: Object as PropType<Slide>,
+    required: true
+  },
+  deleteLoading: {
+    type: Boolean,
+    default: false
+  }
+});
+
+defineEmits(['delete']);
+
+const showInfoDialog = ref(false);
+
+const showDeleteDialog = ref(false);
+
+const getStatusColor = (status: SLIDE_STATUS) => {
+  let color;
+
+  switch (status) {
+    case SLIDE_STATUS.SUCCESS:
+      color = 'green-500';
+      break;
+    case SLIDE_STATUS.RUNNING:
+      color = 'highlight-500';
+      break;
+    case SLIDE_STATUS.ERROR:
+      color = 'red-500';
+      break;
+    default:
+      color = 'white';
+      break;
+  }
+  return 'border-' + color + ' text-' + color;
+};
+
+onMounted(() => {
+  TooltipGenerator.addGeneralTooltip({
+    target: '#successIcon' + props.slide.slide_id,
+    content: 'Bild erfolgreich konvertiert',
+    placement: 'bottom'
+  });
+  TooltipGenerator.addGeneralTooltip({
+    target: '#errorIcon' + props.slide.slide_id,
+    content: 'Fehlgeschlagen',
+    placement: 'bottom'
+  });
+  TooltipGenerator.addGeneralTooltip({
+    target: '#runningIcon' + props.slide.slide_id,
+    content: 'Bild wird konvertiert',
+    placement: 'bottom'
+  });
+});
+</script>
 <template>
   <skeleton-card inputClasses='px-5 py-5 hover:bg-gray-600'>
     <div class='flex flex-col justify-between items-center h-full gap-4'>
@@ -97,78 +159,3 @@
     @reject='showDeleteDialog = false'
   ></confirm-dialog>
 </template>
-<script lang='ts'>
-import { defineComponent, onMounted, PropType, ref } from 'vue';
-import { getThumbnailUrl } from '../config';
-import { Slide } from '../model/slide';
-import { SLIDE_STATUS } from '../model/slideStatus';
-import { TooltipGenerator } from '../utils/tooltips/tooltip-generator';
-
-export default defineComponent({
-  props: {
-    slide: {
-      type: Object as PropType<Slide>,
-      required: true
-    },
-    deleteLoading: {
-      type: Boolean,
-      default: false
-    }
-  },
-
-  emits: ['delete'],
-
-  setup(props) {
-    const showInfoDialog = ref(false);
-
-    const showDeleteDialog = ref(false);
-
-    const getStatusColor = (status: SLIDE_STATUS) => {
-      let color;
-
-      switch (status) {
-        case SLIDE_STATUS.SUCCESS:
-          color = 'green-500';
-          break;
-        case SLIDE_STATUS.RUNNING:
-          color = 'highlight-500';
-          break;
-        case SLIDE_STATUS.ERROR:
-          color = 'red-500';
-          break;
-        default:
-          color = 'white';
-          break;
-      }
-      return 'border-' + color + ' text-' + color;
-    };
-
-    onMounted(() => {
-      TooltipGenerator.addGeneralTooltip({
-        target: '#successIcon' + props.slide.slide_id,
-        content: 'Bild erfolgreich konvertiert',
-        placement: 'bottom'
-      });
-      TooltipGenerator.addGeneralTooltip({
-        target: '#errorIcon' + props.slide.slide_id,
-        content: 'Fehlgeschlagen',
-        placement: 'bottom'
-      });
-      TooltipGenerator.addGeneralTooltip({
-        target: '#runningIcon' + props.slide.slide_id,
-        content: 'Bild wird konvertiert',
-        placement: 'bottom'
-      });
-    });
-
-    return {
-      SLIDE_STATUS,
-      getStatusColor,
-      getThumbnailUrl,
-      showInfoDialog,
-      showDeleteDialog
-    };
-  }
-});
-</script>
-<style></style>
