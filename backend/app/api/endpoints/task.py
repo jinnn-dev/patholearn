@@ -160,7 +160,10 @@ def update_annotation_group(
 
     for user_solution in user_solutions:
         for annotation in user_solution.solution_data:
-            if annotation["name"] == annotation_group_update.oldName:
+            if (
+                "name" in annotation
+                and annotation["name"] == annotation_group_update.oldName
+            ):
                 annotation["name"] = annotation_group_update.name
                 annotation["color"] = annotation_group_update.color
         crud_user_solution.update(
@@ -171,9 +174,10 @@ def update_annotation_group(
 
     if task.solution is not None:
         for annotation in task.solution:
-            if "name" not in annotation:
-                continue
-            if annotation["name"] == annotation_group_update.oldName:
+            if (
+                "name" in annotation
+                and annotation["name"] == annotation_group_update.oldName
+            ):
                 annotation["name"] = annotation_group_update.name
                 annotation["color"] = annotation_group_update.color
     crud_task.update(
