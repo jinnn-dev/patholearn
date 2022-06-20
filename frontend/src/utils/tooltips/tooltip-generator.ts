@@ -1,5 +1,5 @@
 import { select } from 'd3-selection';
-import tippy, { animateFill, followCursor, Instance, Placement, Props, roundArrow } from 'tippy.js';
+import tippy, { animateFill, followCursor, Instance, Placement, roundArrow } from 'tippy.js';
 import 'tippy.js/animations/shift-away.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/dist/svg-arrow.css';
@@ -70,7 +70,7 @@ export class TooltipGenerator {
   /**
    * Destroys all tooltips
    */
-  public static destoyAll() {
+  public static destroyAll() {
     for (const tooltip of this.instances) {
       tooltip.hide();
       tooltip.destroy();
@@ -78,12 +78,20 @@ export class TooltipGenerator {
     this.instances = [];
   }
 
-  private static _generateContent(percentage: number, header: string, content?: string): string {
-    return `<h1 class='text-lg text-center font-semibold'>${header}</h1>
-    <div class='text-center'>
-    <p class='text-sm my-2'>${percentage}% Übereinstimmung</p>
-    ${content ? `<p class='font-semibold break-words'>${content}</p>` : ''}
-    </div>`;
+  public static disableTooltip(elementId: string) {
+    const index = this.instances.findIndex((item) => item.reference.id === elementId);
+    if (index > -1) {
+      const tooltip = this.instances[index];
+      tooltip.disable();
+    }
+  }
+
+  public static enableTooltip(elementId: string) {
+    const index = this.instances.findIndex((item) => item.reference.id === elementId);
+    if (index > -1) {
+      const tooltip = this.instances[index];
+      tooltip.enable();
+    }
   }
 
   public static addGeneralTooltip({
@@ -106,17 +114,17 @@ export class TooltipGenerator {
     });
 
     if (instances.length == 1) {
-      this.instances.push(instances[0]);
-      return instances[0];
+      const instance = instances[0];
+      this.instances.push(instance);
+      return instance;
     }
-
-    // tippy(target, { content, placement, theme: 'myDark' });
   }
 
-  public static destroyTooltip(htmlId: string) {
-    for (const tooltip of this.instances) {
-      if (tooltip.reference.id === htmlId) {
-      }
-    }
+  private static _generateContent(percentage: number, header: string, content?: string): string {
+    return `<h1 class='text-lg text-center font-semibold'>${header}</h1>
+    <div class='text-center'>
+    <p class='text-sm my-2'>${percentage}% Übereinstimmung</p>
+    ${content ? `<p class='font-semibold break-words'>${content}</p>` : ''}
+    </div>`;
   }
 }

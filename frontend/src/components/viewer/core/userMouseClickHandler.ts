@@ -25,7 +25,7 @@ export async function userMouseClickHandler(
     }
   } else if (isDrawingTool(currentTool!)) {
     if (event.quick) {
-      TooltipGenerator.destoyAll();
+      TooltipGenerator.destroyAll();
 
       annotationViewer.addDrawingAnnotation(TOOL_ANNOTATION[currentTool!]!);
       annotationViewer.updateDrawingAnnotation();
@@ -41,7 +41,7 @@ export async function userMouseClickHandler(
     }
   } else if (currentTool === Tool.POINT_USER_SOLUTION) {
     if (event.quick) {
-      TooltipGenerator.destoyAll();
+      TooltipGenerator.destroyAll();
 
       const annotation = annotationViewer.addAnnotationPoint(
         ANNOTATION_TYPE.USER_SOLUTION_POINT,
@@ -65,7 +65,7 @@ export async function userMouseClickHandler(
   } else if (currentTool === Tool.SELECT) {
     if (!userSolutionLocked.value) {
       if (event.quick) {
-        TooltipGenerator.destoyAll();
+        TooltipGenerator.destroyAll();
         const elementsToSelect = 'circle, polyline, rect';
 
         select('#' + SVG_ID)
@@ -86,7 +86,7 @@ export async function userMouseClickHandler(
           });
       }
     } else {
-      TooltipGenerator.destoyAll();
+      TooltipGenerator.destroyAll();
       annotationViewer.removeListener();
     }
   }

@@ -3,41 +3,41 @@
     v-if='task?.task_type === 1'
     :annotationGroups='task.annotation_groups'
     :taskId='task.id'
+    @groupCreated='groupCreated'
     @hideGroup='hideGroup'
     @showGroup='showGroup'
-    @groupCreated='groupCreated'
   ></annotation-group>
 
   <annotation-settings v-if='selectedPolygon && task?.task_type === 1' @saved='updateSelectedAnnotation'>
     <custom-select
-      :isSearchable='false'
-      displayType='small'
-      label='Annotationsklasse:'
-      :values='task?.annotation_groups'
-      field='name'
       :initial-data='selectedPolygon.name'
+      :isSearchable='false'
+      :values='task?.annotation_groups'
+      displayType='small'
+      field='name'
+      label='Annotationsklasse:'
       @valueChanged='updateAnnotationName'
     />
   </annotation-settings>
 
   <tool-bar
-    :tools='toolbarTools'
-    @toolUpdate='setTool'
-    :setMoving='is_solving || setMoving'
     :changeToolTo='changeToolTo'
+    :setMoving='is_solving || setMoving'
+    :tools='toolbarTools'
     @hideAnnotations='hideAllAnnotations'
     @showAnnotations='showAllAnnotations'
+    @toolUpdate='setTool'
   ></tool-bar>
 
   <confirm-dialog
-    :show='showDeleteAnnotationsModal'
     :loading='deleteAnnotationsLoading'
+    :show='showDeleteAnnotationsModal'
     header='Sollen alle Annotationen gelöscht werden?'
-    @reject='showDeleteAnnotationsModal = false'
     @confirmation='deleteAnnotations'
+    @reject='showDeleteAnnotationsModal = false'
   ></confirm-dialog>
 
-  <escape-info :show='isPolygonDrawing || isLineDrawing' :isPolygon='isPolygonDrawing'></escape-info>
+  <escape-info :isPolygon='isPolygonDrawing' :show='isPolygonDrawing || isLineDrawing'></escape-info>
 
   <saving-info></saving-info>
 
@@ -50,14 +50,14 @@
   <info-tooltip @hide-tooltip='unselectAnnotation'></info-tooltip>
 
   <confirm-dialog
+    :loading='isTaskSaving'
     :show='showDeleteAnnotationDialog'
     header='Soll die Annotation gelöscht werden?'
-    :loading='isTaskSaving'
     @confirmation='deleteAnnotation'
     @reject='showDeleteAnnotationDialog = false'
   ></confirm-dialog>
 
-  <div ref='viewerRef' id='viewerImage' class='h-screen bg-gray-900' @keyup='handleKeyup'></div>
+  <div id='viewerImage' ref='viewerRef' class='h-screen bg-gray-900' @keyup='handleKeyup'></div>
 </template>
 <script lang='ts'>
 import OpenSeadragon from 'openseadragon';
@@ -74,7 +74,7 @@ import { TaskService } from '../../services/task.service';
 import { ParseResult } from '../../utils/annotation-parser';
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
 import { AnnotationViewer } from './core/annotationViewer';
-import { options, SVG_ID } from './core/options';
+import { options } from './core/options';
 import { userMouseClickHandler } from './core/userMouseClickHandler';
 import {
   isTaskSaving,
@@ -85,11 +85,11 @@ import {
 } from './core/viewerState';
 import {
   focusBackgroundAnnotation,
-  updateAnnotation,
+  hideAllAnnotations,
   hideGroup,
-  showGroup,
   showAllAnnotations,
-  hideAllAnnotations
+  showGroup,
+  updateAnnotation
 } from './taskViewerHelper';
 
 export default defineComponent({
@@ -187,7 +187,7 @@ export default defineComponent({
     watch(
       () => props.solve_result,
       (newVal: TaskResult | undefined, oldVal: TaskResult | undefined) => {
-        TooltipGenerator.destoyAll();
+        TooltipGenerator.destroyAll();
 
         drawingViewer.value?.resetAnnotations();
 
@@ -217,7 +217,7 @@ export default defineComponent({
       () => {
         if (!props.show_result) {
           drawingViewer.value?.resetAnnotations();
-          TooltipGenerator.destoyAll();
+          TooltipGenerator.destroyAll();
           drawingViewer.value?.clearSolutionAnnotations();
         } else {
           if (props.solve_result && props.task?.can_be_solved) {
@@ -264,7 +264,7 @@ export default defineComponent({
 
       const tools = [
         Tool.MOVE, Tool.SELECT, Tool.DELETE, Tool.DELETE_ANNOTATION
-      ]
+      ];
       if (toolbarTools.value.length === 0) {
         toolbarTools.value = [...tools];
       }
@@ -532,7 +532,7 @@ export default defineComponent({
     };
 
     onUnmounted(() => {
-      TooltipGenerator.destoyAll();
+      TooltipGenerator.destroyAll();
     });
     return {
       toolbarTools,

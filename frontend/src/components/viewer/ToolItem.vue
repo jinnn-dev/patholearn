@@ -7,31 +7,49 @@ import { Instance } from 'tippy.js';
 
 const props = defineProps({
   comp: String as PropType<IconNames>,
-  hint: String
-});
-
-watch(() => props.hint, () => {
-  tooltip.value?.setContent(props.hint || '');
+  hint: String,
+  hideTooltip: Boolean
 });
 
 const tooltip = ref<Instance>();
 
-const id = nanoid(4);
+const tooltipReferenceId = ref<string>();
+
+watch(() => props.hint, () => {
+  tooltip.value?.setContent(props.hint || '');
+});
+watch(() => props.hideTooltip, () => {
+  if (tooltipReferenceId.value) {
+    if (props.hideTooltip) {
+      TooltipGenerator.disableTooltip(tooltipReferenceId.value);
+    } else {
+      TooltipGenerator.enableTooltip(tooltipReferenceId.value);
+    }
+  }
+});
+
+const tooltipId = ref<string>(nanoid(4));
+
+const createTooltip = () => {
+  tooltip.value = TooltipGenerator.addGeneralTooltip({
+    target: '#' + props.comp + tooltipId.value,
+    content: props.hint || '',
+    placement: 'right'
+  });
+  tooltipReferenceId.value = tooltip.value?.reference.id;
+};
+
 onMounted(() => {
   nextTick(() => {
-    tooltip.value = TooltipGenerator.addGeneralTooltip({
-      target: '#' + props.comp + id,
-      content: props.hint || '',
-      placement: 'right'
-    });
-
-  })
+    createTooltip();
+  });
 });
 
 </script>
 <template>
-  <div :id='comp + id'
-       class='transition cursor-pointer flex justify-center items-center p-2 hover:bg-gray-300 select-none'>
+  <div :id='comp + tooltipId'
+       :class='!hideTooltip && "hover:bg-gray-300 cursor-pointer"'
+       class='transition flex justify-center items-center p-2 select-none'>
     <Icon :name='comp' class='fill-white' />
   </div>
 </template>
