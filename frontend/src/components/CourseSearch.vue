@@ -47,15 +47,15 @@ const joinCourse = (course: Course) => {
 };
 </script>
 <template>
-  <div class='relative' ref='target'>
+  <div ref='target' class='relative'>
     <input-field
       v-model='searchString'
-      placeholder='Tippe, um nach einem Kurs zu suchen...'
       paddingLeft='pl-10'
+      placeholder='Tippe, um nach einem Kurs zu suchen...'
       @click='isFocus = true'
     >
       <template v-slot:firstIcon>
-        <Icon name='magnifying-glass' class='text-gray-200' />
+        <Icon class='text-gray-200' name='magnifying-glass' />
       </template>
     </input-field>
 
@@ -76,9 +76,9 @@ const joinCourse = (course: Course) => {
             v-if='!course.is_member'
             :loading='joinCourseLoading'
             class='w-24'
-            @click.stop='joinCourse(course)'
-            name='Beitreten'
             fontWeight='font-semibold'
+            name='Beitreten'
+            @click.stop='joinCourse(course)'
           ></save-button>
         </div>
       </div>

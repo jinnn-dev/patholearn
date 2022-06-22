@@ -60,29 +60,29 @@ function addHint(hint: TaskHint) {
 }
 </script>
 <template>
-  <div class='flex justify-between items-center mb-2' v-if='!creatorOpen'>
+  <div v-if='!creatorOpen' class='flex justify-between items-center mb-2'>
     <div v-if='task && task.hints.length === 0' class='text-xl'>Keine Tipps vorhanden</div>
-    <primary-button type='button' name='Tipp' class='w-24' bgColor='bg-gray-500' @click.native='creatorOpen = true'>
-      <Icon name='plus' class='mr-1' />
+    <primary-button bgColor='bg-gray-500' class='w-24' name='Tipp' type='button' @click.native='creatorOpen = true'>
+      <Icon class='mr-1' name='plus' />
     </primary-button>
   </div>
   <HintCreator
     v-if='creatorOpen'
-    :taskId='task.id'
-    :hint='selectedHint'
-    @closeMe='closeCreator'
     :key='creatorOpen'
-    @updated='updateList'
+    :hint='selectedHint'
+    :taskId='task.id'
+    @closeMe='closeCreator'
     @created='addHint'
+    @updated='updateList'
   />
 
-  <div class='overflow-y-auto max-h-[500px]' v-if='task && !creatorOpen && task?.hints.length > 0'>
+  <div v-if='task && !creatorOpen && task?.hints.length > 0' class='overflow-y-auto max-h-[500px]'>
     <Hint
       v-for='(hint, index) in sortedHints'
       :key='index'
       :hint='hint'
-      @edit='selectHint(hint)'
       @delete='deleteHint'
+      @edit='selectHint(hint)'
     ></Hint>
   </div>
 </template>

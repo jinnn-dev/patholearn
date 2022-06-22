@@ -110,45 +110,45 @@ const isObject = (value: object | string): boolean => {
 };
 </script>
 <template>
-  <div class='relative' ref='target'>
+  <div ref='target' class='relative'>
     <input-field
       v-if='isSearchable'
-      :label='label'
-      :tip='tip'
-      :placeholder='placeholder'
       v-model='searchString'
+      :label='label'
+      :placeholder='placeholder'
+      :tip='tip'
       @click='isFocus = true'
     ></input-field>
 
     <div v-else>
       <div class='my-2'>Annotationsklasse</div>
       <div
-        @click='isFocus = !isFocus'
         class='h-10 bg-gray-500 hover:bg-gray-400 hover:ring-2 ring-highlight-800 rounded-lg flex items-center p-4 cursor-pointer justify-between'
+        @click='isFocus = !isFocus'
       >
         {{ searchString || 'Keine Klasse' }}
         <div class='ml-3'>
-          <Icon v-if='isFocus' width='12' name='caret-up' strokeWidth='32' />
-          <Icon v-else width='12' name='caret-down' strokeWidth='32' />
+          <Icon v-if='isFocus' name='caret-up' strokeWidth='32' width='12' />
+          <Icon v-else name='caret-down' strokeWidth='32' width='12' />
         </div>
       </div>
     </div>
 
     <div
       v-if='isFocus'
-      class='absolute top-[80px] left-auto max-h-62 w-full bg-gray-500 rounded-lg shadow-md z-[99] overflow-auto border-2 border-gray-300'
       :class='MAPPED_OPTION_WRAPPER_SIZE[displayType]'
+      class='absolute top-[80px] left-auto max-h-62 w-full bg-gray-500 rounded-lg shadow-md z-[99] overflow-auto border-2 border-gray-300'
     >
       <div v-if='filteredData?.length === 0' class='p-2'>Nichts gefunden</div>
       <div v-else class='w-full divide-y-2 divide-gray-600'>
         <div
           v-for='value in filteredData'
           :key='isObject(value) && field ? value[field] : value'
-          class='flex transition justify-start items-center hover:bg-gray-400 bg-gray-500 cursor-pointer'
           :class='MAPPED_OPTION_SIZE[displayType]'
+          class='flex transition justify-start items-center hover:bg-gray-400 bg-gray-500 cursor-pointer'
           @click='valueSelected(value)'
         >
-          <div class='w-full' :class='MAPPED_OPTION_DETAIL_SIZE[displayType]'>
+          <div :class='MAPPED_OPTION_DETAIL_SIZE[displayType]' class='w-full'>
             {{ isObject(value) && field ? value[field] : value }}
           </div>
         </div>

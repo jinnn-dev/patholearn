@@ -1,7 +1,7 @@
 <template>
   <saving-info></saving-info>
 
-  <div ref='viewerRef' id='viewerImage' class='h-screen bg-gray-900' @keyup='handleKeyup'></div>
+  <div id='viewerImage' ref='viewerRef' class='h-screen bg-gray-900' @keyup='handleKeyup'></div>
 </template>
 <script lang='ts'>
 import { defineComponent, onMounted, PropType, ref, watch } from 'vue';

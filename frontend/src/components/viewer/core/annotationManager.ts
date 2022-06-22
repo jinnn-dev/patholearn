@@ -7,15 +7,7 @@ import { AnnotationData } from '../../../model/viewer/export/annotationData';
 import { generateAnnotation } from '../factories/generateAnnotation';
 
 export class AnnotationManager {
-  private _backgroundNode: HTMLElement;
-  private _solutionNode: HTMLElement;
-  private _userSolutionNode: HTMLElement;
   private _infoNode: HTMLElement;
-
-  private _backgroundAnnotations: Annotation[];
-  private _solutionAnnotations: Annotation[];
-  private _userSolutionAnnotations: Annotation[];
-  private _infoAnnotations: Annotation[];
 
   constructor(
     backgroundNode: HTMLElement,
@@ -32,6 +24,48 @@ export class AnnotationManager {
     this._solutionAnnotations = [];
     this._userSolutionAnnotations = [];
     this._infoAnnotations = [];
+  }
+
+  private _backgroundNode: HTMLElement;
+
+  get backgroundNode() {
+    return this._backgroundNode;
+  }
+
+  private _solutionNode: HTMLElement;
+
+  get solutionNode() {
+    return this._solutionNode;
+  }
+
+  private _userSolutionNode: HTMLElement;
+
+  get userSolutionNode() {
+    return this._userSolutionNode;
+  }
+
+  private _backgroundAnnotations: Annotation[];
+
+  get backgroundAnnotations() {
+    return this._backgroundAnnotations;
+  }
+
+  private _solutionAnnotations: Annotation[];
+
+  get solutionAnnotations() {
+    return this._solutionAnnotations;
+  }
+
+  private _userSolutionAnnotations: Annotation[];
+
+  get userSolutionAnnotations() {
+    return this._userSolutionAnnotations;
+  }
+
+  private _infoAnnotations: Annotation[];
+
+  get infoAnnotations() {
+    return this._infoAnnotations;
   }
 
   /**
@@ -166,10 +200,6 @@ export class AnnotationManager {
     annotationData.forEach((data: AnnotationData) => {
       this.addBackgroundAnnotation(data, scale);
     });
-  }
-
-  private _generateAnnotation(data: AnnotationData, scale: number, fillColor: string, strokeColor: string): Annotation {
-    return generateAnnotation(data, this.getNode(data.type), scale, fillColor, strokeColor);
   }
 
   /**
@@ -312,31 +342,7 @@ export class AnnotationManager {
     return resultAnnotation!;
   }
 
-  get backgroundAnnotations() {
-    return this._backgroundAnnotations;
-  }
-
-  get solutionAnnotations() {
-    return this._solutionAnnotations;
-  }
-
-  get userSolutionAnnotations() {
-    return this._userSolutionAnnotations;
-  }
-
-  get infoAnnotations() {
-    return this._infoAnnotations;
-  }
-
-  get backgroundNode() {
-    return this._backgroundNode;
-  }
-
-  get solutionNode() {
-    return this._solutionNode;
-  }
-
-  get userSolutionNode() {
-    return this._userSolutionNode;
+  private _generateAnnotation(data: AnnotationData, scale: number, fillColor: string, strokeColor: string): Annotation {
+    return generateAnnotation(data, this.getNode(data.type), scale, fillColor, strokeColor);
   }
 }

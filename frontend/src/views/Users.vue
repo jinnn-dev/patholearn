@@ -119,9 +119,9 @@ const onSubmit = () => {
       <div class='flex justify-between'>
         <subheader text='Vorhandene Lehrende'></subheader>
         <primary-button
+          bgColor='bg-gray-500'
           class='w-44'
           name='Neuer Lehrender'
-          bgColor='bg-gray-500'
           @click='showModal = true'
         ></primary-button>
       </div>
@@ -146,27 +146,27 @@ const onSubmit = () => {
 
   <modal-dialog :show='showModal'>
     <h1 class='text-2xl'>Lege einen neuen Lehrenden an</h1>
-    <form @submit.prevent='onSubmit' class='w-full'>
-      <auth-input :required='true' label='Vorname' placeholder='Max' v-model='formData.firstname'>
+    <form class='w-full' @submit.prevent='onSubmit'>
+      <auth-input v-model='formData.firstname' :required='true' label='Vorname' placeholder='Max'>
         <Icon name='user' />
       </auth-input>
-      <auth-input :required='false' label='Mittelname (Optional)' placeholder='Max' v-model='formData.middlename'>
+      <auth-input v-model='formData.middlename' :required='false' label='Mittelname (Optional)' placeholder='Max'>
         <Icon name='user' />
       </auth-input>
-      <auth-input :required='true' label='Nachname' placeholder='Max' v-model='formData.lastname'>
+      <auth-input v-model='formData.lastname' :required='true' label='Nachname' placeholder='Max'>
         <Icon name='user' />
       </auth-input>
       <auth-input
         v-model='formData.email'
+        :required='true'
+        autocomplete='enail'
         label='E-Mail'
         placeholder='demo@demo.de'
         type='email'
-        :required='true'
-        autocomplete='enail'
       >
         <Icon name='at' />
       </auth-input>
-      <div class='text-red-500' v-if="validator.email.$errors.some((e) => e.hasOwnProperty('$property'))">
+      <div v-if="validator.email.$errors.some((e) => e.hasOwnProperty('$property'))" class='text-red-500'>
         Keine gültige E-Mail-Adresse
       </div>
 
@@ -174,34 +174,34 @@ const onSubmit = () => {
 
       <auth-input
         v-model='formData.password'
+        :required='true'
+        autocomplete='new-password'
         label='Passwort'
         placeholder='1234'
         type='password'
-        :required='true'
-        autocomplete='new-password'
       >
         <Icon name='key' size='24' />
       </auth-input>
       <auth-input
         v-model='formData.confirmPassword'
+        :required='true'
+        autocomplete='new-password'
         label='Bestätige Passwort'
         placeholder='1234'
         type='password'
-        autocomplete='new-password'
-        :required='true'
       >
         <Icon name='key' size='24' />
       </auth-input>
       <div v-if='!passwordMatch' class='text-red-500'>Passwörter stimmen nicht überein.</div>
       <div class='flex flex-end'>
         <primary-button
-          @click.prevent='closeModal'
-          class='mr-2'
-          name='Abbrechen'
           bgColor='bg-gray-500'
+          class='mr-2'
           fontWeight='font-normal'
+          name='Abbrechen'
+          @click.prevent='closeModal'
         ></primary-button>
-        <save-button name='Speichern' type='submit' :loading='adminIsCreating'></save-button>
+        <save-button :loading='adminIsCreating' name='Speichern' type='submit'></save-button>
       </div>
     </form>
   </modal-dialog>

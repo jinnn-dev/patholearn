@@ -67,14 +67,14 @@ const leaveGroup = () => {
 </script>
 <template>
   <content-container>
-    <template v-slot:header v-if='isMember'>
+    <template v-if='isMember' v-slot:header>
       <content-header
-        link='/home'
-        linkText='Zurück zur Kursauswahl'
-        :text='course?.name'
         :subText="`bei ${course?.owner.firstname} ${course?.owner.middlename ? course?.owner.middlename : ''} ${
           course?.owner.lastname
         }`"
+        :text='course?.name'
+        link='/home'
+        linkText='Zurück zur Kursauswahl'
       ></content-header>
     </template>
     <template v-slot:content>
@@ -84,13 +84,13 @@ const leaveGroup = () => {
           <div class='flex'>
             <subheader class='w-full' text='Aufgabengruppen'></subheader>
             <danger-button
-              buttonText='Kurs verlassen'
-              @confirmation='leaveGroup'
-              :show='showModal'
               :loading='leaveCourseLoading'
+              :show='showModal'
+              buttonText='Kurs verlassen'
+              customClasses='w-72'
               header='Möchtest du die Gruppe wirklich verlassen?'
               info='All dein Fortschritt wird gelöscht!'
-              customClasses='w-72'
+              @confirmation='leaveGroup'
             >
             </danger-button>
           </div>
@@ -99,8 +99,8 @@ const leaveGroup = () => {
             <div v-if='loading' class='flex'>
               <skeleton-card
                 v-for='i in 4'
-                :loading='loading'
                 :key='i'
+                :loading='loading'
                 skeletonClasses='h-24 w-44 ml-4'
               ></skeleton-card>
             </div>
@@ -114,9 +114,9 @@ const leaveGroup = () => {
                     <progress-bar
                       :id='taskgroup.short_name'
                       :correctTasks='taskgroup.correct_tasks'
-                      :wrongTasks='taskgroup.wrong_tasks'
-                      :taskCount='taskgroup.task_count'
                       :percentage='taskgroup.percentage_solved'
+                      :taskCount='taskgroup.task_count'
+                      :wrongTasks='taskgroup.wrong_tasks'
                     ></progress-bar>
 
                     <task-count-badge :count='taskgroup.task_count'></task-count-badge>

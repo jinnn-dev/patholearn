@@ -11,8 +11,8 @@ const removeItem = (index: number) => {
     <error-notification
       v-for='(error, index) in errorState'
       :key='index'
-      :index='index'
       :error='error'
+      :index='index'
       @expired='removeItem($event)'
     >
     </error-notification>

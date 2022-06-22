@@ -8,12 +8,6 @@ import { AnnotationPoint } from './annotationPoint';
 import { InfoAnnotation } from './infoAnnotation';
 
 export default class InfoAnnotationPoint extends AnnotationPoint implements InfoAnnotation {
-  private _headerText: string;
-
-  private _detailText: string;
-
-  private _images: string[];
-
   private static STROKE_WIDTH_FACTOR = 1.2;
 
   constructor(
@@ -29,6 +23,36 @@ export default class InfoAnnotationPoint extends AnnotationPoint implements Info
     this._headerText = headerText;
     this._detailText = detailText;
     this._images = images;
+  }
+
+  private _headerText: string;
+
+  public get headerText(): string {
+    return this._headerText;
+  }
+
+  public set headerText(value: string) {
+    this._headerText = value;
+  }
+
+  private _detailText: string;
+
+  public get detailText(): string {
+    return this._detailText;
+  }
+
+  public set detailText(value: string) {
+    this._detailText = value;
+  }
+
+  private _images: string[];
+
+  public get images(): string[] {
+    return this._images;
+  }
+
+  public set images(value: string[]) {
+    this._images = value;
   }
 
   deleteTooltip(): void {}
@@ -77,26 +101,5 @@ export default class InfoAnnotationPoint extends AnnotationPoint implements Info
   updateColor(fillColor: string, strokeColor: string): void {
     super.updateColor(fillColor, strokeColor);
     this.element?.attr('stroke', strokeColor);
-  }
-
-  public get headerText(): string {
-    return this._headerText;
-  }
-  public set headerText(value: string) {
-    this._headerText = value;
-  }
-
-  public get detailText(): string {
-    return this._detailText;
-  }
-  public set detailText(value: string) {
-    this._detailText = value;
-  }
-
-  public get images(): string[] {
-    return this._images;
-  }
-  public set images(value: string[]) {
-    this._images = value;
   }
 }

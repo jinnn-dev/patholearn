@@ -1,54 +1,54 @@
 <template>
   <div
-    class='bg-gray-700/70 backdrop-blur-md z-[99] rounded-xl p-4 flex flex-col items-center border-3'
     v-if='solveResult'
     :style='{ borderColor: color }'
+    class='bg-gray-700/70 backdrop-blur-md z-[99] rounded-xl p-4 flex flex-col items-center border-3'
   >
     <div class='flex justify-center items-center gap-4'>
       <!-- <img src="../../assets/well_done.svg" class="w-42" v-if="solveResult?.task_status === TaskStatus.CORRECT" /> -->
-      <div class='svg-container' v-if='solveResult?.task_status === TaskStatus.CORRECT'>
+      <div v-if='solveResult?.task_status === TaskStatus.CORRECT' class='svg-container'>
         <svg
-          class='ft-green-tick'
-          xmlns='http://www.w3.org/2000/svg'
-          height='49'
-          width='40'
-          viewBox='0 0 48 48'
           aria-hidden='true'
+          class='ft-green-tick'
+          height='49'
+          viewBox='0 0 48 48'
+          width='40'
+          xmlns='http://www.w3.org/2000/svg'
         >
-          <circle class='circle circle-correct' fill='transparent' cx='24' cy='24' r='22' />
+          <circle class='circle circle-correct' cx='24' cy='24' fill='transparent' r='22' />
           <path
             class='tick'
+            d='M14 27l5.917 4.917L34 17'
             fill='none'
             stroke='#2ecc71'
-            stroke-width='4'
             stroke-linecap='round'
             stroke-linejoin='round'
             stroke-miterlimit='10'
-            d='M14 27l5.917 4.917L34 17'
+            stroke-width='4'
           />
         </svg>
       </div>
 
-      <div class='svg-container' v-if='solveResult?.task_status !== TaskStatus.CORRECT'>
+      <div v-if='solveResult?.task_status !== TaskStatus.CORRECT' class='svg-container'>
         <svg
-          class='ft-green-tick'
-          xmlns='http://www.w3.org/2000/svg'
-          height='49'
-          width='40'
-          viewBox='0 0 48 48'
           aria-hidden='true'
+          class='ft-green-tick'
+          height='49'
+          viewBox='0 0 48 48'
+          width='40'
+          xmlns='http://www.w3.org/2000/svg'
         >
-          <circle class='circle circle-wrong' fill='transparent' cx='24' cy='24' r='22' />
+          <circle class='circle circle-wrong' cx='24' cy='24' fill='transparent' r='22' />
           <line
             id='path2'
             class='cross'
             fill='none'
             stroke='#e74c3c'
-            stroke-width='3'
             stroke-miterlimit='10'
+            stroke-width='3'
             x1='15'
-            y1='33'
             x2='33'
+            y1='33'
             y2='15'
           />
           <line
@@ -56,11 +56,11 @@
             class='cross'
             fill='none'
             stroke='#e74c3c'
-            stroke-width='3'
             stroke-miterlimit='10'
+            stroke-width='3'
             x1='33'
-            y1='33'
             x2='15'
+            y1='33'
             y2='15'
           />
           <!-- <path
@@ -80,7 +80,7 @@
       </h2>
     </div>
 
-    <div class='w-full flex flex-col items-center' v-if='groupedDetail'>
+    <div v-if='groupedDetail' class='w-full flex flex-col items-center'>
       <div class='mt-1'>
         <div v-for='(item, index) in groupedDetail' :key='index' class='flex gap-4 my-2 items-center'>
           <div
@@ -102,22 +102,22 @@
 
     <div class='flex gap-4 mt-2'>
       <save-button
-        class='w-52'
-        bgColor='bg-gray-500'
         :loading='viewerLoadingState.solveResultLoading'
-        @click='userSolutionLocked = false'
-        name='Lösung bearbeiten'
+        bgColor='bg-gray-500'
+        class='w-52'
         fontWeight='font-medium'
+        name='Lösung bearbeiten'
+        @click='userSolutionLocked = false'
       >
       </save-button>
       <save-button
         v-if='solveResult.task_status === TaskStatus.CORRECT && showSolution'
         :loading='viewerLoadingState.solutionLoading'
-        class='w-70'
-        bgColor='bg-gray-500'
-        @click='showSolution = !showSolution'
         :name="showSolution ? 'Musterlösung ausblenden' : 'Musterlösung anzeigen'"
+        bgColor='bg-gray-500'
+        class='w-70'
         fontWeight='font-medium'
+        @click='showSolution = !showSolution'
       >
       </save-button>
     </div>

@@ -11,12 +11,6 @@ import { VertexElement } from './vertice';
 export class AnnotationPolygon extends AnnotationLine {
   private _fill_color: string;
 
-  private _externalDragHandler?: (
-    event: OpenSeadragon.OSDEvent<any>,
-    index: number,
-    point: OpenSeadragon.Point
-  ) => void;
-
   constructor(
     g: HTMLElement,
     type: ANNOTATION_TYPE,
@@ -28,6 +22,22 @@ export class AnnotationPolygon extends AnnotationLine {
   ) {
     super(g, type, color, id, reactive, name);
     this._fill_color = fill_color;
+  }
+
+  private _externalDragHandler?: (
+    event: OpenSeadragon.OSDEvent<any>,
+    index: number,
+    point: OpenSeadragon.Point
+  ) => void;
+
+  set externalDragHandler(
+    externalDragHandler: (event: OpenSeadragon.OSDEvent<any>, index: number, point: OpenSeadragon.Point) => void
+  ) {
+    this._externalDragHandler = externalDragHandler;
+  }
+
+  get fillColor() {
+    return this._fill_color;
   }
 
   addVertex(viewportCoord: OpenSeadragon.Point, r: number, strokeWidth: number): void {
@@ -188,15 +198,5 @@ export class AnnotationPolygon extends AnnotationLine {
     }
 
     return Math.abs(total);
-  }
-
-  set externalDragHandler(
-    externalDragHandler: (event: OpenSeadragon.OSDEvent<any>, index: number, point: OpenSeadragon.Point) => void
-  ) {
-    this._externalDragHandler = externalDragHandler;
-  }
-
-  get fillColor() {
-    return this._fill_color;
   }
 }

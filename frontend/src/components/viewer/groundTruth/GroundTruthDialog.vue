@@ -94,17 +94,17 @@ const emit = defineEmits(['applyAnnotations', 'closeDialog']);
       <form-field label='Ground Thruth' tip='Wähle eine XML- oder PNG-Datei mit der Musterlösung aus'>
         <div class='flex items-center'>
           <label
-            for='slide-upload'
             class='transition cursor-pointer flex justify-center bg-gray-500 hover:bg-gray-300 px-2 w-full rounded-lg py-1'
+            for='slide-upload'
           >
-            <Icon name='cloud-arrow-up' class='mr-2' />
+            <Icon class='mr-2' name='cloud-arrow-up' />
             <span>Musterlösung auswählen</span>
           </label>
           <div v-if='file' class='ml-4'>
             {{ file.name }}
           </div>
         </div>
-        <input class='hidden' id='slide-upload' type='file' @change='onFileSelected' />
+        <input id='slide-upload' class='hidden' type='file' @change='onFileSelected' />
       </form-field>
     </div>
     <div v-if='isWrongFormat' class='text-red-400'>Wähle eine XML- oder PNG-Datei aus</div>
@@ -116,7 +116,7 @@ const emit = defineEmits(['applyAnnotations', 'closeDialog']);
           <div>Gefundene Annotationen:</div>
           <div v-for='group in convertResult' :key='group.name' class='flex justify-between my-2'>
             <div class='w-6 h-6 overflow-hidden rounded-full'>
-              <input type='color' id='body' name='body' v-model='group.color' class='w-20' />
+              <input id='body' v-model='group.color' class='w-20' name='body' type='color' />
             </div>
             <!-- <div class="rounded-full w-6 h-6" :style="`background-color:${group.color}`"></div> -->
             <text-edit :value='group.name' @valueChanged='updateName($event, group)'></text-edit>
@@ -127,19 +127,19 @@ const emit = defineEmits(['applyAnnotations', 'closeDialog']);
     </div>
     <div class='flex justify-end mt-8'>
       <primary-button
-        @click.prevent="$emit('closeDialog')"
-        class='mr-2 w-28'
-        name='Abbrechen'
         bgColor='bg-gray-500'
         bgHoverColor='bg-gray-700'
+        class='mr-2 w-28'
         fontWeight='font-normal'
+        name='Abbrechen'
+        @click.prevent="$emit('closeDialog')"
       ></primary-button>
       <save-button
         v-if='convertResult'
-        :loading='loading'
         :label="loading ? 'Wird verarbeitet...' : 'Hinzufügen'"
-        @click='applyAnnotations'
+        :loading='loading'
         class='max-w-50'
+        @click='applyAnnotations'
       ></save-button>
     </div>
   </modal-dialog>

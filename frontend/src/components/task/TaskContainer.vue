@@ -127,17 +127,17 @@ const deleteBaseTask = () => {
 </script>
 <template>
   <div
+    :class="[isCollapsed ? 'right-0' : 'right-80']"
+    :title="isCollapsed ? 'Ausklappen' : 'Einklappen'"
     class='transition-all cursor-pointer absolute z-10 top-1/2 -translate-y-1/2 bg-gray-700/70 backdrop-blur-md text-3xl rounded-l-lg h-12 flex flex-col items-center justify-center'
     @click='isCollapsed = !isCollapsed'
-    :title="isCollapsed ? 'Ausklappen' : 'Einklappen'"
-    :class="[isCollapsed ? 'right-0' : 'right-80']"
   >
-    <Icon name='caret-left' class='transition-all' :class="[isCollapsed ? 'rotate-180' : 'rotate-90']" />
+    <Icon :class="[isCollapsed ? 'rotate-180' : 'rotate-90']" class='transition-all' name='caret-left' />
   </div>
 
   <div
-    class='transition-all w-80 fixed z-10 right-0 top-1/2 -translate-y-1/2 rounded-l-lg overflow-hidden bg-gray-700/70 backdrop-blur-md'
     :class="[isCollapsed ? '-right-80' : 'right-0']"
+    class='transition-all w-80 fixed z-10 right-0 top-1/2 -translate-y-1/2 rounded-l-lg overflow-hidden bg-gray-700/70 backdrop-blur-md'
   >
     <div class='flex gap-4 justify-between items-center m-2 text-center text-xl'>
       <h3>{{ baseTask?.name }}</h3>
@@ -147,16 +147,16 @@ const deleteBaseTask = () => {
       <div class='flex flex-col justify-center items-center w-full'>
         <div v-for='(layer, index) in taskMap' :key='index' class='w-full'>
           <task-layer
+            :baseTaskId='baseTask.id'
             :isOwner='isOwner'
             :layerIndex='+index'
-            :tasks='layer'
             :selectedTaskId='selectedTask?.id'
-            :baseTaskId='baseTask.id'
-            @taskSelected='changeTask($event)'
-            @taskCreated='createTask($event)'
-            @taskUpdated='updateTask($event)'
-            @taskDeleted='deleteTask(index, $event)'
+            :tasks='layer'
             @layerDeleted='deleteLayer($event)'
+            @taskCreated='createTask($event)'
+            @taskDeleted='deleteTask(index, $event)'
+            @taskSelected='changeTask($event)'
+            @taskUpdated='updateTask($event)'
           ></task-layer>
         </div>
         <role-only v-if='isOwner' class='w-full'>
@@ -175,19 +175,19 @@ const deleteBaseTask = () => {
         <div class='my-4'>Alle Aufgaben und Lösungen werden gelöscht.</div>
         <div class='flex justify-end'>
           <primary-button
-            @click.prevent='showDeleteBaseTask = false'
-            class='mr-2 w-28'
-            name='Nein'
             bgColor='bg-gray-500'
             bgHoverColor='bg-gray-700'
+            class='mr-2 w-28'
             fontWeight='font-normal'
+            name='Nein'
+            @click.prevent='showDeleteBaseTask = false'
           ></primary-button>
           <save-button
+            :loading='deleteLoading'
+            class='w-28'
             name='Ja'
             type='submit'
-            :loading='deleteLoading'
             @click='deleteBaseTask'
-            class='w-28'
           ></save-button>
         </div>
       </div>

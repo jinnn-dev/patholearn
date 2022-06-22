@@ -74,47 +74,47 @@ onMounted(() => {
           <Icon
             v-if='slide.status === SLIDE_STATUS.SUCCESS'
             :id="'successIcon' + slide.slide_id"
-            name='check-circle'
-            :width='40'
-            :height='40'
             :class='getStatusColor(slide.status)'
+            :height='40'
+            :width='40'
+            name='check-circle'
           />
           <Icon
             v-else-if='slide.status === SLIDE_STATUS.RUNNING'
             :id="'runningIcon' + slide.slide_id"
-            name='spinner'
-            class='animate-spin'
-            :width='40'
-            :height='40'
             :class='getStatusColor(slide.status)'
+            :height='40'
+            :width='40'
+            class='animate-spin'
+            name='spinner'
           />
           <Icon
             v-else
             :id="'errorIcon' + slide.slide_id"
-            name='warning'
-            :width='40'
-            :height='40'
             :class='getStatusColor(slide.status)'
+            :height='40'
+            :width='40'
+            name='warning'
           />
         </div>
         <div class='flex gap-2'>
           <primary-button
-            @click='showInfoDialog = true'
             bgColor='bg-gray-500'
             bgHoverColor='bg-gray-400'
             class='w-10 h-10'
+            @click='showInfoDialog = true'
           >
-            <Icon name='info' :width='30' :height='30' class='text-white' />
+            <Icon :height='30' :width='30' class='text-white' name='info' />
           </primary-button>
-          <primary-button @click.stop='showDeleteDialog = true' class='w-10 h-10' bgColor='bg-red-600'>
-            <Icon :width='30' :height='30' name='trash' />
+          <primary-button bgColor='bg-red-600' class='w-10 h-10' @click.stop='showDeleteDialog = true'>
+            <Icon :height='30' :width='30' name='trash' />
           </primary-button>
         </div>
       </div>
 
       <div class='h-full w-full flex items-center justify-center'>
         <div v-if='slide.status === SLIDE_STATUS.ERROR'>
-          <Icon name='smiley-sad' class='text-gray-500 opacity-80' :width='150' :height='150' />
+          <Icon :height='150' :width='150' class='text-gray-500 opacity-80' name='smiley-sad' />
         </div>
         <lazy-image
           v-else
@@ -131,7 +131,7 @@ onMounted(() => {
       <div class='w-full'>
         <div v-if='slide.status === SLIDE_STATUS.SUCCESS' class='w-full'>
           <primary-button bgColor='bg-gray-500' @click.prevent="$router.push('/slides/' + slide.slide_id)">
-            <Icon name='frame-corners' :width='30' :height='30' />
+            <Icon :height='30' :width='30' name='frame-corners' />
           </primary-button>
         </div>
       </div>
@@ -141,7 +141,7 @@ onMounted(() => {
   <modal-dialog :show='showInfoDialog' customClasses='w-1/2 mb-8 mt-8'>
     <div class='sticky top-0 flex justify-end bg-gray-800 p-2'>
       <div class='w-full text-4xl'>Metadaten</div>
-      <primary-button class='w-12' bgColor='bg-gray-500' @click='showInfoDialog = false'>
+      <primary-button bgColor='bg-gray-500' class='w-12' @click='showInfoDialog = false'>
         <Icon name='x'></Icon>
       </primary-button>
     </div>
@@ -157,9 +157,9 @@ onMounted(() => {
     </div>
   </modal-dialog>
   <confirm-dialog
-    header='Bild löschen?'
-    :show='showDeleteDialog'
     :loading='deleteLoading'
+    :show='showDeleteDialog'
+    header='Bild löschen?'
     @confirmation="$emit('delete')"
     @reject='showDeleteDialog = false'
   ></confirm-dialog>

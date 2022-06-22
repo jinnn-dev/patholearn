@@ -185,8 +185,8 @@ const editTask = (task: BaseTask) => {
     <template v-slot:header>
       <content-header
         :link='`/course/${taskGroup?.course_short_name}/admin`'
-        linkText='Zurück zum Kurs'
         :text='taskGroup?.name'
+        linkText='Zurück zum Kurs'
       ></content-header>
     </template>
     <template v-slot:content>
@@ -194,15 +194,15 @@ const editTask = (task: BaseTask) => {
         <div class='w-full text-xl font-bold text-gray-200 uppercase'>Deine Aufgaben</div>
       </div>
       <div class='my-4 flex justify-between'>
-        <primary-button class='w-48 h-10' name='Neue Aufgabe' bgColor='bg-gray-400' @click='showModal = !showModal'>
-          <Icon name='plus' class='mr-2' weight='bold' />
+        <primary-button bgColor='bg-gray-400' class='w-48 h-10' name='Neue Aufgabe' @click='showModal = !showModal'>
+          <Icon class='mr-2' name='plus' weight='bold' />
         </primary-button>
         <primary-button
+          bgColor='bg-gray-700'
           class='w-56'
           fontWeight='font-medium'
-          textColor='text-red-400'
-          bgColor='bg-gray-700'
           name='Aufgabengruppe löschen'
+          textColor='text-red-400'
           @click='showTaskgroupDelete = true'
         ></primary-button>
       </div>
@@ -226,16 +226,16 @@ const editTask = (task: BaseTask) => {
   <modal-dialog :show='showModal' customClasses='max-w-[50%] min-w-[30rem]'>
     <div class='relative'>
       <h1 class='text-2xl text-center'>Erstelle eine neue Aufgabe</h1>
-      <form @submit.prevent='onSubmit' class='w-full'>
+      <form class='w-full' @submit.prevent='onSubmit'>
         <input-field
           v-model='formData.name'
+          :errorMessage="taskError ? 'Es gibt bereits eine Aufgabe mit diesem Namen' : ''"
+          :required='true'
+          class='w-full'
           label='Aufgabenname'
           placeholder='Markiere alle ...'
           tip='Gebe der Aufgabe einen eindeutigen Namen'
           type='text'
-          :required='true'
-          class='w-full'
-          :errorMessage="taskError ? 'Es gibt bereits eine Aufgabe mit diesem Namen' : ''"
         >
         </input-field>
         <slide-select @slideChanged='setSlide($event)'></slide-select>
@@ -244,15 +244,15 @@ const editTask = (task: BaseTask) => {
           <div>
             <div>Aufgaben aus einer CSV-Datei generieren (optional):</div>
             <div class='flex items-center my-4'>
-              <label for='slide-upload' class='cursor-pointer flex justify-center bg-gray-500 w-56 rounded-lg py-1'>
-                <Icon name='cloud-arrow-up' class='mr-2' />
+              <label class='cursor-pointer flex justify-center bg-gray-500 w-56 rounded-lg py-1' for='slide-upload'>
+                <Icon class='mr-2' name='cloud-arrow-up' />
                 <span>CSV-Datei auswählen</span>
               </label>
               <div v-if='formData.csv_file' class='ml-4'>
                 {{ formData.csv_file.name }}
               </div>
             </div>
-            <input class='hidden' id='slide-upload' type='file' accept='.csv' @change='onFileUpload' />
+            <input id='slide-upload' accept='.csv' class='hidden' type='file' @change='onFileUpload' />
           </div>
 
           <div v-if='formData.csv_file'>
@@ -267,10 +267,10 @@ const editTask = (task: BaseTask) => {
           <div class='flex gap-3 mb-3 items-center'>
             <div class='flex-1'>
               <div
-                class='animate-pulse bg-green-500 my-2 rounded-lg transition duration-10 h-3'
                 :style="{
                   width: uploadProgress + '%'
                 }"
+                class='animate-pulse bg-green-500 my-2 rounded-lg transition duration-10 h-3'
               ></div>
             </div>
             <div>{{ uploadProgress }}%</div>
@@ -280,14 +280,14 @@ const editTask = (task: BaseTask) => {
 
         <div class='flex justify-end w-full'>
           <primary-button
-            @click.prevent='onTaskClose'
-            class='mr-2 w-32'
-            name='Abbrechen'
             bgColor='bg-gray-500'
             bgHoverColor='bg-gray-700'
+            class='mr-2 w-32'
             fontWeight='font-normal'
+            name='Abbrechen'
+            @click.prevent='onTaskClose'
           ></primary-button>
-          <save-button class='w-48' name='Speichern' type='submit' :loading='taskLoading'></save-button>
+          <save-button :loading='taskLoading' class='w-48' name='Speichern' type='submit'></save-button>
         </div>
       </form>
     </div>
@@ -299,19 +299,19 @@ const editTask = (task: BaseTask) => {
       <div class='my-4'>Alle zugehörigen Aufgaben und Lösungen werden gelöscht.</div>
       <div class='flex justify-end'>
         <primary-button
-          @click.prevent='showTaskgroupDelete = false'
-          class='mr-2 w-28'
-          name='Nein'
           bgColor='bg-gray-500'
           bgHoverColor='bg-gray-700'
+          class='mr-2 w-28'
           fontWeight='font-normal'
+          name='Nein'
+          @click.prevent='showTaskgroupDelete = false'
         ></primary-button>
         <save-button
+          :loading='deleteLoading'
+          class='w-28'
           name='Ja'
           type='submit'
-          :loading='deleteLoading'
           @click='deleteTaskGroup'
-          class='w-28'
         ></save-button>
       </div>
     </div>
@@ -324,19 +324,19 @@ const editTask = (task: BaseTask) => {
         <div class='my-4'>Alle Aufgaben und Lösungen werden gelöscht.</div>
         <div class='flex justify-end'>
           <primary-button
-            @click.prevent='showDeleteBaseTask = false'
-            class='mr-2 w-28'
-            name='Nein'
             bgColor='bg-gray-500'
             bgHoverColor='bg-gray-700'
+            class='mr-2 w-28'
             fontWeight='font-normal'
+            name='Nein'
+            @click.prevent='showDeleteBaseTask = false'
           ></primary-button>
           <save-button
+            :loading='deleteBaseLoading'
+            class='w-28'
             name='Ja'
             type='submit'
-            :loading='deleteBaseLoading'
             @click='deleteBaseTask'
-            class='w-28'
           ></save-button>
         </div>
       </div>

@@ -67,46 +67,46 @@ const resetDialog = () => {
   <div>
     <div class='flex justify-end'>
       <primary-button
-        name='Bild hochladen'
-        @click='toggleShowUpload'
-        class='w-52 mb-6'
         bgColor='bg-gray-400'
         bgHoverColor='bg-gray-300'
+        class='w-52 mb-6'
+        name='Bild hochladen'
+        @click='toggleShowUpload'
       >
-        <Icon name='plus' class='mr-2 w-8' :width='24' :height='24' />
+        <Icon :height='24' :width='24' class='mr-2 w-8' name='plus' />
       </primary-button>
     </div>
     <modal-dialog :show='showUpload' customClasses='w-1/3'>
       <h1 class='text-3xl'>Bild hochladen</h1>
-      <form @submit.prevent='onSubmit' class='flex flex-col'>
+      <form class='flex flex-col' @submit.prevent='onSubmit'>
         <input-field
           v-model='formModel.name'
           label='Name'
-          tip='Gebe dem Bild einen eindeutigen Namen.'
           placeholder='Session 1'
+          tip='Gebe dem Bild einen eindeutigen Namen.'
         >
         </input-field>
 
         <form-field label='Bild' tip='Wähle ein Bild aus, welches hochgeladen werden soll'>
           <div class='flex items-center'>
-            <label for='slide-upload' class='cursor-pointer flex justify-center bg-gray-500 w-56 rounded-lg py-1'>
-              <Icon name='cloud-arrow-up' class='mr-2' />
+            <label class='cursor-pointer flex justify-center bg-gray-500 w-56 rounded-lg py-1' for='slide-upload'>
+              <Icon class='mr-2' name='cloud-arrow-up' />
               <span>Bild auswählen</span>
             </label>
             <div v-if='formModel.file' class='ml-4'>
               {{ formModel.file.name }}
             </div>
           </div>
-          <input class='hidden' id='slide-upload' type='file' @change='onFileUpload' />
+          <input id='slide-upload' class='hidden' type='file' @change='onFileUpload' />
         </form-field>
         <div v-if='loading'>
           <div class='flex gap-3 mb-3 items-center'>
             <div class='flex-1'>
               <div
-                class='animate-pulse bg-green-500 my-2 rounded-lg transition duration-10 h-3'
                 :style="{
                   width: progress + '%'
                 }"
+                class='animate-pulse bg-green-500 my-2 rounded-lg transition duration-10 h-3'
               ></div>
             </div>
             <div>{{ progress }}%</div>
@@ -116,16 +116,16 @@ const resetDialog = () => {
         </div>
         <div class='w-full flex justify-end gap-4'>
           <primary-button
+            bgColor='bg-gray-500'
+            class='w-36'
             name='Abbrechen'
             type='button'
             @click.stop='
               showUpload = false;
               resetDialog();
             '
-            bgColor='bg-gray-500'
-            class='w-36'
           ></primary-button>
-          <save-button name='Hochladen' class='w-36' :loading='loading'></save-button>
+          <save-button :loading='loading' class='w-36' name='Hochladen'></save-button>
         </div>
       </form>
     </modal-dialog>

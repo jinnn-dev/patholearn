@@ -39,13 +39,13 @@ watch(
             leave-to-class='opacity-0 translate-y-10 translate-y-0 scale-95'
           >
             <div
-              class='bg-gray-800 tex-gray-100 rounded-lg text-left shadow-xl p-8 top-1/2'
-              :class='customClasses'
-              role='dialog'
+              v-show='showModal'
               ref='modal'
+              :class='customClasses'
               araia-modal='true'
               aria-labelledby='modal-headline'
-              v-show='showModal'
+              class='bg-gray-800 tex-gray-100 rounded-lg text-left shadow-xl p-8 top-1/2'
+              role='dialog'
             >
               <slot>Kein Inhalt</slot>
             </div>

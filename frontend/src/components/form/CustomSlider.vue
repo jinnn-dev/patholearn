@@ -39,16 +39,16 @@ watch(
 <template>
   <form-field :label='label'>
     <Slider
-      class='w-full'
       v-model='sliderPosition'
-      @update="$emit('valueChanged', $event)"
-      @change="$emit('isReleased', $event)"
-      :step='step'
-      :min='min'
-      :max='max'
-      :tooltips='tooltips'
-      :orientation='orientation'
       :direction='direction'
+      :max='max'
+      :min='min'
+      :orientation='orientation'
+      :step='step'
+      :tooltips='tooltips'
+      class='w-full'
+      @change="$emit('isReleased', $event)"
+      @update="$emit('valueChanged', $event)"
     ></Slider>
   </form-field>
 </template>

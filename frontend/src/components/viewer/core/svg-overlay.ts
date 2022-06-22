@@ -1,11 +1,14 @@
 import { EventHandler, MouseTracker, OSDEvent, Point, Viewer } from 'openseadragon';
+
 export const SVG_ID = 'drawingSvg';
 export const SOLUTION_NODE_ID = 'solutionNode';
 export const USER_SOLUTION_NODE_ID = 'userSolutionNode';
 export const BACKGROUND_NODE_ID = 'backgroundNode';
 export const INFO_NODE_ID = 'infoNode';
+
 // Adaption of: https://github.com/openseadragon/svg-overlay | License: BSD-3-Clause License
 export class SvgOverlay {
+  private static svgNS = 'http://www.w3.org/2000/svg';
   private _viewer: Viewer;
   private _containerWidth: number;
   private _containerHeight: number;
@@ -14,8 +17,6 @@ export class SvgOverlay {
   private _backgroundNode: HTMLElement;
   private _userSolutionNode: HTMLElement;
   private _infoNode: HTMLElement;
-
-  private static svgNS = 'http://www.w3.org/2000/svg';
 
   constructor(viewer: Viewer) {
     const self = this;

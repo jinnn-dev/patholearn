@@ -63,8 +63,8 @@ const deleteSlide = (slide: Slide, index: number) => {
       <div class='flex justify-end w-full mb-4'>
         <primary-button
           class='w-32 mt-2'
-          name='Aktualisieren'
           fontWeight='font-semibold'
+          name='Aktualisieren'
           @click='loadSlides'
         ></primary-button>
       </div>
@@ -73,7 +73,7 @@ const deleteSlide = (slide: Slide, index: number) => {
         v-if='slideLoading'
         class='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 h-32'
       >
-        <skeleton-card v-for='i of [1, 2, 3]' :key='i' class='my-4 min-h-42' :loading='slideLoading'></skeleton-card>
+        <skeleton-card v-for='i of [1, 2, 3]' :key='i' :loading='slideLoading' class='my-4 min-h-42'></skeleton-card>
       </div>
       <div v-else>
         <div v-if='slides.length === 0 && !slideError' class='text-4xl'>
@@ -85,8 +85,8 @@ const deleteSlide = (slide: Slide, index: number) => {
           <slide-card
             v-for='(slide, index) of slides'
             :key='slide.name'
-            :slide='slide'
             :deleteLoading='slideDeleteLoading'
+            :slide='slide'
             @delete='deleteSlide(slide, index)'
           >
           </slide-card>

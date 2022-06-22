@@ -81,11 +81,11 @@ const downloadUserSolutions = async (task: Task) => {
 <template>
   <div class='w-full flex items-center justify-between p-2 bg-gray-600 sticky top-0'>
     <div class='mr-2'>{{ layerIndex }}. Ebene</div>
-    <role-only class='flex gap-2' v-if='isOwner'>
+    <role-only v-if='isOwner' class='flex gap-2'>
       <Icon
-        name='minus'
         v-if='layerIndex !== 1'
         class='text-white cursor-pointer'
+        name='minus'
         weight='bold'
         @click='removeLayer'
       ></Icon>
@@ -95,21 +95,21 @@ const downloadUserSolutions = async (task: Task) => {
     <task-item
       v-for='(task, taskIndex) in tasks'
       :key='task.id'
+      :class="selectedTaskId === task.id ? 'ring-2 ring-highlight-800' : ''"
       :isOwner='isOwner'
       :question='task.task_question'
-      :userSolution='task.user_solution'
-      :class="selectedTaskId === task.id ? 'ring-2 ring-highlight-800' : ''"
       :showDownload='
         task.annotation_type === ANNOTATION_TYPE.SOLUTION_POINT && task.task_type !== TaskType.IMAGE_SELECT
       '
-      @click.stop='selectTask(task)'
+      :userSolution='task.user_solution'
       @deleteTask='deleteTask(task.id, taskIndex)'
-      @editTask='editTask(task)'
       @downloadUserSolutions='downloadUserSolutions(task)'
+      @editTask='editTask(task)'
+      @click.stop='selectTask(task)'
     ></task-item>
     <role-only v-if='isOwner'>
       <div class='p-2 px-18 my-2'>
-        <primary-button @click='taskCreationModal = true' class=''>Neue Aufgabe</primary-button>
+        <primary-button class='' @click='taskCreationModal = true'>Neue Aufgabe</primary-button>
       </div>
     </role-only>
   </div>
@@ -117,14 +117,14 @@ const downloadUserSolutions = async (task: Task) => {
   <role-only>
     <modal-dialog :show='taskCreationModal' customClasses='w-2/5'>
       <CreateTask
+        :baseTaskId='baseTaskId'
+        :layerIndex='layerIndex'
         @close='taskCreationModal = false'
         @taskCreated="$emit('taskCreated', $event)"
-        :layerIndex='layerIndex'
-        :baseTaskId='baseTaskId'
       />
     </modal-dialog>
     <modal-dialog :show='taskUpdateModal' customClasses='w-2/5'>
-      <UpdateTask @close='taskUpdateModal = false' @taskUpdated="$emit('taskUpdated', $event)" :task='selectedTask' />
+      <UpdateTask :task='selectedTask' @close='taskUpdateModal = false' @taskUpdated="$emit('taskUpdated', $event)" />
     </modal-dialog>
   </role-only>
 </template>

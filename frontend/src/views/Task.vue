@@ -161,36 +161,36 @@ const loadTaskSolution = async () => {
 
         <div class='fixed z-10 bottom-8 right-8'>
           <save-button
-            @click='solveTask'
-            :label="selectedTask?.can_be_solved ? 'Überprüfe Lösung' : 'Ich bin fertig'"
-            fontWeight='font-medium'
-            :loading='isSolving'
             :disabled='userSolutionLocked'
+            :label="selectedTask?.can_be_solved ? 'Überprüfe Lösung' : 'Ich bin fertig'"
+            :loading='isSolving'
+            fontWeight='font-medium'
+            @click='solveTask'
           ></save-button>
         </div>
 
         <select-images-task
           v-if='selectedTask?.task_type === TaskType.IMAGE_SELECT'
-          :task='selectedTask'
           :base_task_id='baseTask?.id'
-          :task_group_id='baseTask?.task_group_id'
           :course_id='baseTask?.course_id'
-          :solve_result='solve_result || selectedTask?.user_solution?.task_result'
-          :show_result='showTaskResult'
           :is_solving='isSolving'
+          :show_result='showTaskResult'
+          :solve_result='solve_result || selectedTask?.user_solution?.task_result'
+          :task='selectedTask'
+          :task_group_id='baseTask?.task_group_id'
         ></select-images-task>
 
         <div v-else>
           <task-viewer
             v-if='baseTask?.tasks.length === 0 || selectedTask?.task_type !== TaskType.IMAGE_SELECT'
-            :slide_name='baseTask?.slide_id'
-            :task='selectedTask'
             :base_task_id='baseTask?.id'
-            :task_group_id='baseTask?.task_group_id'
             :course_id='baseTask?.course_id'
-            :solve_result='solve_result || selectedTask?.user_solution?.task_result'
-            :show_result='showTaskResult'
             :is_solving='isSolving'
+            :show_result='showTaskResult'
+            :slide_name='baseTask?.slide_id'
+            :solve_result='solve_result || selectedTask?.user_solution?.task_result'
+            :task='selectedTask'
+            :task_group_id='baseTask?.task_group_id'
             @userAnnotationChanged='resetTaskResult'
           ></task-viewer>
         </div>

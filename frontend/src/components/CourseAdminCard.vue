@@ -89,16 +89,16 @@ onClickOutside(target, () => (dotMenuOpen.value = false));
         </div>
         <div>
           <Icon
-            name='dots-three-vertical'
             class='cursor-pointer ml-4 hover:text-gray-200 rounded-md'
+            name='dots-three-vertical'
             weight='bold'
             @click.prevent.stop='dotMenuOpen = !dotMenuOpen'
           ></Icon>
           <dot-menu
             ref='target'
             :optionsOpen='dotMenuOpen'
-            @edit='showEditTaskGroup = true'
             @delete='showDeleteTaskGroup = true'
+            @edit='showEditTaskGroup = true'
           />
         </div>
       </div>
@@ -110,7 +110,7 @@ onClickOutside(target, () => (dotMenuOpen.value = false));
           class='transition hover:ring-2 ring-white bg-gray-500 group-hover:bg-gray-300 p-2 rounded-lg cursor-pointer inline-block'
           @click.prevent='downloadUserSolutions(taskgroup.short_name)'
         >
-          <Icon name='download-simple' v-if='!downloadUserSolutionsLoading' />
+          <Icon v-if='!downloadUserSolutionsLoading' name='download-simple' />
           <Spinner v-else></Spinner>
         </div>
       </div>
@@ -124,19 +124,19 @@ onClickOutside(target, () => (dotMenuOpen.value = false));
         <div class='my-4'>Alle Aufgaben und Lösungen werden gelöscht.</div>
         <div class='flex justify-end'>
           <primary-button
-            @click.prevent='showDeleteTaskGroup = false'
-            class='mr-2 w-28'
-            name='Nein'
             bgColor='bg-gray-500'
             bgHoverColor='bg-gray-700'
+            class='mr-2 w-28'
             fontWeight='font-normal'
+            name='Nein'
+            @click.prevent='showDeleteTaskGroup = false'
           ></primary-button>
           <save-button
+            :loading='deleteTaskGroupLoading'
+            class='w-28'
             name='Ja'
             type='submit'
-            :loading='deleteTaskGroupLoading'
             @click='deleteTaskGroup'
-            class='w-28'
           ></save-button>
         </div>
       </div>
@@ -144,22 +144,22 @@ onClickOutside(target, () => (dotMenuOpen.value = false));
     <modal-dialog :show='showEditTaskGroup'>
       <div class='relative'>
         <h1 class='text-2xl'>Aufgabengruppe bearbeiten</h1>
-        <InputField label='Neuer Name' v-model='newTaskGroupName'></InputField>
+        <InputField v-model='newTaskGroupName' label='Neuer Name'></InputField>
         <div class='flex justify-end'>
           <primary-button
-            @click.prevent='showEditTaskGroup = false'
-            class='mr-2 w-28'
-            name='Abbrechen'
             bgColor='bg-gray-500'
             bgHoverColor='bg-gray-700'
+            class='mr-2 w-28'
             fontWeight='font-normal'
+            name='Abbrechen'
+            @click.prevent='showEditTaskGroup = false'
           ></primary-button>
           <save-button
+            :loading='editTaskGroupLoading'
+            class='w-32'
             name='Speichern'
             type='submit'
-            :loading='editTaskGroupLoading'
             @click='editTaskGroup'
-            class='w-32'
           ></save-button>
         </div>
       </div>

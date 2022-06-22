@@ -215,10 +215,10 @@ const deleteExistingImage = (index: number) => {
 <template>
   <div
     v-if='infotooltipState.show'
-    class='absolute z-[3] max-w-[40%] px-4 py-2 rounded-xl bg-gray-700/60 backdrop-blur-md'
+    ref='containerRef'
     :class="infotooltipState.animate ? 'transition-all' : ''"
     :style='{ transform: translateAttribute }'
-    ref='containerRef'
+    class='absolute z-[3] max-w-[40%] px-4 py-2 rounded-xl bg-gray-700/60 backdrop-blur-md'
   >
     <div class='flex flex-col'>
       <div class='flex justify-between items-start gap-4'>
@@ -229,12 +229,12 @@ const deleteExistingImage = (index: number) => {
         <div class='flex justify-end gap-2'>
           <Icon
             v-if='isAdmin'
-            name='pencil'
-            class='cursor-pointer hover:text-gray-200'
             :strokeWidth='22'
+            class='cursor-pointer hover:text-gray-200'
+            name='pencil'
             @click='openTooltip'
           ></Icon>
-          <Icon name='x' @click='hideTooltip' class='cursor-pointer hover:text-gray-200' :strokeWidth='28'></Icon>
+          <Icon :strokeWidth='28' class='cursor-pointer hover:text-gray-200' name='x' @click='hideTooltip'></Icon>
         </div>
       </div>
       <div class='mt-2 flex w-full'>
@@ -246,10 +246,10 @@ const deleteExistingImage = (index: number) => {
         >
           <div v-for='image of infotooltipState.images' :key='image' class='w-full my-2'>
             <lazy-image
+              v-viewer
               :imageUrl='getInfoImageUrl(image)'
               class='cursor-pointer'
               @imageLoaded='updateTooltipPosition'
-              v-viewer
             ></lazy-image>
           </div>
         </div>
@@ -258,27 +258,27 @@ const deleteExistingImage = (index: number) => {
   </div>
   <modal-dialog :show='showEdit' customClasses='w-[40rem]'>
     <h2 class='text-3xl'>Info bearbeiten</h2>
-    <input-field v-model='headerText' label='Titel' type='text' :required='true'></input-field>
-    <input-area v-model='detailText' label='Details' class='h-[18rem]'></input-area>
+    <input-field v-model='headerText' :required='true' label='Titel' type='text'></input-field>
+    <input-area v-model='detailText' class='h-[18rem]' label='Details'></input-area>
     <FormField v-if='existingImages.length > 0' label='Vorhandene Bilder'>
       <div class='flex flex-wrap max-h-[300px] overflow-auto gap-4'>
         <div v-for='(image, index) in existingImages'>
           <UploadPreviewImage
             :key='image.info_image_id'
-            :imgSrc='getInfoImageUrl(image.info_image_id)'
             :imageName='image.name'
+            :imgSrc='getInfoImageUrl(image.info_image_id)'
             :index='index'
-            @imageChanged='updateExistingImage'
             @deleteImage='deleteExistingImage(index)'
+            @imageChanged='updateExistingImage'
           />
         </div>
       </div>
     </FormField>
 
     <MultiImageUpload
+      :resetArray='!isSaving'
       label='Neue Bilder hochladen'
       tip='Wähle Bilder aus oder ziehe sie in das Feld'
-      :resetArray='!isSaving'
       @imagesDropped='setImages'
     ></MultiImageUpload>
     <!-- <div v-if="uploadLoading">
@@ -298,17 +298,17 @@ const deleteExistingImage = (index: number) => {
 
     <div class='flex justify-end'>
       <primary-button
+        bgColor='bg-gray-500'
+        bgHoverColor='bg-gray-700'
+        class='mr-2 w-32'
+        fontWeight='font-normal'
+        name='Abbrechen'
         @click.prevent='
           showEdit = false;
           infotooltipState.show = true;
         '
-        class='mr-2 w-32'
-        name='Abbrechen'
-        bgColor='bg-gray-500'
-        bgHoverColor='bg-gray-700'
-        fontWeight='font-normal'
       ></primary-button>
-      <save-button name='Speichern' type='submit' class='w-36' @click='updateTooltip' :loading='isSaving'></save-button>
+      <save-button :loading='isSaving' class='w-36' name='Speichern' type='submit' @click='updateTooltip'></save-button>
     </div>
   </modal-dialog>
 </template>

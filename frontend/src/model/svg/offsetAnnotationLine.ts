@@ -11,15 +11,9 @@ import { AnnotationLine } from './annotationLine';
 import { AnnotationPolygon } from './polygon';
 
 export class OffsetAnnotationLine extends AnnotationLine {
-  private _outerPoints: OpenSeadragon.Point[];
-  private _offsetRadius: number;
-
   private _lineFunction: Line<any>;
-
   private _pathElement?: Selection<SVGPathElement, unknown, null, undefined>;
   private _selectedPolyline?: AnnotationPolygon;
-
-  private _changedManual: boolean;
 
   constructor(
     g: HTMLElement,
@@ -46,6 +40,32 @@ export class OffsetAnnotationLine extends AnnotationLine {
       .curve(curveLinearClosed);
   }
 
+  private _outerPoints: OpenSeadragon.Point[];
+
+  get outerPoints() {
+    return this._outerPoints;
+  }
+
+  private _offsetRadius: number;
+
+  get offsetRadius() {
+    return this._offsetRadius;
+  }
+
+  set offsetRadius(radius: number) {
+    this._offsetRadius = radius;
+  }
+
+  private _changedManual: boolean;
+
+  get changedManual(): boolean {
+    return this._changedManual;
+  }
+
+  set changedManual(changedManual: boolean) {
+    this._changedManual = changedManual;
+  }
+
   /**
    * Creates the inflation and renders the path element
    *
@@ -54,28 +74,6 @@ export class OffsetAnnotationLine extends AnnotationLine {
   createInflation(scale: number): void {
     this.inflateLine(this._offsetRadius);
     this.createPath(scale);
-  }
-
-  private inflateLine(inflateValue: number) {
-    const coord = [];
-
-    for (const vertex of this.vertice) {
-      coord.push(new geom.Coordinate(vertex.viewport.x, vertex.viewport.y));
-    }
-
-    const geometryFactory = new geom.GeometryFactory();
-    const shell = geometryFactory.createLineString(coord);
-    const polygon = shell.buffer(inflateValue, 2, operation.buffer.BufferParameters.CAP_ROUND);
-    const inflated = [];
-    const oCoord = polygon.getCoordinates();
-
-    for (const c of oCoord) {
-      inflated.push(new OpenSeadragon.Point(c.x, c.y));
-    }
-
-    inflated.pop();
-
-    this._outerPoints = inflated;
   }
 
   dragHandler(event: OpenSeadragon.OSDEvent<any>, node: HTMLElement, viewer: OpenSeadragon.Viewer): void {
@@ -91,27 +89,6 @@ export class OffsetAnnotationLine extends AnnotationLine {
       this._selectedPolyline?.select(viewer, scale);
       // this._selectedPolyline?.select(viewer, scale);
       this.createInflation(scale);
-    }
-  }
-
-  private createPath(scale?: number): void {
-    if (!this._pathElement && scale) {
-      const points = this._outerPoints;
-      points.push(points[0]);
-      this._pathElement = select(this.g)
-        .append('path')
-        .attr('id', this.id)
-        .attr('d', this._lineFunction(this._outerPoints) + '')
-        .style('fill', this.color + ANNOTATION_COLOR.FILL_OPACITY)
-        .attr('fill-rule', 'evenodd')
-        .style('stroke-width', POLYGON_STROKE_WIDTH / scale)
-        .attr('stroke', this.color);
-
-      if (this.name) {
-        this._pathElement.attr('name', this.name);
-      }
-    } else {
-      this._pathElement?.attr('d', this._lineFunction(this._outerPoints) + '');
     }
   }
 
@@ -243,23 +220,46 @@ export class OffsetAnnotationLine extends AnnotationLine {
     this._selectedPolyline?.remove();
   }
 
-  get outerPoints() {
-    return this._outerPoints;
+  private inflateLine(inflateValue: number) {
+    const coord = [];
+
+    for (const vertex of this.vertice) {
+      coord.push(new geom.Coordinate(vertex.viewport.x, vertex.viewport.y));
+    }
+
+    const geometryFactory = new geom.GeometryFactory();
+    const shell = geometryFactory.createLineString(coord);
+    const polygon = shell.buffer(inflateValue, 2, operation.buffer.BufferParameters.CAP_ROUND);
+    const inflated = [];
+    const oCoord = polygon.getCoordinates();
+
+    for (const c of oCoord) {
+      inflated.push(new OpenSeadragon.Point(c.x, c.y));
+    }
+
+    inflated.pop();
+
+    this._outerPoints = inflated;
   }
 
-  get offsetRadius() {
-    return this._offsetRadius;
-  }
+  private createPath(scale?: number): void {
+    if (!this._pathElement && scale) {
+      const points = this._outerPoints;
+      points.push(points[0]);
+      this._pathElement = select(this.g)
+        .append('path')
+        .attr('id', this.id)
+        .attr('d', this._lineFunction(this._outerPoints) + '')
+        .style('fill', this.color + ANNOTATION_COLOR.FILL_OPACITY)
+        .attr('fill-rule', 'evenodd')
+        .style('stroke-width', POLYGON_STROKE_WIDTH / scale)
+        .attr('stroke', this.color);
 
-  set offsetRadius(radius: number) {
-    this._offsetRadius = radius;
-  }
-
-  get changedManual(): boolean {
-    return this._changedManual;
-  }
-
-  set changedManual(changedManual: boolean) {
-    this._changedManual = changedManual;
+      if (this.name) {
+        this._pathElement.attr('name', this.name);
+      }
+    } else {
+      this._pathElement?.attr('d', this._lineFunction(this._outerPoints) + '');
+    }
   }
 }

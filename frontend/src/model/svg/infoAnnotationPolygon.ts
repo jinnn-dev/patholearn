@@ -5,13 +5,8 @@ import { ANNOTATION_TYPE } from '../viewer/annotationType';
 import { ANNOTATION_COLOR } from '../viewer/colors';
 import { InfoAnnotation } from './infoAnnotation';
 import { AnnotationPolygon } from './polygon';
+
 export default class InfoAnnotationPolygon extends AnnotationPolygon implements InfoAnnotation {
-  private _headerText: string;
-
-  private _detailText: string;
-
-  private _images: string[];
-
   private static STROKE_WIDTH_FACTOR = 1.2;
 
   constructor(
@@ -32,6 +27,36 @@ export default class InfoAnnotationPolygon extends AnnotationPolygon implements 
     this._images = images;
   }
 
+  private _headerText: string;
+
+  public get headerText(): string {
+    return this._headerText;
+  }
+
+  public set headerText(value: string) {
+    this._headerText = value;
+  }
+
+  private _detailText: string;
+
+  public get detailText(): string {
+    return this._detailText;
+  }
+
+  public set detailText(value: string) {
+    this._detailText = value;
+  }
+
+  private _images: string[];
+
+  public get images(): string[] {
+    return this._images;
+  }
+
+  public set images(value: string[]) {
+    this._images = value;
+  }
+
   update(r: number, strokeWidth: number): void {
     super.update(r, strokeWidth);
     InfoTooltipGenerator.updateTooltip(this.id, false);
@@ -46,28 +71,5 @@ export default class InfoAnnotationPolygon extends AnnotationPolygon implements 
   unselect(): void {
     super.unselect();
     InfoTooltipGenerator.hideTooltip(this.id);
-  }
-
-  public get headerText(): string {
-    return this._headerText;
-  }
-  public set headerText(value: string) {
-    this._headerText = value;
-  }
-
-  public get detailText(): string {
-    return this._detailText;
-  }
-
-  public set detailText(value: string) {
-    this._detailText = value;
-  }
-
-  public get images(): string[] {
-    return this._images;
-  }
-
-  public set images(value: string[]) {
-    this._images = value;
   }
 }

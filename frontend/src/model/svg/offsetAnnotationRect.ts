@@ -12,19 +12,9 @@ import { AnnotationPolygon } from './polygon';
 
 export class OffsetAnnotationRectangle extends AnnotationRectangle {
   private _outerPoints: OpenSeadragon.Point[];
-  private _outerPolygon?: AnnotationPolygon;
-
   private _innerPoints: OpenSeadragon.Point[];
-  private _innerPolygon?: AnnotationPolygon;
-
   private _pathElement?: Selection<SVGPathElement, unknown, null, undefined>;
-
   private _lineFunction: Line<any>;
-
-  private _inflationOuterOffset: number;
-  private _inflationInnerOffset: number;
-
-  private _changedManual: boolean;
 
   constructor(
     g: HTMLElement,
@@ -51,41 +41,46 @@ export class OffsetAnnotationRectangle extends AnnotationRectangle {
       .curve(curveLinearClosed);
   }
 
-  private createInnerInflation(): void {
-    this._innerPoints = this.inflatePolygon(-this._inflationInnerOffset).reverse();
+  private _outerPolygon?: AnnotationPolygon;
+
+  get outerPolygon() {
+    return this._outerPoints;
   }
 
-  private createOuterInflation(): void {
-    this._outerPoints = this.inflatePolygon(this._inflationOuterOffset);
+  private _innerPolygon?: AnnotationPolygon;
+
+  get innerPolygon() {
+    return this._innerPoints;
   }
 
-  private inflatePolygon(inflateValue: number): OpenSeadragon.Point[] {
-    const coord = [];
+  private _inflationOuterOffset: number;
 
-    const p1 = this.vertice[0].viewport;
-    const p4 = this.vertice[1].viewport;
-    const p2 = new OpenSeadragon.Point(p1.x + (p4.x - p1.x), p1.y);
-    const p3 = new OpenSeadragon.Point(p1.x, p1.y + (p4.y - p1.y));
+  get inflationOuterOffset(): number {
+    return this._inflationOuterOffset;
+  }
 
-    for (const vertice of [p1, p3, p4, p2]) {
-      coord.push(new geom.Coordinate(vertice.x, vertice.y));
-    }
+  set inflationOuterOffset(offset: number) {
+    this._inflationOuterOffset = offset;
+  }
 
-    coord.push(coord[0]);
+  private _inflationInnerOffset: number;
 
-    const geometryFactory = new geom.GeometryFactory();
-    const linearRing = geometryFactory.createLinearRing(coord);
-    const shell = geometryFactory.createPolygon(linearRing, []);
+  get inflationInnerOffset(): number {
+    return this._inflationInnerOffset;
+  }
 
-    const polygon = shell.buffer(inflateValue, 2, operation.buffer.BufferParameters.CAP_FLAT);
-    const inflated = [];
-    const oCoord = polygon.getCoordinates();
+  set inflationInnerOffset(offset: number) {
+    this._inflationInnerOffset = offset;
+  }
 
-    for (const c of oCoord) {
-      inflated.push(new OpenSeadragon.Point(c.x, c.y));
-    }
+  private _changedManual: boolean;
 
-    return inflated;
+  get changedManual(): boolean {
+    return this._changedManual;
+  }
+
+  set changedManual(changedManual: boolean) {
+    this._changedManual = changedManual;
   }
 
   public createInflation(scale: number): void {
@@ -204,25 +199,6 @@ export class OffsetAnnotationRectangle extends AnnotationRectangle {
     this.updateInflationOuterOffset(this._inflationOuterOffset, scale, viewer);
   }
 
-  private createPath(scale: number, strokeWidth?: number): void {
-    if (!this._pathElement) {
-      this._pathElement = select(this.g)
-        .append('path')
-        .attr('id', this.id)
-        .attr('d', this._lineFunction(this._outerPoints) + ' ' + this._lineFunction(this._innerPoints))
-        .style('fill', this.fillColor)
-        .attr('fill-rule', 'evenodd')
-        .style('stroke-width', POLYGON_STROKE_WIDTH / scale)
-        .attr('stroke', this.color);
-
-      if (this.name) {
-        this._pathElement.attr('name', this.name);
-      }
-    } else {
-      this._pathElement.attr('d', this._lineFunction(this._outerPoints) + ' ' + this._lineFunction(this._innerPoints));
-    }
-  }
-
   select(viewer: OpenSeadragon.Viewer, scale: number): void {
     super.select(viewer, scale);
 
@@ -271,6 +247,69 @@ export class OffsetAnnotationRectangle extends AnnotationRectangle {
     }
   }
 
+  remove() {
+    super.remove();
+    this._outerPolygon?.remove();
+    this._innerPolygon?.remove();
+    this._pathElement?.remove();
+  }
+
+  private createInnerInflation(): void {
+    this._innerPoints = this.inflatePolygon(-this._inflationInnerOffset).reverse();
+  }
+
+  private createOuterInflation(): void {
+    this._outerPoints = this.inflatePolygon(this._inflationOuterOffset);
+  }
+
+  private inflatePolygon(inflateValue: number): OpenSeadragon.Point[] {
+    const coord = [];
+
+    const p1 = this.vertice[0].viewport;
+    const p4 = this.vertice[1].viewport;
+    const p2 = new OpenSeadragon.Point(p1.x + (p4.x - p1.x), p1.y);
+    const p3 = new OpenSeadragon.Point(p1.x, p1.y + (p4.y - p1.y));
+
+    for (const vertice of [p1, p3, p4, p2]) {
+      coord.push(new geom.Coordinate(vertice.x, vertice.y));
+    }
+
+    coord.push(coord[0]);
+
+    const geometryFactory = new geom.GeometryFactory();
+    const linearRing = geometryFactory.createLinearRing(coord);
+    const shell = geometryFactory.createPolygon(linearRing, []);
+
+    const polygon = shell.buffer(inflateValue, 2, operation.buffer.BufferParameters.CAP_FLAT);
+    const inflated = [];
+    const oCoord = polygon.getCoordinates();
+
+    for (const c of oCoord) {
+      inflated.push(new OpenSeadragon.Point(c.x, c.y));
+    }
+
+    return inflated;
+  }
+
+  private createPath(scale: number, strokeWidth?: number): void {
+    if (!this._pathElement) {
+      this._pathElement = select(this.g)
+        .append('path')
+        .attr('id', this.id)
+        .attr('d', this._lineFunction(this._outerPoints) + ' ' + this._lineFunction(this._innerPoints))
+        .style('fill', this.fillColor)
+        .attr('fill-rule', 'evenodd')
+        .style('stroke-width', POLYGON_STROKE_WIDTH / scale)
+        .attr('stroke', this.color);
+
+      if (this.name) {
+        this._pathElement.attr('name', this.name);
+      }
+    } else {
+      this._pathElement.attr('d', this._lineFunction(this._outerPoints) + ' ' + this._lineFunction(this._innerPoints));
+    }
+  }
+
   private createInnerPolygon(viewer: OpenSeadragon.Viewer, scale: number): void {
     this._innerPolygon = new AnnotationPolygon(this.g, this.type, 'none', this.color, nanoid(), false, this.name);
     this._innerPolygon.addClosedPolygon(
@@ -295,13 +334,6 @@ export class OffsetAnnotationRectangle extends AnnotationRectangle {
     };
   }
 
-  remove() {
-    super.remove();
-    this._outerPolygon?.remove();
-    this._innerPolygon?.remove();
-    this._pathElement?.remove();
-  }
-
   private createOuterPolygon(viewer: OpenSeadragon.Viewer, scale: number): void {
     this._outerPolygon = new AnnotationPolygon(this.g, this.type, 'none', this.color, nanoid(), false, this.name);
     this._outerPolygon.addClosedPolygon(
@@ -323,37 +355,5 @@ export class OffsetAnnotationRectangle extends AnnotationRectangle {
     this._outerPolygon.dragEndHandler = (event) => {
       polygonChanged.changed = true;
     };
-  }
-
-  get innerPolygon() {
-    return this._innerPoints;
-  }
-
-  get inflationOuterOffset(): number {
-    return this._inflationOuterOffset;
-  }
-
-  set inflationOuterOffset(offset: number) {
-    this._inflationOuterOffset = offset;
-  }
-
-  get inflationInnerOffset(): number {
-    return this._inflationInnerOffset;
-  }
-
-  set inflationInnerOffset(offset: number) {
-    this._inflationInnerOffset = offset;
-  }
-
-  get outerPolygon() {
-    return this._outerPoints;
-  }
-
-  get changedManual(): boolean {
-    return this._changedManual;
-  }
-
-  set changedManual(changedManual: boolean) {
-    this._changedManual = changedManual;
   }
 }

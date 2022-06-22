@@ -26,22 +26,22 @@ const saveValue = () => {
         {{ newValue }}
       </div>
       <role-only>
-        <input-field v-model='newValue' v-if='activeEdit' marginHor='my-0' />
+        <input-field v-if='activeEdit' v-model='newValue' marginHor='my-0' />
       </role-only>
     </div>
     <role-only>
       <Icon
-        name='pencil-simple'
         v-if='!activeEdit'
         :size='20'
         class='group-hover:block ml-2 cursor-pointer'
+        name='pencil-simple'
         @click='activeEdit = true'
       />
       <Icon
-        name='floppy-disk'
         v-if='activeEdit'
-        class='cursor-pointer ml-2'
         :size='20'
+        class='cursor-pointer ml-2'
+        name='floppy-disk'
         weight='bold'
         @click.stop='saveValue'
       />

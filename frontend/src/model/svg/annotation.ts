@@ -7,16 +7,6 @@ import { ANNOTATION_COLOR } from '../viewer/colors';
  * Abstract class representing a annotation
  */
 export abstract class Annotation {
-  private _id: string;
-  private _g: HTMLElement;
-  private _type: ANNOTATION_TYPE;
-  private _color: string;
-  private _reactive: boolean;
-  private _isSelected: boolean;
-  private _name?: string;
-
-  private _mouseTracker?: OpenSeadragon.MouseTracker;
-
   constructor(
     g: HTMLElement,
     type: ANNOTATION_TYPE,
@@ -32,6 +22,86 @@ export abstract class Annotation {
     this._reactive = reactive;
     this._name = name;
     this._isSelected = false;
+  }
+
+  private _id: string;
+
+  get id(): string {
+    return this._id;
+  }
+
+  set id(id: string) {
+    this._id = id;
+  }
+
+  private _g: HTMLElement;
+
+  get g(): HTMLElement {
+    return this._g;
+  }
+
+  set g(g: HTMLElement) {
+    this._g = g;
+  }
+
+  private _type: ANNOTATION_TYPE;
+
+  get type(): ANNOTATION_TYPE {
+    return this._type;
+  }
+
+  set type(type: ANNOTATION_TYPE) {
+    this._type = type;
+  }
+
+  private _color: string;
+
+  get color(): string {
+    return this._color;
+  }
+
+  set color(color: string) {
+    this._color = color;
+  }
+
+  private _reactive: boolean;
+
+  get reactive(): boolean {
+    return this._reactive;
+  }
+
+  set reactive(reactive: boolean) {
+    this._reactive = reactive;
+  }
+
+  private _isSelected: boolean;
+
+  get isSelected() {
+    return this._isSelected;
+  }
+
+  set isSelected(isSelected: boolean) {
+    this._isSelected = isSelected;
+  }
+
+  private _name?: string;
+
+  get name(): string | undefined {
+    return this._name;
+  }
+
+  set name(name: string | undefined) {
+    this._name = name;
+  }
+
+  private _mouseTracker?: OpenSeadragon.MouseTracker;
+
+  get mouseTracker(): OpenSeadragon.MouseTracker | undefined {
+    return this._mouseTracker;
+  }
+
+  set mouseTracker(mouseTracker: OpenSeadragon.MouseTracker | undefined) {
+    this._mouseTracker = mouseTracker;
   }
 
   /**
@@ -99,69 +169,5 @@ export abstract class Annotation {
   public updateAnnotationClass(name: string, color: string): void {
     this.name = name;
     this.updateColor(color + ANNOTATION_COLOR.FILL_OPACITY, color);
-  }
-
-  set mouseTracker(mouseTracker: OpenSeadragon.MouseTracker | undefined) {
-    this._mouseTracker = mouseTracker;
-  }
-
-  get mouseTracker(): OpenSeadragon.MouseTracker | undefined {
-    return this._mouseTracker;
-  }
-
-  set id(id: string) {
-    this._id = id;
-  }
-
-  get id(): string {
-    return this._id;
-  }
-
-  set g(g: HTMLElement) {
-    this._g = g;
-  }
-
-  get g(): HTMLElement {
-    return this._g;
-  }
-
-  set type(type: ANNOTATION_TYPE) {
-    this._type = type;
-  }
-
-  get type(): ANNOTATION_TYPE {
-    return this._type;
-  }
-
-  set color(color: string) {
-    this._color = color;
-  }
-
-  get color(): string {
-    return this._color;
-  }
-
-  set reactive(reactive: boolean) {
-    this._reactive = reactive;
-  }
-
-  get reactive(): boolean {
-    return this._reactive;
-  }
-
-  set name(name: string | undefined) {
-    this._name = name;
-  }
-
-  get name(): string | undefined {
-    return this._name;
-  }
-
-  set isSelected(isSelected: boolean) {
-    this._isSelected = isSelected;
-  }
-
-  get isSelected() {
-    return this._isSelected;
   }
 }

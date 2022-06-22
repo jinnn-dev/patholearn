@@ -102,29 +102,29 @@ const onSubmit = () => {
           :key='group.name + group.color'
           class='bg-gray-500 rounded-lg px-2 py-1 flex items-center my-2'
         >
-          <div class='mr-2' :title="!isHidden(group) ? 'Klasse einblenden' : 'Klasse ausblenden'">
+          <div :title="!isHidden(group) ? 'Klasse einblenden' : 'Klasse ausblenden'" class='mr-2'>
             <Icon
-              name='eye'
               v-if='!isHidden(group)'
               class='cursor-pointer'
+              name='eye'
               @click.stop='toggleAnnotationGroup(group)'
             />
-            <Icon name='eye-slash' v-else class='cursor-pointer' @click.stop='toggleAnnotationGroup(group)' />
+            <Icon v-else class='cursor-pointer' name='eye-slash' @click.stop='toggleAnnotationGroup(group)' />
           </div>
           <!-- <div class="w-4 h-4 mr-3 flex-shrink-0 rounded-full" :style="`background-color:${group.color}`"></div> -->
           <color-picker
             v-if='isSuperUser() && isAdmin'
-            class='w-4 h-4 mr-3 flex-shrink-0'
-            @isReleased='updateGroup(group.name, groupUpdateColor, group)'
-            @changed='groupUpdateColor = $event'
             :initialColor='group.color'
+            class='w-4 h-4 mr-3 flex-shrink-0'
+            @changed='groupUpdateColor = $event'
+            @isReleased='updateGroup(group.name, groupUpdateColor, group)'
           ></color-picker>
-          <div v-else class='w-4 h-4 mr-3 flex-shrink-0 rounded-full' :style='`background-color: ${group.color}`'></div>
+          <div v-else :style='`background-color: ${group.color}`' class='w-4 h-4 mr-3 flex-shrink-0 rounded-full'></div>
           <text-edit
             v-if='isSuperUser() && isAdmin'
             :value='group.name'
-            @valueChanged='updateGroup($event, group.color, group)'
             class='w-full items-center'
+            @valueChanged='updateGroup($event, group.color, group)'
           ></text-edit>
           <div v-else class='w-full items-center'>{{ group.name }}</div>
         </div>
@@ -133,9 +133,9 @@ const onSubmit = () => {
     <role-only>
       <primary-button
         v-if='isAdmin'
-        name='Neue Klasse'
-        class='py-2'
         bgColor='bg-gray-400'
+        class='py-2'
+        name='Neue Klasse'
         @click='showGroupCreation = true'
       ></primary-button>
     </role-only>
@@ -145,32 +145,32 @@ const onSubmit = () => {
     <modal-dialog :show='showGroupCreation'>
       <h1 class='text-2xl text-center'>Neue Annotationsklasse</h1>
 
-      <form @submit.prevent='onSubmit' class='w-full'>
+      <form class='w-full' @submit.prevent='onSubmit'>
         <input-field
           v-model='groupCreationForm.name'
-          label='Klassenname'
-          tip='Gib der Annotationsklasse einen Namen'
-          placeholder='Classis...'
-          class='mb-2'
           :required='true'
+          class='mb-2'
+          label='Klassenname'
+          placeholder='Classis...'
+          tip='Gib der Annotationsklasse einen Namen'
         ></input-field>
 
         <div class='flex flex-col mb-4'>
-          <label for='body' class='text-gray-200'>Klassenfarbe:</label>
+          <label class='text-gray-200' for='body'>Klassenfarbe:</label>
           <div class='rounded-lg overflow-hidden h-8'>
-            <input type='color' id='body' name='body' v-model='groupCreationForm.color' />
+            <input id='body' v-model='groupCreationForm.color' name='body' type='color' />
           </div>
         </div>
         <div class='flex justify-end w-full'>
           <primary-button
-            @click.prevent='showGroupCreation = false'
-            class='mr-2 w-32'
-            name='Abbrechen'
             bgColor='bg-gray-500'
             bgHoverColor='bg-gray-700'
+            class='mr-2 w-32'
             fontWeight='font-normal'
+            name='Abbrechen'
+            @click.prevent='showGroupCreation = false'
           ></primary-button>
-          <save-button name='Speichern' type='submit' class='w-32' :loading='groupCreationLoading'></save-button>
+          <save-button :loading='groupCreationLoading' class='w-32' name='Speichern' type='submit'></save-button>
         </div>
       </form>
     </modal-dialog>

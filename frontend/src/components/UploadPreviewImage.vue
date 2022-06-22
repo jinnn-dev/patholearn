@@ -110,9 +110,9 @@ const updateImage = () => {
       <div :class='`h-${size} w-${size}`'>
         <div class='h-full'>
           <lazy-image
+            v-viewer
             :imageClasses="'h-full w-full object-cover cursor-pointer'"
             :imageUrl='imgSrc'
-            v-viewer
           ></lazy-image>
         </div>
       </div>
@@ -121,14 +121,14 @@ const updateImage = () => {
           class='bg-gray-600 hover:bg-gray-500 p-1 rounded-md cursor-pointer hover:ring-2 ring-gray-100 transition-all'
           @click="$emit('deleteImage')"
         >
-          <Icon name='trash' class='text-red-500'></Icon>
+          <Icon class='text-red-500' name='trash'></Icon>
         </div>
         <div
           class='bg-gray-600 hover:bg-gray-500 p-1 rounded-md cursor-pointer hover:ring-2 ring-gray-100 transition-all'
         >
           <Icon
-            name='pencil'
             class='text-white'
+            name='pencil'
             @click="
               showEdit = true;
               newImageName = splittedName[0] || '';
@@ -137,26 +137,26 @@ const updateImage = () => {
         </div>
       </div>
     </div>
-    <p class='mt-1 select-none' :id='`previewImage-${index}`'>{{ truncatedName }}</p>
+    <p :id='`previewImage-${index}`' class='mt-1 select-none'>{{ truncatedName }}</p>
   </div>
 
   <modal-dialog :show='showEdit' customClasses='w-[30rem]'>
     <h2 class='text-3xl'>Bild bearbeiten</h2>
 
-    <input-field v-model='newImageName' label='Bildname' type='text' :required='true'></input-field>
+    <input-field v-model='newImageName' :required='true' label='Bildname' type='text'></input-field>
     <div class='flex justify-end'>
       <primary-button
+        bgColor='bg-gray-500'
+        bgHoverColor='bg-gray-700'
+        class='mr-2 w-32'
+        fontWeight='font-normal'
+        name='Abbrechen'
         @click.prevent='
           showEdit = false;
           newImageName = splittedName[0];
         '
-        class='mr-2 w-32'
-        name='Abbrechen'
-        bgColor='bg-gray-500'
-        bgHoverColor='bg-gray-700'
-        fontWeight='font-normal'
       ></primary-button>
-      <save-button name='Speichern' type='submit' class='w-36' @click='updateImage'></save-button>
+      <save-button class='w-36' name='Speichern' type='submit' @click='updateImage'></save-button>
     </div>
   </modal-dialog>
 </template>

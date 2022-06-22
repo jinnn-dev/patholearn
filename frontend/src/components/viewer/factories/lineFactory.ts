@@ -7,6 +7,10 @@ import { OffsetAnnotationLineData } from '../../../model/viewer/export/offsetAnn
 import { AnnotationBaseData, AnnotationBaseOffsetData, AnnotationFactory } from './annotationFactory';
 
 export class LineFactory extends AnnotationFactory<AnnotationLine> {
+  public static getInstance(): LineFactory {
+    return new LineFactory();
+  }
+
   public createInfo(annotationData: AnnotationBaseData): AnnotationLine {
     const infoData = annotationData.data as InfoAnnotatationData;
 
@@ -24,6 +28,7 @@ export class LineFactory extends AnnotationFactory<AnnotationLine> {
     annotationLine.addClosedLine(points, annotationData.radius, annotationData.strokeWidth);
     return annotationLine;
   }
+
   public create(annotationData: AnnotationBaseData): AnnotationLine {
     const points: Point[] = this.convertToPoints(annotationData.data.coord.viewport || []);
 
@@ -66,9 +71,5 @@ export class LineFactory extends AnnotationFactory<AnnotationLine> {
     );
 
     return offsetAnnotationLine;
-  }
-
-  public static getInstance(): LineFactory {
-    return new LineFactory();
   }
 }

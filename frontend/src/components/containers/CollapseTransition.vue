@@ -46,11 +46,11 @@ function afterLeave(element: HTMLElement) {
   <transition
     enter-active-class='enter-active'
     leave-active-class='leave-active'
-    @before-enter='beforeEnter'
     @enter='enter'
+    @leave='leave'
+    @before-enter='beforeEnter'
     @after-enter='afterEnter'
     @before-leave='beforeLeave'
-    @leave='leave'
     @after-leave='afterLeave'
   >
     <slot />

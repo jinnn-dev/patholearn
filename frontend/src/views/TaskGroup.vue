@@ -77,11 +77,11 @@ const onSubmit = () => {
 </script>
 <template>
   <content-container>
-    <template v-slot:header v-if='isMember'>
+    <template v-if='isMember' v-slot:header>
       <content-header
         :link='`/course/${taskGroup?.course_short_name}`'
-        linkText='Zurück zum Kurs'
         :text='taskGroup?.name'
+        linkText='Zurück zum Kurs'
       ></content-header>
     </template>
     <template v-slot:content>
@@ -93,7 +93,7 @@ const onSubmit = () => {
             <div class='w-full text-xl font-bold text-gray-200 uppercase'>Deine Aufgaben</div>
           </div>
 
-          <no-content v-if='taskGroup?.tasks.length === 0' text='Keine Aufgaben vorhanden' class='mt-12'></no-content>
+          <no-content v-if='taskGroup?.tasks.length === 0' class='mt-12' text='Keine Aufgaben vorhanden'></no-content>
           <div v-else class='flex flex-wrap my-8'>
             <div v-for='baseTask in taskGroup?.tasks' :key='baseTask.id' class='ml-4 mb-4'>
               <skeleton-card
@@ -108,10 +108,10 @@ const onSubmit = () => {
 
                 <progress-bar
                   :id='baseTask.short_name'
-                  :percentage='baseTask.percentage_solved'
                   :correctTasks='baseTask.correct_tasks'
-                  :wrongTasks='baseTask.wrong_tasks'
+                  :percentage='baseTask.percentage_solved'
                   :taskCount='baseTask.task_count'
+                  :wrongTasks='baseTask.wrong_tasks'
                 ></progress-bar>
                 <task-count-badge :count='baseTask.task_count'></task-count-badge>
                 <new-task-badge v-if='baseTask.new_tasks'></new-task-badge>

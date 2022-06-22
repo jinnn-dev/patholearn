@@ -1,14 +1,14 @@
 <template>
-  <div class='icon' :id='id'>
+  <div :id='id' class='icon'>
     <svg
-      xmlns='http://www.w3.org/2000/svg'
-      :width='size || width'
       :height='size || height'
-      :viewBox.camel='viewBox'
-      v-bind='$attrs'
-      v-html='icon'
-      class='stroke-current fill-current'
       :stroke-width='strokeWidth'
+      :viewBox.camel='viewBox'
+      :width='size || width'
+      class='stroke-current fill-current'
+      v-bind='$attrs'
+      xmlns='http://www.w3.org/2000/svg'
+      v-html='icon'
     ></svg>
   </div>
 </template>

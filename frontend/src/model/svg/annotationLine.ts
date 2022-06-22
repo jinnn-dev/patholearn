@@ -11,17 +11,6 @@ import { Circle } from './circle';
 import { VertexElement } from './vertice';
 
 export class AnnotationLine extends Annotation {
-  private _vertice: VertexElement[];
-
-  private _polyline?: Selection<SVGPolylineElement, unknown, null, undefined>;
-  private _polylinePoints: string[];
-
-  private _mouseTrackers: OpenSeadragon.MouseTracker[];
-
-  private _isClosed: boolean;
-
-  private _dragEndHandler?: (event: OpenSeadragon.OSDEvent<any>) => void;
-
   private _resultPolylines: Selection<SVGPolylineElement, unknown, null, undefined>[];
 
   constructor(
@@ -39,6 +28,62 @@ export class AnnotationLine extends Annotation {
     this._mouseTrackers = [];
     this._isClosed = false;
     this._resultPolylines = [];
+  }
+
+  private _vertice: VertexElement[];
+
+  get vertice() {
+    return this._vertice;
+  }
+
+  set vertice(vertice: VertexElement[]) {
+    this._vertice = vertice;
+  }
+
+  private _polyline?: Selection<SVGPolylineElement, unknown, null, undefined>;
+
+  get polyline(): Selection<SVGPolylineElement, unknown, null, undefined> | undefined {
+    return this._polyline;
+  }
+
+  set polyline(polyine: Selection<SVGPolylineElement, unknown, null, undefined> | undefined) {
+    this._polyline = polyine;
+  }
+
+  private _polylinePoints: string[];
+
+  get polylinePoints() {
+    return this._polylinePoints;
+  }
+
+  set polylinePoints(points: string[]) {
+    this._polylinePoints = points;
+  }
+
+  private _mouseTrackers: OpenSeadragon.MouseTracker[];
+
+  get mouseTrackers() {
+    return this._mouseTrackers;
+  }
+
+  set mouseTrackers(mouseTrackers: OpenSeadragon.MouseTracker[]) {
+    this._mouseTrackers = mouseTrackers;
+  }
+
+  private _isClosed: boolean;
+
+  get isClosed() {
+    return this._isClosed;
+  }
+
+  set isClosed(closed: boolean) {
+    this._isClosed = closed;
+  }
+
+  private _dragEndHandler?: (event: OpenSeadragon.OSDEvent<any>) => void;
+
+  set dragEndHandler(dragEndHandler: (event: OpenSeadragon.OSDEvent<any>) => void) {
+    this._dragEndHandler = dragEndHandler;
   }
 
   /**
@@ -418,49 +463,5 @@ export class AnnotationLine extends Annotation {
       width: maxX - minX,
       height: maxY - minY
     };
-  }
-
-  get isClosed() {
-    return this._isClosed;
-  }
-
-  set isClosed(closed: boolean) {
-    this._isClosed = closed;
-  }
-
-  get polylinePoints() {
-    return this._polylinePoints;
-  }
-
-  set polylinePoints(points: string[]) {
-    this._polylinePoints = points;
-  }
-
-  get mouseTrackers() {
-    return this._mouseTrackers;
-  }
-
-  get vertice() {
-    return this._vertice;
-  }
-
-  set vertice(vertice: VertexElement[]) {
-    this._vertice = vertice;
-  }
-
-  set mouseTrackers(mouseTrackers: OpenSeadragon.MouseTracker[]) {
-    this._mouseTrackers = mouseTrackers;
-  }
-
-  get polyline(): Selection<SVGPolylineElement, unknown, null, undefined> | undefined {
-    return this._polyline;
-  }
-
-  set polyline(polyine: Selection<SVGPolylineElement, unknown, null, undefined> | undefined) {
-    this._polyline = polyine;
-  }
-
-  set dragEndHandler(dragEndHandler: (event: OpenSeadragon.OSDEvent<any>) => void) {
-    this._dragEndHandler = dragEndHandler;
   }
 }

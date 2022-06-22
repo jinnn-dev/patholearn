@@ -36,12 +36,12 @@ const generatedBgColor = computed(() => {
 </script>
 <template>
   <button
-    :type='type'
-    class='flex justify-center items-center w-full transition rounded-lg py-2 text-md px-2 ring-gray-100'
     :class="`${bgColor} ${fontWeight} ${textColor} ${
       disabled ? 'cursor-not-allowed' : `cursor-pointer hover:${bgHoverColor || generatedBgColor}  hover:ring-2`
     }`"
     :disabled='disabled'
+    :type='type'
+    class='flex justify-center items-center w-full transition rounded-lg py-2 text-md px-2 ring-gray-100'
   >
     <slot></slot>
     {{ name }}

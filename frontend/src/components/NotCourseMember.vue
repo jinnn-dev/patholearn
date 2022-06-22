@@ -31,6 +31,6 @@ const joinCourse = () => {
   </div>
   <div class='flex flex-col items-center'>
     <div class='text-4xl text-center mt-14 mb-8'>Du bist nicht Teil dieses Kurses</div>
-    <save-button label='Beitreten' class='w-42' @click='joinCourse' :loading='joinLoading'></save-button>
+    <save-button :loading='joinLoading' class='w-42' label='Beitreten' @click='joinCourse'></save-button>
   </div>
 </template>

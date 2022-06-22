@@ -8,9 +8,6 @@ import { POLYGON_STROKE_WIDTH } from '../../model/viewer/config';
 import { Annotation } from './annotation';
 
 export class AnnotationPoint extends Annotation {
-  private _vertex?: OpenSeadragon.Point;
-  private _element?: Selection<SVGCircleElement, unknown, null, undefined>;
-
   constructor(
     g: HTMLElement,
     type: ANNOTATION_TYPE,
@@ -19,6 +16,18 @@ export class AnnotationPoint extends Annotation {
     name?: string
   ) {
     super(g, type, color, id, true, name);
+  }
+
+  private _vertex?: OpenSeadragon.Point;
+
+  get vertex(): OpenSeadragon.Point | undefined {
+    return this._vertex;
+  }
+
+  private _element?: Selection<SVGCircleElement, unknown, null, undefined>;
+
+  get element() {
+    return this._element;
   }
 
   /**
@@ -142,13 +151,5 @@ export class AnnotationPoint extends Annotation {
     if (this.name) {
       this._element?.attr('name', this.name);
     }
-  }
-
-  get element() {
-    return this._element;
-  }
-
-  get vertex(): OpenSeadragon.Point | undefined {
-    return this._vertex;
   }
 }

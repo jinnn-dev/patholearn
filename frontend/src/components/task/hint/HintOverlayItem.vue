@@ -24,8 +24,8 @@ defineProps({
       {{ hint.content }}
     </div>
     <div class='my-2 flex gap-2'>
-      <div class='h-20 w-20 rounded-lg' v-for='image in hint.images' :key='image'>
-        <UploadPreviewImage :preview='true' :imgSrc="SLIDE_IMAGE_URL + '/' + image.image_name" />
+      <div v-for='image in hint.images' :key='image' class='h-20 w-20 rounded-lg'>
+        <UploadPreviewImage :imgSrc="SLIDE_IMAGE_URL + '/' + image.image_name" :preview='true' />
       </div>
     </div>
   </div>

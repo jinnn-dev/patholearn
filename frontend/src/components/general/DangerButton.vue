@@ -26,13 +26,13 @@ const confirm = () => {
 </script>
 <template>
   <primary-button
+    :class='customClasses'
+    :name='buttonText'
+    bgColor='bg-gray-700'
     class='w-auto'
     fontWeight='font-medium'
     textColor='text-red-400'
-    bgColor='bg-gray-700'
-    :name='buttonText'
     @click='showConfirmationDialog = true'
-    :class='customClasses'
   ></primary-button>
   <modal-dialog :show='showConfirmationDialog || show'>
     <div class='relative'>
@@ -40,14 +40,14 @@ const confirm = () => {
       <div class='my-4'>{{ info }}</div>
       <div class='flex justify-end'>
         <primary-button
-          @click.prevent='showConfirmationDialog = false'
-          class='mr-2 w-28'
-          name='Nein'
           bgColor='bg-gray-500'
           bgHoverColor='bg-gray-700'
+          class='mr-2 w-28'
           fontWeight='font-normal'
+          name='Nein'
+          @click.prevent='showConfirmationDialog = false'
         ></primary-button>
-        <save-button name='Ja' type='submit' :loading='loading' @click='confirm' class='w-28'></save-button>
+        <save-button :loading='loading' class='w-28' name='Ja' type='submit' @click='confirm'></save-button>
       </div>
     </div>
   </modal-dialog>

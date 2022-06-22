@@ -101,15 +101,15 @@ const onCourseJoin = (course: Course) => {
         <div class='flex justify-between items-center'>
           <div class='w-full text-xl font-bold text-gray-200 uppercase'>Deine Kurse</div>
           <primary-button bgColor='bg-gray-400' class='w-48 h-10' name='Neuer Kurs' @click='showModal = !showModal'>
-            <Icon name='plus' class='mr-2' weight='bold' />
+            <Icon class='mr-2' name='plus' weight='bold' />
           </primary-button>
         </div>
         <div class='my-8'>
           <div v-if='loading' class='flex'>
             <skeleton-card
               v-for='i in 4'
-              :loading='loading'
               :key='i'
+              :loading='loading'
               skeletonClasses='h-24 w-44 ml-4 mb-4'
             ></skeleton-card>
           </div>
@@ -129,7 +129,7 @@ const onCourseJoin = (course: Course) => {
         </div>
         <div class='my-8'>
           <div v-if='loading' class='flex'>
-            <skeleton-card v-for='i in 4' :loading='loading' :key='i' skeletonClasses='h-24 w-44 ml-4'></skeleton-card>
+            <skeleton-card v-for='i in 4' :key='i' :loading='loading' skeletonClasses='h-24 w-44 ml-4'></skeleton-card>
           </div>
           <div v-else class='flex flex-wrap gap-4'>
             <div v-for='course in courses' :key='course.id'>
@@ -142,25 +142,25 @@ const onCourseJoin = (course: Course) => {
     </template>
   </content-container>
 
-  <modal-dialog customClasses='w-[700px] h-1/2' :show='showModal'>
+  <modal-dialog :show='showModal' customClasses='w-[700px] h-1/2'>
     <div>
       <h1 class='text-2xl text-center'>Erstelle einen neuen Kurs</h1>
-      <form @submit.prevent='onSubmit' class='w-full'>
+      <form class='w-full' @submit.prevent='onSubmit'>
         <input-field
           v-model='formData.name'
+          :errorMessage="courseAlreadyExists ? 'Es gibt bereits einen Kurs mit diesem Namen.' : ''"
+          :required='true'
           label='Kursname'
           placeholder='Kursname'
-          type='text'
           tip='Gebe dem Kurs einen eindeutigen Namen.'
-          :required='true'
-          :errorMessage="courseAlreadyExists ? 'Es gibt bereits einen Kurs mit diesem Namen.' : ''"
+          type='text'
         >
         </input-field>
         <!-- <div v-if="courseAlreadyExists" class="text-red-500">Es gibt bereits einen Kurs mit diesem Namen.</div> -->
 
         <input-area
-          class='h-72'
           v-model='formData.description'
+          class='h-72'
           label='Kursbeschreibung'
           placeholder='Das ist der tollste Kurs'
           tip='Gebe deinem Kurs eine optionale Beschreibung'
@@ -168,13 +168,13 @@ const onCourseJoin = (course: Course) => {
 
         <div class='flex flex-end'>
           <primary-button
-            @click.prevent='hideModal'
-            class='mr-2'
-            name='Abbrechen'
             bgColor='bg-gray-500'
+            class='mr-2'
             fontWeight='font-normal'
+            name='Abbrechen'
+            @click.prevent='hideModal'
           ></primary-button>
-          <save-button name='Speichern' type='submit' :loading='courseIsCreating'></save-button>
+          <save-button :loading='courseIsCreating' name='Speichern' type='submit'></save-button>
         </div>
       </form>
     </div>

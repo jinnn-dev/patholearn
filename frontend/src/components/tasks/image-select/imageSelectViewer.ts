@@ -24,8 +24,6 @@ export class ImageSelectViewer {
 
   private _imageSelectFeedback: ImageSelectFeedback[];
 
-  private _clickDisabled: Boolean = false;
-
   constructor(
     images: string[],
     selected: string[],
@@ -79,6 +77,16 @@ export class ImageSelectViewer {
     this._overlay = this._viewer.svgOverlay();
 
     this.initViewer();
+  }
+
+  private _clickDisabled: Boolean = false;
+
+  set clickDisabled(disabled: Boolean) {
+    this._clickDisabled = disabled;
+  }
+
+  get selectedImagesRef(): Ref<Set<string>> {
+    return this._selectedImages;
   }
 
   initViewer() {
@@ -164,13 +172,5 @@ export class ImageSelectViewer {
         rect.attr('stroke', RESULT_POLYGON_COLOR[feedback.status]!);
       }
     }
-  }
-
-  get selectedImagesRef(): Ref<Set<string>> {
-    return this._selectedImages;
-  }
-
-  set clickDisabled(disabled: Boolean) {
-    this._clickDisabled = disabled;
   }
 }

@@ -10,7 +10,7 @@ defineProps({
 });
 </script>
 <template>
-  <div class='flex flex-col justify-start items-start' :class='marginHor'>
+  <div :class='marginHor' class='flex flex-col justify-start items-start'>
     <span class='text-gray-200 mb-0.5'>{{ label }}</span>
     <div class='relative w-full h-full'>
       <div class='pointer-events-none absolute inset-y-0 left-2 flex items-center'>
@@ -20,7 +20,7 @@ defineProps({
         <slot></slot>
       </div>
     </div>
-    <p class='mt-2 text-sm text-gray-200' v-if='tip'>
+    <p v-if='tip' class='mt-2 text-sm text-gray-200'>
       {{ tip }}
     </p>
     <p class='text-red-500 text-sm my-1'>

@@ -30,10 +30,10 @@ async function deleteHint() {
         Fehlern angezeigt
       </div>
       <div class='flex gap-2'>
-        <primary-button type='button' class='w-8 h-8' bgColor='bg-gray-500' @click="$emit('edit', hint)">
+        <primary-button bgColor='bg-gray-500' class='w-8 h-8' type='button' @click="$emit('edit', hint)">
           <Icon name='pencil' />
         </primary-button>
-        <primary-button type='button' class='w-8 h-8' bgColor='bg-red-500'>
+        <primary-button bgColor='bg-red-500' class='w-8 h-8' type='button'>
           <Icon name='trash' @click='deleteHint' />
         </primary-button>
       </div>
@@ -42,8 +42,8 @@ async function deleteHint() {
       {{ hint.content }}
     </div>
     <div class='my-2 flex gap-2'>
-      <div class='h-20 w-20 bg-gray-500 rounded-lg' v-for='image in hint.images' :key='image.id'>
-        <UploadPreviewImage :preview='true' :imgSrc="SLIDE_IMAGE_URL + '/' + image.image_name" />
+      <div v-for='image in hint.images' :key='image.id' class='h-20 w-20 bg-gray-500 rounded-lg'>
+        <UploadPreviewImage :imgSrc="SLIDE_IMAGE_URL + '/' + image.image_name" :preview='true' />
       </div>
     </div>
   </div>

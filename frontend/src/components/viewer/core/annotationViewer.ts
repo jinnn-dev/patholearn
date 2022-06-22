@@ -39,21 +39,10 @@ import { TaskSaver } from './taskSaver';
 import { viewerLoadingState, viewerScale, viewerZoom } from './viewerState';
 
 export class AnnotationViewer {
-  private _viewer: OpenSeadragon.Viewer;
-
   private _overlay: SvgOverlay;
-
   private _annotationManager: AnnotationManager;
-
   private _mouseCircle: MouseCircle;
-
-  private _drawingAnnotation!: AnnotationLine | AnnotationRectangle | undefined;
-
   private _currentColor: ANNOTATION_COLOR;
-
-  private _stopDraggingIndicator: boolean = false;
-
-  private _snapResult: SnapResult | undefined;
 
   constructor(viewerOptions: OpenSeadragon.Options) {
     this._viewer = OpenSeadragon(viewerOptions);
@@ -108,6 +97,79 @@ export class AnnotationViewer {
 
       this._viewer.viewport.zoomBy(1);
     });
+  }
+
+  private _viewer: OpenSeadragon.Viewer;
+
+  get viewer(): Viewer {
+    return this._viewer;
+  }
+
+  private _drawingAnnotation!: AnnotationLine | AnnotationRectangle | undefined;
+
+  get drawingAnnotation() {
+    return this._drawingAnnotation;
+  }
+
+  private _stopDraggingIndicator: boolean = false;
+
+  set stopDraggingIndicator(value: boolean) {
+    this._stopDraggingIndicator = value;
+  }
+
+  private _snapResult: SnapResult | undefined;
+
+  get snapResult() {
+    return this._snapResult;
+  }
+
+  get isLineDrawing() {
+    return this._drawingAnnotation !== undefined && this._drawingAnnotation instanceof AnnotationLine;
+  }
+
+  get isPolygonDrawing() {
+    return this._drawingAnnotation !== undefined && this._drawingAnnotation instanceof AnnotationPolygon;
+  }
+
+  get drawingPolygonIsClosed() {
+    if (this._drawingAnnotation?.isClosed) {
+      if (
+        this._drawingAnnotation instanceof OffsetAnnotationPolygon ||
+        this._drawingAnnotation instanceof OffsetAnnotationRectangle
+      ) {
+        const annotation = this._drawingAnnotation as OffsetAnnotationPolygon;
+
+        let size = annotation.getSize();
+
+        if (this._drawingAnnotation instanceof OffsetAnnotationRectangle) {
+          size *= 1 / (size * 2) / 100;
+        }
+
+        const offset = POLYGON_INFLATE_OFFSET * size;
+
+        const value = (offset * ANNOTATION_OFFSET_SCALAR) / 80;
+
+        annotation.inflationInnerOffset = value;
+        annotation.inflationOuterOffset = value;
+
+        annotation.createInflation(this.scale);
+      }
+    }
+
+    return this._drawingAnnotation?.isClosed;
+  }
+
+  get scale(): number {
+    // @ts-ignore
+    return this._viewer.viewport._containerInnerSize.x * this._viewer.viewport.getZoom(true);
+  }
+
+  get zoom(): number {
+    return this._viewer.viewport.getZoom();
+  }
+
+  get maxZoom() {
+    return this._viewer.viewport.getMaxZoom();
   }
 
   addAnimationHandler(): void {
@@ -905,70 +967,5 @@ export class AnnotationViewer {
 
   resetZoom() {
     this._viewer.viewport.fitBounds(this._viewer.viewport.getHomeBounds());
-  }
-
-  get isLineDrawing() {
-    return this._drawingAnnotation !== undefined && this._drawingAnnotation instanceof AnnotationLine;
-  }
-
-  get isPolygonDrawing() {
-    return this._drawingAnnotation !== undefined && this._drawingAnnotation instanceof AnnotationPolygon;
-  }
-
-  get drawingPolygonIsClosed() {
-    if (this._drawingAnnotation?.isClosed) {
-      if (
-        this._drawingAnnotation instanceof OffsetAnnotationPolygon ||
-        this._drawingAnnotation instanceof OffsetAnnotationRectangle
-      ) {
-        const annotation = this._drawingAnnotation as OffsetAnnotationPolygon;
-
-        let size = annotation.getSize();
-
-        if (this._drawingAnnotation instanceof OffsetAnnotationRectangle) {
-          size *= 1 / (size * 2) / 100;
-        }
-
-        const offset = POLYGON_INFLATE_OFFSET * size;
-
-        const value = (offset * ANNOTATION_OFFSET_SCALAR) / 80;
-
-        annotation.inflationInnerOffset = value;
-        annotation.inflationOuterOffset = value;
-
-        annotation.createInflation(this.scale);
-      }
-    }
-
-    return this._drawingAnnotation?.isClosed;
-  }
-
-  get snapResult() {
-    return this._snapResult;
-  }
-
-  set stopDraggingIndicator(value: boolean) {
-    this._stopDraggingIndicator = value;
-  }
-
-  get drawingAnnotation() {
-    return this._drawingAnnotation;
-  }
-
-  get viewer(): Viewer {
-    return this._viewer;
-  }
-
-  get scale(): number {
-    // @ts-ignore
-    return this._viewer.viewport._containerInnerSize.x * this._viewer.viewport.getZoom(true);
-  }
-
-  get zoom(): number {
-    return this._viewer.viewport.getZoom();
-  }
-
-  get maxZoom() {
-    return this._viewer.viewport.getMaxZoom();
   }
 }

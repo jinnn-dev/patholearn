@@ -70,21 +70,21 @@ onUnmounted(() => {
 
     <select-images-task
       v-if='selectedTask?.task_type === TaskType.IMAGE_SELECT'
-      :task='selectedTask'
       :base_task_id='baseTask?.id'
-      :task_group_id='baseTask?.task_group_id'
       :course_id='baseTask?.course_id'
       :isAdmin='true'
+      :task='selectedTask'
+      :task_group_id='baseTask?.task_group_id'
     ></select-images-task>
 
     <div v-else>
       <task-viewer-admin
         v-if='baseTask?.tasks.length === 0 || selectedTask?.task_type !== TaskType.IMAGE_SELECT'
+        :base_task_id='baseTask?.id'
+        :course_id='baseTask?.course_id'
         :slide_name='baseTask?.slide_id'
         :task='selectedTask'
-        :base_task_id='baseTask?.id'
         :task_group_id='baseTask?.task_group_id'
-        :course_id='baseTask?.course_id'
       ></task-viewer-admin>
     </div>
   </div>

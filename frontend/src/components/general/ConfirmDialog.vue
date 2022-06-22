@@ -29,14 +29,14 @@ const reject = () => {
       </h2>
       <div class='flex justify-end mt-4'>
         <primary-button
-          @click.prevent='reject'
-          class='mr-2 w-28'
-          name='Nein'
           bgColor='bg-gray-500'
           bgHoverColor='bg-gray-700'
+          class='mr-2 w-28'
           fontWeight='font-normal'
+          name='Nein'
+          @click.prevent='reject'
         ></primary-button>
-        <save-button name='Ja' type='submit' :loading='loading' @click='confirm' class='w-28'></save-button>
+        <save-button :loading='loading' class='w-28' name='Ja' type='submit' @click='confirm'></save-button>
       </div>
     </div>
   </modal-dialog>

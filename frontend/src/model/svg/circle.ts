@@ -3,11 +3,7 @@ import { nanoid } from 'nanoid';
 
 export class Circle {
   private _d3circle: Selection<SVGCircleElement, unknown, null, undefined> | null;
-
-  private _id: string;
   private _g: HTMLElement;
-  private _cx: number;
-  private _cy: number;
   private _r: number;
   private _strokeColor: string;
   private _strokeWidth: number;
@@ -39,13 +35,13 @@ export class Circle {
     this._name = name;
   }
 
-  get isAttached() {
-    return this._d3circle;
-  }
+  private _id: string;
 
   get id() {
     return this._id;
   }
+
+  private _cx: number;
 
   get cx() {
     return this._cx;
@@ -55,12 +51,18 @@ export class Circle {
     this._cx = cx;
   }
 
+  private _cy: number;
+
   get cy() {
     return this._cy;
   }
 
   set cy(cy: number) {
     this._cy = cy;
+  }
+
+  get isAttached() {
+    return this._d3circle;
   }
 
   /**

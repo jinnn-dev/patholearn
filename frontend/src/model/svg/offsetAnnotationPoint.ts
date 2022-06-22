@@ -8,7 +8,6 @@ import { POLYGON_INFLATE_OFFSET } from '../../model/viewer/config';
 import { AnnotationPoint } from './annotationPoint';
 
 export class OffsetAnnotationPoint extends AnnotationPoint {
-  private _offsetRadius: number;
   private _offsetElement?: Selection<SVGPathElement, unknown, null, undefined>;
 
   constructor(
@@ -21,6 +20,16 @@ export class OffsetAnnotationPoint extends AnnotationPoint {
   ) {
     super(g, type, color, id, name);
 
+    this._offsetRadius = offsetRadius;
+  }
+
+  private _offsetRadius: number;
+
+  get offsetRadius(): number {
+    return this._offsetRadius;
+  }
+
+  set offsetRadius(offsetRadius: number) {
     this._offsetRadius = offsetRadius;
   }
 
@@ -93,13 +102,5 @@ export class OffsetAnnotationPoint extends AnnotationPoint {
     if (this.name) {
       this._offsetElement?.attr('name', this.name);
     }
-  }
-
-  set offsetRadius(offsetRadius: number) {
-    this._offsetRadius = offsetRadius;
-  }
-
-  get offsetRadius(): number {
-    return this._offsetRadius;
   }
 }

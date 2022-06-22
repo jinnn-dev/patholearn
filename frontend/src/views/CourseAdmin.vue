@@ -166,7 +166,7 @@ const editCourse = async () => {
 <template>
   <content-container>
     <template v-slot:header>
-      <content-header link='/home' linkText='Zurück zur Kursauswahl' :text='course?.name'></content-header>
+      <content-header :text='course?.name' link='/home' linkText='Zurück zur Kursauswahl'></content-header>
     </template>
     <template v-slot:content>
       <div class='flex gap-10 flex-1'>
@@ -180,12 +180,12 @@ const editCourse = async () => {
                 name='Neue Aufgabengruppe'
                 @click='showGroupModal = !showGroupModal'
               >
-                <Icon name='plus' class='mr-2' weight='bold' />
+                <Icon class='mr-2' name='plus' weight='bold' />
               </primary-button>
             </div>
-            <primary-button class='w-52' fontWeight='font-medium' bgColor='bg-gray-600' @click='showEditCourse = true'>
+            <primary-button bgColor='bg-gray-600' class='w-52' fontWeight='font-medium' @click='showEditCourse = true'>
               <div class='flex items-center justify-center'>
-                <Icon class='mr-1' height='18' width='18' name='pencil'></Icon>
+                <Icon class='mr-1' height='18' name='pencil' width='18'></Icon>
                 <div>Kurs bearbeiten</div>
               </div>
             </primary-button>
@@ -194,8 +194,8 @@ const editCourse = async () => {
             <div v-if='loading' class='flex'>
               <skeleton-card
                 v-for='i in 4'
-                :loading='loading'
                 :key='i'
+                :loading='loading'
                 skeletonClasses='h-24 w-44 ml-4'
               ></skeleton-card>
             </div>
@@ -221,29 +221,29 @@ const editCourse = async () => {
   <modal-dialog :show='showGroupModal'>
     <div class='relative'>
       <h1 class='text-2xl text-center'>Erstelle eine neue Aufgabengruppe</h1>
-      <form @submit.prevent='onGroupSubmit' class='w-full'>
+      <form class='w-full' @submit.prevent='onGroupSubmit'>
         <input-field
           v-model='fromGroupData.name'
+          :errorMessage="taskGroupExists ? 'Es existiert bereits eine Gruppe mit diesem Namen' : ''"
+          :required='true'
+          class='w-96'
           label='Gruppenname'
           placeholder='Aufgabengruppe'
           tip='Gebe der Gruppe einen eindeutigen Namen'
-          :errorMessage="taskGroupExists ? 'Es existiert bereits eine Gruppe mit diesem Namen' : ''"
           type='text'
-          :required='true'
-          class='w-96'
         >
         </input-field>
 
         <div class='flex flex-end'>
           <primary-button
-            @click.prevent='onTaskGroupClose'
-            class='mr-2'
-            name='Abbrechen'
             bgColor='bg-gray-500'
             bgHoverColor='bg-gray-700'
+            class='mr-2'
             fontWeight='font-normal'
+            name='Abbrechen'
+            @click.prevent='onTaskGroupClose'
           ></primary-button>
-          <save-button name='Speichern' type='submit' :loading='taskGroupLoading'></save-button>
+          <save-button :loading='taskGroupLoading' name='Speichern' type='submit'></save-button>
         </div>
       </form>
     </div>
@@ -253,38 +253,38 @@ const editCourse = async () => {
     <div class='relative'>
       <h1 class='text-2xl'>Kurs bearbeiten</h1>
 
-      <input-field label='Kursname' v-model='newCourseName' />
+      <input-field v-model='newCourseName' label='Kursname' />
 
       <div class='border-2 m-2 px-4 rounded-lg border-red-800'>
         <div class='my-4 text-gray-200 font-bold text-red-400'>
           ACHTUNG - Alle zugehörigen Aufgabengruppen, Aufgaben und Lösungen werden gelöscht.
         </div>
-        <input-field tip='Bitte den Namen des Kurses eingeben um ihn zu löschen' v-model='deleteCourseVerification' />
+        <input-field v-model='deleteCourseVerification' tip='Bitte den Namen des Kurses eingeben um ihn zu löschen' />
 
         <primary-button
-          @click.prevent='deleteCourse'
-          class='mr-2 w-full my-5'
-          name='Kurs Löschen'
           bgColor='bg-red-500'
           bgHoverColor='bg-red-700'
+          class='mr-2 w-full my-5'
           fontWeight='font-normal'
+          name='Kurs Löschen'
+          @click.prevent='deleteCourse'
         ></primary-button>
       </div>
       <div class='flex justify-end'>
         <primary-button
-          @click.prevent='showEditCourse = false'
-          class='mr-2 w-28'
-          name='Abbrechen'
           bgColor='bg-gray-500'
           bgHoverColor='bg-gray-700'
+          class='mr-2 w-28'
           fontWeight='font-normal'
+          name='Abbrechen'
+          @click.prevent='showEditCourse = false'
         ></primary-button>
         <save-button
+          :loading='editCourseLoading'
+          class='w-28'
           name='Speichern'
           type='submit'
-          :loading='editCourseLoading'
           @click='editCourse'
-          class='w-28'
         ></save-button>
       </div>
     </div>

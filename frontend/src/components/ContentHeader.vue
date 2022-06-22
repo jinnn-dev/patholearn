@@ -12,8 +12,8 @@ defineProps({
   <div class='flex justify-center w-full'>
     <div id='test' class='flex w-11/12 relative items-center bg-gray-700 rounded-xl bg-opacity-40 py-5'>
       <div class='flex transition ml-2 text-xl items-center cursor-pointer hover:text-highlight-500 absolute'>
-        <router-link class='flex p-2 items-center text-base lg:text-xl' :to='link'>
-          <Icon name='arrow-left' class='mr-2' />
+        <router-link :to='link' class='flex p-2 items-center text-base lg:text-xl'>
+          <Icon class='mr-2' name='arrow-left' />
           {{ linkText }}
         </router-link>
       </div>

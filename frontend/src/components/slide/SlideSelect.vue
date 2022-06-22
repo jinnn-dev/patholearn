@@ -51,13 +51,13 @@ const selectSlide = (slide: Slide) => {
 };
 </script>
 <template>
-  <div class='relative' ref='target'>
+  <div ref='target' class='relative'>
     <input-field
-      label='Aufgaben-Slide'
-      tip='Wähle ein Slide welches in der Aufgabe benutzt wird'
-      placeholder='Klicke hier, um ein Slide zu wählen'
       v-model='searchString'
       :required='true'
+      label='Aufgaben-Slide'
+      placeholder='Klicke hier, um ein Slide zu wählen'
+      tip='Wähle ein Slide welches in der Aufgabe benutzt wird'
       @click='
         loadSlides();
         isFocus = true;

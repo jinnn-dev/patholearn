@@ -10,25 +10,10 @@ import { Circle } from './circle';
 import { VertexElement } from './vertice';
 
 export class AnnotationRectangle extends Annotation {
-  private _vertice: VertexElement[];
-
-  private _width: number = 0;
-
-  private _height: number = 0;
-
-  private _polyline?: Selection<SVGRectElement, unknown, null, undefined>;
-
   private _polylinePoints: string[];
-
   private _mouseTrackers: OpenSeadragon.MouseTracker[];
-
-  private _isClosed: boolean;
-
   private _dragEndHandler?: (event: OpenSeadragon.OSDEvent<any>) => void;
-
   private _resultPolylines: Selection<SVGPolylineElement, unknown, null, undefined>[];
-
-  private _fillColor: string;
 
   constructor(
     g: HTMLElement,
@@ -46,6 +31,62 @@ export class AnnotationRectangle extends Annotation {
     this._mouseTrackers = [];
     this._isClosed = false;
     this._resultPolylines = [];
+  }
+
+  private _vertice: VertexElement[];
+
+  get vertice() {
+    return this._vertice;
+  }
+
+  set vertice(vertice: VertexElement[]) {
+    this._vertice = vertice;
+  }
+
+  private _width: number = 0;
+
+  get width() {
+    return this._width;
+  }
+
+  set width(width: number) {
+    this._width = width;
+  }
+
+  private _height: number = 0;
+
+  get height() {
+    return this._height;
+  }
+
+  set height(height: number) {
+    this._height = height;
+  }
+
+  private _polyline?: Selection<SVGRectElement, unknown, null, undefined>;
+
+  get polyline(): Selection<SVGRectElement, unknown, null, undefined> | undefined {
+    return this._polyline;
+  }
+
+  set polyline(polyine: Selection<SVGRectElement, unknown, null, undefined> | undefined) {
+    this._polyline = polyine;
+  }
+
+  private _isClosed: boolean;
+
+  get isClosed() {
+    return this._isClosed;
+  }
+
+  set isClosed(closed: boolean) {
+    this._isClosed = closed;
+  }
+
+  private _fillColor: string;
+
+  get fillColor() {
+    return this._fillColor;
   }
 
   addVertex(viewportCoord: OpenSeadragon.Point, r: number, strokeWidth: number) {
@@ -337,49 +378,5 @@ export class AnnotationRectangle extends Annotation {
     const topRight = this.vertice[0].viewport.plus(new OpenSeadragon.Point(this.width, 0));
     const bottomLeft = this.vertice[0].viewport.plus(new OpenSeadragon.Point(0, this.height));
     return [this.vertice[0].viewport, bottomLeft, this.vertice[1].viewport, topRight];
-  }
-
-  get polyline(): Selection<SVGRectElement, unknown, null, undefined> | undefined {
-    return this._polyline;
-  }
-
-  set polyline(polyine: Selection<SVGRectElement, unknown, null, undefined> | undefined) {
-    this._polyline = polyine;
-  }
-
-  get width() {
-    return this._width;
-  }
-
-  set width(width: number) {
-    this._width = width;
-  }
-
-  get height() {
-    return this._height;
-  }
-
-  set height(height: number) {
-    this._height = height;
-  }
-
-  get vertice() {
-    return this._vertice;
-  }
-
-  set vertice(vertice: VertexElement[]) {
-    this._vertice = vertice;
-  }
-
-  get isClosed() {
-    return this._isClosed;
-  }
-
-  set isClosed(closed: boolean) {
-    this._isClosed = closed;
-  }
-
-  get fillColor() {
-    return this._fillColor;
   }
 }

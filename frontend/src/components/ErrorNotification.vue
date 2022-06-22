@@ -30,7 +30,7 @@ const getDate = computed(() =>
 );
 </script>
 <template>
-  <div @click="$emit('expired', index)" class='bg-red-700 p-4 rounded-lg shadow-xl text-white my-4'>
+  <div class='bg-red-700 p-4 rounded-lg shadow-xl text-white my-4' @click="$emit('expired', index)">
     <div class='font-semibold text-red-200'>
       {{ getDate }}
     </div>

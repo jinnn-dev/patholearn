@@ -2,6 +2,7 @@ export interface WrongLabelDetailStatistic {
   label: string;
   amount: number;
 }
+
 export interface WrongLabelStatistic {
   detail: WrongLabelDetailStatistic[];
   label: string;

@@ -4,31 +4,31 @@
       Füge eine neue Aufgabe der
       {{ taskUpdateForm.layer }}. Ebene hinzu
     </h1>
-    <form @submit.prevent='updateTask' class='w-full'>
+    <form class='w-full' @submit.prevent='updateTask'>
       <input-field
         v-model='taskUpdateForm.task_question'
+        :required='true'
         label='Fragestellung'
         placeholder='Markiere...'
         type='text'
-        :required='true'
       >
       </input-field>
 
       <Accordion>
         <AccordionItem
-          title='Aufgabeneinstellungen'
-          :first='true'
           v-if='taskUpdateForm.task_type !== TaskType.IMAGE_SELECT'
+          :first='true'
+          title='Aufgabeneinstellungen'
         >
-          <div class='my-8' v-if='taskUpdateForm.task_type === 0'>
+          <div v-if='taskUpdateForm.task_type === 0' class='my-8'>
             <div>Wie viele Annotationen müssen die Lernenden mindestens richtig treffen:</div>
             <CustomSlider
-              :min='0'
-              :max='50'
-              :tooltips='true'
               :initialPosition='taskUpdateForm.min_correct'
-              @isReleased='updateMinCorrect'
+              :max='50'
+              :min='0'
+              :tooltips='true'
               class='pb-4 pt-11'
+              @isReleased='updateMinCorrect'
             >
             </CustomSlider>
           </div>
@@ -41,10 +41,10 @@
             </div>
             <div class='flex w-full justify-evenly gap-2 my-2'>
               <div
-                class='transition flex justify-center items-center bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg p-2'
                 v-for='level in knowledgeLevel'
                 :key='level.index'
                 :class="taskUpdateForm.knowledge_level === level.index && 'bg-gray-500 ring-2 ring-highlight-900'"
+                class='transition flex justify-center items-center bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg p-2'
                 @click='taskUpdateForm.knowledge_level = level.index'
               >
                 <div class='flex flex-col gap-3 justify-center items-center text-center'>
@@ -59,8 +59,8 @@
           <div class='my-8'>
             <div>Soll die Aufgabe von Nutzern lösbar sein?</div>
             <toggle-button
-              class='my-2'
               :enabled='taskUpdateForm.can_be_solved'
+              class='my-2'
               @changed='changeCanBeSolved'
             ></toggle-button>
           </div>
@@ -72,14 +72,14 @@
 
       <div class='flex justify-end w-full mt-4'>
         <primary-button
-          @click.prevent="$emit('close')"
-          class='mr-2 w-32'
-          name='Abbrechen'
           bgColor='bg-gray-500'
           bgHoverColor='bg-gray-700'
+          class='mr-2 w-32'
           fontWeight='font-normal'
+          name='Abbrechen'
+          @click.prevent="$emit('close')"
         ></primary-button>
-        <save-button name='Speichern' type='submit' class='w-36' :loading='taskUpdateLoading'></save-button>
+        <save-button :loading='taskUpdateLoading' class='w-36' name='Speichern' type='submit'></save-button>
       </div>
     </form>
   </div>

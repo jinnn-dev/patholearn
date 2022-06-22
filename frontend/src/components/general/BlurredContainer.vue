@@ -1,4 +1,4 @@
-<script setup lang='ts'>
+<script lang='ts' setup>
 import { PropType } from 'vue';
 
 type BlurAmount = '' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';

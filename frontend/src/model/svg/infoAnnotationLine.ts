@@ -7,12 +7,6 @@ import { AnnotationLine } from './annotationLine';
 import { InfoAnnotation } from './infoAnnotation';
 
 export default class InfoAnnotationLine extends AnnotationLine implements InfoAnnotation {
-  private _headerText: string;
-
-  private _detailText: string;
-
-  private _images: string[];
-
   private static STROKE_WIDTH_FACTOR = 1.2;
 
   constructor(
@@ -28,6 +22,36 @@ export default class InfoAnnotationLine extends AnnotationLine implements InfoAn
     this._headerText = headerText;
     this._detailText = detailText;
     this._images = images;
+  }
+
+  private _headerText: string;
+
+  public get headerText(): string {
+    return this._headerText;
+  }
+
+  public set headerText(value: string) {
+    this._headerText = value;
+  }
+
+  private _detailText: string;
+
+  public get detailText(): string {
+    return this._detailText;
+  }
+
+  public set detailText(value: string) {
+    this._detailText = value;
+  }
+
+  private _images: string[];
+
+  public get images(): string[] {
+    return this._images;
+  }
+
+  public set images(value: string[]) {
+    this._images = value;
   }
 
   update(r: number, strokeWidth: number): void {
@@ -46,28 +70,5 @@ export default class InfoAnnotationLine extends AnnotationLine implements InfoAn
   unselect(): void {
     super.unselect();
     InfoTooltipGenerator.hideTooltip(this.id);
-  }
-
-  public get headerText(): string {
-    return this._headerText;
-  }
-  public set headerText(value: string) {
-    this._headerText = value;
-  }
-
-  public get detailText(): string {
-    return this._detailText;
-  }
-
-  public set detailText(value: string) {
-    this._detailText = value;
-  }
-
-  public get images(): string[] {
-    return this._images;
-  }
-
-  public set images(value: string[]) {
-    this._images = value;
   }
 }

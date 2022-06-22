@@ -7,6 +7,10 @@ import { OffsetAnnotationPoint } from '../../../model/svg/offsetAnnotationPoint'
 import { AnnotationBaseData, AnnotationBaseOffsetData, AnnotationFactory } from './annotationFactory';
 
 export class PointFactory extends AnnotationFactory<AnnotationPoint> {
+  public static getInstance(): PointFactory {
+    return new PointFactory();
+  }
+
   public createInfo(annotationData: AnnotationBaseData): InfoAnnotationPoint {
     const infoData = annotationData.data as InfoAnnotatationData;
     let annotationPoint = new InfoAnnotationPoint(
@@ -27,6 +31,7 @@ export class PointFactory extends AnnotationFactory<AnnotationPoint> {
 
     return annotationPoint;
   }
+
   public create(annotationData: AnnotationBaseData): AnnotationPoint {
     let annotationPoint: AnnotationPoint = new AnnotationPoint(
       annotationData.node,
@@ -65,9 +70,5 @@ export class PointFactory extends AnnotationFactory<AnnotationPoint> {
     );
 
     return offsetAnnotationPoint;
-  }
-
-  public static getInstance(): PointFactory {
-    return new PointFactory();
   }
 }

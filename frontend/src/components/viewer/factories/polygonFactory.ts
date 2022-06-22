@@ -8,6 +8,10 @@ import { InfoAnnotatationData } from '../../../viewer/export/infoAnnotationData'
 import { AnnotationBaseData, AnnotationBaseOffsetData, AnnotationFactory } from './annotationFactory';
 
 export class PolygonFactory extends AnnotationFactory<AnnotationPolygon> {
+  public static getInstance(): PolygonFactory {
+    return new PolygonFactory();
+  }
+
   public createInfo(annotationData: AnnotationBaseData): AnnotationPolygon {
     const infoData = annotationData.data as InfoAnnotatationData;
 
@@ -27,6 +31,7 @@ export class PolygonFactory extends AnnotationFactory<AnnotationPolygon> {
 
     return annotationPolygon;
   }
+
   public create(annotationData: AnnotationBaseData): AnnotationPolygon {
     const points: Point[] = this.convertToPoints(annotationData.data.coord.viewport || []);
 
@@ -100,9 +105,5 @@ export class PolygonFactory extends AnnotationFactory<AnnotationPolygon> {
     }
 
     return offsetPolygonAnnotation;
-  }
-
-  public static getInstance(): PolygonFactory {
-    return new PolygonFactory();
   }
 }

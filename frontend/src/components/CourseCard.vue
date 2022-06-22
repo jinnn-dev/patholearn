@@ -24,7 +24,7 @@ defineProps({
         <div class='text-xl truncated-lines-2'>
           {{ course.name }}
         </div>
-        <div class='text-gray-200' v-if='!isCourseOwner'>
+        <div v-if='!isCourseOwner' class='text-gray-200'>
           bei
           {{ course.owner.firstname }}
           {{ course.owner.lastname }}
@@ -32,10 +32,10 @@ defineProps({
         <progress-bar
           v-if='!isCourseOwner'
           :id='course.short_name'
-          :percentage='course.percentage_solved'
-          :wrongTasks='course.wrong_tasks'
           :correctTasks='course.correct_tasks'
+          :percentage='course.percentage_solved'
           :taskCount='course.task_count'
+          :wrongTasks='course.wrong_tasks'
         ></progress-bar>
         <task-count-badge :count='course.task_count'></task-count-badge>
         <new-task-badge v-if='course.new_tasks'></new-task-badge>

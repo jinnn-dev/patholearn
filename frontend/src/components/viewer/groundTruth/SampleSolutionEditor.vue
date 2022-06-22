@@ -1,4 +1,4 @@
-<script setup lang='ts'>
+<script lang='ts' setup>
 import { ref } from 'vue';
 import { TempUploadImage } from '../../../model/TempUploadImage';
 import { useService } from '../../../composables/useService';
@@ -100,14 +100,14 @@ const closeDialog = () => {
 <template>
   <!--  TODO: Allow incremental solution addition. If already a solution exists add new one. Store grey values in key in annotation group. So the new image can than be mapped to the corresponding annotation group-->
   <modal-dialog :show='showDialog' custom-classes='w-full h-screen m-0 p-0 '>
-    <BlurredContainer blur-amount='md' :bg-opacity='95' class='absolute w-full h-screen z-10 overflow-y-auto'>
+    <BlurredContainer :bg-opacity='95' blur-amount='md' class='absolute w-full h-screen z-10 overflow-y-auto'>
       <div class='relative w-full h-full flex flex-col justify-center items-center'>
         <div v-if='!result' class='flex flex-col items-center justify-center w-full'>
           <h1 class='text-3xl'>Es ist noch keine Musterlösung hinzugefügt worden</h1>
           <MultiImageUpload
+            class='w-2/3 h-96'
             label='Dateien mit Musterlösungen'
             tip='Füge eine Reihe von Dateien mit Musterlösungen hinzu. Entweder PNG- oder XML-Dateien'
-            class='w-2/3 h-96'
             @imagesDropped='onImagesDropped'
           >
           </MultiImageUpload>
@@ -131,15 +131,15 @@ const closeDialog = () => {
               <div v-for='group of annotationsGroups' class='flex justify-between gap-4 bg-gray-500 p-2 rounded-lg'>
                 <div class='w-6 h-6 flex-none ring-2 ring-gray-900 overflow-hidden rounded-full'>
                   <input
-                    type='color'
                     id='body'
-                    name='body'
                     v-model='group.color'
-                    @input='updateColor($event, group)'
                     class='w-20'
+                    name='body'
+                    type='color'
+                    @input='updateColor($event, group)'
                   />
                 </div>
-                <text-edit class='w-full' :value='group.name' @valueChanged='updateName($event, group)'></text-edit>
+                <text-edit :value='group.name' class='w-full' @valueChanged='updateName($event, group)'></text-edit>
               </div>
             </div>
           </div>
@@ -148,7 +148,7 @@ const closeDialog = () => {
             <div class='text-2xl font-bold mb-8 text-center'>Gefundene Annotationen</div>
             <Accordion :collapse='false'>
               <div class='w-full grid grid-cols-2 gap-4'>
-                <AccordionItem class='rounded-lg w-full' v-for='item of result?.results'>
+                <AccordionItem v-for='item of result?.results' class='rounded-lg w-full'>
                   <template v-slot:header>
                     <div class='text-lg'>
                       In der Datei <span class='font-bold'>{{ item.file_name }}</span> wurden
@@ -172,7 +172,7 @@ const closeDialog = () => {
             </Accordion>
           </div>
         </div>
-        <div class='w-2/3 flex justify-end gap-4 mt-8' v-if='result'>
+        <div v-if='result' class='w-2/3 flex justify-end gap-4 mt-8'>
           <PrimaryButton bg-color='bg-gray-400' class='w-32' name='Abbrechen' @click='closeDialog'></PrimaryButton>
           <PrimaryButton
             bg-color='bg-gray-400'

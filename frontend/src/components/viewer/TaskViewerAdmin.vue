@@ -639,76 +639,76 @@ const closeSampleSolutionEditor = () => {
   <annotation-group
     v-if='task?.task_type === 1'
     :annotationGroups='task.annotation_groups'
-    :taskId='task.id'
     :is-admin='true'
-    @showGroup='showGroup'
-    @hideGroup='hideGroup'
+    :taskId='task.id'
     @groupUpdated='updateGroup'
+    @hideGroup='hideGroup'
+    @showGroup='showGroup'
   ></annotation-group>
 
   <annotation-settings v-if='selectedPolygon'>
     <color-picker
       v-if='task?.task_type === 0 || isBackgroundPolygon'
-      label='Annotationsfarbe'
-      @isReleased='polygonChanged.changed = true'
-      @changed='updateAnnotationColor'
       :initialColor='selectedPolygon.color'
+      label='Annotationsfarbe'
+      @changed='updateAnnotationColor'
+      @isReleased='polygonChanged.changed = true'
     ></color-picker>
     <custom-select
       v-if='task?.task_type === 1'
-      :isSearchable='false'
-      displayType='small'
-      label='Annotationsklasse:'
-      :values='task?.annotation_groups'
-      field='name'
       :initial-data='selectedPolygon.name'
+      :isSearchable='false'
+      :values='task?.annotation_groups'
+      displayType='small'
+      field='name'
+      label='Annotationsklasse:'
       @valueChanged='updateAnnotationName'
     />
 
     <custom-slider
       v-if='isOffsetAnnotationPoint'
-      label='Kreisradius'
-      :step='-1'
-      :min='0'
-      :max='maxRadius'
-      :tooltips='false'
-      @valueChanged='updateAnnotationPointOffsetRadius'
-      @isReleased='polygonChanged.changed = true'
       :initialPosition='selectedPolygonData.offsetRadius'
+      :max='maxRadius'
+      :min='0'
+      :step='-1'
+      :tooltips='false'
+      label='Kreisradius'
+      @isReleased='polygonChanged.changed = true'
+      @valueChanged='updateAnnotationPointOffsetRadius'
     />
 
     <custom-slider
       v-if='isOffsetAnnotationLine && !isAnnotationChangedManually'
-      label='Toleranzabstand'
-      :step='-1'
-      :min='0'
-      :max='maxRadius'
-      :tooltips='false'
-      @valueChanged='updateAnnotationLineOffsetRadius'
-      @isReleased='polygonChanged.changed = true'
       :initialPosition='selectedPolygonData.offsetRadius'
+      :max='maxRadius'
+      :min='0'
+      :step='-1'
+      :tooltips='false'
+      label='Toleranzabstand'
+      @isReleased='polygonChanged.changed = true'
+      @valueChanged='updateAnnotationLineOffsetRadius'
     />
 
     <div v-if='isOffsetAnnotationPolygon && !isAnnotationChangedManually'>
       <custom-slider
-        label='Äußerer Toleranzabstand:'
-        :step='-1'
-        :min='0'
-        :max='maxRadius'
-        :tooltips='false'
-        @valueChanged='updateOuterOffsetRadius'
-        @isReleased='polygonChanged.changed = true'
         :initialPosition='selectedPolygonData.outerOffset'
+        :max='maxRadius'
+        :min='0'
+        :step='-1'
+        :tooltips='false'
+        label='Äußerer Toleranzabstand:'
+        @isReleased='polygonChanged.changed = true'
+        @valueChanged='updateOuterOffsetRadius'
       />
       <CustomSlider
-        label=' Innerer Toleranzabstand:'
-        :step='-1'
-        :min='0'
-        :max='maxRadius'
-        :tooltips='false'
-        @valueChanged='updateInnerOffsetRadius'
-        @isReleased='polygonChanged.changed = true'
         :initialPosition='selectedPolygonData.innerOffset'
+        :max='maxRadius'
+        :min='0'
+        :step='-1'
+        :tooltips='false'
+        label=' Innerer Toleranzabstand:'
+        @isReleased='polygonChanged.changed = true'
+        @valueChanged='updateInnerOffsetRadius'
       />
     </div>
 
@@ -718,9 +718,9 @@ const closeSampleSolutionEditor = () => {
 
     <div class='mt-4'>
       <primary-button
-        class='w-64'
-        bgColor='bg-gray-500'
         v-if='isBackgroundPolygon'
+        bgColor='bg-gray-500'
+        class='w-64'
         name='Zu Lösungsannotation konvertieren (Polygon)'
         @click.prevent='convertToSolutionAnnotation()'
       >
@@ -728,8 +728,8 @@ const closeSampleSolutionEditor = () => {
 
       <primary-button
         v-if='isOffsetAnnotationPolygon'
-        class='w-64'
         bgColor='bg-gray-500'
+        class='w-64'
         name='Zu Hintergrundannotation konvertieren (Rechteck)'
         @click.prevent='convertToBackgroundAnnotation()'
       >
@@ -738,15 +738,15 @@ const closeSampleSolutionEditor = () => {
   </annotation-settings>
 
   <tool-bar
-    :tools='toolbarTools'
-    @toolUpdate='setTool'
-    :setMoving='setMoving'
     :changeToolTo='changeToolTo'
-    @showAnnotations='showAllAnnotations'
+    :setMoving='setMoving'
+    :tools='toolbarTools'
     @hideAnnotations='hideAllAnnotations'
+    @showAnnotations='showAllAnnotations'
+    @toolUpdate='setTool'
   ></tool-bar>
 
-  <escape-info :show='isPolygonDrawing || isLineDrawing' :isPolygon='isPolygonDrawing'></escape-info>
+  <escape-info :isPolygon='isPolygonDrawing' :show='isPolygonDrawing || isLineDrawing'></escape-info>
 
   <saving-info />
 
@@ -771,8 +771,8 @@ const closeSampleSolutionEditor = () => {
     :loading='deleteAnnotationsLoading'
     :show='showConfirmationDialog'
     header='Sollen alle Annotationen gelöscht werden?'
-    @reject='showConfirmationDialog = false'
     @confirmation='deleteAllAnnotations'
+    @reject='showConfirmationDialog = false'
   ></confirm-dialog>
 
   <background-annotation-switcher
@@ -782,17 +782,17 @@ const closeSampleSolutionEditor = () => {
   ></background-annotation-switcher>
 
   <info-tooltip
+    :is-admin='true'
     @hide-tooltip='unselectAnnotation'
     @update-tooltip='updateInfoAnnotation'
-    :is-admin='true'
   ></info-tooltip>
 
   <confirm-dialog
+    :loading='isTaskSaving'
     :show='showDeleteAnnotationDialog'
     header='Soll die Annotation gelöscht werden?'
-    :loading='isTaskSaving'
     @confirmation='deleteAnnotation'
     @reject='showDeleteAnnotationDialog = false'
   ></confirm-dialog>
-  <div ref='viewerRef' id='viewerImage' class='h-screen bg-gray-900 overflow-hidden' @keyup='handleKeyup'></div>
+  <div id='viewerImage' ref='viewerRef' class='h-screen bg-gray-900 overflow-hidden' @keyup='handleKeyup'></div>
 </template>

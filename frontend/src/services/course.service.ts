@@ -3,8 +3,6 @@ import { ApiService } from './api.service';
 import { handleError } from './error-handler';
 
 export class CourseService {
-  private static apiURL = (path: string = '') => '/courses' + path;
-
   /**
    * Searches for courses containing the search string
    *
@@ -142,4 +140,6 @@ export class CourseService {
     );
     return response!.data;
   }
+
+  private static apiURL = (path: string = '') => '/courses' + path;
 }

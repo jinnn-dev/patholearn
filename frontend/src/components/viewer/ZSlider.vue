@@ -20,12 +20,12 @@ const valueChanged = (newValue: number) => {
     <div class='flex flex-col justify-center items-center'>
       <span>Layer</span>
       <custom-slider
-        @value-changed='valueChanged'
-        :tooltips='true'
-        :min='1'
-        :max='childCount'
-        orientation='vertical'
         :direction="'rtl'"
+        :max='childCount'
+        :min='1'
+        :tooltips='true'
+        orientation='vertical'
+        @value-changed='valueChanged'
       ></custom-slider>
     </div>
   </div>

@@ -10,8 +10,6 @@ import { ApiService } from './api.service';
 import { handleError } from './error-handler';
 
 export class TaskService {
-  private static _apiUrl = (shortName: string = '') => '/tasks' + shortName;
-
   /**
    * Returns the base task content
    *
@@ -560,4 +558,6 @@ export class TaskService {
 
     return response!.data;
   }
+
+  private static _apiUrl = (shortName: string = '') => '/tasks' + shortName;
 }

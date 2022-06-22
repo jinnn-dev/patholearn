@@ -106,15 +106,15 @@ function closeCreator() {
         class='flex bg-gray-800/40 font-semibold rounded-lg p-2 cursor-pointer hover:bg-gray-800/60'
         @click='closeCreator'
       >
-        <Icon name='arrow-left' class='mr-1' />
+        <Icon class='mr-1' name='arrow-left' />
         Zurück
       </div>
     </div>
     <input-field
-      label='Anzahl benötigter Fehler'
       v-model='hint.needed_mistakes'
-      type='number'
+      label='Anzahl benötigter Fehler'
       tip='Wenn eine lernende Person die hinterlegte Fehleranzahl erreicht hat, wird ihm dieser Tipp angezeigt'
+      type='number'
     ></input-field>
     <input-area
       v-model='hint.content'
@@ -123,8 +123,8 @@ function closeCreator() {
       tip='Hier muss der Inhalt des Tipps hinterlegt werden den die lernenden Person angezeigt wird '
     />
 
-    <div class='my-2 flex gap-2' v-viewer>
-      <div class='h-20 w-20 bg-gray-500 rounded-lg' v-for='image in hint.images' :key='image'>
+    <div v-viewer class='my-2 flex gap-2'>
+      <div v-for='image in hint.images' :key='image' class='h-20 w-20 bg-gray-500 rounded-lg'>
         <UploadPreviewImage :imgSrc="SLIDE_IMAGE_URL + '/' + image.image_name" @click='deleteImage(image.image_name)' />
       </div>
 
@@ -135,19 +135,19 @@ function closeCreator() {
         class='h-20 w-20 bg-green-600 rounded-lg flex items-center justify-center cursor-pointer hover:bg-green-500 transition'
         @click='fileRef?.click()'
       >
-        <Icon name='plus' width='30' height='30' stroke-width='25' />
+        <Icon height='30' name='plus' stroke-width='25' width='30' />
       </div>
     </div>
     <MultiImageUpload
+      :resetArray='true'
       label='Füge Bilder hinzu'
       tip='Wähle Bilder aus oder ziehe sie in das Feld'
-      :resetArray='true'
       @imagesDropped='setImages'
     ></MultiImageUpload>
 
     <div class='flex justify-end'>
-      <save-button type='button' name='Tipp speichern' class='w-48' @click='createHint'></save-button>
+      <save-button class='w-48' name='Tipp speichern' type='button' @click='createHint'></save-button>
     </div>
-    <input type='file' ref='fileRef' v-show='false' @change='onFileChange($event)' />
+    <input v-show='false' ref='fileRef' type='file' @change='onFileChange($event)' />
   </div>
 </template>
