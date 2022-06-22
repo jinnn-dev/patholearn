@@ -142,7 +142,6 @@ const loadTaskSolution = async () => {
     viewerLoadingState.solutionLoading = false;
   }
 };
-
 </script>
 <template>
   <viewer-loading :show='!viewerLoadingState.dataLoaded || !viewerLoadingState.tilesLoaded'></viewer-loading>

@@ -33,7 +33,6 @@ const generatedBgColor = computed(() => {
 
   return colors[0] + '-' + colors[1] + '-' + (+colors[2] - 200);
 });
-
 </script>
 <template>
   <button

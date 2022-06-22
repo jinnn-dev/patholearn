@@ -43,7 +43,6 @@ onMounted(() => {
     placement: 'top'
   });
 });
-
 </script>
 <template>
   <div :id='id' class='flex justify-between my-2 items-center'>

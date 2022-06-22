@@ -105,7 +105,6 @@ const deleteTiledImage = (index: number) => {
     viewer.value?.world.removeItem(previousItem);
   }
 };
-
 </script>
 
 <template>

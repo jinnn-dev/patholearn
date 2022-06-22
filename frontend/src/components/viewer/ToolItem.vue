@@ -16,18 +16,24 @@ const tooltip = ref<Instance>();
 
 const tooltipReferenceId = ref<string>();
 
-watch(() => props.hint, () => {
-  tooltip.value?.setContent(props.hint || '');
-});
-watch(() => props.hideTooltip, () => {
-  if (tooltipReferenceId.value) {
-    if (props.hideTooltip) {
-      TooltipGenerator.disableTooltip(tooltipReferenceId.value);
-    } else {
-      TooltipGenerator.enableTooltip(tooltipReferenceId.value);
+watch(
+  () => props.hint,
+  () => {
+    tooltip.value?.setContent(props.hint || '');
+  }
+);
+watch(
+  () => props.hideTooltip,
+  () => {
+    if (tooltipReferenceId.value) {
+      if (props.hideTooltip) {
+        TooltipGenerator.disableTooltip(tooltipReferenceId.value);
+      } else {
+        TooltipGenerator.enableTooltip(tooltipReferenceId.value);
+      }
     }
   }
-});
+);
 
 const tooltipId = ref<string>(nanoid(4));
 
@@ -45,12 +51,13 @@ onMounted(() => {
     createTooltip();
   });
 });
-
 </script>
 <template>
-  <div :id='comp + tooltipId'
-       :class='!hideTooltip && "hover:bg-gray-300 cursor-pointer"'
-       class='transition flex justify-center items-center p-2 select-none'>
+  <div
+    :id='comp + tooltipId'
+    :class="!hideTooltip && 'hover:bg-gray-300 cursor-pointer'"
+    class='transition flex justify-center items-center p-2 select-none'
+  >
     <Icon :name='comp' class='fill-white' />
   </div>
 </template>

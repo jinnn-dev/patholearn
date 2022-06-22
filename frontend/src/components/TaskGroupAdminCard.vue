@@ -110,7 +110,6 @@ const editBaseTask = async () => {
 const target = ref(null);
 
 onClickOutside(target, () => (openDotMenu.value = false));
-
 </script>
 <template>
   <skeleton-card class='min-w-40 relative' :shouldHover='false'>
@@ -139,7 +138,6 @@ onClickOutside(target, () => (openDotMenu.value = false));
         <toggle-button @changed='toggleEnabledState(baseTask)' :enabled='baseTask.enabled'></toggle-button>
       </div>
     </div>
-
 
     <div class='flex justify-between items-center text-right text-sm font-semibold gap-4 mt-6'>
       <save-button

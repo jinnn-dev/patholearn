@@ -124,7 +124,6 @@ const deleteBaseTask = () => {
       deleteLoading.value = false;
     });
 };
-
 </script>
 <template>
   <div

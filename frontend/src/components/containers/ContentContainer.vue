@@ -16,4 +16,3 @@ import Navigation from '../Navigation.vue';
     </div>
   </div>
 </template>
-

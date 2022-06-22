@@ -147,20 +147,14 @@ const onSubmit = () => {
   <modal-dialog :show='showModal'>
     <h1 class='text-2xl'>Lege einen neuen Lehrenden an</h1>
     <form @submit.prevent='onSubmit' class='w-full'>
-      <auth-input :required='true' label='Vorname' placeholder='Max' v-model='formData.firstname'
-      >
-        <Icon name='user'
-        />
+      <auth-input :required='true' label='Vorname' placeholder='Max' v-model='formData.firstname'>
+        <Icon name='user' />
       </auth-input>
-      <auth-input :required='false' label='Mittelname (Optional)' placeholder='Max' v-model='formData.middlename'
-      >
-        <Icon name='user'
-        />
+      <auth-input :required='false' label='Mittelname (Optional)' placeholder='Max' v-model='formData.middlename'>
+        <Icon name='user' />
       </auth-input>
-      <auth-input :required='true' label='Nachname' placeholder='Max' v-model='formData.lastname'
-      >
-        <Icon name='user'
-        />
+      <auth-input :required='true' label='Nachname' placeholder='Max' v-model='formData.lastname'>
+        <Icon name='user' />
       </auth-input>
       <auth-input
         v-model='formData.email'
@@ -212,4 +206,3 @@ const onSubmit = () => {
     </form>
   </modal-dialog>
 </template>
-

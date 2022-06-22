@@ -268,7 +268,6 @@ const setToolbarTools = () => {
     Tool.ADD_INFO_POLYGON
   ];
 
-
   toolbarTools.value = [...tools];
   toolbarTools.value = toolbarTools.value.slice(0, tools.length);
 
@@ -387,8 +386,6 @@ const setTool = (data: { tool: Tool; event: any }) => {
   if (currentTool.value !== Tool.SELECT) {
     polygonChanged.polygon?.unselect();
   }
-
-
 };
 
 const handleKeyup = async (e: KeyboardEvent) => {
@@ -431,10 +428,7 @@ const handleKeyup = async (e: KeyboardEvent) => {
 };
 
 const resetAnnotationTolerance = () => {
-  (selectedPolygon.value as OffsetAnnotationLine).resetOffset(
-    drawingViewer.value!.scale,
-    drawingViewer.value!.viewer
-  );
+  (selectedPolygon.value as OffsetAnnotationLine).resetOffset(drawingViewer.value!.scale, drawingViewer.value!.viewer);
 };
 
 const saveTask = async (type?: ANNOTATION_TYPE) => {
@@ -508,11 +502,9 @@ const selectAnnotation = (annotationId: string) => {
     ) {
       const annotation = selectedPolygon.value as OffsetAnnotationPolygon;
 
-      const newInnerOffset =
-        annotation.inflationInnerOffset * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
+      const newInnerOffset = annotation.inflationInnerOffset * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
       updateInnerOffsetRadius(newInnerOffset);
-      const newOuterOffset =
-        annotation.inflationOuterOffset * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
+      const newOuterOffset = annotation.inflationOuterOffset * maxRadius * Math.pow(drawingViewer.value!.scale, 0.35);
       updateOuterOffsetRadius(newOuterOffset);
     } else if (selectedPolygon.value instanceof OffsetAnnotationLine) {
       const annotation = selectedPolygon.value as OffsetAnnotationLine;
@@ -539,7 +531,6 @@ const moveHandler = (event: any) => {
     currentTool.value === Tool.ADD_POINT_SOLUTION
   );
 };
-
 
 const updateGroup = async (data: { group: AnnotationGroupModel; newName: string; newColor: string }) => {
   const index = props.task?.annotation_groups.findIndex((item) => data.group.name === item.name);
@@ -643,7 +634,6 @@ const closeSampleSolutionEditor = () => {
   showUploadDialog.value = false;
   changeToolTo.value = Tool.MOVE;
 };
-
 </script>
 <template>
   <annotation-group
@@ -726,7 +716,6 @@ const closeSampleSolutionEditor = () => {
       <primary-button bgColor='bg-gray-500' @click='resetAnnotationTolerance'>Toleranz zurücksetzen</primary-button>
     </div>
 
-
     <div class='mt-4'>
       <primary-button
         class='w-64'
@@ -748,8 +737,14 @@ const closeSampleSolutionEditor = () => {
     </div>
   </annotation-settings>
 
-  <tool-bar :tools='toolbarTools' @toolUpdate='setTool' :setMoving='setMoving' :changeToolTo='changeToolTo'
-            @showAnnotations='showAllAnnotations' @hideAnnotations='hideAllAnnotations'></tool-bar>
+  <tool-bar
+    :tools='toolbarTools'
+    @toolUpdate='setTool'
+    :setMoving='setMoving'
+    :changeToolTo='changeToolTo'
+    @showAnnotations='showAllAnnotations'
+    @hideAnnotations='hideAllAnnotations'
+  ></tool-bar>
 
   <escape-info :show='isPolygonDrawing || isLineDrawing' :isPolygon='isPolygonDrawing'></escape-info>
 
@@ -764,10 +759,12 @@ const closeSampleSolutionEditor = () => {
   <!--    @closeDialog='showUploadDialog = false'-->
   <!--  ></ground-truth-dialog>-->
 
-  <SampleSolutionEditor :show-dialog='showUploadDialog' :slide-id='slide_name'
-                        @applyAnnotations='parseAnnotations'
-                        @close='closeSampleSolutionEditor'>
-
+  <SampleSolutionEditor
+    :show-dialog='showUploadDialog'
+    :slide-id='slide_name'
+    @applyAnnotations='parseAnnotations'
+    @close='closeSampleSolutionEditor'
+  >
   </SampleSolutionEditor>
 
   <confirm-dialog

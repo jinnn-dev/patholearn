@@ -67,6 +67,5 @@ function toggleDisplay() {
         <slot></slot>
       </div>
     </collapse-transition>
-
   </div>
 </template>

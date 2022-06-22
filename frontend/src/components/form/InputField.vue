@@ -1,5 +1,4 @@
 <script lang='ts' setup>
-
 import FormField from './FormField.vue';
 
 const emit = defineEmits(['update:modelValue']);

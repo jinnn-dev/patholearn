@@ -77,7 +77,6 @@ const downloadUserSolutions = async (task: Task) => {
   document.body.appendChild(a);
   a.click();
 };
-
 </script>
 <template>
   <div class='w-full flex items-center justify-between p-2 bg-gray-600 sticky top-0'>
@@ -108,8 +107,7 @@ const downloadUserSolutions = async (task: Task) => {
       @editTask='editTask(task)'
       @downloadUserSolutions='downloadUserSolutions(task)'
     ></task-item>
-    <role-only v-if='isOwner'
-    >
+    <role-only v-if='isOwner'>
       <div class='p-2 px-18 my-2'>
         <primary-button @click='taskCreationModal = true' class=''>Neue Aufgabe</primary-button>
       </div>
@@ -129,7 +127,6 @@ const downloadUserSolutions = async (task: Task) => {
       <UpdateTask @close='taskUpdateModal = false' @taskUpdated="$emit('taskUpdated', $event)" :task='selectedTask' />
     </modal-dialog>
   </role-only>
-
 </template>
 <style>
 .slider-connect,

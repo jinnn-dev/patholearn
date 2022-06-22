@@ -108,7 +108,6 @@ const valueSelected = (value: any) => {
 const isObject = (value: object | string): boolean => {
   return typeof value === 'object';
 };
-
 </script>
 <template>
   <div class='relative' ref='target'>

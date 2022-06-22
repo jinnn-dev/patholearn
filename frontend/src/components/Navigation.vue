@@ -8,7 +8,6 @@ const onLogout = async () => {
   AuthService.logout();
   router.go(0);
 };
-
 </script>
 <template>
   <nav class='sticky text-sm lg:text-lg xl:text-xl bg-gray-800 py-4 top-0 z-50'>

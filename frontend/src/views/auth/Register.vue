@@ -51,13 +51,7 @@ const onSubmit = () => {
   passwordMatch.value = formData.password == formData.confirmPassword;
   if (!validator.value.$invalid) {
     registerLoading.value = true;
-    AuthService.register(
-      formData.firstname,
-      formData.middlename,
-      formData.lastname,
-      formData.email,
-      formData.password
-    )
+    AuthService.register(formData.firstname, formData.middlename, formData.lastname, formData.email, formData.password)
       .then(() => {
         registerLoading.value = false;
         router.push('/login');
@@ -78,20 +72,14 @@ const onSubmit = () => {
     <div class='bg-gray-700 rounded-xl p-4 shadow-md w-96 z-[2]'>
       <div class='text-4xl font-semibold text-center'>Register</div>
       <form @submit.prevent='onSubmit' class='w-full'>
-        <auth-input :required='true' label='Vorname' placeholder='Max' v-model='formData.firstname'
-        >
-          <Icon name='user'
-          />
+        <auth-input :required='true' label='Vorname' placeholder='Max' v-model='formData.firstname'>
+          <Icon name='user' />
         </auth-input>
-        <auth-input :required='false' label='Mittelname (Optional)' placeholder='Max' v-model='formData.middlename'
-        >
-          <Icon name='user'
-          />
+        <auth-input :required='false' label='Mittelname (Optional)' placeholder='Max' v-model='formData.middlename'>
+          <Icon name='user' />
         </auth-input>
-        <auth-input :required='true' label='Nachname' placeholder='Max' v-model='formData.lastname'
-        >
-          <Icon name='user'
-          />
+        <auth-input :required='true' label='Nachname' placeholder='Max' v-model='formData.lastname'>
+          <Icon name='user' />
         </auth-input>
         <auth-input
           v-model='formData.email'

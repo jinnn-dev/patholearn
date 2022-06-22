@@ -209,14 +209,10 @@ onMounted(() => {
 });
 
 const setToolbarTools = () => {
-
-  const tools = [
-    Tool.MOVE, Tool.SELECT, Tool.DELETE, Tool.DELETE_ANNOTATION
-  ];
+  const tools = [Tool.MOVE, Tool.SELECT, Tool.DELETE, Tool.DELETE_ANNOTATION];
   if (toolbarTools.value.length === 0) {
     toolbarTools.value = [...tools];
   }
-
 
   toolbarTools.value = toolbarTools.value.slice(0, 4);
   let tool;
@@ -319,7 +315,6 @@ const saveUserSolution = async (type?: ANNOTATION_TYPE, annotation?: Annotation)
     isUserSolution(TOOL_ANNOTATION[currentTool.value!]!) &&
     (props.task?.user_solution === undefined || props.task?.user_solution?.solution_data === undefined)
   ) {
-
     props.task!.user_solution = await drawingViewer.value!.saveUserSolution(
       {
         task_id: props.task!.id,
@@ -459,7 +454,6 @@ const setAnnotations = (task: Task) => {
 onUnmounted(() => {
   TooltipGenerator.destroyAll();
 });
-
 </script>
 <template>
   <annotation-group
@@ -470,7 +464,7 @@ onUnmounted(() => {
     @hideGroup='hideGroup'
     @showGroup='showGroup'
   ></annotation-group>
-  
+
   <annotation-settings v-if='selectedPolygon && task?.task_type === 1' @saved='updateSelectedAnnotation'>
     <custom-select
       :initial-data='selectedPolygon.name'

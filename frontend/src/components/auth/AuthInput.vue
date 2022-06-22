@@ -19,7 +19,6 @@ const props = defineProps({
 });
 
 const onChanged = (e: { currentTarget: { value: any } }) => emit('update:modelValue', e.currentTarget.value);
-
 </script>
 <template>
   <form-field :label='label'>

@@ -198,9 +198,7 @@ const updateTooltipPosition = () => {
 const updateExistingImage = (event: { image: string; index: number }) => {
   const index = event.index;
   existingImages.value[index].name = event.image;
-  const foundIndex = imagesToEdit.value.findIndex(
-    (i) => i.info_image_id === existingImages.value[index].info_image_id
-  );
+  const foundIndex = imagesToEdit.value.findIndex((i) => i.info_image_id === existingImages.value[index].info_image_id);
   if (foundIndex >= 0) {
     imagesToEdit.value[foundIndex] = existingImages.value[index];
   } else {
@@ -213,7 +211,6 @@ const deleteExistingImage = (index: number) => {
   existingImages.value = existingImages.value.filter((image) => image.info_image_id !== imageInArray.info_image_id);
   imagesToDelete.value.push(imageInArray);
 };
-
 </script>
 <template>
   <div

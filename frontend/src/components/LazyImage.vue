@@ -48,7 +48,6 @@ const handleError = () => {
 };
 
 const imageLoadError = ref(false);
-
 </script>
 <template>
   <div class='overflow-hidden w-full h-full flex justify-center items-center relative select-none'>
@@ -73,7 +72,8 @@ const imageLoadError = ref(false);
         :class="loaded ? 'show ' + imageClasses : ''"
         class='rounded-lg'
         @error='handleError'
-        alt='Lazy image' />
+        alt='Lazy image'
+      />
     </div>
     <div v-else class='bg-gray-300 p-2 rounded-lg'>
       <Icon name='filex' :width='32' :height='32' />

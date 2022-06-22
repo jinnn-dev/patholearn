@@ -49,7 +49,6 @@ const selectSlide = (slide: Slide) => {
 
   emit('slideChanged', selectedSlide);
 };
-
 </script>
 <template>
   <div class='relative' ref='target'>

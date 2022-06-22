@@ -20,7 +20,6 @@ async function deleteHint() {
   await TaskService.removeHint(props.hint.id);
   emit('delete', props.hint.id);
 }
-
 </script>
 <template>
   <div class='rounded-lg h-full bg-gray-500/40 flex w-full mb-2 flex-col p-2'>
@@ -31,15 +30,11 @@ async function deleteHint() {
         Fehlern angezeigt
       </div>
       <div class='flex gap-2'>
-        <primary-button type='button' class='w-8 h-8' bgColor='bg-gray-500' @click="$emit('edit', hint)"
-        >
-          <Icon name='pencil'
-          />
+        <primary-button type='button' class='w-8 h-8' bgColor='bg-gray-500' @click="$emit('edit', hint)">
+          <Icon name='pencil' />
         </primary-button>
-        <primary-button type='button' class='w-8 h-8' bgColor='bg-red-500'
-        >
-          <Icon name='trash' @click='deleteHint'
-          />
+        <primary-button type='button' class='w-8 h-8' bgColor='bg-red-500'>
+          <Icon name='trash' @click='deleteHint' />
         </primary-button>
       </div>
     </div>

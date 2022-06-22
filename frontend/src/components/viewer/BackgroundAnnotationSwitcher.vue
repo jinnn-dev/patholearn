@@ -39,12 +39,9 @@ const changeIndex = (value: number) => {
 
   emit('focus', selectedIndex.value);
 };
-
 </script>
 <template>
-  <div
-    class='fixed bottom-[10%] right-0 p-2 rounded-l-lg shadow-md bg-gray-700/70 backdrop-blur-md z-[2] select-none'
-  >
+  <div class='fixed bottom-[10%] right-0 p-2 rounded-l-lg shadow-md bg-gray-700/70 backdrop-blur-md z-[2] select-none'>
     <div>Hintergrundannotationen</div>
     <div class='flex justify-between my-2'>
       <Icon name='caret-left' strokeWidth='36' class='cursor-pointer' @click.stop='changeIndex(-1)' />

@@ -179,5 +179,4 @@ const onCourseJoin = (course: Course) => {
       </form>
     </div>
   </modal-dialog>
-
 </template>

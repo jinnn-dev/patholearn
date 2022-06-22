@@ -1,5 +1,4 @@
 <script lang='ts' setup>
-
 import { computed, onMounted, ref } from 'vue';
 import { TooltipGenerator } from '../utils/tooltips/tooltip-generator';
 import ModalDialog from './containers/ModalDialog.vue';
@@ -93,7 +92,6 @@ const updateImage = () => {
   });
   showEdit.value = false;
 };
-
 </script>
 <template>
   <!-- <div class="h-20 w-20 relative group select-none">
@@ -161,5 +159,4 @@ const updateImage = () => {
       <save-button name='Speichern' type='submit' class='w-36' @click='updateImage'></save-button>
     </div>
   </modal-dialog>
-
 </template>

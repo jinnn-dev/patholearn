@@ -16,7 +16,6 @@ provide('collapse', props.collapse);
 function select(index: number) {
   selectedIndex.value = index;
 }
-
 </script>
 
 <template>

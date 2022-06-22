@@ -42,7 +42,6 @@ const editTask = () => {
 const downloadUserSolutions = () => {
   emit('downloadUserSolutions');
 };
-
 </script>
 <template>
   <div
@@ -84,5 +83,4 @@ const downloadUserSolutions = () => {
     >
     </confirm-dialog>
   </div>
-
 </template>

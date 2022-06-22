@@ -74,7 +74,6 @@ const onSubmit = () => {
       }
     });
 };
-
 </script>
 <template>
   <content-container>

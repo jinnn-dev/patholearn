@@ -1,7 +1,7 @@
 <script setup lang='ts'>
 import { PropType } from 'vue';
 
-type BlurAmount = '' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl'
+type BlurAmount = '' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
 
 defineProps({
   blurAmount: {

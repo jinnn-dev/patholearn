@@ -10,14 +10,13 @@ import SaveButton from '../general/SaveButton.vue';
 
 const emit = defineEmits(['slide-uploaded']);
 
-
 const showUpload = ref(false);
 const loading = ref(false);
 
 const progress = ref(0);
 const errorMessage = ref('');
 
-const formModel = reactive<{ name: string, file: File | null }>({
+const formModel = reactive<{ name: string; file: File | null }>({
   name: '',
   file: null
 });

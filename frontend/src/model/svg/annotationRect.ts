@@ -87,10 +87,10 @@ export class AnnotationRectangle extends Annotation {
       this._mouseTrackers.push(
         new OpenSeadragon.MouseTracker({
           element: node,
-          dragHandler: function(event) {
+          dragHandler: function (event) {
             self.dragHandler(event, node, viewer);
           },
-          dragEndHandler: function(event) {
+          dragEndHandler: function (event) {
             if (self.reactive) {
               polygonChanged.changed = true;
             }
@@ -164,7 +164,7 @@ export class AnnotationRectangle extends Annotation {
       vertex.element.updateRadius(POLYGON_VERTICE_RADIUS / scale);
       vertex.element.updateStrokeWidth(POLYGON_VERTICE_RADIUS / scale);
       vertex.element.updateStrokeColor(this.color);
-      select('[id ="' + vertex.element.id + '"]').each(function() {
+      select('[id ="' + vertex.element.id + '"]').each(function () {
         self.addTracking(this as HTMLElement, viewer);
       });
 

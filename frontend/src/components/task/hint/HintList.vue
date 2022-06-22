@@ -62,8 +62,7 @@ function addHint(hint: TaskHint) {
 <template>
   <div class='flex justify-between items-center mb-2' v-if='!creatorOpen'>
     <div v-if='task && task.hints.length === 0' class='text-xl'>Keine Tipps vorhanden</div>
-    <primary-button type='button' name='Tipp' class='w-24' bgColor='bg-gray-500' @click.native='creatorOpen = true'
-    >
+    <primary-button type='button' name='Tipp' class='w-24' bgColor='bg-gray-500' @click.native='creatorOpen = true'>
       <Icon name='plus' class='mr-1' />
     </primary-button>
   </div>

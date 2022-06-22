@@ -1,5 +1,4 @@
 <script lang='ts' setup>
-
 import { ref } from 'vue';
 import PrimaryButton from './PrimaryButton.vue';
 import ModalDialog from '../containers/ModalDialog.vue';
@@ -24,7 +23,6 @@ const showConfirmationDialog = ref<Boolean>(false);
 const confirm = () => {
   emit('confirmation');
 };
-
 </script>
 <template>
   <primary-button

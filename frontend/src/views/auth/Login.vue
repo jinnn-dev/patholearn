@@ -44,7 +44,6 @@ const onSubmit = () => {
       });
   }
 };
-
 </script>
 <template>
   <div class='w-full min-h-screen flex items-center flex-col justify-center'>

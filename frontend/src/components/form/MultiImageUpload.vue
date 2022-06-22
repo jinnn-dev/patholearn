@@ -120,7 +120,6 @@ const updateImage = (event: { image: File; index: number }) => {
 const isFileImage = (file: File | undefined | null) => {
   return file && file['type'].split('/')[0] === 'image';
 };
-
 </script>
 <template>
   <form-field :label='label' :tip='tip' :errorMessage='errorMessage' :marginHor='marginHor' class='relative'>
@@ -179,7 +178,6 @@ const isFileImage = (file: File | undefined | null) => {
               :index='index'
             />
           </div>
-
         </div>
       </div>
     </div>

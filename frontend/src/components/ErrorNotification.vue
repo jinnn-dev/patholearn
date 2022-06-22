@@ -28,7 +28,6 @@ const getDate = computed(() =>
     second: '2-digit'
   })
 );
-
 </script>
 <template>
   <div @click="$emit('expired', index)" class='bg-red-700 p-4 rounded-lg shadow-xl text-white my-4'>
@@ -44,4 +43,5 @@ const getDate = computed(() =>
     </div>
     <div></div>
   </div>
-</template>s
+</template>
+s

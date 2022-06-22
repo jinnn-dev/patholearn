@@ -10,8 +10,6 @@ const props = defineProps({
   }
 });
 const { viewer } = useAnnotationSlide(options('annotation-slide-viewer', getSlideUrl(props.slideId)));
-
-
 </script>
 <template>
   <div id='annotation-slide-viewer' class='w-full h-full'></div>

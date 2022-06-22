@@ -1,5 +1,6 @@
 <script lang='ts' setup>
-import { isTaskSaving } from './core/viewerState';</script>
+import { isTaskSaving } from './core/viewerState';
+</script>
 <template>
   <div
     v-if='isTaskSaving'

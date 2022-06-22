@@ -1,5 +1,4 @@
 <script lang='ts' setup>
-
 import FormField from './FormField.vue';
 
 defineProps({

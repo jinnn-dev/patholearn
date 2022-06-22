@@ -45,7 +45,6 @@ const joinCourse = (course: Course) => {
       joinCourseLoading.value = false;
     });
 };
-
 </script>
 <template>
   <div class='relative' ref='target'>

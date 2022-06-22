@@ -186,10 +186,10 @@ export class AnnotationLine extends Annotation {
       this._mouseTrackers.push(
         new OpenSeadragon.MouseTracker({
           element: node,
-          dragHandler: function(event) {
+          dragHandler: function (event) {
             self.dragHandler(event, node, viewer);
           },
-          dragEndHandler: function(event) {
+          dragEndHandler: function (event) {
             if (self.reactive) {
               polygonChanged.changed = true;
             }
@@ -239,7 +239,7 @@ export class AnnotationLine extends Annotation {
         vertice.element.updateStrokeWidth((POLYGON_VERTICE_RADIUS - 2) / scale);
         vertice.element.updateStrokeColor(this.color);
         if (trackable) {
-          select('[id ="' + vertice.element.id + '"]').each(function() {
+          select('[id ="' + vertice.element.id + '"]').each(function () {
             self.addTracking(this as HTMLElement, viewer);
           });
         }

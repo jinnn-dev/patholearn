@@ -79,7 +79,6 @@ const downloadUserSolutions = async (short_name: string) => {
 const target = ref(null);
 
 onClickOutside(target, () => (dotMenuOpen.value = false));
-
 </script>
 <template>
   <router-link :to="'/group/' + taskgroup.short_name + '/admin'" class=''>

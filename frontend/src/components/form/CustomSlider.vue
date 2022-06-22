@@ -35,7 +35,6 @@ watch(
     sliderPosition.value = props.initialPosition;
   }
 );
-
 </script>
 <template>
   <form-field :label='label'>

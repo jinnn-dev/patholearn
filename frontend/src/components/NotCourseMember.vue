@@ -21,7 +21,6 @@ const joinCourse = () => {
     });
   }
 };
-
 </script>
 <template>
   <div class='text-center'>

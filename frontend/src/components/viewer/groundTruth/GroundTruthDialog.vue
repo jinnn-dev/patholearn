@@ -42,7 +42,6 @@ onMounted(() => {
   isWrongFormat.value = false;
 });
 
-
 const updateName = (name: string, group: ParseResult) => {
   group.name = name;
 };

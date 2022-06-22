@@ -89,10 +89,10 @@ export class AnnotationPoint extends Annotation {
     if (!this.mouseTracker) {
       this.mouseTracker = new OpenSeadragon.MouseTracker({
         element: self._element?.node() as Element,
-        dragHandler: function(event) {
+        dragHandler: function (event) {
           self.dragHandler(event, self._element?.node() as unknown as HTMLElement, viewer);
         },
-        dragEndHandler: function() {
+        dragEndHandler: function () {
           if (self.reactive) {
             polygonChanged.changed = true;
           }

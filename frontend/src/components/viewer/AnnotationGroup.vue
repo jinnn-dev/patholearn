@@ -90,8 +90,6 @@ const onSubmit = () => {
       showGroupCreation.value = false;
     });
 };
-
-
 </script>
 <template>
   <div class='fixed right-0 top-6 z-10 bg-gray-700/70 backdrop-blur-md rounded-l-lg p-2 w-80'>

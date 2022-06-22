@@ -14,7 +14,6 @@ const valueChanged = (newValue: number) => {
   index.value = newValue;
   emit('z-changed', { newIndex: index.value - 1, oldIndex: previousIndex });
 };
-
 </script>
 <template>
   <div class='fixed bg-gray-600 p-4 z-10 right-0 top-1/2 -translate-y-1/2 rounded-l-xl'>
