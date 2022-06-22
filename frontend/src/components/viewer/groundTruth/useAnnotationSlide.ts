@@ -1,5 +1,5 @@
 import OpenSeadragon, { Options, Viewer } from 'openseadragon';
-import { onMounted, ref, unref } from 'vue';
+import { onMounted, unref } from 'vue';
 import { AnnotationSlideManager } from './AnnotationSlideManager';
 
 export function useAnnotationSlide(viewerOptions: Options) {

@@ -11,7 +11,7 @@ export type MaybeRef<T> = Ref<T> | T;
  * @returns The delayed ref with the value
  */
 export function debounceRef<T>(value: T, delay: MaybeRef<number> = 200, callOutside: MaybeRef<boolean> = true): Ref<T> {
-  let timeout: number;
+  let timeout: NodeJS.Timeout;
   return customRef<T>((track, trigger) => {
     return {
       get() {

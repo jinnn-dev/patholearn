@@ -1,3 +1,5 @@
+<script lang='ts' setup>
+import { isTaskSaving } from './core/viewerState';</script>
 <template>
   <div
     v-if='isTaskSaving'
@@ -19,14 +21,3 @@
     Saving...
   </div>
 </template>
-<script lang='ts'>
-import { defineComponent } from 'vue';
-import { isTaskSaving } from './core/viewerState';
-
-export default defineComponent({
-  setup() {
-    return { isTaskSaving };
-  }
-});
-</script>
-<style></style>

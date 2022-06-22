@@ -1,6 +1,7 @@
 <script lang='ts' setup>
 import { PropType, ref, watch } from 'vue';
 import Slider from '@vueform/slider';
+import FormField from './FormField.vue';
 
 type Direction = 'ltr' | 'rtl';
 

@@ -11,12 +11,6 @@ const props = defineProps({
 
 const showModal = ref<Boolean>(false);
 
-const handleKeyup = (e: KeyboardEvent) => {
-  if (e.key === 'Escape') {
-    showModal.value = false;
-  }
-};
-
 watch(
   () => props.show,
   (show) => {

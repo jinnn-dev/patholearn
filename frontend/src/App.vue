@@ -1,3 +1,41 @@
+<script lang='ts' setup>
+import { getEnv } from './config';
+import { ref } from 'vue';
+import { detect } from 'detect-browser';
+import ErrorBar from './components/ErrorBar.vue';
+
+const title = getEnv('APP_TITLE');
+document.title = title || '';
+
+//set favicon dynamicly
+let link = document.querySelector('link[rel~=\'icon\']');
+if (!link) {
+  link = document.createElement('link');
+  // @ts-ignore
+  link.rel = 'icon';
+  document.getElementsByTagName('head')[0].appendChild(link);
+}
+// @ts-ignore
+link.href = '/' + getEnv('APP_FAVICON_URL') || '';
+
+const showBrowserWarning = ref(false);
+
+const detectedBrowser = detect();
+if (detectedBrowser) {
+  switch (detectedBrowser.name) {
+    case 'chrome':
+      break;
+    case 'edge-chromium':
+      break;
+    case 'opera':
+      break;
+
+    default:
+      showBrowserWarning.value = true;
+      break;
+  }
+}
+</script>
 <template>
   <!--  <div-->
   <!--    class='hidden backdrop-blur backdrop-blur-0 backdrop-blur-sm backdrop-blur-md backdrop-blur-lg backdrop-blur-xl backdrop-blur-2xl backdrop-blur-3xl'></div>-->
@@ -13,55 +51,6 @@
   </div>
   <error-bar></error-bar>
 </template>
-
-<script lang='ts'>
-import { detect } from 'detect-browser';
-import { defineComponent, onMounted, ref } from 'vue';
-import { getEnv } from './config';
-
-export default defineComponent({
-  name: 'App',
-
-  setup() {
-    onMounted(async () => {
-    });
-
-    const title = getEnv('APP_TITLE');
-    document.title = title || '';
-
-    //set favicon dynamicly
-    let link = document.querySelector('link[rel~=\'icon\']');
-    if (!link) {
-      link = document.createElement('link');
-      // @ts-ignore
-      link.rel = 'icon';
-      document.getElementsByTagName('head')[0].appendChild(link);
-    }
-    // @ts-ignore
-    link.href = '/' + getEnv('APP_FAVICON_URL') || '';
-
-    const showBrowserWarning = ref(false);
-
-    const detectedBrowser = detect();
-    if (detectedBrowser) {
-      switch (detectedBrowser.name) {
-        case 'chrome':
-          break;
-        case 'edge-chromium':
-          break;
-        case 'opera':
-          break;
-
-        default:
-          showBrowserWarning.value = true;
-          break;
-      }
-    }
-
-    return { showBrowserWarning };
-  }
-});
-</script>
 
 <style>
 @font-face {
@@ -149,7 +138,7 @@ input[type='color']::-webkit-color-swatch {
 
 ::-webkit-scrollbar-thumb {
   background: #b3b3b3;
-  border: 0px none #ffffff;
+  border: 0 none #ffffff;
   border-radius: 100px;
 }
 

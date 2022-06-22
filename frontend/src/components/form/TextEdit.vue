@@ -1,5 +1,8 @@
 <script lang='ts' setup>
 import { ref } from 'vue';
+import RoleOnly from '../containers/RoleOnly.vue';
+import InputField from './InputField.vue';
+import Icon from '../general/Icon.vue';
 
 const emit = defineEmits(['valueChanged']);
 

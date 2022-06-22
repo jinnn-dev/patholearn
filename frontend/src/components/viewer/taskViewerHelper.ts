@@ -1,5 +1,6 @@
 import { Annotation } from '../../model/svg/annotation';
-import { AnnotationGroup, Task } from '../../model/task';
+import { Task } from '../../model/task';
+import { AnnotationGroup } from '../../model/task/annotationGroup';
 import { isUserSolution } from '../../model/viewer/annotationType';
 import { AnnotationViewer } from './core/annotationViewer';
 import { isTaskSaving, polygonChanged } from './core/viewerState';

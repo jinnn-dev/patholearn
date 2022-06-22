@@ -4,6 +4,12 @@ import { getThumbnailUrl } from '../../config';
 import { Slide } from '../../model/slide';
 import { SLIDE_STATUS } from '../../model/slideStatus';
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
+import SkeletonCard from '../containers/SkeletonCard.vue';
+import Icon from '../general/Icon.vue';
+import PrimaryButton from '../general/PrimaryButton.vue';
+import LazyImage from '../LazyImage.vue';
+import ModalDialog from '../containers/ModalDialog.vue';
+import ConfirmDialog from '../general/ConfirmDialog.vue';
 
 const props = defineProps({
   slide: {
@@ -150,7 +156,6 @@ onMounted(() => {
       </div>
     </div>
   </modal-dialog>
-
   <confirm-dialog
     header='Bild löschen?'
     :show='showDeleteDialog'

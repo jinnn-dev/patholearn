@@ -6,6 +6,14 @@ import { Task, TaskCreate, TaskType } from '../../model/task';
 import { TaskImageService } from '../../services/task-image.service';
 import { TaskService } from '../../services/task.service';
 import { knowledgeLevel, taskTypes } from './task-config';
+import InputField from '../form/InputField.vue';
+import AccordionItem from '../containers/AccordionItem.vue';
+import Accordion from '../containers/Accordion.vue';
+import Icon from '../general/Icon.vue';
+import CustomSlider from '../form/CustomSlider.vue';
+import MultiImageUpload from '../form/MultiImageUpload.vue';
+import PrimaryButton from '../general/PrimaryButton.vue';
+import SaveButton from '../general/SaveButton.vue';
 
 const emit = defineEmits(['close', 'taskCreated']);
 
@@ -71,8 +79,6 @@ const rules = {
 };
 
 const validator = useVuelidate(rules, taskCreationForm);
-
-const expandTaskSettings = ref(true);
 
 const createdTask = ref<Task>();
 
@@ -141,10 +147,8 @@ const uploadImageSelectImages = async () => {
     formData.append('names', image.file.name);
   }
 
-  const imageIds = TaskImageService.uploadMultipleTaskImages(formData, (value: any) => {
+  return TaskImageService.uploadMultipleTaskImages(formData, (_: any) => {
   });
-
-  return imageIds;
 };
 
 const setImages = (images: { fileUrl: string; file: File }[]) => {

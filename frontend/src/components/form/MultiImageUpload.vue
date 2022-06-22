@@ -1,6 +1,9 @@
 <script lang='ts' setup>
 import { PropType, ref, watch } from 'vue';
 import { TempUploadImage } from '../../model/TempUploadImage';
+import FormField from './FormField.vue';
+import Icon from '../general/Icon.vue';
+import UploadPreviewImage from '../UploadPreviewImage.vue';
 
 const emit = defineEmits(['imagesDropped']);
 
@@ -176,6 +179,7 @@ const isFileImage = (file: File | undefined | null) => {
               :index='index'
             />
           </div>
+
         </div>
       </div>
     </div>

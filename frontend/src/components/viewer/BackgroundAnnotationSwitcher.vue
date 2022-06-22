@@ -1,3 +1,46 @@
+<script lang='ts' setup>
+import { ref, watch } from 'vue';
+import { viewerLoadingState } from './core/viewerState';
+import Icon from '../general/Icon.vue';
+import PrimaryButton from '../general/PrimaryButton.vue';
+
+const props = defineProps({
+  backgroundAnnotations: {
+    type: Number,
+    default: 0
+  }
+});
+
+const emit = defineEmits(['focus']);
+
+const selectedIndex = ref(0);
+
+watch(
+  () => viewerLoadingState.tilesLoaded,
+  () => {
+    selectedIndex.value = 0;
+  }
+);
+
+const changeIndex = (value: number) => {
+  selectedIndex.value += value;
+
+  if (selectedIndex.value >= props.backgroundAnnotations) {
+    selectedIndex.value = 0;
+    emit('focus', selectedIndex.value);
+    return;
+  }
+
+  if (selectedIndex.value < 0) {
+    selectedIndex.value = props.backgroundAnnotations - 1;
+    emit('focus', selectedIndex.value);
+    return;
+  }
+
+  emit('focus', selectedIndex.value);
+};
+
+</script>
 <template>
   <div
     class='fixed bottom-[10%] right-0 p-2 rounded-l-lg shadow-md bg-gray-700/70 backdrop-blur-md z-[2] select-none'
@@ -15,50 +58,3 @@
     ></primary-button>
   </div>
 </template>
-<script lang='ts'>
-import { defineComponent, ref, watch } from 'vue';
-import { viewerLoadingState } from './core/viewerState';
-
-export default defineComponent({
-  props: {
-    backgroundAnnotations: {
-      type: Number,
-      default: 0
-    }
-  },
-
-  emits: ['focus'],
-
-  setup(props, { emit }) {
-    const selectedIndex = ref(0);
-
-    watch(
-      () => viewerLoadingState.tilesLoaded,
-      () => {
-        selectedIndex.value = 0;
-      }
-    );
-
-    const changeIndex = (value: number) => {
-      selectedIndex.value += value;
-
-      if (selectedIndex.value >= props.backgroundAnnotations) {
-        selectedIndex.value = 0;
-        emit('focus', selectedIndex.value);
-        return;
-      }
-
-      if (selectedIndex.value < 0) {
-        selectedIndex.value = props.backgroundAnnotations - 1;
-        emit('focus', selectedIndex.value);
-        return;
-      }
-
-      emit('focus', selectedIndex.value);
-    };
-
-    return { selectedIndex, changeIndex };
-  }
-});
-</script>
-<style></style>

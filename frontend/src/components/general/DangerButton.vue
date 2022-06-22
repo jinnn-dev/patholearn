@@ -1,6 +1,9 @@
 <script lang='ts' setup>
 
 import { ref } from 'vue';
+import PrimaryButton from './PrimaryButton.vue';
+import ModalDialog from '../containers/ModalDialog.vue';
+import SaveButton from './SaveButton.vue';
 
 const emit = defineEmits(['confirmation']);
 

@@ -22,13 +22,6 @@ export interface ImageSelectFeedback {
   status: TaskStatus;
 }
 
-export interface TaskResult {
-  task_id?: number;
-  task_status?: TaskStatus;
-  response_text?: string;
-  result_detail?: TaskResultDetail[] | ImageSelectFeedback[];
-}
-
 type TaskStatusStringType = {
   [key in TaskStatus | string]?: string;
 };

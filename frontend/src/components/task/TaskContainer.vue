@@ -5,6 +5,12 @@ import { Task } from '../../model/task';
 import { TaskStatus } from '../../model/result';
 import { BaseTask } from '../../model/baseTask';
 import { TaskService } from '../../services/task.service';
+import TaskLayer from './TaskLayer.vue';
+import RoleOnly from '../containers/RoleOnly.vue';
+import PrimaryButton from '../general/PrimaryButton.vue';
+import ModalDialog from '../containers/ModalDialog.vue';
+import SaveButton from '../general/SaveButton.vue';
+import Icon from '../general/Icon.vue';
 
 interface LayeredTasks {
   [key: number]: Task[];
@@ -42,7 +48,7 @@ onMounted(() => {
 
   changeTask(taskMap.value[1][0]);
   if (!props.isOwner) {
-    for (const [key, value] of Object.entries(taskMap.value)) {
+    for (const [_, value] of Object.entries(taskMap.value)) {
       for (const task of value) {
         if (task.user_solution === null || task.user_solution?.task_result?.task_status !== TaskStatus.CORRECT) {
           changeTask(task);
@@ -154,7 +160,6 @@ const deleteBaseTask = () => {
             @layerDeleted='deleteLayer($event)'
           ></task-layer>
         </div>
-
         <role-only v-if='isOwner' class='w-full'>
           <div class='p-1.5 py-4 px-20 w-full bg-gray-800'>
             <primary-button bgColor='bg-gray-500' class='p-2' @click='addNewLayer'> Neue Ebene</primary-button>

@@ -1,6 +1,8 @@
 <script lang='ts' setup>
 import { inject, Ref, ref, watch } from 'vue';
 import { nanoid } from 'nanoid';
+import CollapseTransition from './CollapseTransition.vue';
+import Icon from '../general/Icon.vue';
 
 const props = defineProps({
   title: {
@@ -26,11 +28,7 @@ watch(
   () => selectedIndex,
   () => {
     if (collapse) {
-      if (selectedIndex?.value === index) {
-        expand.value = true;
-      } else {
-        expand.value = false;
-      }
+      expand.value = selectedIndex?.value === index;
     }
   },
   { deep: true }
@@ -69,5 +67,6 @@ function toggleDisplay() {
         <slot></slot>
       </div>
     </collapse-transition>
+
   </div>
 </template>

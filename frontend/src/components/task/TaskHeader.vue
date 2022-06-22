@@ -1,14 +1,16 @@
 <script lang='ts' setup>
 import { PropType } from 'vue';
 import { Task, TaskType } from '../../model/task';
-import { TaskResult } from '../../model/result';
+import { TaskResult as TR } from '../../model/task/result/taskResult';
+import TaskQuestion from './TaskQuestion.vue';
+import TaskResult from './TaskResult.vue';
 
 defineProps({
   selectedTask: {
     type: Object as PropType<Task>
   },
   solveResult: {
-    type: Object as PropType<TaskResult>
+    type: Object as PropType<TR>
   }
 });
 </script>

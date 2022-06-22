@@ -4,8 +4,16 @@ import { ref } from 'vue';
 import { TempUploadImage } from '../../../model/TempUploadImage';
 import { useService } from '../../../composables/useService';
 import { ImageService } from '../../../services/image.service';
-import { ExtractionResult } from '../../../model/viewer/export/extractionResult';
-import { AnnotationGroup } from '../../../model/task';
+import { AnnotationGroup } from '../../../model/task/annotationGroup';
+import ModalDialog from '../../containers/ModalDialog.vue';
+import BlurredContainer from '../../general/BlurredContainer.vue';
+import MultiImageUpload from '../../form/MultiImageUpload.vue';
+import PrimaryButton from '../../general/PrimaryButton.vue';
+import SaveButton from '../../general/SaveButton.vue';
+import TextEdit from '../../form/TextEdit.vue';
+import Accordion from '../../containers/Accordion.vue';
+import AccordionItem from '../../containers/AccordionItem.vue';
+import AnnotationSlide from './AnnotationSlide.vue';
 
 
 const props = defineProps({
@@ -96,7 +104,6 @@ const closeDialog = () => {
 
 </script>
 <template>
-
   <!--  TODO: Allow incremental solution addition. If already a solution exists add new one. Store grey values in key in annotation group. So the new image can than be mapped to the corresponding annotation group-->
   <modal-dialog :show='showDialog' custom-classes='w-full h-screen m-0 p-0 '>
 

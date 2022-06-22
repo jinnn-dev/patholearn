@@ -4,6 +4,7 @@ import { isInfoTool, Tool, TOOL_COMPONENTS, TOOL_HINTS } from '../../model/viewe
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
 import { userSolutionLocked, viewerLoadingState } from './core/viewerState';
 import { Instance } from 'tippy.js';
+import ToolItem from './ToolItem.vue';
 
 const props = defineProps({
   tools: Array as PropType<Tool[]>,
@@ -67,7 +68,6 @@ const createTooltip = () => {
 
 onMounted(() => {
   changeTool(Tool.MOVE, null);
-
   // nextTick(() => {
   //   createTooltip();
   // });
@@ -93,7 +93,6 @@ const toggleAnnotationVisibility = () => {
 </script>
 <template>
   <div class='fixed z-10 top-1/2 transform -translate-y-1/2 overflow-hidden flex flex-col gap-8'>
-
     <div class='overflow-hidden rounded-r-lg bg-gray-600/70 backdrop-blur-md'>
       <tool-item
         :comp='annotationToolComponent'
@@ -102,7 +101,6 @@ const toggleAnnotationVisibility = () => {
       >
       </tool-item>
     </div>
-
     <div
       v-if='!userSolutionLocked && !viewerLoadingState.solveResultLoading'
       :class='annotationVisible ? "opacity-100" : "opacity-20"'

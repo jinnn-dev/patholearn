@@ -1,4 +1,4 @@
-import { TaskResult } from './result';
+import { TaskResult } from './task/result/taskResult';
 
 export interface UserSolution {
   percentage_solved: number;

@@ -4,6 +4,7 @@ import { nanoid } from 'nanoid';
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
 import { IconNames } from '../../../icons';
 import { Instance } from 'tippy.js';
+import Icon from '../general/Icon.vue';
 
 const props = defineProps({
   comp: String as PropType<IconNames>,

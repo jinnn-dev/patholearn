@@ -32,8 +32,8 @@
               class='w-[52rem] h-full'
               :centeredSlides='true'
               :loop='true'
-              navigation
               :modules='modules'
+              navigation
             >
               <swiper-slide v-for='(hint, index) in hints' :key='hint.id' class='h-full'>
                 <HintOverlayItem :hint='hint' :index='index' class='px-12' />
@@ -54,10 +54,12 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
 import { getTaskHints, store } from '../../../utils/hint.store';
+import HintOverlayItem from './HintOverlayItem.vue';
+import Icon from '../../general/Icon.vue';
 
 SwiperCore.use([Navigation, Pagination, A11y]);
 export default defineComponent({
-  components: { Swiper, SwiperSlide },
+  components: { Icon, HintOverlayItem, Swiper, SwiperSlide },
   props: {
     taskId: {
       type: Number

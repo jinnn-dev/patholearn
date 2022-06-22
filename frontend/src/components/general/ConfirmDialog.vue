@@ -1,5 +1,9 @@
 <script lang='ts' setup>
 
+import ModalDialog from '../containers/ModalDialog.vue';
+import PrimaryButton from './PrimaryButton.vue';
+import SaveButton from './SaveButton.vue';
+
 const emit = defineEmits(['confirmation', 'reject']);
 
 defineProps({

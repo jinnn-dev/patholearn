@@ -1,106 +1,93 @@
+<script lang='ts' setup>
+import useVuelidate from '@vuelidate/core';
+import { email, required } from '@vuelidate/validators';
+import { reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { getEnv } from '../../config';
+import { AuthService } from '../../services/auth.service';
+import SaveButton from '../../components/general/SaveButton.vue';
+import AuthInput from '../../components/auth/AuthInput.vue';
+import Icon from '../../components/general/Icon.vue';
+
+const formData = reactive({
+  email: '',
+  password: ''
+});
+
+const error = ref<boolean>(false);
+
+const router = useRouter();
+
+const loginLoading = ref<Boolean>(false);
+
+const rules = {
+  email: { required, email },
+  password: { required }
+};
+
+const validator = useVuelidate(rules, formData);
+
+const onSubmit = () => {
+  validator.value.$touch();
+
+  if (!validator.value.$invalid) {
+    loginLoading.value = true;
+    AuthService.login(formData.email, formData.password)
+      .then(() => {
+        loginLoading.value = false;
+        router.push('/home');
+      })
+      .catch(() => {
+        error.value = true;
+        loginLoading.value = false;
+        formData.password = '';
+      });
+  }
+};
+
+</script>
 <template>
-  <div class="w-full min-h-screen flex items-center flex-col justify-center">
-    <div class="h-48 mb-12" v-if="getEnv('APP_LOGO_URL')">
-      <img :src="`/${getEnv('APP_LOGO_URL')}`" alt="logo" class="rounded-lg h-full" />
+  <div class='w-full min-h-screen flex items-center flex-col justify-center'>
+    <div class='h-48 mb-12' v-if="getEnv('APP_LOGO_URL')">
+      <img :src="`/${getEnv('APP_LOGO_URL')}`" alt='logo' class='rounded-lg h-full' />
     </div>
 
-    <div class="bg-gray-700 rounded-xl p-4 shadow-md w-96 z-[2]">
-      <div class="text-4xl font-semibold text-center">Login</div>
-      <form @submit.prevent="onSubmit" class="w-full">
+    <div class='bg-gray-700 rounded-xl p-4 shadow-md w-96 z-[2]'>
+      <div class='text-4xl font-semibold text-center'>Login</div>
+      <form @submit.prevent='onSubmit' class='w-full'>
         <auth-input
-          v-model="formData.email"
-          label="E-Mail"
-          placeholder="demo@demo.de"
-          type="email"
-          :required="true"
-          autocomplete="email"
+          v-model='formData.email'
+          label='E-Mail'
+          placeholder='demo@demo.de'
+          type='email'
+          :required='true'
+          autocomplete='email'
         >
-          <Icon name="at" class="text-gray-200" />
+          <Icon name='at' class='text-gray-200' />
         </auth-input>
-        <div class="text-red-500" v-if="validator.email.$errors.some((e) => e.hasOwnProperty('$property'))">
+        <div class='text-red-500' v-if="validator.email.$errors.some((e) => e.hasOwnProperty('$property'))">
           Keine gültige E-Mail-Adresse
         </div>
         <auth-input
-          v-model="formData.password"
-          label="Passwort"
-          placeholder="1234"
-          type="password"
-          autocomplete="password"
-          :required="true"
+          v-model='formData.password'
+          label='Passwort'
+          placeholder='1234'
+          type='password'
+          autocomplete='password'
+          :required='true'
         >
-          <Icon name="key" class="text-gray-200" size="24" />
+          <Icon name='key' class='text-gray-200' size='24' />
         </auth-input>
 
-        <div v-if="error" class="text-red-500 font-bold">Falsche E-Mail oder Passwort</div>
-        <div class="w-full flex justify-end mt-8">
-          <save-button name="Anmelden" :loading="loginLoading" />
+        <div v-if='error' class='text-red-500 font-bold'>Falsche E-Mail oder Passwort</div>
+        <div class='w-full flex justify-end mt-8'>
+          <save-button name='Anmelden' :loading='loginLoading' />
         </div>
       </form>
-
-      <div class="mt-4">
+      <div class='mt-4'>
         Noch keinen Account?
-        <router-link to="/register" class="underline text-highlight-400">Registrieren</router-link>
+        <router-link to='/register' class='underline text-highlight-400'>Registrieren</router-link>
       </div>
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import useVuelidate from '@vuelidate/core';
-import { email, required } from '@vuelidate/validators';
-import { defineComponent, reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { getEnv } from '../../config';
-import { AuthService } from '../../services/auth.service';
-
-export default defineComponent({
-  setup() {
-    const formData = reactive({
-      email: '',
-      password: ''
-    });
-
-    const error = ref<boolean>(false);
-
-    const router = useRouter();
-
-    const loginLoading = ref<Boolean>(false);
-
-    const onSubmit = () => {
-      validator.value.$touch();
-
-      if (!validator.value.$invalid) {
-        loginLoading.value = true;
-        AuthService.login(formData.email, formData.password)
-          .then(() => {
-            loginLoading.value = false;
-            router.push('/home');
-          })
-          .catch((err) => {
-            error.value = true;
-            loginLoading.value = false;
-            formData.password = '';
-          });
-      }
-    };
-
-    const rules = {
-      email: { required, email },
-      password: { required }
-    };
-
-    const validator = useVuelidate(rules, formData);
-
-    return {
-      onSubmit,
-      formData,
-      validator,
-      error,
-      loginLoading,
-      getEnv
-    };
-  }
-});
-</script>
-
-<style></style>

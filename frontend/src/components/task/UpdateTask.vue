@@ -89,8 +89,16 @@ import { defineComponent, PropType, reactive, ref, watch } from 'vue';
 import { Task, TaskType } from '../../model/task';
 import { TaskService } from '../../services/task.service';
 import { knowledgeLevel, taskTypes } from './task-config';
+import InputField from '../form/InputField.vue';
+import Accordion from '../containers/Accordion.vue';
+import AccordionItem from '../containers/AccordionItem.vue';
+import CustomSlider from '../form/CustomSlider.vue';
+import ToggleButton from '../form/ToggleButton.vue';
+import PrimaryButton from '../general/PrimaryButton.vue';
+import SaveButton from '../general/SaveButton.vue';
 
 export default defineComponent({
+  components: { SaveButton, PrimaryButton, ToggleButton, CustomSlider, AccordionItem, Accordion, InputField },
   props: {
     task: {
       type: Object as PropType<Task>

@@ -1,3 +1,9 @@
+<script lang='ts' setup>
+defineProps({
+  show: Boolean,
+  isPolygon: Boolean
+});
+</script>
 <template>
   <div
     v-if='show'
@@ -11,11 +17,3 @@
     <div>Drücke die <kbd>&larr;</kbd> um den letzten Punkt zu löschen</div>
   </div>
 </template>
-<script lang='ts'>
-import { defineComponent } from 'vue';
-
-export default defineComponent({
-  props: { show: Boolean, isPolygon: Boolean }
-});
-</script>
-<style></style>

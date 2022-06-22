@@ -1,3 +1,98 @@
+<script lang='ts' setup>
+import { PropType, reactive, ref } from 'vue';
+import { AnnotationGroup } from '../../model/task/annotationGroup';
+import { TaskService } from '../../services/task.service';
+import { isSuperUser } from '../../utils/app.state';
+import { isTaskSaving } from './core/viewerState';
+import Icon from '../general/Icon.vue';
+import ColorPicker from '../general/ColorPicker.vue';
+import TextEdit from '../form/TextEdit.vue';
+import RoleOnly from '../containers/RoleOnly.vue';
+import PrimaryButton from '../general/PrimaryButton.vue';
+import ModalDialog from '../containers/ModalDialog.vue';
+import InputField from '../form/InputField.vue';
+import SaveButton from '../general/SaveButton.vue';
+
+const props = defineProps({
+  annotationGroups: {
+    type: Object as PropType<AnnotationGroup[]>,
+    default: []
+  },
+
+  isAdmin: {
+    type: Boolean,
+    default: false
+  },
+
+  taskId: Number
+});
+
+const emit = defineEmits(['showGroup', 'hideGroup', 'groupCreated', 'groupUpdated']);
+
+const showGroupCreation = ref<Boolean>(false);
+
+const hiddenElements = ref<AnnotationGroup[]>([]);
+
+const groupUpdateColor = ref('');
+
+const groupCreationForm = reactive({
+  name: '',
+  color: '#FF00FF'
+});
+
+const groupCreationLoading = ref<Boolean>(false);
+
+const isHidden = (group: AnnotationGroup) => {
+  return hiddenElements.value?.includes(group);
+};
+
+const toggleAnnotationGroup = (group: AnnotationGroup) => {
+  if (!hiddenElements.value?.includes(group)) {
+    hiddenElements.value?.push(group);
+    emit('hideGroup', group);
+  } else {
+    const index = hiddenElements.value.findIndex((item) => item.name === group.name);
+    if (index !== -1) {
+      hiddenElements.value.splice(index, 1);
+      emit('showGroup', group);
+    }
+  }
+};
+
+const updateGroup = async (newName: string, newColor: string, group: AnnotationGroup) => {
+  if (newName !== group.name || newColor !== group.color) {
+    isTaskSaving.value = true;
+
+    TaskService.updateAnnotationGroup(props.taskId!, group.name, newName, newColor).then(() => {
+      emit('groupUpdated', {
+        group,
+        newName,
+        newColor
+      });
+      isTaskSaving.value = false;
+    });
+  }
+};
+
+const onSubmit = () => {
+  groupCreationLoading.value = true;
+  TaskService.createAnnotationGroup(props.taskId!, groupCreationForm.name, groupCreationForm.color)
+    .then((annotationGroup: AnnotationGroup) => {
+      emit('groupCreated', annotationGroup);
+
+      props.annotationGroups?.push(annotationGroup);
+    })
+    .catch((e) => {
+      console.log(e);
+    })
+    .finally(() => {
+      groupCreationLoading.value = false;
+      showGroupCreation.value = false;
+    });
+};
+
+
+</script>
 <template>
   <div class='fixed right-0 top-6 z-10 bg-gray-700/70 backdrop-blur-md rounded-l-lg p-2 w-80'>
     <div v-if='!annotationGroups || annotationGroups.length === 0' class='my-2'>Keine Klassen vorhanden</div>
@@ -83,105 +178,3 @@
     </modal-dialog>
   </role-only>
 </template>
-
-<script lang='ts'>
-import { defineComponent, PropType, reactive, ref } from 'vue';
-import { AnnotationGroup } from '../../model/task';
-import { TaskService } from '../../services/task.service';
-import { isSuperUser } from '../../utils/app.state';
-import { isTaskSaving } from './core/viewerState';
-
-export default defineComponent({
-  props: {
-    annotationGroups: {
-      type: Object as PropType<AnnotationGroup[]>,
-      default: []
-    },
-
-    isAdmin: {
-      type: Boolean,
-      default: false
-    },
-
-    taskId: Number
-  },
-
-  emits: ['showGroup', 'hideGroup', 'groupCreated', 'groupUpdated'],
-
-  setup(props, { emit }) {
-    const showGroupCreation = ref<Boolean>(false);
-
-    const hiddenElements = ref<AnnotationGroup[]>([]);
-
-    const groupUpdateColor = ref('');
-
-    const groupCreationForm = reactive({
-      name: '',
-      color: '#FF00FF'
-    });
-
-    const groupCreationLoading = ref<Boolean>(false);
-
-    const isHidden = (group: AnnotationGroup) => {
-      return hiddenElements.value?.includes(group);
-    };
-
-    const toggleAnnotationGroup = (group: AnnotationGroup) => {
-      if (!hiddenElements.value?.includes(group)) {
-        hiddenElements.value?.push(group);
-        emit('hideGroup', group);
-      } else {
-        const index = hiddenElements.value.findIndex((item) => item.name === group.name);
-        if (index !== -1) {
-          hiddenElements.value.splice(index, 1);
-          emit('showGroup', group);
-        }
-      }
-    };
-
-    const updateGroup = async (newName: string, newColor: string, group: AnnotationGroup) => {
-      if (newName !== group.name || newColor !== group.color) {
-        isTaskSaving.value = true;
-
-        TaskService.updateAnnotationGroup(props.taskId!, group.name, newName, newColor).then(() => {
-          emit('groupUpdated', {
-            group,
-            newName,
-            newColor
-          });
-          isTaskSaving.value = false;
-        });
-      }
-    };
-
-    const onSubmit = () => {
-      groupCreationLoading.value = true;
-      TaskService.createAnnotationGroup(props.taskId!, groupCreationForm.name, groupCreationForm.color)
-        .then((annotationGroup: AnnotationGroup) => {
-          emit('groupCreated', annotationGroup);
-
-          props.annotationGroups?.push(annotationGroup);
-        })
-        .catch((e) => {
-          console.log(e);
-        })
-        .finally(() => {
-          groupCreationLoading.value = false;
-          showGroupCreation.value = false;
-        });
-    };
-    return {
-      toggleAnnotationGroup,
-      isHidden,
-      onSubmit,
-      updateGroup,
-      isSuperUser,
-      showGroupCreation,
-      groupCreationForm,
-      groupCreationLoading,
-      groupUpdateColor
-    };
-  }
-});
-</script>
-<style></style>

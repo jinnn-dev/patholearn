@@ -1,4 +1,6 @@
 <script lang='ts' setup>
+import PrimaryButton from './PrimaryButton.vue';
+
 defineProps({
   loading: Boolean,
   label: String,

@@ -1,8 +1,9 @@
 import { ImageSelectStatistic } from 'model/imageSelectStatistic';
 import { BaseTask, CreateBaseTask, UpdateBaseTask } from '../model/baseTask';
 import { MembersolutionSummary } from '../model/membersolutionSummary';
-import { TaskResult } from '../model/result';
-import { AnnotationGroup, Task, TaskCreate, TaskUpdate } from '../model/task';
+import { TaskResult } from '../model/task/result/taskResult';
+import { Task, TaskCreate, TaskUpdate } from '../model/task';
+import { AnnotationGroup } from '../model/task/annotationGroup';
 import { TaskHint, TaskHintCreate, TaskHintUpdate } from '../model/taskHint';
 import { UserSolution, UserSolutionCreate, UserSolutionUpdate } from '../model/userSolution';
 import { ApiService } from './api.service';
@@ -130,6 +131,7 @@ export class TaskService {
     );
     return response!.data;
   }
+
   /**
    * Returns all base tasks to given course
    *

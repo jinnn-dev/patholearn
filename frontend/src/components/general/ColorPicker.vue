@@ -1,4 +1,6 @@
 <script lang='ts' setup>
+import FormField from '../form/FormField.vue';
+
 defineEmits(['isReleased', 'changed']);
 
 defineProps({

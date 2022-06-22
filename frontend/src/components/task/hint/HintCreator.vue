@@ -3,6 +3,12 @@ import { PropType, reactive, ref } from 'vue';
 import { SLIDE_IMAGE_URL } from '../../../config';
 import { HintType, TaskHint } from '../../../model/taskHint';
 import { TaskService } from '../../../services/task.service';
+import Icon from '../../general/Icon.vue';
+import InputField from '../../form/InputField.vue';
+import InputArea from '../../form/InputArea.vue';
+import UploadPreviewImage from '../../UploadPreviewImage.vue';
+import MultiImageUpload from '../../form/MultiImageUpload.vue';
+import SaveButton from '../../general/SaveButton.vue';
 
 const emit = defineEmits(['closeMe', 'updated', 'created']);
 

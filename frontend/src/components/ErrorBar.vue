@@ -1,11 +1,19 @@
+<script lang='ts' setup>
+import { errorState } from '../services/error-handler';
+import ErrorNotification from './ErrorNotification.vue';
+
+const removeItem = (index: number) => {
+  errorState.value.splice(index, 1);
+};
+</script>
 <template>
-  <div class="fixed z-[99] bottom-4 left-1/2 transform -translate-x-1/2">
+  <div class='fixed z-[99] bottom-4 left-1/2 transform -translate-x-1/2'>
     <error-notification
-      v-for="(error, index) in errorState"
-      :key="index"
-      :index="index"
-      :error="error"
-      @expired="removeItem($event)"
+      v-for='(error, index) in errorState'
+      :key='index'
+      :index='index'
+      :error='error'
+      @expired='removeItem($event)'
     >
     </error-notification>
 
@@ -25,18 +33,3 @@
     </div> -->
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent } from 'vue';
-import { errorState } from '../services/error-handler';
-export default defineComponent({
-  props: {},
-  setup() {
-    const removeItem = (index: number) => {
-      errorState.value.splice(index, 1);
-    };
-
-    return { errorState, removeItem };
-  }
-});
-</script>

@@ -3,6 +3,9 @@ import { PropType } from 'vue';
 import { TaskHint } from '../../../model/taskHint';
 import { TaskService } from '../../../services/task.service';
 import { SLIDE_IMAGE_URL } from '../../../config';
+import PrimaryButton from '../../general/PrimaryButton.vue';
+import Icon from '../../general/Icon.vue';
+import UploadPreviewImage from '../../UploadPreviewImage.vue';
 
 const emit = defineEmits(['edit', 'delete']);
 

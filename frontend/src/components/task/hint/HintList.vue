@@ -3,6 +3,10 @@ import { computed, PropType, ref } from 'vue';
 import { Task } from '../../../model/task';
 import { getTaskHints, store } from '../../../utils/hint.store';
 import { TaskHint } from '../../../model/taskHint';
+import PrimaryButton from '../../general/PrimaryButton.vue';
+import HintCreator from './HintCreator.vue';
+import Hint from './Hint.vue';
+import Icon from '../../general/Icon.vue';
 
 const props = defineProps({
   task: {
@@ -58,11 +62,9 @@ function addHint(hint: TaskHint) {
 <template>
   <div class='flex justify-between items-center mb-2' v-if='!creatorOpen'>
     <div v-if='task && task.hints.length === 0' class='text-xl'>Keine Tipps vorhanden</div>
-
     <primary-button type='button' name='Tipp' class='w-24' bgColor='bg-gray-500' @click.native='creatorOpen = true'
     >
-      <Icon name='plus' class='mr-1'
-      />
+      <Icon name='plus' class='mr-1' />
     </primary-button>
   </div>
   <HintCreator

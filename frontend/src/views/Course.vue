@@ -1,63 +1,130 @@
+<script lang='ts' setup>
+import { onMounted, reactive, ref } from 'vue';
+import { Course } from '../model/course';
+import { useRoute, useRouter } from 'vue-router';
+import { CourseService } from '../services/course.service';
+import ContentContainer from '../components/containers/ContentContainer.vue';
+import NoContent from '../components/NoContent.vue';
+import NewTaskBadge from '../components/NewTaskBadge.vue';
+import SkeletonCard from '../components/containers/SkeletonCard.vue';
+import TaskCountBadge from '../components/TaskCountBadge.vue';
+import ProgressBar from '../components/ProgressBar.vue';
+import DangerButton from '../components/general/DangerButton.vue';
+import Subheader from '../components/Subheader.vue';
+import NotCourseMember from '../components/NotCourseMember.vue';
+import ContentHeader from '../components/ContentHeader.vue';
+
+const course = ref<Course>();
+const route = useRoute();
+
+const isMember = ref<Boolean>(true);
+
+const loading = ref<Boolean>(true);
+const leaveCourseLoading = ref<Boolean>(false);
+
+const showModal = ref<Boolean>(false);
+const formData = reactive({
+  name: '',
+  slide_id: ''
+});
+
+const router = useRouter();
+
+onMounted(() => {
+  loadCourseDetails();
+});
+
+const loadCourseDetails = () => {
+  CourseService.getCourseDetails(route.params.id as string)
+    .then((res: Course) => {
+      course.value = res;
+      loading.value = false;
+      isMember.value = true;
+    })
+    .catch((err) => {
+      if (err.response) {
+        if (err.response.status === 403) {
+          isMember.value = false;
+          loading.value = false;
+          course.value = err.response.data.detail.course;
+        }
+      }
+    });
+};
+
+const leaveGroup = () => {
+  leaveCourseLoading.value = true;
+  CourseService.leaveCourse(course.value?.short_name!)
+    .then(() => {
+      router.push('/home');
+      leaveCourseLoading.value = false;
+    })
+    .catch((error) => {
+      leaveCourseLoading.value = false;
+      console.log(error);
+    });
+};
+</script>
 <template>
   <content-container>
-    <template v-slot:header v-if="isMember">
+    <template v-slot:header v-if='isMember'>
       <content-header
-        link="/home"
-        linkText="Zurück zur Kursauswahl"
-        :text="course?.name"
+        link='/home'
+        linkText='Zurück zur Kursauswahl'
+        :text='course?.name'
         :subText="`bei ${course?.owner.firstname} ${course?.owner.middlename ? course?.owner.middlename : ''} ${
           course?.owner.lastname
         }`"
       ></content-header>
     </template>
     <template v-slot:content>
-      <not-course-member v-if="!isMember" :course="course" @courseJoined="loadCourseDetails"></not-course-member>
+      <not-course-member v-if='!isMember' :course='course' @courseJoined='loadCourseDetails'></not-course-member>
       <div v-else>
         <div>
-          <div class="flex">
-            <subheader class="w-full" text="Aufgabengruppen"></subheader>
+          <div class='flex'>
+            <subheader class='w-full' text='Aufgabengruppen'></subheader>
             <danger-button
-              buttonText="Kurs verlassen"
-              @confirmation="leaveGroup"
-              :show="showModal"
-              :loading="leaveCourseLoading"
-              header="Möchtest du die Gruppe wirklich verlassen?"
-              info="All dein Fortschritt wird gelöscht!"
-              customClasses="w-72"
+              buttonText='Kurs verlassen'
+              @confirmation='leaveGroup'
+              :show='showModal'
+              :loading='leaveCourseLoading'
+              header='Möchtest du die Gruppe wirklich verlassen?'
+              info='All dein Fortschritt wird gelöscht!'
+              customClasses='w-72'
             >
             </danger-button>
           </div>
 
-          <div class="my-8">
-            <div v-if="loading" class="flex">
+          <div class='my-8'>
+            <div v-if='loading' class='flex'>
               <skeleton-card
-                v-for="i in 4"
-                :loading="loading"
-                :key="i"
-                skeletonClasses="h-24 w-44 ml-4"
+                v-for='i in 4'
+                :loading='loading'
+                :key='i'
+                skeletonClasses='h-24 w-44 ml-4'
               ></skeleton-card>
             </div>
-            <div v-else class="flex flex-wrap">
-              <div v-for="taskgroup in course?.task_groups" :key="taskgroup.short_name" class="ml-4 mb-4">
+            <div v-else class='flex flex-wrap'>
+              <div v-for='taskgroup in course?.task_groups' :key='taskgroup.short_name' class='ml-4 mb-4'>
                 <router-link :to="'/group/' + taskgroup.short_name">
-                  <skeleton-card class="min-w-[15rem]">
-                    <div class="text-xl">
+                  <skeleton-card class='min-w-[15rem]'>
+                    <div class='text-xl'>
                       {{ taskgroup.name }}
                     </div>
                     <progress-bar
-                      :id="taskgroup.short_name"
-                      :correctTasks="taskgroup.correct_tasks"
-                      :wrongTasks="taskgroup.wrong_tasks"
-                      :taskCount="taskgroup.task_count"
-                      :percentage="taskgroup.percentage_solved"
+                      :id='taskgroup.short_name'
+                      :correctTasks='taskgroup.correct_tasks'
+                      :wrongTasks='taskgroup.wrong_tasks'
+                      :taskCount='taskgroup.task_count'
+                      :percentage='taskgroup.percentage_solved'
                     ></progress-bar>
 
-                    <task-count-badge :count="taskgroup.task_count"></task-count-badge>
-                    <new-task-badge v-if="taskgroup.new_tasks"></new-task-badge>
+                    <task-count-badge :count='taskgroup.task_count'></task-count-badge>
+                    <new-task-badge v-if='taskgroup.new_tasks'></new-task-badge>
                   </skeleton-card>
                 </router-link>
               </div>
-              <no-content v-if="course?.task_groups?.length === 0" text="Keine Aufgabengrupppen vorhanden"></no-content>
+              <no-content v-if='course?.task_groups?.length === 0' text='Keine Aufgabengrupppen vorhanden'></no-content>
             </div>
           </div>
         </div>
@@ -65,86 +132,3 @@
     </template>
   </content-container>
 </template>
-
-<script lang="ts">
-import { defineComponent, onMounted, reactive, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { Course } from '../model/course';
-import { CourseService } from '../services/course.service';
-
-export default defineComponent({
-  setup() {
-    const course = ref<Course>();
-    const route = useRoute();
-
-    const isMember = ref<Boolean>(true);
-
-    const loading = ref<Boolean>(true);
-    const joinLoading = ref<Boolean>(false);
-    const leaveCourseLoading = ref<Boolean>(false);
-
-    const showModal = ref<Boolean>(false);
-    const formData = reactive({
-      name: '',
-      slide_id: ''
-    });
-
-    const router = useRouter();
-
-    onMounted(() => {
-      loadCourseDetails();
-    });
-
-    const loadCourseDetails = () => {
-      CourseService.getCourseDetails(route.params.id as string)
-        .then((res: Course) => {
-          course.value = res;
-          loading.value = false;
-          isMember.value = true;
-        })
-        .catch((err) => {
-          if (err.response) {
-            if (err.response.status === 403) {
-              isMember.value = false;
-              loading.value = false;
-              course.value = err.response.data.detail.course;
-            }
-          }
-        });
-    };
-
-    const joinCourse = () => {
-      joinLoading.value = true;
-      CourseService.joinCourse(course.value?.short_name!).then((res) => {
-        joinLoading.value = false;
-        loadCourseDetails();
-      });
-    };
-
-    const leaveGroup = () => {
-      leaveCourseLoading.value = true;
-      CourseService.leaveCourse(course.value?.short_name!)
-        .then((res) => {
-          router.push('/home');
-          leaveCourseLoading.value = false;
-        })
-        .catch((error) => {
-          leaveCourseLoading.value = false;
-          console.log(error);
-        });
-    };
-
-    return {
-      course,
-      loading,
-      showModal,
-      isMember,
-      leaveCourseLoading,
-      leaveGroup,
-      loadCourseDetails
-    };
-  }
-});
-</script>
-
-<style></style>

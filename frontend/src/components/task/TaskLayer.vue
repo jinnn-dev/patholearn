@@ -3,6 +3,13 @@ import { PropType, ref } from 'vue';
 import { Task, TaskType } from '../../model/task';
 import { TaskService } from '../../services/task.service';
 import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
+import RoleOnly from '../containers/RoleOnly.vue';
+import ModalDialog from '../containers/ModalDialog.vue';
+import UpdateTask from './UpdateTask.vue';
+import CreateTask from './CreateTask.vue';
+import PrimaryButton from '../general/PrimaryButton.vue';
+import TaskItem from './TaskItem.vue';
+import Icon from '../general/Icon.vue';
 
 const props = defineProps({
   layerIndex: {
@@ -25,8 +32,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['taskCreated', 'taskUpdated', 'taskSelected', 'taskDeleted', 'layerDeleted']);
-
-const selectedType = ref<Number>(0);
 
 const taskCreationModal = ref<Boolean>(false);
 const taskUpdateModal = ref<Boolean>(false);
@@ -56,13 +61,6 @@ const removeLayer = async () => {
     await TaskService.deleteTask(task.id);
   }
   emit('layerDeleted', props.layerIndex);
-};
-
-const s2ab = (s: any) => {
-  var buf = new ArrayBuffer(s.length);
-  var view = new Uint8Array(buf);
-  for (var i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) & 0xff;
-  return buf;
 };
 
 const downloadUserSolutions = async (task: Task) => {
@@ -131,6 +129,7 @@ const downloadUserSolutions = async (task: Task) => {
       <UpdateTask @close='taskUpdateModal = false' @taskUpdated="$emit('taskUpdated', $event)" :task='selectedTask' />
     </modal-dialog>
   </role-only>
+
 </template>
 <style>
 .slider-connect,

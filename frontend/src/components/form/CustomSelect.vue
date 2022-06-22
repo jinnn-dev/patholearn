@@ -1,6 +1,8 @@
 <script lang='ts' setup>
 import { onClickOutside } from '@vueuse/core';
 import { onMounted, PropType, ref, watch } from 'vue';
+import InputField from './InputField.vue';
+import Icon from '../general/Icon.vue';
 
 type SELECT_OPTIONS_SIZE = 'small' | 'medium' | 'large';
 
@@ -74,7 +76,7 @@ watch(
 
 watch(
   () => props.values,
-  (oldVal, newVal) => {
+  (oldVal, _) => {
     filteredData.value = oldVal;
   }
 );

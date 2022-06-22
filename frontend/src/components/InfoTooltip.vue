@@ -1,3 +1,220 @@
+<script lang='ts' setup>
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { getInfoImageUrl } from '../config';
+import { InfoImage } from '../model/infoImage';
+import { InfoImageService } from '../services/info-image.service';
+import { InfoTooltipGenerator } from '../utils/tooltips/info-tooltip-generator';
+import { infotooltipState, resetInfoTooltipState } from '../utils/tooltips/info-tooltip-state';
+import ModalDialog from './containers/ModalDialog.vue';
+import SaveButton from './general/SaveButton.vue';
+import PrimaryButton from './general/PrimaryButton.vue';
+import MultiImageUpload from './form/MultiImageUpload.vue';
+import FormField from './form/FormField.vue';
+import UploadPreviewImage from './UploadPreviewImage.vue';
+import InputArea from './form/InputArea.vue';
+import InputField from './form/InputField.vue';
+import LazyImage from './LazyImage.vue';
+import Icon from './general/Icon.vue';
+
+const props = defineProps({
+  isAdmin: {
+    type: Boolean,
+    default: false
+  }
+});
+
+const emit = defineEmits(['hideTooltip', 'updateTooltip']);
+const containerRef = ref<HTMLElement | null>(null);
+
+const width = ref(0);
+const height = ref(0);
+
+const showEdit = ref(false);
+
+const headerText = ref(infotooltipState.headerText);
+const detailText = ref(infotooltipState.detailText);
+const infotooltipImages = ref(infotooltipState.images);
+
+const uploadImages = ref<{ file: File; fileUrl: string }[]>([]);
+
+const uploadProgress = ref(0.0);
+const uploadLoading = ref(false);
+
+const existingImages = ref<InfoImage[]>([]);
+const imagesToDelete = ref<InfoImage[]>([]);
+const imagesToEdit = ref<InfoImage[]>([]);
+
+const isSaving = ref(false);
+
+watch(
+  () => infotooltipState.id,
+  () => {
+    nextTick(() => {
+      if (containerRef.value) {
+        width.value = containerRef.value.clientWidth;
+        height.value = containerRef.value.clientHeight;
+      }
+    });
+  }
+);
+
+watch(
+  () => infotooltipState.show,
+  () => {
+    nextTick(() => {
+      if (containerRef.value) {
+        width.value = containerRef.value.clientWidth;
+        height.value = containerRef.value.clientHeight;
+      }
+    });
+  }
+);
+
+watch(
+  () => infotooltipState.headerText,
+  () => {
+    headerText.value = infotooltipState.headerText;
+  }
+);
+
+watch(
+  () => infotooltipState.detailText,
+  () => {
+    detailText.value = infotooltipState.detailText;
+  }
+);
+
+watch(
+  () => infotooltipState.images,
+  async () => {
+    nextTick(() => {
+      if (containerRef.value) {
+        width.value = containerRef.value.clientWidth;
+        height.value = containerRef.value.clientHeight;
+      }
+    });
+    infotooltipImages.value = infotooltipState.images;
+  }
+);
+
+watch(
+  () => infotooltipState.animate,
+  () => {
+    if (infotooltipState.animate) {
+    }
+  }
+);
+
+const translateAttribute = computed(() => {
+  let xDiff = 0;
+  let yDiff = 0;
+
+  if (containerRef.value) {
+    xDiff = width.value / 2;
+    yDiff = height.value + 10;
+  }
+
+  const translateX = infotooltipState.x - xDiff;
+  const translateY = infotooltipState.y - yDiff;
+
+  return `translate(${translateX}px,${translateY}px)`;
+});
+
+onMounted(async () => {
+  headerText.value = infotooltipState.headerText;
+  detailText.value = infotooltipState.detailText;
+  uploadImages.value = [];
+});
+
+const hideTooltip = () => {
+  // infotooltipState.show = false;
+  resetInfoTooltipState();
+  emit('hideTooltip', infotooltipState.id);
+};
+
+const openTooltip = async () => {
+  showEdit.value = true;
+  uploadImages.value = [];
+
+  infotooltipState.show = false;
+
+  if (infotooltipState.images && infotooltipState.images.length > 0) {
+    existingImages.value = await InfoImageService.getInfoImagesById(infotooltipState.images);
+  }
+};
+
+const updateTooltip = async () => {
+  isSaving.value = true;
+
+  let image_ids: string[] = [];
+  if (uploadImages.value.length > 0) {
+    const formData = new FormData();
+    for (const image of uploadImages.value) {
+      formData.append('images', image.file);
+      formData.append('names', image.file.name);
+    }
+    uploadLoading.value = true;
+    const uploaded_images = await InfoImageService.uploadMultipleInfoImages(formData, (event) => {
+      uploadProgress.value = Math.round((100 * event.loaded) / event.total);
+    });
+    image_ids = uploaded_images.map((image) => image.info_image_id);
+    uploadLoading.value = false;
+  }
+
+  if (imagesToEdit.value.length > 0) {
+    await InfoImageService.updateInfoImages(imagesToEdit.value);
+  }
+
+  if (imagesToDelete.value.length > 0) {
+    await InfoImageService.deleteInfoImages(imagesToDelete.value.map((image) => image.info_image_id));
+  }
+
+  const newTooltipImages = image_ids.concat(existingImages.value.map((image) => image.info_image_id));
+
+  emit('updateTooltip', {
+    id: infotooltipState.id,
+    headerText: headerText.value,
+    detailText: detailText.value,
+    images: newTooltipImages
+  });
+  InfoTooltipGenerator.updateTooltip(infotooltipState.id);
+  infotooltipState.images = newTooltipImages;
+  infotooltipState.show = true;
+  isSaving.value = false;
+  showEdit.value = false;
+};
+
+const setImages = (images: { file: File; fileUrl: string }[]) => {
+  uploadImages.value = images;
+};
+
+const updateTooltipPosition = () => {
+  if (containerRef.value) {
+    width.value = containerRef.value.clientWidth;
+    height.value = containerRef.value.clientHeight;
+  }
+};
+
+const updateExistingImage = (event: { image: string; index: number }) => {
+  const index = event.index;
+  existingImages.value[index].name = event.image;
+  const foundIndex = imagesToEdit.value.findIndex(
+    (i) => i.info_image_id === existingImages.value[index].info_image_id
+  );
+  if (foundIndex >= 0) {
+    imagesToEdit.value[foundIndex] = existingImages.value[index];
+  } else {
+    imagesToEdit.value.push(existingImages.value[index]);
+  }
+};
+
+const deleteExistingImage = (index: number) => {
+  const imageInArray = existingImages.value[index];
+  existingImages.value = existingImages.value.filter((image) => image.info_image_id !== imageInArray.info_image_id);
+  imagesToDelete.value.push(imageInArray);
+};
+
+</script>
 <template>
   <div
     v-if='infotooltipState.show'
@@ -20,7 +237,6 @@
             :strokeWidth='22'
             @click='openTooltip'
           ></Icon>
-
           <Icon name='x' @click='hideTooltip' class='cursor-pointer hover:text-gray-200' :strokeWidth='28'></Icon>
         </div>
       </div>
@@ -99,236 +315,3 @@
     </div>
   </modal-dialog>
 </template>
-<script lang='ts'>
-import { computed, defineComponent, nextTick, onMounted, ref, watch } from 'vue';
-import { getInfoImageUrl, SLIDE_IMAGE_URL } from '../config';
-import { InfoImage } from '../model/infoImage';
-import { InfoImageService } from '../services/info-image.service';
-import { InfoTooltipGenerator } from '../utils/tooltips/info-tooltip-generator';
-import { infotooltipState, resetInfoTooltipState } from '../utils/tooltips/info-tooltip-state';
-
-export default defineComponent({
-  props: {
-    isAdmin: {
-      type: Boolean,
-      default: false
-    }
-  },
-  emits: ['hideTooltip', 'updateTooltip'],
-  setup(props, { emit }) {
-    const containerRef = ref<HTMLElement | null>(null);
-
-    const width = ref(0);
-    const height = ref(0);
-
-    const showEdit = ref(false);
-
-    const headerText = ref(infotooltipState.headerText);
-    const detailText = ref(infotooltipState.detailText);
-    const infotooltipImages = ref(infotooltipState.images);
-
-    const uploadImages = ref<{ file: File; fileUrl: string }[]>([]);
-
-    const uploadProgress = ref(0.0);
-    const uploadLoading = ref(false);
-
-    const existingImages = ref<InfoImage[]>([]);
-    const imagesToDelete = ref<InfoImage[]>([]);
-    const imagesToEdit = ref<InfoImage[]>([]);
-
-    const isSaving = ref(false);
-
-    watch(
-      () => infotooltipState.id,
-      () => {
-        nextTick(() => {
-          if (containerRef.value) {
-            width.value = containerRef.value.clientWidth;
-            height.value = containerRef.value.clientHeight;
-          }
-        });
-      }
-    );
-
-    watch(
-      () => infotooltipState.show,
-      () => {
-        nextTick(() => {
-          if (containerRef.value) {
-            width.value = containerRef.value.clientWidth;
-            height.value = containerRef.value.clientHeight;
-          }
-        });
-      }
-    );
-
-    watch(
-      () => infotooltipState.headerText,
-      () => {
-        headerText.value = infotooltipState.headerText;
-      }
-    );
-
-    watch(
-      () => infotooltipState.detailText,
-      () => {
-        detailText.value = infotooltipState.detailText;
-      }
-    );
-
-    watch(
-      () => infotooltipState.images,
-      async () => {
-        nextTick(() => {
-          if (containerRef.value) {
-            width.value = containerRef.value.clientWidth;
-            height.value = containerRef.value.clientHeight;
-          }
-        });
-        infotooltipImages.value = infotooltipState.images;
-      }
-    );
-
-    watch(
-      () => infotooltipState.animate,
-      () => {
-        if (infotooltipState.animate) {
-        }
-      }
-    );
-
-    const translateAttribute = computed(() => {
-      let xDiff = 0;
-      let yDiff = 0;
-
-      if (containerRef.value) {
-        xDiff = width.value / 2;
-        yDiff = height.value + 10;
-      }
-
-      const translateX = infotooltipState.x - xDiff;
-      const translateY = infotooltipState.y - yDiff;
-
-      return `translate(${translateX}px,${translateY}px)`;
-    });
-
-    onMounted(async () => {
-      headerText.value = infotooltipState.headerText;
-      detailText.value = infotooltipState.detailText;
-      uploadImages.value = [];
-    });
-
-    const hideTooltip = () => {
-      // infotooltipState.show = false;
-      resetInfoTooltipState();
-      emit('hideTooltip', infotooltipState.id);
-    };
-
-    const openTooltip = async () => {
-      showEdit.value = true;
-      uploadImages.value = [];
-
-      infotooltipState.show = false;
-
-      if (infotooltipState.images && infotooltipState.images.length > 0) {
-        existingImages.value = await InfoImageService.getInfoImagesById(infotooltipState.images);
-      }
-    };
-
-    const updateTooltip = async () => {
-      isSaving.value = true;
-
-      let image_ids: string[] = [];
-      if (uploadImages.value.length > 0) {
-        const formData = new FormData();
-        for (const image of uploadImages.value) {
-          formData.append('images', image.file);
-          formData.append('names', image.file.name);
-        }
-        uploadLoading.value = true;
-        const uploaded_images = await InfoImageService.uploadMultipleInfoImages(formData, (event) => {
-          uploadProgress.value = Math.round((100 * event.loaded) / event.total);
-        });
-        image_ids = uploaded_images.map((image) => image.info_image_id);
-        uploadLoading.value = false;
-      }
-
-      if (imagesToEdit.value.length > 0) {
-        await InfoImageService.updateInfoImages(imagesToEdit.value);
-      }
-
-      if (imagesToDelete.value.length > 0) {
-        await InfoImageService.deleteInfoImages(imagesToDelete.value.map((image) => image.info_image_id));
-      }
-
-      const newTooltipImages = image_ids.concat(existingImages.value.map((image) => image.info_image_id));
-
-      emit('updateTooltip', {
-        id: infotooltipState.id,
-        headerText: headerText.value,
-        detailText: detailText.value,
-        images: newTooltipImages
-      });
-      InfoTooltipGenerator.updateTooltip(infotooltipState.id);
-      infotooltipState.images = newTooltipImages;
-      infotooltipState.show = true;
-      isSaving.value = false;
-      showEdit.value = false;
-    };
-
-    const setImages = (images: { file: File; fileUrl: string }[]) => {
-      uploadImages.value = images;
-    };
-
-    const updateTooltipPosition = () => {
-      if (containerRef.value) {
-        width.value = containerRef.value.clientWidth;
-        height.value = containerRef.value.clientHeight;
-      }
-    };
-
-    const updateExistingImage = (event: { image: string; index: number }) => {
-      const index = event.index;
-      existingImages.value[index].name = event.image;
-      const foundIndex = imagesToEdit.value.findIndex(
-        (i) => i.info_image_id === existingImages.value[index].info_image_id
-      );
-      if (foundIndex >= 0) {
-        imagesToEdit.value[foundIndex] = existingImages.value[index];
-      } else {
-        imagesToEdit.value.push(existingImages.value[index]);
-      }
-    };
-
-    const deleteExistingImage = (index: number) => {
-      const imageInArray = existingImages.value[index];
-      existingImages.value = existingImages.value.filter((image) => image.info_image_id !== imageInArray.info_image_id);
-      imagesToDelete.value.push(imageInArray);
-    };
-
-    return {
-      infotooltipState,
-      translateAttribute,
-      containerRef,
-      uploadLoading,
-      uploadProgress,
-      infotooltipImages,
-      SLIDE_IMAGE_URL,
-      isSaving,
-      existingImages,
-      showEdit,
-      headerText,
-      detailText,
-      getInfoImageUrl,
-      hideTooltip,
-      setImages,
-      updateTooltip,
-      updateTooltipPosition,
-      openTooltip,
-      updateExistingImage,
-      deleteExistingImage
-    };
-  }
-});
-</script>
-<style></style>

@@ -1,3 +1,93 @@
+<script lang='ts' setup>
+import { onMounted, PropType, ref } from 'vue';
+import { AnnotationViewer } from '../core/annotationViewer';
+import { AnnotationParser, ParseResult } from '../../../utils/annotation-parser';
+import { TempUploadImage } from '../../../model/TempUploadImage';
+import { SlideService } from '../../../services/slide.service';
+import { ANNOTATION_TYPE } from '../../../model/viewer/annotationType';
+import ModalDialog from '../../containers/ModalDialog.vue';
+import SaveButton from '../../general/SaveButton.vue';
+import PrimaryButton from '../../general/PrimaryButton.vue';
+import TextEdit from '../../form/TextEdit.vue';
+import FormField from '../../form/FormField.vue';
+import Icon from '../../general/Icon.vue';
+
+const props = defineProps({
+  showDialog: Boolean,
+  drawingViewer: Object as PropType<AnnotationViewer>,
+  loading: Boolean,
+  isUserSolution: {
+    type: Boolean,
+    default: false
+  },
+  slideId: {
+    type: String,
+    required: true
+  }
+});
+
+const file = ref();
+
+const convertResult = ref<ParseResult[]>();
+const conversionLoading = ref<Boolean>();
+
+const isWrongFormat = ref<Boolean>(false);
+
+const selectedImages = ref<TempUploadImage[]>();
+
+onMounted(() => {
+  file.value = undefined;
+  convertResult.value = undefined;
+  conversionLoading.value = false;
+  isWrongFormat.value = false;
+});
+
+
+const updateName = (name: string, group: ParseResult) => {
+  group.name = name;
+};
+
+const applyAnnotations = () => {
+  for (const group of convertResult.value!) {
+    for (const annotation of group.polygons) {
+      annotation.color = group.color!;
+      annotation.name = group.name!;
+    }
+  }
+
+  emit('applyAnnotations', convertResult.value);
+};
+
+const onFileSelected = async (event: any) => {
+  conversionLoading.value = true;
+  isWrongFormat.value = false;
+
+  file.value = event?.target.files[0];
+
+  if (file.value.type === 'text/xml') {
+    props.drawingViewer?.convertToAnnotations(file.value, (data: ParseResult[]) => {
+      convertResult.value = data;
+
+      conversionLoading.value = false;
+    });
+  } else if (file.value.type === 'image/png') {
+    const formData = new FormData();
+    formData.set('file', file.value);
+    const res = await SlideService.convertImage(formData);
+
+    convertResult.value = AnnotationParser.convertImageToAnnotations(
+      res,
+      props.drawingViewer!.viewer,
+      props.isUserSolution ? ANNOTATION_TYPE.USER_SOLUTION : ANNOTATION_TYPE.SOLUTION
+    );
+    conversionLoading.value = false;
+  } else {
+    isWrongFormat.value = true;
+  }
+};
+
+const emit = defineEmits(['applyAnnotations', 'closeDialog']);
+</script>
 <template>
   <modal-dialog :show='showDialog'>
     <h1 class='text-2xl'>Musterlösung hinzufügen</h1>
@@ -55,100 +145,3 @@
     </div>
   </modal-dialog>
 </template>
-<script lang='ts'>
-import { SlideService } from '../../../services/slide.service';
-import { AnnotationParser, ParseResult } from '../../../utils/annotation-parser';
-import { defineComponent, onMounted, PropType, ref } from 'vue';
-import { AnnotationViewer } from '../core/annotationViewer';
-import { ANNOTATION_TYPE } from '../../../model/viewer/annotationType';
-import { TempUploadImage } from '../../../model/TempUploadImage';
-
-export default defineComponent({
-  props: {
-    showDialog: Boolean,
-    drawingViewer: Object as PropType<AnnotationViewer>,
-    loading: Boolean,
-    isUserSolution: {
-      type: Boolean,
-      default: false
-    },
-    slideId: {
-      type: String,
-      required: true
-    }
-  },
-  emits: ['applyAnnotations', 'closeDialog'],
-  setup(props, { emit }) {
-    const file = ref();
-
-    const convertResult = ref<ParseResult[]>();
-    const conversionLoading = ref<Boolean>();
-
-    const isWrongFormat = ref<Boolean>(false);
-
-    const selectedImages = ref<TempUploadImage[]>();
-
-    onMounted(() => {
-      file.value = undefined;
-      convertResult.value = undefined;
-      conversionLoading.value = false;
-      isWrongFormat.value = false;
-    });
-
-
-    const updateName = (name: string, group: ParseResult) => {
-      group.name = name;
-    };
-
-    const applyAnnotations = () => {
-      for (const group of convertResult.value!) {
-        for (const annotation of group.polygons) {
-          annotation.color = group.color!;
-          annotation.name = group.name!;
-        }
-      }
-
-      emit('applyAnnotations', convertResult.value);
-    };
-
-    const onFileSelected = async (event: any) => {
-      conversionLoading.value = true;
-      isWrongFormat.value = false;
-
-      file.value = event?.target.files[0];
-
-      if (file.value.type === 'text/xml') {
-        props.drawingViewer?.convertToAnnotations(file.value, (data: ParseResult[]) => {
-          convertResult.value = data;
-
-          conversionLoading.value = false;
-        });
-      } else if (file.value.type === 'image/png') {
-        const formData = new FormData();
-        formData.set('file', file.value);
-        const res = await SlideService.convertImage(formData);
-
-        convertResult.value = AnnotationParser.convertImageToAnnotations(
-          res,
-          props.drawingViewer!.viewer,
-          props.isUserSolution ? ANNOTATION_TYPE.USER_SOLUTION : ANNOTATION_TYPE.SOLUTION
-        );
-        conversionLoading.value = false;
-      } else {
-        isWrongFormat.value = true;
-      }
-    };
-
-    return {
-      onFileSelected,
-      updateName,
-      applyAnnotations,
-      file,
-      convertResult,
-      isWrongFormat,
-      conversionLoading
-    };
-  }
-});
-</script>
-<style></style>

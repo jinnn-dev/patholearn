@@ -1,6 +1,12 @@
 <script lang='ts' setup>
 import { reactive, ref } from 'vue';
 import { SlideService } from '../../services/slide.service';
+import PrimaryButton from '../general/PrimaryButton.vue';
+import Icon from '../general/Icon.vue';
+import ModalDialog from '../containers/ModalDialog.vue';
+import FormField from '../form/FormField.vue';
+import InputField from '../form/InputField.vue';
+import SaveButton from '../general/SaveButton.vue';
 
 const emit = defineEmits(['slide-uploaded']);
 
@@ -20,7 +26,7 @@ const toggleShowUpload = () => {
   showUpload.value = !showUpload.value;
 };
 
-const onFileUpload = (event) => {
+const onFileUpload = (event: any) => {
   formModel.file = event.target.files[0];
 };
 

@@ -1,11 +1,7 @@
 import { TaskHint } from './taskHint';
 import { UserSolution } from './userSolution';
 import { AnnotationData } from './viewer/export/annotationData';
-
-export interface AnnotationGroup {
-  name: string;
-  color: string;
-}
+import { AnnotationGroup } from './task/annotationGroup';
 
 export enum TaskType {
   DRAWING = 0,

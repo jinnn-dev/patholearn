@@ -126,10 +126,13 @@
 <script lang='ts'>
 import { computed, defineComponent, PropType } from 'vue';
 
-import { TaskResult, TaskStatus, RESULT_POLYGON_COLOR, RESULT_RESPONSE_NAME } from '../../model/result';
-import { userSolutionLocked, showSolution, viewerLoadingState } from '../../components/viewer/core/viewerState';
+import { RESULT_POLYGON_COLOR, RESULT_RESPONSE_NAME, TaskStatus } from '../../model/result';
+import { showSolution, userSolutionLocked, viewerLoadingState } from '../viewer/core/viewerState';
+import SaveButton from '../general/SaveButton.vue';
+import { TaskResult } from '../../model/task/result/taskResult';
 
 export default defineComponent({
+  components: { SaveButton },
   props: {
     solveResult: Object as PropType<TaskResult>,
     showSolution: Boolean
@@ -154,9 +157,7 @@ export default defineComponent({
         }
       }
 
-      const sortedResult = new Map([...result.entries()].sort((a, b) => b[1] - a[1]));
-
-      return sortedResult;
+      return new Map([...result.entries()].sort((a, b) => b[1] - a[1]));
     });
 
     return {

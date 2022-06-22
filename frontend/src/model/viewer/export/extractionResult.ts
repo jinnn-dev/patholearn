@@ -1,5 +1,5 @@
 import { PointData } from './pointData';
-import { AnnotationGroup } from '../../task';
+import { AnnotationGroup } from '../../task/annotationGroup';
 
 export interface ImageDimensions {
   width: number;
