@@ -27,7 +27,7 @@ const props = defineProps({
 
 onMounted(() => {
   tippy('[id="' + props.id + '"]', {
-    content: `<div class='flex flex-col font-semibold'>
+    content: `<div class='flex flex-col font-semibold p-2'>
             <div class='flex justify-between gap-4'><span>Richtige Aufgaben: </span><span>${
       props.correctTasks
     }</span></div>
