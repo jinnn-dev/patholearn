@@ -6,11 +6,10 @@ import { TempUploadImage } from '../../../model/tempUploadImage';
 import { SlideService } from '../../../services/slide.service';
 import { ANNOTATION_TYPE } from '../../../core/viewer/types/annotationType';
 import ModalDialog from '../../containers/ModalDialog.vue';
-import SaveButton from '../../general/SaveButton.vue';
-import PrimaryButton from '../../general/PrimaryButton.vue';
 import TextEdit from '../../form/TextEdit.vue';
 import FormField from '../../form/FormField.vue';
 import Icon from '../../general/Icon.vue';
+import ConfirmButtons from '../../general/ConfirmButtons.vue';
 
 const props = defineProps({
   showDialog: Boolean,
@@ -125,22 +124,10 @@ const emit = defineEmits(['applyAnnotations', 'closeDialog']);
         </div>
       </div>
     </div>
-    <div class='flex justify-end mt-8'>
-      <primary-button
-        bgColor='bg-gray-500'
-        bgHoverColor='bg-gray-700'
-        class='mr-2 w-28'
-        fontWeight='font-normal'
-        name='Abbrechen'
-        @click.prevent="$emit('closeDialog')"
-      ></primary-button>
-      <save-button
-        v-if='convertResult'
-        :label="loading ? 'Wird verarbeitet...' : 'Hinzufügen'"
-        :loading='loading'
-        class='max-w-50'
-        @click='applyAnnotations'
-      ></save-button>
-    </div>
+
+    <confirm-buttons class='mt-8' :loading='loading' reject-text='Abbrechen' @reject='$emit("closeDialog")'
+                     :confirm-text="loading ? 'Wird verarbeitet...' : 'Hinzufügen'"
+                     @confirm='applyAnnotations'>
+    </confirm-buttons>
   </modal-dialog>
 </template>

@@ -19,6 +19,7 @@ import SkeletonCard from '../components/containers/SkeletonCard.vue';
 import Icon from '../components/general/Icon.vue';
 import Subheader from '../components/Subheader.vue';
 import ContentHeader from '../components/ContentHeader.vue';
+import ConfirmButtons from '../components/general/ConfirmButtons.vue';
 
 const course = ref<Course>();
 const route = useRoute();
@@ -234,17 +235,8 @@ const editCourse = async () => {
         >
         </input-field>
 
-        <div class='flex flex-end'>
-          <primary-button
-            bgColor='bg-gray-500'
-            bgHoverColor='bg-gray-700'
-            class='mr-2'
-            fontWeight='font-normal'
-            name='Abbrechen'
-            @click.prevent='onTaskGroupClose'
-          ></primary-button>
-          <save-button :loading='taskGroupLoading' name='Speichern' type='submit'></save-button>
-        </div>
+        <confirm-buttons :loading='taskGroupLoading' reject-text='Abbrechen' @reject='onTaskGroupClose'
+                         confirm-text='Speichern'></confirm-buttons>
       </form>
     </div>
   </modal-dialog>
@@ -270,23 +262,8 @@ const editCourse = async () => {
           @click.prevent='deleteCourse'
         ></primary-button>
       </div>
-      <div class='flex justify-end'>
-        <primary-button
-          bgColor='bg-gray-500'
-          bgHoverColor='bg-gray-700'
-          class='mr-2 w-28'
-          fontWeight='font-normal'
-          name='Abbrechen'
-          @click.prevent='showEditCourse = false'
-        ></primary-button>
-        <save-button
-          :loading='editCourseLoading'
-          class='w-28'
-          name='Speichern'
-          type='submit'
-          @click='editCourse'
-        ></save-button>
-      </div>
+      <confirm-buttons :loading='editCourseLoading' reject-text='Abbrechen' @reject='showEditCourse = false'
+                       confirm-text='Speichern' @confirm='editCourse'></confirm-buttons>
     </div>
   </modal-dialog>
   <!-- <modal-dialog :show="showEditCourse">

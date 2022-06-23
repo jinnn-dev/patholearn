@@ -10,7 +10,6 @@ import router from '../router';
 import { TaskImageService } from '../services/task-image.service';
 import RoleOnly from '../components/containers/RoleOnly.vue';
 import ModalDialog from '../components/containers/ModalDialog.vue';
-import SaveButton from '../components/general/SaveButton.vue';
 import PrimaryButton from '../components/general/PrimaryButton.vue';
 import MultiImageUpload from '../components/form/MultiImageUpload.vue';
 import Icon from '../components/general/Icon.vue';
@@ -20,6 +19,7 @@ import ContentContainer from '../components/containers/ContentContainer.vue';
 import TaskGroupAdminCard from '../components/TaskGroupAdminCard.vue';
 import NoContent from '../components/NoContent.vue';
 import ContentHeader from '../components/ContentHeader.vue';
+import ConfirmButtons from '../components/general/ConfirmButtons.vue';
 
 const uploadImages = ref<{ fileUrl: string; file: File }[]>([]);
 
@@ -278,17 +278,8 @@ const editTask = (task: BaseTask) => {
           <div v-if='uploadProgress === 100.0' class='font-semibold'>Aufgaben werden erstellt...</div>
         </div>
 
-        <div class='flex justify-end w-full'>
-          <primary-button
-            bgColor='bg-gray-500'
-            bgHoverColor='bg-gray-700'
-            class='mr-2 w-32'
-            fontWeight='font-normal'
-            name='Abbrechen'
-            @click.prevent='onTaskClose'
-          ></primary-button>
-          <save-button :loading='taskLoading' class='w-48' name='Speichern' type='submit'></save-button>
-        </div>
+        <confirm-buttons :loading='taskLoading' reject-text='Abbrechen' @reject='onTaskClose'
+                         confirm-text='Speichern'></confirm-buttons>
       </form>
     </div>
   </modal-dialog>
@@ -297,23 +288,8 @@ const editTask = (task: BaseTask) => {
     <div class='relative'>
       <h1 class='text-2xl'>Möchtest du die Aufgabengruppe löschen?</h1>
       <div class='my-4'>Alle zugehörigen Aufgaben und Lösungen werden gelöscht.</div>
-      <div class='flex justify-end'>
-        <primary-button
-          bgColor='bg-gray-500'
-          bgHoverColor='bg-gray-700'
-          class='mr-2 w-28'
-          fontWeight='font-normal'
-          name='Nein'
-          @click.prevent='showTaskgroupDelete = false'
-        ></primary-button>
-        <save-button
-          :loading='deleteLoading'
-          class='w-28'
-          name='Ja'
-          type='submit'
-          @click='deleteTaskGroup'
-        ></save-button>
-      </div>
+      <confirm-buttons :loading='deleteLoading' @reject='showTaskgroupDelete = false'
+                       @confirm='deleteTaskGroup'></confirm-buttons>
     </div>
   </modal-dialog>
 
@@ -322,23 +298,8 @@ const editTask = (task: BaseTask) => {
       <div class='relative'>
         <h1 class='text-2xl'>Möchtest du die Aufgabe löschen?</h1>
         <div class='my-4'>Alle Aufgaben und Lösungen werden gelöscht.</div>
-        <div class='flex justify-end'>
-          <primary-button
-            bgColor='bg-gray-500'
-            bgHoverColor='bg-gray-700'
-            class='mr-2 w-28'
-            fontWeight='font-normal'
-            name='Nein'
-            @click.prevent='showDeleteBaseTask = false'
-          ></primary-button>
-          <save-button
-            :loading='deleteBaseLoading'
-            class='w-28'
-            name='Ja'
-            type='submit'
-            @click='deleteBaseTask'
-          ></save-button>
-        </div>
+        <confirm-buttons :loading='deleteBaseLoading' @reject='showDeleteBaseTask = false' @confirm='deleteBaseTask'>
+        </confirm-buttons>
       </div>
     </modal-dialog>
   </role-only>

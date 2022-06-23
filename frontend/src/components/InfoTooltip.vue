@@ -15,6 +15,7 @@ import InputArea from './form/InputArea.vue';
 import InputField from './form/InputField.vue';
 import LazyImage from './LazyImage.vue';
 import Icon from './general/Icon.vue';
+import ConfirmButtons from './general/ConfirmButtons.vue';
 
 const props = defineProps({
   isAdmin: {
@@ -296,19 +297,13 @@ const deleteExistingImage = (index: number) => {
       <div v-if="uploadProgress == 100.0" class="font-semibold">Wird gespeichert...</div>
     </div> -->
 
-    <div class='flex justify-end'>
-      <primary-button
-        bgColor='bg-gray-500'
-        bgHoverColor='bg-gray-700'
-        class='mr-2 w-32'
-        fontWeight='font-normal'
-        name='Abbrechen'
-        @click.prevent='
-          showEdit = false;
-          infotooltipState.show = true;
-        '
-      ></primary-button>
-      <save-button :loading='isSaving' class='w-36' name='Speichern' type='submit' @click='updateTooltip'></save-button>
-    </div>
+    <confirm-buttons :loading='isSaving'
+                     reject-text='Abbrechen'
+                     @reject='showEdit = false; infotooltipState.show = true;'
+                     confirm-text='Speichern'
+                     @confirm='updateTooltip'
+    >
+
+    </confirm-buttons>
   </modal-dialog>
 </template>

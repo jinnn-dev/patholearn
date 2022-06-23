@@ -70,17 +70,9 @@
         </AccordionItem> -->
       </Accordion>
 
-      <div class='flex justify-end w-full mt-4'>
-        <primary-button
-          bgColor='bg-gray-500'
-          bgHoverColor='bg-gray-700'
-          class='mr-2 w-32'
-          fontWeight='font-normal'
-          name='Abbrechen'
-          @click.prevent="$emit('close')"
-        ></primary-button>
-        <save-button :loading='taskUpdateLoading' class='w-36' name='Speichern' type='submit'></save-button>
-      </div>
+      <confirm-buttons class='mt-4' :loading='taskUpdateLoading' reject-text='Abbrechen' @reject='$emit("close")'
+                       confirm-text='Speichern'></confirm-buttons>
+      
     </form>
   </div>
 </template>
@@ -97,9 +89,19 @@ import ToggleButton from '../form/ToggleButton.vue';
 import PrimaryButton from '../general/PrimaryButton.vue';
 import SaveButton from '../general/SaveButton.vue';
 import { TaskType } from '../../core/types/taskType';
+import ConfirmButtons from '../general/ConfirmButtons.vue';
 
 export default defineComponent({
-  components: { SaveButton, PrimaryButton, ToggleButton, CustomSlider, AccordionItem, Accordion, InputField },
+  components: {
+    ConfirmButtons,
+    SaveButton,
+    PrimaryButton,
+    ToggleButton,
+    CustomSlider,
+    AccordionItem,
+    Accordion,
+    InputField
+  },
   props: {
     task: {
       type: Object as PropType<Task>

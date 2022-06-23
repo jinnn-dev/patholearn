@@ -19,6 +19,7 @@ import Spinner from './Spinner.vue';
 import ToggleButton from './form/ToggleButton.vue';
 import TaskCountBadge from './TaskCountBadge.vue';
 import DotMenu from './DotMenu.vue';
+import ConfirmButtons from './general/ConfirmButtons.vue';
 
 const props = defineProps({
   baseTask: Object as PropType<BaseTask>
@@ -314,23 +315,12 @@ onClickOutside(target, () => (openDotMenu.value = false));
     <div class='relative min-w-[20rem]'>
       <h1 class='text-2xl'>Aufgaben bearbeiten</h1>
       <InputField v-model='newTaskName' label='Neuer Name'></InputField>
-      <div class='flex justify-end'>
-        <primary-button
-          bgColor='bg-gray-500'
-          bgHoverColor='bg-gray-700'
-          class='mr-2 w-28'
-          fontWeight='font-normal'
-          name='Abbrechen'
-          @click.prevent='showEditTask = false'
-        ></primary-button>
-        <save-button
-          :loading='editTaskLoading'
-          class='w-32'
-          name='Speichern'
-          type='submit'
-          @click='editBaseTask'
-        ></save-button>
-      </div>
+      <confirm-buttons :loading='editTaskLoading'
+                       reject-text='Abbrechen'
+                       @reject='showEditTask = false'
+                       confirm-text='Speichern'
+                       @confirm='editBaseTask'
+      ></confirm-buttons>
     </div>
   </modal-dialog>
 </template>

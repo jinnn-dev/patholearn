@@ -4,7 +4,6 @@ import { Course, CreateCourse } from '../model/course';
 import { CourseService } from '../services/course.service';
 import { appState } from '../utils/app.state';
 import ModalDialog from '../components/containers/ModalDialog.vue';
-import SaveButton from '../components/general/SaveButton.vue';
 import PrimaryButton from '../components/general/PrimaryButton.vue';
 import InputArea from '../components/form/InputArea.vue';
 import InputField from '../components/form/InputField.vue';
@@ -15,6 +14,7 @@ import SkeletonCard from '../components/containers/SkeletonCard.vue';
 import RoleOnly from '../components/containers/RoleOnly.vue';
 import Icon from '../components/general/Icon.vue';
 import CourseSearch from '../components/CourseSearch.vue';
+import ConfirmButtons from '../components/general/ConfirmButtons.vue';
 
 const courses = ref<Course[]>([]);
 const ownerCourses = ref<Course[]>([]);
@@ -165,17 +165,10 @@ const onCourseJoin = (course: Course) => {
           placeholder='Das ist der tollste Kurs'
           tip='Gebe deinem Kurs eine optionale Beschreibung'
         ></input-area>
-
-        <div class='flex flex-end'>
-          <primary-button
-            bgColor='bg-gray-500'
-            class='mr-2'
-            fontWeight='font-normal'
-            name='Abbrechen'
-            @click.prevent='hideModal'
-          ></primary-button>
-          <save-button :loading='courseIsCreating' name='Speichern' type='submit'></save-button>
-        </div>
+        <confirm-buttons :loading='courseIsCreating'
+                         reject-text='Abbrechen' confirm-text='Speichern'
+                         @reject='hideModal'>
+        </confirm-buttons>
       </form>
     </div>
   </modal-dialog>

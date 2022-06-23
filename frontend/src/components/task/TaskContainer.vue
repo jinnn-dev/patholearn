@@ -11,6 +11,7 @@ import ModalDialog from '../containers/ModalDialog.vue';
 import SaveButton from '../general/SaveButton.vue';
 import Icon from '../general/Icon.vue';
 import { TaskStatus } from '../../core/types/taskStatus';
+import ConfirmButtons from '../general/ConfirmButtons.vue';
 
 interface LayeredTasks {
   [key: number]: Task[];
@@ -173,23 +174,8 @@ const deleteBaseTask = () => {
       <div class='relative'>
         <h1 class='text-2xl'>Möchtest du die Aufgabe löschen?</h1>
         <div class='my-4'>Alle Aufgaben und Lösungen werden gelöscht.</div>
-        <div class='flex justify-end'>
-          <primary-button
-            bgColor='bg-gray-500'
-            bgHoverColor='bg-gray-700'
-            class='mr-2 w-28'
-            fontWeight='font-normal'
-            name='Nein'
-            @click.prevent='showDeleteBaseTask = false'
-          ></primary-button>
-          <save-button
-            :loading='deleteLoading'
-            class='w-28'
-            name='Ja'
-            type='submit'
-            @click='deleteBaseTask'
-          ></save-button>
-        </div>
+        <confirm-buttons :loading='deleteLoading' @reject='showDeleteBaseTask = false'
+                         @confirm='deleteBaseTask'></confirm-buttons>
       </div>
     </modal-dialog>
   </role-only>

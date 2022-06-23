@@ -13,6 +13,7 @@ import ContentContainer from '../components/containers/ContentContainer.vue';
 import SkeletonCard from '../components/containers/SkeletonCard.vue';
 import CardLoading from '../components/CardLoading.vue';
 import Subheader from '../components/Subheader.vue';
+import ConfirmButtons from '../components/general/ConfirmButtons.vue';
 
 const initialState = {
   firstname: '',
@@ -159,7 +160,7 @@ const onSubmit = () => {
       <auth-input
         v-model='formData.email'
         :required='true'
-        autocomplete='enail'
+        autocomplete='email'
         label='E-Mail'
         placeholder='demo@demo.de'
         type='email'
@@ -193,16 +194,8 @@ const onSubmit = () => {
         <Icon name='key' size='24' />
       </auth-input>
       <div v-if='!passwordMatch' class='text-red-500'>Passwörter stimmen nicht überein.</div>
-      <div class='flex flex-end'>
-        <primary-button
-          bgColor='bg-gray-500'
-          class='mr-2'
-          fontWeight='font-normal'
-          name='Abbrechen'
-          @click.prevent='closeModal'
-        ></primary-button>
-        <save-button :loading='adminIsCreating' name='Speichern' type='submit'></save-button>
-      </div>
+      <confirm-buttons :loading='adminIsCreating' reject-text='Abbrechen' @reject='closeModal'
+                       confirm-text='Speichern'></confirm-buttons>
     </form>
   </modal-dialog>
 </template>

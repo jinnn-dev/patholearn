@@ -13,6 +13,7 @@ import SaveButton from './general/SaveButton.vue';
 import InputField from './form/InputField.vue';
 import Icon from './general/Icon.vue';
 import DotMenu from './DotMenu.vue';
+import ConfirmButtons from './general/ConfirmButtons.vue';
 
 const props = defineProps({
   taskgroup: {
@@ -122,46 +123,19 @@ onClickOutside(target, () => (dotMenuOpen.value = false));
       <div class='relative'>
         <h1 class='text-2xl'>Möchtest du die Aufgabengruppe löschen?</h1>
         <div class='my-4'>Alle Aufgaben und Lösungen werden gelöscht.</div>
-        <div class='flex justify-end'>
-          <primary-button
-            bgColor='bg-gray-500'
-            bgHoverColor='bg-gray-700'
-            class='mr-2 w-28'
-            fontWeight='font-normal'
-            name='Nein'
-            @click.prevent='showDeleteTaskGroup = false'
-          ></primary-button>
-          <save-button
-            :loading='deleteTaskGroupLoading'
-            class='w-28'
-            name='Ja'
-            type='submit'
-            @click='deleteTaskGroup'
-          ></save-button>
-        </div>
+        <confirm-buttons @reject='showDeleteTaskGroup = false' @confirm='deleteTaskGroup'
+                         :loading='deleteTaskGroupLoading'>
+        </confirm-buttons>
       </div>
     </modal-dialog>
     <modal-dialog :show='showEditTaskGroup'>
       <div class='relative'>
         <h1 class='text-2xl'>Aufgabengruppe bearbeiten</h1>
         <InputField v-model='newTaskGroupName' label='Neuer Name'></InputField>
-        <div class='flex justify-end'>
-          <primary-button
-            bgColor='bg-gray-500'
-            bgHoverColor='bg-gray-700'
-            class='mr-2 w-28'
-            fontWeight='font-normal'
-            name='Abbrechen'
-            @click.prevent='showEditTaskGroup = false'
-          ></primary-button>
-          <save-button
-            :loading='editTaskGroupLoading'
-            class='w-32'
-            name='Speichern'
-            type='submit'
-            @click='editTaskGroup'
-          ></save-button>
-        </div>
+        <confirm-buttons :loading='editTaskGroupLoading'
+                         reject-text='Abbrechen' @reject='showEditTaskGroup = false'
+                         confirm-text='Speichern' @confirm='editTaskGroup'>
+        </confirm-buttons>
       </div>
     </modal-dialog>
   </role-only>

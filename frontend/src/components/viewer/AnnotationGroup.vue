@@ -11,7 +11,7 @@ import RoleOnly from '../containers/RoleOnly.vue';
 import PrimaryButton from '../general/PrimaryButton.vue';
 import ModalDialog from '../containers/ModalDialog.vue';
 import InputField from '../form/InputField.vue';
-import SaveButton from '../general/SaveButton.vue';
+import ConfirmButtons from '../general/ConfirmButtons.vue';
 
 const props = defineProps({
   annotationGroups: {
@@ -161,17 +161,9 @@ const onSubmit = () => {
             <input id='body' v-model='groupCreationForm.color' name='body' type='color' />
           </div>
         </div>
-        <div class='flex justify-end w-full'>
-          <primary-button
-            bgColor='bg-gray-500'
-            bgHoverColor='bg-gray-700'
-            class='mr-2 w-32'
-            fontWeight='font-normal'
-            name='Abbrechen'
-            @click.prevent='showGroupCreation = false'
-          ></primary-button>
-          <save-button :loading='groupCreationLoading' class='w-32' name='Speichern' type='submit'></save-button>
-        </div>
+
+        <confirm-buttons :loading='groupCreationLoading' reject-text='Abbrechen' @reject='showGroupCreation = false'
+                         confirm-text='Speichern'></confirm-buttons>
       </form>
     </modal-dialog>
   </role-only>

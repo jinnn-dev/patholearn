@@ -26,6 +26,7 @@ const props = defineProps({
     type: String,
     default: 'submit'
   }
+
 });
 
 const generatedBgColor = computed(() => {
@@ -41,7 +42,7 @@ const generatedBgColor = computed(() => {
     }`"
     :disabled='disabled'
     :type='type'
-    class='flex justify-center items-center w-full transition rounded-lg py-2 text-md px-2 ring-gray-100'
+    class='flex justify-center items-center w-full transition rounded-lg py-2 text-md px-2 ring-gray-100 w-full min-w-[4rem]'
   >
     <slot></slot>
     {{ name }}

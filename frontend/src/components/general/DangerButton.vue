@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import PrimaryButton from './PrimaryButton.vue';
 import ModalDialog from '../containers/ModalDialog.vue';
 import SaveButton from './SaveButton.vue';
+import ConfirmButtons from './ConfirmButtons.vue';
 
 const emit = defineEmits(['confirmation']);
 
@@ -38,17 +39,7 @@ const confirm = () => {
     <div class='relative'>
       <h1 class='text-2xl'>{{ header }}</h1>
       <div class='my-4'>{{ info }}</div>
-      <div class='flex justify-end'>
-        <primary-button
-          bgColor='bg-gray-500'
-          bgHoverColor='bg-gray-700'
-          class='mr-2 w-28'
-          fontWeight='font-normal'
-          name='Nein'
-          @click.prevent='showConfirmationDialog = false'
-        ></primary-button>
-        <save-button :loading='loading' class='w-28' name='Ja' type='submit' @click='confirm'></save-button>
-      </div>
+      <confirm-buttons :loading='loading' @reject='showConfirmationDialog = false' @confirm='confirm'></confirm-buttons>
     </div>
   </modal-dialog>
 </template>

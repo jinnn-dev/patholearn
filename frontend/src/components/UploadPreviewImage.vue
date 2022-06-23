@@ -7,6 +7,7 @@ import SaveButton from './general/SaveButton.vue';
 import InputField from './form/InputField.vue';
 import Icon from './general/Icon.vue';
 import LazyImage from './LazyImage.vue';
+import ConfirmButtons from './general/ConfirmButtons.vue';
 
 const props = defineProps({
   index: Number,
@@ -144,19 +145,11 @@ const updateImage = () => {
     <h2 class='text-3xl'>Bild bearbeiten</h2>
 
     <input-field v-model='newImageName' :required='true' label='Bildname' type='text'></input-field>
-    <div class='flex justify-end'>
-      <primary-button
-        bgColor='bg-gray-500'
-        bgHoverColor='bg-gray-700'
-        class='mr-2 w-32'
-        fontWeight='font-normal'
-        name='Abbrechen'
-        @click.prevent='
-          showEdit = false;
-          newImageName = splittedName[0];
-        '
-      ></primary-button>
-      <save-button class='w-36' name='Speichern' type='submit' @click='updateImage'></save-button>
-    </div>
+    <confirm-buttons
+      reject-text='Abbrechen'
+      @reject='showEdit = false; newImageName = splittedName[0];'
+      confirm-text='Speichern'
+      @confirm='updateImage'
+    ></confirm-buttons>
   </modal-dialog>
 </template>

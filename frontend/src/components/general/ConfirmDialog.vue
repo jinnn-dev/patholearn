@@ -2,6 +2,7 @@
 import ModalDialog from '../containers/ModalDialog.vue';
 import PrimaryButton from './PrimaryButton.vue';
 import SaveButton from './SaveButton.vue';
+import ConfirmButtons from './ConfirmButtons.vue';
 
 const emit = defineEmits(['confirmation', 'reject']);
 
@@ -27,17 +28,12 @@ const reject = () => {
       <h2 v-if='detail' class='mt-4'>
         {{ detail }}
       </h2>
-      <div class='flex justify-end mt-4'>
-        <primary-button
-          bgColor='bg-gray-500'
-          bgHoverColor='bg-gray-700'
-          class='mr-2 w-28'
-          fontWeight='font-normal'
-          name='Nein'
-          @click.prevent='reject'
-        ></primary-button>
-        <save-button :loading='loading' class='w-28' name='Ja' type='submit' @click='confirm'></save-button>
-      </div>
+      <confirm-buttons class='mt-4'
+                       :loading='loading'
+                       @reject='reject'
+                       @confirm='confirm'>
+
+      </confirm-buttons>
     </div>
   </modal-dialog>
 </template>

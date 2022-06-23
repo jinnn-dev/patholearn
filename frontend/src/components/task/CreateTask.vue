@@ -12,9 +12,8 @@ import Accordion from '../containers/Accordion.vue';
 import Icon from '../general/Icon.vue';
 import CustomSlider from '../form/CustomSlider.vue';
 import MultiImageUpload from '../form/MultiImageUpload.vue';
-import PrimaryButton from '../general/PrimaryButton.vue';
-import SaveButton from '../general/SaveButton.vue';
 import { TaskType } from '../../core/types/taskType';
+import ConfirmButtons from '../general/ConfirmButtons.vue';
 
 const emit = defineEmits(['close', 'taskCreated']);
 
@@ -304,20 +303,11 @@ const resetForm = () => {
           </div>
         </AccordionItem>
       </Accordion>
-      <div class='flex justify-end w-full mt-4'>
-        <primary-button
-          bgColor='bg-gray-500'
-          bgHoverColor='bg-gray-700'
-          class='mr-2 w-32'
-          fontWeight='font-normal'
-          name='Abbrechen'
-          @click.prevent="
-            $emit('close');
-            resetForm();
-          "
-        ></primary-button>
-        <save-button :loading='taskCreationLoading' class='w-36' name='Speichern' type='submit'></save-button>
-      </div>
+
+      <confirm-buttons class='mt-4' :loading='taskCreationLoading' reject-text='Abbrechen'
+                       @reject='$emit("close");resetForm()'
+                       confirm-text='Speichern'></confirm-buttons>
+      
     </form>
   </div>
 </template>

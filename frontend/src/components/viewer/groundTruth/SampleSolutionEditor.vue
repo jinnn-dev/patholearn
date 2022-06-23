@@ -13,6 +13,7 @@ import TextEdit from '../../form/TextEdit.vue';
 import Accordion from '../../containers/Accordion.vue';
 import AccordionItem from '../../containers/AccordionItem.vue';
 import AnnotationSlide from './AnnotationSlide.vue';
+import ConfirmButtons from '../../general/ConfirmButtons.vue';
 
 const props = defineProps({
   showDialog: Boolean,
@@ -114,10 +115,9 @@ const closeDialog = () => {
           <div v-if='containsWrongFormat' class='text-red-500 font-semibold'>
             Es sind nur Dateien im PNG-Format erlaubt
           </div>
-          <div class='w-1/2 flex justify-end gap-4'>
-            <PrimaryButton bg-color='bg-gray-400' class='w-32' name='Abbrechen' @click='closeDialog'></PrimaryButton>
-            <SaveButton :loading='loading' class='w-32' label='Hochladen' @click='convertImages'></SaveButton>
-          </div>
+          <confirm-buttons class='w-1/2 flex justify-end' :loading='loading' reject-text='Abbrechen'
+                           @reject='closeDialog' confirm-text='Hochladen'
+                           @confirm='convertImages'></confirm-buttons>
         </div>
 
         <div v-else class='flex flex-col justify-center items-center w-2/3 overflow-y-auto'>
