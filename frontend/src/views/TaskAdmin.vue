@@ -3,7 +3,7 @@ import { defineAsyncComponent, onMounted, onUnmounted, ref } from 'vue';
 import { BaseTask } from '../model/baseTask';
 import { useRoute } from 'vue-router';
 import { Task, TaskType } from '../model/task';
-import { viewerLoadingState } from '../components/viewer/core/viewerState';
+import { viewerLoadingState } from '../core/viewer/viewerState';
 import { TaskService } from '../services/task.service';
 import SelectImagesTask from '../components/tasks/image-select/SelectImagesTask.vue';
 import TaskContainer from '../components/task/TaskContainer.vue';

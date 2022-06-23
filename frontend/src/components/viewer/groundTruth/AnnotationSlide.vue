@@ -1,6 +1,6 @@
 <script lang='ts' setup>
 import { useAnnotationSlide } from './useAnnotationSlide';
-import { options } from '../core/options';
+import { options } from '../../../core/viewer/options';
 import { getSlideUrl } from '../../../config';
 
 const props = defineProps({

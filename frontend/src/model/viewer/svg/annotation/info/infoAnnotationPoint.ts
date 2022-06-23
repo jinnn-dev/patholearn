@@ -1,10 +1,10 @@
 import { nanoid } from 'nanoid';
 import { OSDEvent, Point, Viewer } from 'openseadragon';
-import { InfoTooltipGenerator } from '../../../utils/tooltips/info-tooltip-generator';
-import { ANNOTATION_TYPE } from '../annotationType';
-import { ANNOTATION_COLOR } from '../colors';
-import { POLYGON_STROKE_WIDTH } from '../config';
-import { AnnotationPoint } from './annotationPoint';
+import { InfoTooltipGenerator } from '../../../../../utils/tooltips/info-tooltip-generator';
+import { ANNOTATION_TYPE } from '../../../annotationType';
+import { ANNOTATION_COLOR } from '../../../colors';
+import { POLYGON_STROKE_WIDTH } from '../../../config';
+import { AnnotationPoint } from '../annotationPoint';
 import { InfoAnnotation } from './infoAnnotation';
 
 export default class InfoAnnotationPoint extends AnnotationPoint implements InfoAnnotation {

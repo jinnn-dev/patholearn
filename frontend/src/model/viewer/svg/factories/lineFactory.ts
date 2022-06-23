@@ -1,7 +1,7 @@
 import { Point } from 'openseadragon';
-import { AnnotationLine } from '../annotationLine';
-import InfoAnnotationLine from '../infoAnnotationLine';
-import { OffsetAnnotationLine } from '../offsetAnnotationLine';
+import { AnnotationLine } from '../annotation/annotationLine';
+import InfoAnnotationLine from '../annotation/info/infoAnnotationLine';
+import { OffsetAnnotationLine } from '../annotation/offset/offsetAnnotationLine';
 import { InfoAnnotatationData } from '../../export/infoAnnotationData';
 import { OffsetAnnotationLineData } from '../../export/offsetAnnotationLineData';
 import { AnnotationBaseData, AnnotationBaseOffsetData, AnnotationFactory } from './annotationFactory';

@@ -1,5 +1,5 @@
 import { reactive, ref } from 'vue';
-import { Annotation } from '../../../model/viewer/svg/annotation';
+import { Annotation } from '../../model/viewer/svg/annotation/annotation';
 
 export const polygonChanged = reactive<{
   changed: boolean;

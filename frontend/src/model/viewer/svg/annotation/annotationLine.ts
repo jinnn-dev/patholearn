@@ -1,14 +1,14 @@
 import { select, Selection } from 'd3-selection';
 import { nanoid } from 'nanoid';
 import OpenSeadragon, { Point } from 'openseadragon';
-import { polygonChanged } from '../../../components/viewer/core/viewerState';
-import { BoundingBox } from '../../boundingBox';
-import { POLYGON_VERTEX_COLOR } from '../config';
-import { ANNOTATION_TYPE } from '../annotationType';
-import { ANNOTATION_COLOR, COLOR } from '../colors';
+import { polygonChanged } from '../../../../core/viewer/viewerState';
+import { BoundingBox } from '../../../boundingBox';
+import { POLYGON_VERTEX_COLOR } from '../../config';
+import { ANNOTATION_TYPE } from '../../annotationType';
+import { ANNOTATION_COLOR, COLOR } from '../../colors';
 import { Annotation } from './annotation';
-import { Circle } from './circle';
-import { VertexElement } from './vertice';
+import { Circle } from '../circle';
+import { VertexElement } from '../vertex';
 
 export class AnnotationLine extends Annotation {
   private _resultPolylines: Selection<SVGPolylineElement, unknown, null, undefined>[];

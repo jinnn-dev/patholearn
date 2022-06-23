@@ -1,6 +1,6 @@
 import { Point } from 'openseadragon';
-import { AnnotationRectangle } from '../annotationRect';
-import { OffsetAnnotationRectangle } from '../offsetAnnotationRect';
+import { AnnotationRectangle } from '../annotation/annotationRect';
+import { OffsetAnnotationRectangle } from '../annotation/offset/offsetAnnotationRect';
 import { ANNOTATION_OFFSET_SCALAR, POLYGON_INFLATE_OFFSET } from '../../config';
 import { AnnotationRectangleData } from '../../export/annotationRectangleData';
 import { OffsetAnnotationRectangleData } from '../../export/offsetAnnotationRectangleData';

@@ -1,5 +1,5 @@
 <script lang='ts' setup>
-import { isTaskSaving } from './core/viewerState';
+import { isTaskSaving } from '../../core/viewer/viewerState';
 </script>
 <template>
   <div

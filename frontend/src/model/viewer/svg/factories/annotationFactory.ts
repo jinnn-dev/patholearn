@@ -1,5 +1,5 @@
 import { Point } from 'openseadragon';
-import { Annotation } from '../annotation';
+import { Annotation } from '../annotation/annotation';
 import { AnnotationData } from '../../export/annotationData';
 import { PointData } from '../../export/pointData';
 

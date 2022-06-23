@@ -2,10 +2,10 @@ import { select, Selection } from 'd3-selection';
 import { arc } from 'd3-shape';
 import { nanoid } from 'nanoid';
 import OpenSeadragon from 'openseadragon';
-import { ANNOTATION_TYPE } from '../annotationType';
-import { ANNOTATION_COLOR, COLOR } from '../colors';
-import { POLYGON_INFLATE_OFFSET } from '../config';
-import { AnnotationPoint } from './annotationPoint';
+import { ANNOTATION_TYPE } from '../../../annotationType';
+import { ANNOTATION_COLOR, COLOR } from '../../../colors';
+import { POLYGON_INFLATE_OFFSET } from '../../../config';
+import { AnnotationPoint } from '../annotationPoint';
 
 export class OffsetAnnotationPoint extends AnnotationPoint {
   private _offsetElement?: Selection<SVGPathElement, unknown, null, undefined>;

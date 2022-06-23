@@ -4,7 +4,7 @@ import { BaseTask } from '../model/baseTask';
 import { useRoute } from 'vue-router';
 import { Task, TaskType } from '../model/task';
 import { Course } from '../model/course';
-import { showSolution, userSolutionLocked, viewerLoadingState } from '../components/viewer/core/viewerState';
+import { showSolution, userSolutionLocked, viewerLoadingState } from '../core/viewer/viewerState';
 import { TaskService } from '../services/task.service';
 import { getTaskHints } from '../utils/hint.store';
 import TaskViewer from '../components/viewer/TaskViewer.vue';

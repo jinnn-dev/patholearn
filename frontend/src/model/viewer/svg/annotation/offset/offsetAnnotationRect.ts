@@ -3,12 +3,12 @@ import { curveLinearClosed, line, Line } from 'd3-shape';
 import { geom, operation } from 'jsts';
 import { nanoid } from 'nanoid';
 import OpenSeadragon from 'openseadragon';
-import { polygonChanged } from '../../../components/viewer/core/viewerState';
-import { ANNOTATION_TYPE } from '../annotationType';
-import { COLOR } from '../colors';
-import { POLYGON_INFLATE_OFFSET, POLYGON_STROKE_WIDTH, POLYGON_VERTEX_COLOR } from '../config';
-import { AnnotationRectangle } from './annotationRect';
-import { AnnotationPolygon } from './polygon';
+import { polygonChanged } from '../../../../../core/viewer/viewerState';
+import { ANNOTATION_TYPE } from '../../../annotationType';
+import { COLOR } from '../../../colors';
+import { POLYGON_INFLATE_OFFSET, POLYGON_STROKE_WIDTH, POLYGON_VERTEX_COLOR } from '../../../config';
+import { AnnotationRectangle } from '../annotationRect';
+import { AnnotationPolygon } from '../annotationPolygon';
 
 export class OffsetAnnotationRectangle extends AnnotationRectangle {
   private _outerPoints: OpenSeadragon.Point[];

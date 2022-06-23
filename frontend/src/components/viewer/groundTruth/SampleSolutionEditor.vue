@@ -1,6 +1,6 @@
 <script lang='ts' setup>
 import { ref } from 'vue';
-import { TempUploadImage } from '../../../model/TempUploadImage';
+import { TempUploadImage } from '../../../model/tempUploadImage';
 import { useService } from '../../../composables/useService';
 import { ImageService } from '../../../services/image.service';
 import { AnnotationGroup } from '../../../model/task/annotationGroup';

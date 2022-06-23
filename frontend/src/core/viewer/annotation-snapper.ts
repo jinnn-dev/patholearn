@@ -1,7 +1,7 @@
 import { Point } from 'openseadragon';
-import { Annotation } from '../../../model/viewer/svg/annotation';
-import { AnnotationLine } from '../../../model/viewer/svg/annotationLine';
-import { ANNOTATION_TYPE } from '../../../model/viewer/annotationType';
+import { Annotation } from '../../model/viewer/svg/annotation/annotation';
+import { AnnotationLine } from '../../model/viewer/svg/annotation/annotationLine';
+import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
 
 export interface SnapResult {
   snapPoint: Point;

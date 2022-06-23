@@ -3,7 +3,7 @@ import { PropType, reactive, ref } from 'vue';
 import { AnnotationGroup } from '../../model/task/annotationGroup';
 import { TaskService } from '../../services/task.service';
 import { isSuperUser } from '../../utils/app.state';
-import { isTaskSaving } from './core/viewerState';
+import { isTaskSaving } from '../../core/viewer/viewerState';
 import Icon from '../general/Icon.vue';
 import ColorPicker from '../general/ColorPicker.vue';
 import TextEdit from '../form/TextEdit.vue';

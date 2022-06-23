@@ -3,7 +3,7 @@ import OpenSeadragon from 'openseadragon';
 import { computed, onMounted, onUnmounted, PropType, reactive, ref, watch } from 'vue';
 import { getSlideUrl } from '../../config';
 import { RESULT_POLYGON_COLOR, TaskStatus } from '../../model/result';
-import { Annotation } from '../../model/viewer/svg/annotation';
+import { Annotation } from '../../model/viewer/svg/annotation/annotation';
 import { AnnotationGroup as AnnotationGroupModel } from '../../model/task/annotationGroup';
 import { Task } from '../../model/task';
 import { ANNOTATION_TYPE, isUserSolution } from '../../model/viewer/annotationType';
@@ -12,16 +12,16 @@ import { AnnotationData } from '../../model/viewer/export/annotationData';
 import { isDrawingTool, Tool, TOOL_ANNOTATION, TOOL_COLORS, TOOL_KEYBOARD_SHORTCUTS } from '../../model/viewer/tools';
 import { TaskService } from '../../services/task.service';
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
-import { AnnotationViewer } from './core/annotationViewer';
-import { options } from './core/options';
-import { userMouseClickHandler } from './core/userMouseClickHandler';
+import { AnnotationViewer } from '../../core/viewer/annotationViewer';
+import { options } from '../../core/viewer/options';
+import { userMouseClickHandler } from '../../core/viewer/userMouseClickHandler';
 import {
   isTaskSaving,
   polygonChanged,
   selectedPolygon,
   userSolutionLocked,
   viewerLoadingState
-} from './core/viewerState';
+} from '../../core/viewer/viewerState';
 import {
   focusBackgroundAnnotation,
   hideAllAnnotations,

@@ -1,9 +1,9 @@
 import { nanoid } from 'nanoid';
 import { Viewer } from 'openseadragon';
-import { InfoTooltipGenerator } from '../../../utils/tooltips/info-tooltip-generator';
-import { ANNOTATION_TYPE } from '../annotationType';
-import { ANNOTATION_COLOR } from '../colors';
-import { AnnotationLine } from './annotationLine';
+import { InfoTooltipGenerator } from '../../../../../utils/tooltips/info-tooltip-generator';
+import { ANNOTATION_TYPE } from '../../../annotationType';
+import { ANNOTATION_COLOR } from '../../../colors';
+import { AnnotationLine } from '../annotationLine';
 import { InfoAnnotation } from './infoAnnotation';
 
 export default class InfoAnnotationLine extends AnnotationLine implements InfoAnnotation {

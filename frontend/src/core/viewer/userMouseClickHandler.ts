@@ -1,7 +1,7 @@
 import { select } from 'd3-selection';
-import { ANNOTATION_TYPE } from '../../../model/viewer/annotationType';
-import { isDrawingTool, Tool, TOOL_ANNOTATION } from '../../../model/viewer/tools';
-import { TooltipGenerator } from '../../../utils/tooltips/tooltip-generator';
+import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
+import { isDrawingTool, Tool, TOOL_ANNOTATION } from '../../model/viewer/tools';
+import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
 import { AnnotationViewer } from './annotationViewer';
 import { INFO_NODE_ID, SVG_ID, USER_SOLUTION_NODE_ID } from './svg-overlay';
 import { polygonChanged, selectedPolygon, userSolutionLocked } from './viewerState';

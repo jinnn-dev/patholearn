@@ -127,7 +127,7 @@
 import { computed, defineComponent, PropType } from 'vue';
 
 import { RESULT_POLYGON_COLOR, RESULT_RESPONSE_NAME, TaskStatus } from '../../model/result';
-import { showSolution, userSolutionLocked, viewerLoadingState } from '../viewer/core/viewerState';
+import { showSolution, userSolutionLocked, viewerLoadingState } from '../../core/viewer/viewerState';
 import SaveButton from '../general/SaveButton.vue';
 import { TaskResult } from '../../model/task/result/taskResult';
 

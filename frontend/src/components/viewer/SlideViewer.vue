@@ -6,7 +6,7 @@ import { getSlideUrl } from '../../config';
 import { Slide } from '../../model/slide';
 import { SlideService } from '../../services/slide.service';
 import { debounceRef } from '../../utils/debounceRef';
-import { options } from './core/options';
+import { options } from '../../core/viewer/options';
 import ViewerBackButton from './ViewerBackButton.vue';
 import ZSlider from './ZSlider.vue';
 

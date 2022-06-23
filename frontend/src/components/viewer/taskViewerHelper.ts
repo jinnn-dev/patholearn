@@ -1,11 +1,11 @@
-import { Annotation } from '../../model/viewer/svg/annotation';
+import { Annotation } from '../../model/viewer/svg/annotation/annotation';
 import { Task } from '../../model/task';
 import { AnnotationGroup } from '../../model/task/annotationGroup';
 import { isUserSolution } from '../../model/viewer/annotationType';
-import { AnnotationViewer } from './core/annotationViewer';
-import { isTaskSaving, polygonChanged } from './core/viewerState';
+import { AnnotationViewer } from '../../core/viewer/annotationViewer';
+import { isTaskSaving, polygonChanged } from '../../core/viewer/viewerState';
 import { selectAll } from 'd3-selection';
-import { SVG_ID } from './core/options';
+import { SVG_ID } from '../../core/viewer/options';
 
 export const updateAnnotation = async ({
   annotation,

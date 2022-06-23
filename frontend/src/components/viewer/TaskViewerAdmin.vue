@@ -1,15 +1,15 @@
 <script lang='ts' setup>
 import { select, selectAll } from 'd3-selection';
-import { AnnotationRectangle } from 'model/viewer/svg/annotationRect';
+import { AnnotationRectangle } from 'model/viewer/svg/annotation/annotationRect';
 import { AnnotationData } from 'model/viewer/export/annotationData';
 import OpenSeadragon from 'openseadragon';
 import { computed, onMounted, PropType, reactive, ref, watch } from 'vue';
 import { getSlideUrl } from '../../config';
-import { AnnotationLine } from '../../model/viewer/svg/annotationLine';
-import { OffsetAnnotationLine } from '../../model/viewer/svg/offsetAnnotationLine';
-import { OffsetAnnotationPoint } from '../../model/viewer/svg/offsetAnnotationPoint';
-import { OffsetAnnotationRectangle } from '../../model/viewer/svg/offsetAnnotationRect';
-import { OffsetAnnotationPolygon } from '../../model/viewer/svg/offsetPolygon';
+import { AnnotationLine } from '../../model/viewer/svg/annotation/annotationLine';
+import { OffsetAnnotationLine } from '../../model/viewer/svg/annotation/offset/offsetAnnotationLine';
+import { OffsetAnnotationPoint } from '../../model/viewer/svg/annotation/offset/offsetAnnotationPoint';
+import { OffsetAnnotationRectangle } from '../../model/viewer/svg/annotation/offset/offsetAnnotationRect';
+import { OffsetAnnotationPolygon } from '../../model/viewer/svg/annotation/offset/offsetAnnotationPolygon';
 import type { AnnotationGroup as AnnotationGroupModel } from '../../model/task/annotationGroup';
 import { Task, TaskType } from '../../model/task';
 import { ANNOTATION_TYPE, isInfoAnnotation, isSolution } from '../../model/viewer/annotationType';
@@ -17,10 +17,10 @@ import { ANNOTATION_COLOR } from '../../model/viewer/colors';
 import { isDrawingTool, Tool, TOOL_ANNOTATION, TOOL_COLORS, TOOL_KEYBOARD_SHORTCUTS } from '../../model/viewer/tools';
 import { TaskService } from '../../services/task.service';
 import { AnnotationParser, ParseResult } from '../../utils/annotation-parser';
-import { adminMouseClickHandler } from './core/adminMouseClickHandler';
-import { AnnotationViewer } from './core/annotationViewer';
-import { options } from './core/options';
-import { isTaskSaving, polygonChanged, selectedPolygon, viewerLoadingState } from './core/viewerState';
+import { adminMouseClickHandler } from '../../core/viewer/adminMouseClickHandler';
+import { AnnotationViewer } from '../../core/viewer/annotationViewer';
+import { options } from '../../core/viewer/options';
+import { isTaskSaving, polygonChanged, selectedPolygon, viewerLoadingState } from '../../core/viewer/viewerState';
 import {
   focusBackgroundAnnotation,
   hideAllAnnotations,

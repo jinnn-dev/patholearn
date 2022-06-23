@@ -5,9 +5,9 @@ import { SLIDE_IMAGE_URL } from '../../../config';
 import { ImageSelectFeedback, RESULT_POLYGON_COLOR } from '../../../model/result';
 import { ANNOTATION_COLOR } from '../../../model/viewer/colors';
 import { shuffle } from '../../../utils/seadragon.utils';
-import { options, SVG_ID } from '../../viewer/core/options';
-import { BACKGROUND_NODE_ID, SvgOverlay } from '../../viewer/core/svg-overlay';
-import { viewerLoadingState } from '../../viewer/core/viewerState';
+import { options, SVG_ID } from '../../../core/viewer/options';
+import { BACKGROUND_NODE_ID, SvgOverlay } from '../../../core/viewer/svg-overlay';
+import { viewerLoadingState } from '../../../core/viewer/viewerState';
 
 export class ImageSelectViewer {
   private _viewer: Viewer;

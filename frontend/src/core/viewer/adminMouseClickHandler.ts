@@ -1,7 +1,7 @@
 import { select } from 'd3-selection';
-import { Task } from '../../../model/task';
-import { ANNOTATION_TYPE } from '../../../model/viewer/annotationType';
-import { isDrawingTool, Tool, TOOL_ANNOTATION } from '../../../model/viewer/tools';
+import { Task } from '../../model/task';
+import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
+import { isDrawingTool, Tool, TOOL_ANNOTATION } from '../../model/viewer/tools';
 import { AnnotationViewer } from './annotationViewer';
 import { SVG_ID } from './options';
 import { isTaskSaving, polygonChanged, selectedPolygon } from './viewerState';

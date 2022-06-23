@@ -1,6 +1,6 @@
 <script lang='ts' setup>
 import { ref, watch } from 'vue';
-import { viewerLoadingState } from './core/viewerState';
+import { viewerLoadingState } from '../../core/viewer/viewerState';
 import Icon from '../general/Icon.vue';
 import PrimaryButton from '../general/PrimaryButton.vue';
 

@@ -1,7 +1,7 @@
 import { Point } from 'openseadragon';
-import InfoAnnotationPolygon from '../infoAnnotationPolygon';
-import { OffsetAnnotationPolygon } from '../offsetPolygon';
-import { AnnotationPolygon } from '../polygon';
+import InfoAnnotationPolygon from '../annotation/info/infoAnnotationPolygon';
+import { OffsetAnnotationPolygon } from '../annotation/offset/offsetAnnotationPolygon';
+import { AnnotationPolygon } from '../annotation/annotationPolygon';
 import { ANNOTATION_OFFSET_SCALAR, POLYGON_INFLATE_OFFSET } from '../../config';
 import { OffsetAnnotationPolygonData } from '../../export/offsetAnnotationPolygonData';
 import { AnnotationBaseData, AnnotationBaseOffsetData, AnnotationFactory } from './annotationFactory';

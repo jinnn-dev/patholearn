@@ -1,6 +1,6 @@
 <script lang='ts' setup>
 import { PropType, ref, watch } from 'vue';
-import { TempUploadImage } from '../../model/TempUploadImage';
+import { TempUploadImage } from '../../model/tempUploadImage';
 import FormField from './FormField.vue';
 import Icon from '../general/Icon.vue';
 import UploadPreviewImage from '../UploadPreviewImage.vue';

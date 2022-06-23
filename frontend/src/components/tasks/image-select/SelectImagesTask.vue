@@ -9,7 +9,7 @@ import { ImageSelectFeedback } from '../../../model/result';
 import { Task } from '../../../model/task';
 import { ANNOTATION_COLOR } from '../../../model/viewer/colors';
 import { TaskService } from '../../../services/task.service';
-import { isTaskSaving, userSolutionLocked } from '../../viewer/core/viewerState';
+import { isTaskSaving, userSolutionLocked } from '../../../core/viewer/viewerState';
 import { ImageSelectViewer } from './imageSelectViewer';
 import SavingInfo from '../../viewer/SavingInfo.vue';
 import { TaskResult } from 'model/task/result/taskResult';

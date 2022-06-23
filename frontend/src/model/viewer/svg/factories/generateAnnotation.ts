@@ -1,4 +1,4 @@
-import { Annotation } from '../annotation';
+import { Annotation } from '../annotation/annotation';
 import { ANNOTATION_TYPE } from '../../annotationType';
 import { POLYGON_STROKE_WIDTH, POLYGON_VERTEX_COLOR } from '../../config';
 import { AnnotationData } from '../../export/annotationData';
