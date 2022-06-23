@@ -1,10 +1,10 @@
 import { select, Selection } from 'd3-selection';
 import { nanoid } from 'nanoid';
 import OpenSeadragon from 'openseadragon';
-import { polygonChanged } from '../../components/viewer/core/viewerState';
-import { ANNOTATION_TYPE } from '../viewer/annotationType';
-import { COLOR } from '../viewer/colors';
-import { POLYGON_STROKE_WIDTH } from '../viewer/config';
+import { polygonChanged } from '../../../components/viewer/core/viewerState';
+import { ANNOTATION_TYPE } from '../annotationType';
+import { COLOR } from '../colors';
+import { POLYGON_STROKE_WIDTH } from '../config';
 import { Annotation } from './annotation';
 
 export class AnnotationPoint extends Annotation {

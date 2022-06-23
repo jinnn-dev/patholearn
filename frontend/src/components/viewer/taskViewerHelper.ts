@@ -1,4 +1,4 @@
-import { Annotation } from '../../model/svg/annotation';
+import { Annotation } from '../../model/viewer/svg/annotation';
 import { Task } from '../../model/task';
 import { AnnotationGroup } from '../../model/task/annotationGroup';
 import { isUserSolution } from '../../model/viewer/annotationType';

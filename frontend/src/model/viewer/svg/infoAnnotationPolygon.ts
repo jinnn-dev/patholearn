@@ -1,8 +1,8 @@
 import { nanoid } from 'nanoid';
 import { Viewer } from 'openseadragon';
-import { InfoTooltipGenerator } from '../../utils/tooltips/info-tooltip-generator';
-import { ANNOTATION_TYPE } from '../viewer/annotationType';
-import { ANNOTATION_COLOR } from '../viewer/colors';
+import { InfoTooltipGenerator } from '../../../utils/tooltips/info-tooltip-generator';
+import { ANNOTATION_TYPE } from '../annotationType';
+import { ANNOTATION_COLOR } from '../colors';
 import { InfoAnnotation } from './infoAnnotation';
 import { AnnotationPolygon } from './polygon';
 

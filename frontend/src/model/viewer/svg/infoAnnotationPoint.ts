@@ -1,9 +1,9 @@
 import { nanoid } from 'nanoid';
 import { OSDEvent, Point, Viewer } from 'openseadragon';
-import { InfoTooltipGenerator } from '../../utils/tooltips/info-tooltip-generator';
-import { ANNOTATION_TYPE } from '../viewer/annotationType';
-import { ANNOTATION_COLOR } from '../viewer/colors';
-import { POLYGON_STROKE_WIDTH } from '../viewer/config';
+import { InfoTooltipGenerator } from '../../../utils/tooltips/info-tooltip-generator';
+import { ANNOTATION_TYPE } from '../annotationType';
+import { ANNOTATION_COLOR } from '../colors';
+import { POLYGON_STROKE_WIDTH } from '../config';
 import { AnnotationPoint } from './annotationPoint';
 import { InfoAnnotation } from './infoAnnotation';
 

@@ -1,7 +1,7 @@
 import { Point } from 'openseadragon';
-import { Annotation } from '../../svg/annotation';
-import { AnnotationData } from '../export/annotationData';
-import { PointData } from '../export/pointData';
+import { Annotation } from '../annotation';
+import { AnnotationData } from '../../export/annotationData';
+import { PointData } from '../../export/pointData';
 
 export interface AnnotationBaseData {
   data: AnnotationData;

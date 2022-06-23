@@ -3,10 +3,10 @@ import { curveLinearClosed, Line, line } from 'd3-shape';
 import { geom, operation } from 'jsts';
 import { nanoid } from 'nanoid';
 import OpenSeadragon from 'openseadragon';
-import { polygonChanged } from '../../components/viewer/core/viewerState';
-import { ANNOTATION_TYPE } from '../viewer/annotationType';
-import { ANNOTATION_COLOR, COLOR } from '../viewer/colors';
-import { POLYGON_INFLATE_OFFSET, POLYGON_STROKE_WIDTH, POLYGON_VERTEX_COLOR } from '../viewer/config';
+import { polygonChanged } from '../../../components/viewer/core/viewerState';
+import { ANNOTATION_TYPE } from '../annotationType';
+import { ANNOTATION_COLOR, COLOR } from '../colors';
+import { POLYGON_INFLATE_OFFSET, POLYGON_STROKE_WIDTH, POLYGON_VERTEX_COLOR } from '../config';
 import { AnnotationLine } from './annotationLine';
 import { AnnotationPolygon } from './polygon';
 

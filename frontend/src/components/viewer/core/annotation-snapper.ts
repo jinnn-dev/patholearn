@@ -1,6 +1,6 @@
 import { Point } from 'openseadragon';
-import { Annotation } from '../../../model/svg/annotation';
-import { AnnotationLine } from '../../../model/svg/annotationLine';
+import { Annotation } from '../../../model/viewer/svg/annotation';
+import { AnnotationLine } from '../../../model/viewer/svg/annotationLine';
 import { ANNOTATION_TYPE } from '../../../model/viewer/annotationType';
 
 export interface SnapResult {

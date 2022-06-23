@@ -1,11 +1,11 @@
 import { Point } from 'openseadragon';
-import InfoAnnotationPolygon from '../../svg/infoAnnotationPolygon';
-import { OffsetAnnotationPolygon } from '../../svg/offsetPolygon';
-import { AnnotationPolygon } from '../../svg/polygon';
-import { ANNOTATION_OFFSET_SCALAR, POLYGON_INFLATE_OFFSET } from '../config';
-import { OffsetAnnotationPolygonData } from '../export/offsetAnnotationPolygonData';
+import InfoAnnotationPolygon from '../infoAnnotationPolygon';
+import { OffsetAnnotationPolygon } from '../offsetPolygon';
+import { AnnotationPolygon } from '../polygon';
+import { ANNOTATION_OFFSET_SCALAR, POLYGON_INFLATE_OFFSET } from '../../config';
+import { OffsetAnnotationPolygonData } from '../../export/offsetAnnotationPolygonData';
 import { AnnotationBaseData, AnnotationBaseOffsetData, AnnotationFactory } from './annotationFactory';
-import { InfoAnnotatationData } from '../export/infoAnnotationData';
+import { InfoAnnotatationData } from '../../export/infoAnnotationData';
 
 export class PolygonFactory extends AnnotationFactory<AnnotationPolygon> {
   public static getInstance(): PolygonFactory {

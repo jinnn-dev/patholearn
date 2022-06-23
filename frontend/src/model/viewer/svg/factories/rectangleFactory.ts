@@ -1,9 +1,9 @@
 import { Point } from 'openseadragon';
-import { AnnotationRectangle } from '../../svg/annotationRect';
-import { OffsetAnnotationRectangle } from '../../svg/offsetAnnotationRect';
-import { ANNOTATION_OFFSET_SCALAR, POLYGON_INFLATE_OFFSET } from '../config';
-import { AnnotationRectangleData } from '../export/annotationRectangleData';
-import { OffsetAnnotationRectangleData } from '../export/offsetAnnotationRectangleData';
+import { AnnotationRectangle } from '../annotationRect';
+import { OffsetAnnotationRectangle } from '../offsetAnnotationRect';
+import { ANNOTATION_OFFSET_SCALAR, POLYGON_INFLATE_OFFSET } from '../../config';
+import { AnnotationRectangleData } from '../../export/annotationRectangleData';
+import { OffsetAnnotationRectangleData } from '../../export/offsetAnnotationRectangleData';
 import { AnnotationBaseData, AnnotationBaseOffsetData, AnnotationFactory } from './annotationFactory';
 
 export class RectangleFactory extends AnnotationFactory<AnnotationRectangle> {

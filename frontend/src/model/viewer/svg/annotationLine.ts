@@ -1,11 +1,11 @@
 import { select, Selection } from 'd3-selection';
 import { nanoid } from 'nanoid';
 import OpenSeadragon, { Point } from 'openseadragon';
-import { polygonChanged } from '../../components/viewer/core/viewerState';
-import { BoundingBox } from '../boundingBox';
-import { POLYGON_VERTEX_COLOR } from '../viewer/config';
-import { ANNOTATION_TYPE } from '../viewer/annotationType';
-import { ANNOTATION_COLOR, COLOR } from '../viewer/colors';
+import { polygonChanged } from '../../../components/viewer/core/viewerState';
+import { BoundingBox } from '../../boundingBox';
+import { POLYGON_VERTEX_COLOR } from '../config';
+import { ANNOTATION_TYPE } from '../annotationType';
+import { ANNOTATION_COLOR, COLOR } from '../colors';
 import { Annotation } from './annotation';
 import { Circle } from './circle';
 import { VertexElement } from './vertice';

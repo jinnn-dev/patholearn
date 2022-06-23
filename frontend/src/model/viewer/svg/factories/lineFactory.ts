@@ -1,9 +1,9 @@
 import { Point } from 'openseadragon';
-import { AnnotationLine } from '../../svg/annotationLine';
-import InfoAnnotationLine from '../../svg/infoAnnotationLine';
-import { OffsetAnnotationLine } from '../../svg/offsetAnnotationLine';
-import { InfoAnnotatationData } from '../export/infoAnnotationData';
-import { OffsetAnnotationLineData } from '../export/offsetAnnotationLineData';
+import { AnnotationLine } from '../annotationLine';
+import InfoAnnotationLine from '../infoAnnotationLine';
+import { OffsetAnnotationLine } from '../offsetAnnotationLine';
+import { InfoAnnotatationData } from '../../export/infoAnnotationData';
+import { OffsetAnnotationLineData } from '../../export/offsetAnnotationLineData';
 import { AnnotationBaseData, AnnotationBaseOffsetData, AnnotationFactory } from './annotationFactory';
 
 export class LineFactory extends AnnotationFactory<AnnotationLine> {

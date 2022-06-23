@@ -3,7 +3,7 @@ import OpenSeadragon from 'openseadragon';
 import { computed, onMounted, onUnmounted, PropType, reactive, ref, watch } from 'vue';
 import { getSlideUrl } from '../../config';
 import { RESULT_POLYGON_COLOR, TaskStatus } from '../../model/result';
-import { Annotation } from '../../model/svg/annotation';
+import { Annotation } from '../../model/viewer/svg/annotation';
 import { AnnotationGroup as AnnotationGroupModel } from '../../model/task/annotationGroup';
 import { Task } from '../../model/task';
 import { ANNOTATION_TYPE, isUserSolution } from '../../model/viewer/annotationType';

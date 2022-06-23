@@ -1,17 +1,16 @@
 import { select, Selection } from 'd3-selection';
-import { curveLinearClosed, Line, line } from 'd3-shape';
+import { curveLinearClosed, line, Line } from 'd3-shape';
 import { geom, operation } from 'jsts';
 import { nanoid } from 'nanoid';
 import OpenSeadragon from 'openseadragon';
-import { polygonChanged } from '../../components/viewer/core/viewerState';
-import { ANNOTATION_TYPE } from '../viewer/annotationType';
-import { COLOR } from '../viewer/colors';
-import { POLYGON_INFLATE_OFFSET, POLYGON_STROKE_WIDTH, POLYGON_VERTEX_COLOR } from '../viewer/config';
+import { polygonChanged } from '../../../components/viewer/core/viewerState';
+import { ANNOTATION_TYPE } from '../annotationType';
+import { COLOR } from '../colors';
+import { POLYGON_INFLATE_OFFSET, POLYGON_STROKE_WIDTH, POLYGON_VERTEX_COLOR } from '../config';
+import { AnnotationRectangle } from './annotationRect';
 import { AnnotationPolygon } from './polygon';
 
-// import * as jsts from 'jsts';
-
-export class OffsetAnnotationPolygon extends AnnotationPolygon {
+export class OffsetAnnotationRectangle extends AnnotationRectangle {
   private _outerPoints: OpenSeadragon.Point[];
   private _innerPoints: OpenSeadragon.Point[];
   private _pathElement?: Selection<SVGPathElement, unknown, null, undefined>;
@@ -92,31 +91,12 @@ export class OffsetAnnotationPolygon extends AnnotationPolygon {
     }
   }
 
-  createPolyline(strokeWidth: number): Selection<SVGPolylineElement, unknown, null, undefined> {
-    return super.createPolyline(strokeWidth).style('fill', 'none');
-  }
-
   dragHandler(event: OpenSeadragon.OSDEvent<any>, node: HTMLElement, viewer: OpenSeadragon.Viewer): void {
     super.dragHandler(event, node, viewer);
-    // @ts-ignore
-    const scale = viewer.viewport._containerInnerSize.x * viewer.viewport.getZoom(true);
-
     if (!this.changedManual) {
-      this._outerPolygon?.unselect();
-      this._innerPolygon?.unselect();
-      this._outerPolygon?.updatePolygonPoints(
-        this._outerPoints,
-        POLYGON_VERTEX_COLOR / scale,
-        POLYGON_STROKE_WIDTH / scale
-      );
-      this._innerPolygon?.updatePolygonPoints(
-        this._innerPoints,
-        POLYGON_VERTEX_COLOR / scale,
-        POLYGON_STROKE_WIDTH / scale
-      );
-      this._outerPolygon?.select(viewer, scale);
-      this._innerPolygon?.select(viewer, scale);
+      this.unselectSelectPolygons();
     }
+
     // @ts-ignore
     this.createInflation(viewer.viewport._containerInnerSize.x * viewer.viewport.getZoom(true));
   }
@@ -125,8 +105,6 @@ export class OffsetAnnotationPolygon extends AnnotationPolygon {
     super.updateColor(fillColor, strokeColor);
     this._pathElement?.style('fill', this.fillColor).attr('stroke', this.color);
     this.polyline?.style('fill', 'none');
-    this._outerPolygon?.updateColor(fillColor, strokeColor);
-    this._innerPolygon?.updateColor(fillColor, strokeColor);
   }
 
   update(r: number, strokeWidth: number): void {
@@ -138,22 +116,21 @@ export class OffsetAnnotationPolygon extends AnnotationPolygon {
     this._pathElement?.style('stroke-width', strokeWidth);
   }
 
-  addClosedInsetPolygon(
+  addClosedOffsetRectangle(
     polygonPoints: OpenSeadragon.Point[],
     outerPoints: OpenSeadragon.Point[],
     innerPoints: OpenSeadragon.Point[],
     scale: number
   ): void {
-    super.addClosedPolygon(polygonPoints, POLYGON_VERTEX_COLOR / scale, POLYGON_STROKE_WIDTH / scale);
+    super.addClosedRectangle(polygonPoints, POLYGON_VERTEX_COLOR / scale, POLYGON_STROKE_WIDTH / scale);
 
     this._outerPoints = outerPoints;
     this._innerPoints = innerPoints;
     this.createPath(scale);
   }
 
-  addClosedInsetPolygonFromPoints(annotationPoints: OpenSeadragon.Point[], scale: number) {
-    super.addClosedPolygon(annotationPoints, POLYGON_VERTEX_COLOR / scale, POLYGON_STROKE_WIDTH / scale);
-    this.createInflation(scale);
+  createPolyline(strokeWidth: number): Selection<SVGRectElement, unknown, null, undefined> {
+    return super.createPolyline(strokeWidth).style('fill', 'none');
   }
 
   /**
@@ -234,9 +211,6 @@ export class OffsetAnnotationPolygon extends AnnotationPolygon {
     }
   }
 
-  /**
-   * Updates the points of the path
-   */
   updatePathPoints(): void {
     if (this._pathElement) {
       this._pathElement.attr('d', this._lineFunction(this._outerPoints) + ' ' + this._lineFunction(this._innerPoints));
@@ -292,8 +266,13 @@ export class OffsetAnnotationPolygon extends AnnotationPolygon {
   private inflatePolygon(inflateValue: number): OpenSeadragon.Point[] {
     const coord = [];
 
-    for (const vertice of this.vertice) {
-      coord.push(new geom.Coordinate(vertice.viewport.x, vertice.viewport.y));
+    const p1 = this.vertice[0].viewport;
+    const p4 = this.vertice[1].viewport;
+    const p2 = new OpenSeadragon.Point(p1.x + (p4.x - p1.x), p1.y);
+    const p3 = new OpenSeadragon.Point(p1.x, p1.y + (p4.y - p1.y));
+
+    for (const vertice of [p1, p3, p4, p2]) {
+      coord.push(new geom.Coordinate(vertice.x, vertice.y));
     }
 
     coord.push(coord[0]);
@@ -332,31 +311,6 @@ export class OffsetAnnotationPolygon extends AnnotationPolygon {
     }
   }
 
-  private createOuterPolygon(viewer: OpenSeadragon.Viewer, scale: number): void {
-    this._outerPolygon = new AnnotationPolygon(this.g, this.type, 'none', this.color, nanoid(), false, this.name);
-
-    this._outerPolygon.addClosedPolygon(
-      this._outerPoints.slice(0, -1),
-      POLYGON_VERTEX_COLOR / scale,
-      POLYGON_STROKE_WIDTH / scale
-    );
-
-    this._outerPolygon.select(viewer, scale);
-    this._outerPolygon.externalDragHandler = (event, index, point) => {
-      polygonChanged.changed = false;
-      if (index == 0) {
-        this._outerPoints[this._outerPoints.length - 1] = point;
-      }
-      this._outerPoints[index] = point;
-
-      this.changedManual = true;
-      this.updatePathPoints();
-    };
-    this._outerPolygon.dragEndHandler = () => {
-      polygonChanged.changed = true;
-    };
-  }
-
   private createInnerPolygon(viewer: OpenSeadragon.Viewer, scale: number): void {
     this._innerPolygon = new AnnotationPolygon(this.g, this.type, 'none', this.color, nanoid(), false, this.name);
     this._innerPolygon.addClosedPolygon(
@@ -377,6 +331,29 @@ export class OffsetAnnotationPolygon extends AnnotationPolygon {
       this.updatePathPoints();
     };
     this._innerPolygon.dragEndHandler = () => {
+      polygonChanged.changed = true;
+    };
+  }
+
+  private createOuterPolygon(viewer: OpenSeadragon.Viewer, scale: number): void {
+    this._outerPolygon = new AnnotationPolygon(this.g, this.type, 'none', this.color, nanoid(), false, this.name);
+    this._outerPolygon.addClosedPolygon(
+      this._outerPoints.slice(0, -1),
+      POLYGON_VERTEX_COLOR / scale,
+      POLYGON_STROKE_WIDTH / scale
+    );
+    this._outerPolygon.select(viewer, scale);
+    this._outerPolygon.externalDragHandler = (event, index, point) => {
+      polygonChanged.changed = false;
+      if (index == 0) {
+        this._outerPoints[this._outerPoints.length - 1] = point;
+      }
+      this._outerPoints[index] = point;
+
+      this.changedManual = true;
+      this.updatePathPoints();
+    };
+    this._outerPolygon.dragEndHandler = () => {
       polygonChanged.changed = true;
     };
   }

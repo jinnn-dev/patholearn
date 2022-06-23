@@ -1,15 +1,15 @@
 <script lang='ts' setup>
 import { select, selectAll } from 'd3-selection';
-import { AnnotationRectangle } from 'model/svg/annotationRect';
+import { AnnotationRectangle } from 'model/viewer/svg/annotationRect';
 import { AnnotationData } from 'model/viewer/export/annotationData';
 import OpenSeadragon from 'openseadragon';
 import { computed, onMounted, PropType, reactive, ref, watch } from 'vue';
 import { getSlideUrl } from '../../config';
-import { AnnotationLine } from '../../model/svg/annotationLine';
-import { OffsetAnnotationLine } from '../../model/svg/offsetAnnotationLine';
-import { OffsetAnnotationPoint } from '../../model/svg/offsetAnnotationPoint';
-import { OffsetAnnotationRectangle } from '../../model/svg/offsetAnnotationRect';
-import { OffsetAnnotationPolygon } from '../../model/svg/offsetPolygon';
+import { AnnotationLine } from '../../model/viewer/svg/annotationLine';
+import { OffsetAnnotationLine } from '../../model/viewer/svg/offsetAnnotationLine';
+import { OffsetAnnotationPoint } from '../../model/viewer/svg/offsetAnnotationPoint';
+import { OffsetAnnotationRectangle } from '../../model/viewer/svg/offsetAnnotationRect';
+import { OffsetAnnotationPolygon } from '../../model/viewer/svg/offsetPolygon';
 import type { AnnotationGroup as AnnotationGroupModel } from '../../model/task/annotationGroup';
 import { Task, TaskType } from '../../model/task';
 import { ANNOTATION_TYPE, isInfoAnnotation, isSolution } from '../../model/viewer/annotationType';
