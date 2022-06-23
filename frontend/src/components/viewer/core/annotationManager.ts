@@ -4,7 +4,7 @@ import { ANNOTATION_TYPE, isInfoAnnotation, isSolution, isUserSolution } from '.
 import { ANNOTATION_COLOR, getFillColor } from '../../../model/viewer/colors';
 import { POLYGON_STROKE_WIDTH, POLYGON_VERTEX_COLOR } from '../../../model/viewer/config';
 import { AnnotationData } from '../../../model/viewer/export/annotationData';
-import { generateAnnotation } from '../factories/generateAnnotation';
+import { generateAnnotation } from '../../../model/viewer/factories/generateAnnotation';
 
 export class AnnotationManager {
   private readonly _infoNode: HTMLElement;

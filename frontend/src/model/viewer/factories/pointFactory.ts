@@ -1,9 +1,9 @@
 import { InfoAnnotatationData } from 'model/viewer/export/infoAnnotationData';
 import { OffsetAnnotationPointData } from 'model/viewer/export/offsetAnnotationPointData';
 import { Point } from 'openseadragon';
-import { AnnotationPoint } from '../../../model/svg/annotationPoint';
-import InfoAnnotationPoint from '../../../model/svg/infoAnnotationPoint';
-import { OffsetAnnotationPoint } from '../../../model/svg/offsetAnnotationPoint';
+import { AnnotationPoint } from '../../svg/annotationPoint';
+import InfoAnnotationPoint from '../../svg/infoAnnotationPoint';
+import { OffsetAnnotationPoint } from '../../svg/offsetAnnotationPoint';
 import { AnnotationBaseData, AnnotationBaseOffsetData, AnnotationFactory } from './annotationFactory';
 
 export class PointFactory extends AnnotationFactory<AnnotationPoint> {

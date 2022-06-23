@@ -1,7 +1,7 @@
-import { Annotation } from '../../../model/svg/annotation';
-import { ANNOTATION_TYPE } from '../../../model/viewer/annotationType';
-import { POLYGON_STROKE_WIDTH, POLYGON_VERTEX_COLOR } from '../../../model/viewer/config';
-import { AnnotationData } from '../../../model/viewer/export/annotationData';
+import { Annotation } from '../../svg/annotation';
+import { ANNOTATION_TYPE } from '../annotationType';
+import { POLYGON_STROKE_WIDTH, POLYGON_VERTEX_COLOR } from '../config';
+import { AnnotationData } from '../export/annotationData';
 import { LineFactory } from './lineFactory';
 import { PointFactory } from './pointFactory';
 import { PolygonFactory } from './polygonFactory';
