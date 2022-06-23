@@ -12,6 +12,5 @@ export const store = reactive<Store>({
 
 export async function getTaskHints(taskId: number) {
   if (taskId === undefined) return;
-  const hints = await TaskService.getHints(taskId);
-  store.hints = hints;
+  store.hints = await TaskService.getHints(taskId);
 }

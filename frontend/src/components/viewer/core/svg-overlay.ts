@@ -12,11 +12,11 @@ export class SvgOverlay {
   private _viewer: Viewer;
   private _containerWidth: number;
   private _containerHeight: number;
-  private _svg: HTMLElement;
-  private _solutionNode: HTMLElement;
-  private _backgroundNode: HTMLElement;
-  private _userSolutionNode: HTMLElement;
-  private _infoNode: HTMLElement;
+  private readonly _svg: HTMLElement;
+  private readonly _solutionNode: HTMLElement;
+  private readonly _backgroundNode: HTMLElement;
+  private readonly _userSolutionNode: HTMLElement;
+  private readonly _infoNode: HTMLElement;
 
   constructor(viewer: Viewer) {
     const self = this;
@@ -58,7 +58,7 @@ export class SvgOverlay {
       self.resize();
     });
 
-    this._viewer.addHandler('rotate', function (evt) {
+    this._viewer.addHandler('rotate', function () {
       self.resize();
     });
 
@@ -100,10 +100,11 @@ export class SvgOverlay {
       this._svg.setAttribute('height', this._containerHeight + '');
     }
 
-    var p = this._viewer.viewport.pixelFromPoint(new Point(0, 0), true);
-    var zoom = this._viewer.viewport.getZoom(true);
-    var rotation = this._viewer.viewport.getRotation();
-    var scale = this._viewer.viewport._containerInnerSize.x * zoom;
+    const p = this._viewer.viewport.pixelFromPoint(new Point(0, 0), true);
+    const zoom = this._viewer.viewport.getZoom(true);
+    const rotation = this._viewer.viewport.getRotation();
+    // @ts-ignore
+    const scale = this._viewer.viewport._containerInnerSize.x * zoom;
     this._solutionNode.setAttribute(
       'transform',
       'translate(' + p.x + ',' + p.y + ') scale(' + scale + ') rotate(' + rotation + ')'

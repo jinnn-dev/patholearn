@@ -6,7 +6,7 @@ export enum COLOR {
 }
 
 export enum ANNOTATION_COLOR {
-  BACKGORUND_COLOR = '#D80073',
+  BACKGROUND_COLOR = '#D80073',
   USER_SOLUTION_COLOR = '#03d7fc',
   SOLUTION_COLOR = '#e67e22',
   MISTAKE = '#e74c3c',

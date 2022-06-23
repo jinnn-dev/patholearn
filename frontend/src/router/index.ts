@@ -12,7 +12,7 @@ const router = createRouter({
 router.beforeEach(async (to, _from, next) => {
   const isPublic = to.matched.some((record) => record.meta.public);
   const onlyWhenLoggedOut = to.matched.some((record) => record.meta.onlyWhenLoggedOut);
-  const adminRoute = to.matched.some((rescord) => rescord.meta.adminRoute);
+  const adminRoute = to.matched.some((record) => record.meta.adminRoute);
   const loggedIn = !!TokenService.getToken();
 
   if (!isPublic && !loggedIn) {

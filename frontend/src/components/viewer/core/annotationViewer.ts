@@ -22,7 +22,7 @@ import {
   POLYGON_INFLATE_OFFSET,
   POLYGON_SNAPPING_RADIUS,
   POLYGON_STROKE_WIDTH,
-  POLYGON_VERTICE_RADIUS
+  POLYGON_VERTEX_COLOR
 } from '../../../model/viewer/config';
 import { AnnotationData } from '../../../model/viewer/export/annotationData';
 import { AnnotationRectangleData } from '../../../model/viewer/export/annotationRectangleData';
@@ -73,7 +73,7 @@ export class AnnotationViewer {
       this._overlay.userSolutionNode(),
       0,
       0,
-      POLYGON_VERTICE_RADIUS / this.scale,
+      POLYGON_VERTEX_COLOR / this.scale,
       ANNOTATION_COLOR.SOLUTION_COLOR + ANNOTATION_COLOR.FILL_OPACITY,
       POLYGON_STROKE_WIDTH / this.scale,
       ANNOTATION_COLOR.SOLUTION_COLOR
@@ -85,9 +85,9 @@ export class AnnotationViewer {
       const opacity = this.zoom < 0.5 ? 0 : 1;
 
       this._annotationManager.updateAnnotation(opacity, this.scale);
-      this._mouseCircle.updateScale(POLYGON_VERTICE_RADIUS / this.scale, POLYGON_STROKE_WIDTH / this.scale);
+      this._mouseCircle.updateScale(POLYGON_VERTEX_COLOR / this.scale, POLYGON_STROKE_WIDTH / this.scale);
       if (this._drawingAnnotation) {
-        this._drawingAnnotation.update(POLYGON_VERTICE_RADIUS / this.scale, POLYGON_STROKE_WIDTH / this.scale);
+        this._drawingAnnotation.update(POLYGON_VERTEX_COLOR / this.scale, POLYGON_STROKE_WIDTH / this.scale);
       }
 
       viewerZoom.value = this.zoom;
@@ -179,9 +179,9 @@ export class AnnotationViewer {
       const opacity = this.zoom < 0.5 ? 0 : 1;
 
       this._annotationManager.updateAnnotation(opacity, this.scale);
-      this._mouseCircle.updateScale(POLYGON_VERTICE_RADIUS / this.scale, POLYGON_STROKE_WIDTH / this.scale);
+      this._mouseCircle.updateScale(POLYGON_VERTEX_COLOR / this.scale, POLYGON_STROKE_WIDTH / this.scale);
       if (this._drawingAnnotation) {
-        this._drawingAnnotation.update(POLYGON_VERTICE_RADIUS / this.scale, POLYGON_STROKE_WIDTH / this.scale);
+        this._drawingAnnotation.update(POLYGON_VERTEX_COLOR / this.scale, POLYGON_STROKE_WIDTH / this.scale);
       }
 
       viewerZoom.value = this.zoom;
@@ -321,7 +321,7 @@ export class AnnotationViewer {
     if (pointIsInImage(viewportPoint, this._viewer)) {
       this._drawingAnnotation.addVertex(
         viewportPoint,
-        POLYGON_VERTICE_RADIUS / this.scale,
+        POLYGON_VERTEX_COLOR / this.scale,
         POLYGON_STROKE_WIDTH / this.scale
       );
 
@@ -358,7 +358,7 @@ export class AnnotationViewer {
       const y = this._mouseCircle.cy;
       const xDiff = (x - firstPoint.viewport.x) * (x - firstPoint.viewport.x);
       const yDiff = (y - firstPoint.viewport.y) * (y - firstPoint.viewport.y);
-      if (xDiff + yDiff < POLYGON_VERTICE_RADIUS / (this.scale * (this.scale / POLYGON_SNAPPING_RADIUS))) {
+      if (xDiff + yDiff < POLYGON_VERTEX_COLOR / (this.scale * (this.scale / POLYGON_SNAPPING_RADIUS))) {
         this._mouseCircle.updatePosition(firstPoint.viewport.x, firstPoint.viewport.y);
       }
     }
@@ -380,7 +380,7 @@ export class AnnotationViewer {
       .append('circle')
       .attr('cx', this._mouseCircle.cx)
       .attr('cy', this._mouseCircle.cy)
-      .attr('r', POLYGON_VERTICE_RADIUS / this.scale)
+      .attr('r', POLYGON_VERTEX_COLOR / this.scale)
       .attr('stroke-width', POLYGON_STROKE_WIDTH / this.scale)
       .style('fill', 'red');
   }
@@ -401,7 +401,7 @@ export class AnnotationViewer {
       this._currentColor
     );
     const viewport = webToViewport(x, y, this._viewer);
-    annotationPoint.setPoint(viewport, POLYGON_VERTICE_RADIUS / this.scale, POLYGON_STROKE_WIDTH / this.scale);
+    annotationPoint.setPoint(viewport, POLYGON_VERTEX_COLOR / this.scale, POLYGON_STROKE_WIDTH / this.scale);
     this._annotationManager.pushAnnotation(annotationPoint);
     await this.saveTaskAnnotation(task, annotationPoint);
     return annotationPoint;
@@ -424,7 +424,7 @@ export class AnnotationViewer {
       ANNOTATION_TYPE.INFO_POINT
     );
     const viewport = webToViewport(x, y, this._viewer);
-    point.setPoint(viewport, POLYGON_VERTICE_RADIUS / this.scale, POLYGON_STROKE_WIDTH / this.scale);
+    point.setPoint(viewport, POLYGON_VERTEX_COLOR / this.scale, POLYGON_STROKE_WIDTH / this.scale);
     this._annotationManager.pushAnnotation(point);
     await this.saveTaskAnnotation(task, point);
     return point;
@@ -458,14 +458,9 @@ export class AnnotationViewer {
   addAnnotationPoint(type: ANNOTATION_TYPE, x: number, y: number) {
     const annotationPoint = new AnnotationPoint(this._annotationManager.getNode(type), type);
     const viewport = webToViewport(x, y, this._viewer);
-    annotationPoint.setPoint(viewport, POLYGON_VERTICE_RADIUS / this.scale, POLYGON_STROKE_WIDTH / this.scale);
+    annotationPoint.setPoint(viewport, POLYGON_VERTEX_COLOR / this.scale, POLYGON_STROKE_WIDTH / this.scale);
     this._annotationManager.pushAnnotation(annotationPoint);
     return annotationPoint;
-  }
-
-  addAnnotationRect(type: ANNOTATION_TYPE, x: number, y: number) {
-    const annotationRect = new AnnotationRectangle(this._annotationManager.getNode(type), type);
-    const viewport = webToViewport(x, y, this._viewer);
   }
 
   /**
@@ -495,7 +490,7 @@ export class AnnotationViewer {
       .remove();
     if (this._mouseCircle.isAttached) {
       this._mouseCircle.removeCircle();
-      this._mouseCircle.appendCircle(POLYGON_VERTICE_RADIUS / this.scale, POLYGON_STROKE_WIDTH / this.scale);
+      this._mouseCircle.appendCircle(POLYGON_VERTEX_COLOR / this.scale, POLYGON_STROKE_WIDTH / this.scale);
     }
   }
 
@@ -508,9 +503,6 @@ export class AnnotationViewer {
     if (this._drawingAnnotation) {
       if (this._drawingAnnotation.vertice.length > 1) {
         if (this._drawingAnnotation! instanceof OffsetAnnotationLine) {
-          if (this._drawingAnnotation! instanceof OffsetAnnotationPolygon) {
-            const annotation = this._drawingAnnotation as OffsetAnnotationPolygon;
-          }
           (this._drawingAnnotation as OffsetAnnotationLine).createInflation(this.scale);
         }
 
@@ -583,7 +575,7 @@ export class AnnotationViewer {
    * Appends mouse circle
    */
   appendMouseCirlce(): void {
-    this._mouseCircle.appendCircle(POLYGON_VERTICE_RADIUS / this.scale, POLYGON_STROKE_WIDTH / this.scale);
+    this._mouseCircle.appendCircle(POLYGON_VERTEX_COLOR / this.scale, POLYGON_STROKE_WIDTH / this.scale);
   }
 
   /**
@@ -799,6 +791,7 @@ export class AnnotationViewer {
    * Selects an annotation
    *
    * @param annotationId ID of the annotation to select
+   * @param trackable If the Annotation should be trackable
    * @returns The selected annotation
    */
   selectAnnotation(annotationId: string, trackable: boolean = false): Annotation {
@@ -873,7 +866,7 @@ export class AnnotationViewer {
       (selectedAnnotation as AnnotationLine).addVertexInBetween(
         snapPoint,
         indexToInsertAfter + 1,
-        POLYGON_VERTICE_RADIUS / this.scale,
+        POLYGON_VERTEX_COLOR / this.scale,
         POLYGON_STROKE_WIDTH / this.scale
       );
 
@@ -949,14 +942,14 @@ export class AnnotationViewer {
       this._annotationManager.backgroundNode,
       ANNOTATION_TYPE.BASE,
       'none',
-      ANNOTATION_COLOR.BACKGORUND_COLOR
+      ANNOTATION_COLOR.BACKGROUND_COLOR
     );
     rectangle.width = bbox!.width;
     rectangle.height = bbox!.height;
 
     rectangle.addClosedRectangle(
       [new Point(bbox!.x, bbox!.y)],
-      POLYGON_VERTICE_RADIUS / this.scale,
+      POLYGON_VERTEX_COLOR / this.scale,
       POLYGON_STROKE_WIDTH / this.scale
     );
 

@@ -14,7 +14,7 @@ export interface Course {
   task_count?: number;
   new_tasks?: number;
   correct_tasks?: number;
-  wront_tasks?: number;
+  wrong_tasks?: number;
 }
 
 export interface CreateCourse {

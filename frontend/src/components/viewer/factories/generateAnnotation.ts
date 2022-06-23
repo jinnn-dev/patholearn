@@ -1,6 +1,6 @@
 import { Annotation } from '../../../model/svg/annotation';
 import { ANNOTATION_TYPE } from '../../../model/viewer/annotationType';
-import { POLYGON_STROKE_WIDTH, POLYGON_VERTICE_RADIUS } from '../../../model/viewer/config';
+import { POLYGON_STROKE_WIDTH, POLYGON_VERTEX_COLOR } from '../../../model/viewer/config';
 import { AnnotationData } from '../../../model/viewer/export/annotationData';
 import { LineFactory } from './lineFactory';
 import { PointFactory } from './pointFactory';
@@ -14,7 +14,7 @@ export function generateAnnotation(
   fillColor: string,
   strokeColor: string
 ): Annotation {
-  const radius = POLYGON_VERTICE_RADIUS / scale;
+  const radius = POLYGON_VERTEX_COLOR / scale;
   const strokeWidth = POLYGON_STROKE_WIDTH / scale;
 
   let generatedAnnotation: Annotation;

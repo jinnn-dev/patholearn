@@ -2,12 +2,12 @@ import { select } from 'd3-selection';
 import { Annotation } from '../../../model/svg/annotation';
 import { ANNOTATION_TYPE, isInfoAnnotation, isSolution, isUserSolution } from '../../../model/viewer/annotationType';
 import { ANNOTATION_COLOR, getFillColor } from '../../../model/viewer/colors';
-import { POLYGON_STROKE_WIDTH, POLYGON_VERTICE_RADIUS } from '../../../model/viewer/config';
+import { POLYGON_STROKE_WIDTH, POLYGON_VERTEX_COLOR } from '../../../model/viewer/config';
 import { AnnotationData } from '../../../model/viewer/export/annotationData';
 import { generateAnnotation } from '../factories/generateAnnotation';
 
 export class AnnotationManager {
-  private _infoNode: HTMLElement;
+  private readonly _infoNode: HTMLElement;
 
   constructor(
     backgroundNode: HTMLElement,
@@ -26,19 +26,19 @@ export class AnnotationManager {
     this._infoAnnotations = [];
   }
 
-  private _backgroundNode: HTMLElement;
+  private readonly _backgroundNode: HTMLElement;
 
   get backgroundNode() {
     return this._backgroundNode;
   }
 
-  private _solutionNode: HTMLElement;
+  private readonly _solutionNode: HTMLElement;
 
   get solutionNode() {
     return this._solutionNode;
   }
 
-  private _userSolutionNode: HTMLElement;
+  private readonly _userSolutionNode: HTMLElement;
 
   get userSolutionNode() {
     return this._userSolutionNode;
@@ -62,7 +62,7 @@ export class AnnotationManager {
     return this._userSolutionAnnotations;
   }
 
-  private _infoAnnotations: Annotation[];
+  private readonly _infoAnnotations: Annotation[];
 
   get infoAnnotations() {
     return this._infoAnnotations;
@@ -139,7 +139,7 @@ export class AnnotationManager {
   }
 
   /**
-   * Adds an background annotation
+   * Adds a background annotation
    *
    * @param annotation Background annotation
    */
@@ -155,7 +155,7 @@ export class AnnotationManager {
    */
   addBackgroundAnnotation(data: AnnotationData, scale: number): void {
     this._backgroundAnnotations.push(
-      this._generateAnnotation(data, scale, 'none', data.color || ANNOTATION_COLOR.BACKGORUND_COLOR)
+      this._generateAnnotation(data, scale, 'none', data.color || ANNOTATION_COLOR.BACKGROUND_COLOR)
     );
   }
 
@@ -209,7 +209,7 @@ export class AnnotationManager {
    * @param scale Current scale of the viewer
    */
   updateAnnotation(opacity: number, scale: number): void {
-    const radius = POLYGON_VERTICE_RADIUS / scale;
+    const radius = POLYGON_VERTEX_COLOR / scale;
     const strokeWidth = POLYGON_STROKE_WIDTH / scale;
 
     for (const annotation of this._backgroundAnnotations) {
@@ -316,7 +316,7 @@ export class AnnotationManager {
   }
 
   /**
-   * Returns the annotation to the ID and unseelects all other
+   * Returns the annotation to the ID and unselect all other
    *
    * @param annotationId ID of the annotation
    * @returns The annotation to the id

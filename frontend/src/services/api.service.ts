@@ -60,7 +60,9 @@ export class ApiService {
    *
    * @param resource The rest resource to call
    * @param data The data to send with the request
-   * @returns Thre Promise with the return data
+   * @param host The host of the get request
+   * @param responseType The type of the response
+   * @returns The Promise with the return data
    */
   public static get<T>(
     { resource, data, host = BASE_API_URL }: Get,
@@ -81,7 +83,8 @@ export class ApiService {
    *
    * @param resource The rest resource to call
    * @param data The data to send with the request
-   * @param config Aditional configuration to send with the request
+   * @param config Additional configuration to send with the request
+   * @param host The host of the post request
    * @returns The Promise with the return data
    */
   public static post<T>({ resource, data, config, host = BASE_API_URL }: Post): Promise<AxiosResponse<T>> {
@@ -93,6 +96,7 @@ export class ApiService {
    *
    * @param resource The rest resource to call
    * @param data The data to send with the request
+   * @param host The host of the put request
    * @returns The Promise with the return data
    */
   public static put<T>({ resource, data, host = BASE_API_URL }: Put): Promise<AxiosResponse<T>> {
@@ -107,6 +111,8 @@ export class ApiService {
    * Wrapper function for HTTP-DELETE method
    *
    * @param resource The rest resource to call
+   * @param host The host of the delete request
+   * @param data The data to send with the request
    * @returns The Promise with the retur = BASE_API_URL data
    */
   public static delete<T>({ resource, host = BASE_API_URL, data }: Delete): Promise<AxiosResponse<T>> {
@@ -141,20 +147,20 @@ export class ApiService {
           this.removeHeader();
           TokenService.removeToken();
           TokenService.removeRefreshToken();
-          router.push('/login');
+          await router.push('/login');
           throw error;
         }
         if (error.request.status === 401) {
           this.removeHeader();
           TokenService.removeToken();
           TokenService.removeRefreshToken();
-          router.push('/logout');
+          await router.push('/logout');
         }
         if (error.request.status === 403) {
           this.removeHeader();
           TokenService.removeToken();
           TokenService.removeRefreshToken();
-          router.push('/logout');
+          await router.push('/logout');
         }
         throw error;
       }

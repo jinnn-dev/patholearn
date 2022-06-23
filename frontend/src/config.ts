@@ -1,4 +1,5 @@
 export function getEnv(name: string) {
+  // @ts-ignore
   return window?.configs?.[name] || import.meta.env['VITE_' + name];
 }
 

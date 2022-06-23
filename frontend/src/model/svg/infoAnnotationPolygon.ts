@@ -7,8 +7,6 @@ import { InfoAnnotation } from './infoAnnotation';
 import { AnnotationPolygon } from './polygon';
 
 export default class InfoAnnotationPolygon extends AnnotationPolygon implements InfoAnnotation {
-  private static STROKE_WIDTH_FACTOR = 1.2;
-
   constructor(
     headerText: string,
     detailText: string,

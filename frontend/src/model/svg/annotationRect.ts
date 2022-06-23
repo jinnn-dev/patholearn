@@ -2,7 +2,7 @@ import { select, Selection } from 'd3-selection';
 import { nanoid } from 'nanoid';
 import OpenSeadragon, { OSDEvent, Viewer } from 'openseadragon';
 import { polygonChanged } from '../../components/viewer/core/viewerState';
-import { POLYGON_VERTICE_RADIUS } from '../../model/viewer/config';
+import { POLYGON_VERTEX_COLOR } from '../viewer/config';
 import { ANNOTATION_TYPE } from '../viewer/annotationType';
 import { ANNOTATION_COLOR, COLOR } from '../viewer/colors';
 import { Annotation } from './annotation';
@@ -10,7 +10,6 @@ import { Circle } from './circle';
 import { VertexElement } from './vertice';
 
 export class AnnotationRectangle extends Annotation {
-  private _polylinePoints: string[];
   private _mouseTrackers: OpenSeadragon.MouseTracker[];
   private _dragEndHandler?: (event: OpenSeadragon.OSDEvent<any>) => void;
   private _resultPolylines: Selection<SVGPolylineElement, unknown, null, undefined>[];
@@ -27,7 +26,6 @@ export class AnnotationRectangle extends Annotation {
     super(g, type, color, id, reactive, name);
     this._fillColor = fillColor;
     this._vertice = [];
-    this._polylinePoints = [];
     this._mouseTrackers = [];
     this._isClosed = false;
     this._resultPolylines = [];
@@ -83,7 +81,7 @@ export class AnnotationRectangle extends Annotation {
     this._isClosed = closed;
   }
 
-  private _fillColor: string;
+  private readonly _fillColor: string;
 
   get fillColor() {
     return this._fillColor;
@@ -202,8 +200,8 @@ export class AnnotationRectangle extends Annotation {
 
       const vertex = this._vertice[1];
       vertex.element.append();
-      vertex.element.updateRadius(POLYGON_VERTICE_RADIUS / scale);
-      vertex.element.updateStrokeWidth(POLYGON_VERTICE_RADIUS / scale);
+      vertex.element.updateRadius(POLYGON_VERTEX_COLOR / scale);
+      vertex.element.updateStrokeWidth(POLYGON_VERTEX_COLOR / scale);
       vertex.element.updateStrokeColor(this.color);
       select('[id ="' + vertex.element.id + '"]').each(function () {
         self.addTracking(this as HTMLElement, viewer);

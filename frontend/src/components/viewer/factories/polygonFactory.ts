@@ -4,8 +4,8 @@ import { OffsetAnnotationPolygon } from '../../../model/svg/offsetPolygon';
 import { AnnotationPolygon } from '../../../model/svg/polygon';
 import { ANNOTATION_OFFSET_SCALAR, POLYGON_INFLATE_OFFSET } from '../../../model/viewer/config';
 import { OffsetAnnotationPolygonData } from '../../../model/viewer/export/offsetAnnotationPolygonData';
-import { InfoAnnotatationData } from '../../../viewer/export/infoAnnotationData';
 import { AnnotationBaseData, AnnotationBaseOffsetData, AnnotationFactory } from './annotationFactory';
+import { InfoAnnotatationData } from '../../../model/viewer/export/infoAnnotationData';
 
 export class PolygonFactory extends AnnotationFactory<AnnotationPolygon> {
   public static getInstance(): PolygonFactory {

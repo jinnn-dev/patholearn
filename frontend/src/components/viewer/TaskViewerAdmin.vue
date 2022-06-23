@@ -356,7 +356,7 @@ const setTool = (data: { tool: Tool; event: any }) => {
   if (isSolution(TOOL_ANNOTATION[currentTool.value!]!) || isInfoAnnotation(TOOL_ANNOTATION[currentTool.value!]!)) {
     drawingViewer.value?.updateColor(TOOL_COLORS[currentTool.value!]!);
   } else {
-    drawingViewer.value?.updateColor(ANNOTATION_COLOR.BACKGORUND_COLOR);
+    drawingViewer.value?.updateColor(ANNOTATION_COLOR.BACKGROUND_COLOR);
   }
 
   if (currentTool.value === Tool.DELETE) {

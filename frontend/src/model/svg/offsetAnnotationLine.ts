@@ -4,14 +4,14 @@ import { geom, operation } from 'jsts';
 import { nanoid } from 'nanoid';
 import OpenSeadragon from 'openseadragon';
 import { polygonChanged } from '../../components/viewer/core/viewerState';
-import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
-import { ANNOTATION_COLOR, COLOR } from '../../model/viewer/colors';
-import { POLYGON_INFLATE_OFFSET, POLYGON_STROKE_WIDTH, POLYGON_VERTICE_RADIUS } from '../../model/viewer/config';
+import { ANNOTATION_TYPE } from '../viewer/annotationType';
+import { ANNOTATION_COLOR, COLOR } from '../viewer/colors';
+import { POLYGON_INFLATE_OFFSET, POLYGON_STROKE_WIDTH, POLYGON_VERTEX_COLOR } from '../viewer/config';
 import { AnnotationLine } from './annotationLine';
 import { AnnotationPolygon } from './polygon';
 
 export class OffsetAnnotationLine extends AnnotationLine {
-  private _lineFunction: Line<any>;
+  private readonly _lineFunction: Line<any>;
   private _pathElement?: Selection<SVGPathElement, unknown, null, undefined>;
   private _selectedPolyline?: AnnotationPolygon;
 
@@ -78,12 +78,13 @@ export class OffsetAnnotationLine extends AnnotationLine {
 
   dragHandler(event: OpenSeadragon.OSDEvent<any>, node: HTMLElement, viewer: OpenSeadragon.Viewer): void {
     super.dragHandler(event, node, viewer);
+    // @ts-ignore
     const scale = viewer.viewport._containerInnerSize.x * viewer.viewport.getZoom(true);
     if (!this._changedManual) {
       this._selectedPolyline?.unselect();
       this._selectedPolyline?.updatePolygonPoints(
         this._outerPoints,
-        POLYGON_VERTICE_RADIUS / scale,
+        POLYGON_VERTEX_COLOR / scale,
         POLYGON_STROKE_WIDTH / scale
       );
       this._selectedPolyline?.select(viewer, scale);
@@ -114,7 +115,7 @@ export class OffsetAnnotationLine extends AnnotationLine {
       }
 
       this._selectedPolyline?.unselect();
-      this._selectedPolyline?.updatePolygonPoints(points, POLYGON_VERTICE_RADIUS / scale, POLYGON_STROKE_WIDTH / scale);
+      this._selectedPolyline?.updatePolygonPoints(points, POLYGON_VERTEX_COLOR / scale, POLYGON_STROKE_WIDTH / scale);
       this._selectedPolyline?.select(viewer, scale);
     }
   }
@@ -131,7 +132,7 @@ export class OffsetAnnotationLine extends AnnotationLine {
   }
 
   /**
-   * Adds a exisiting OffsetAnnotationLine
+   * Adds an existing OffsetAnnotationLine
    *
    * @param points Points of the annotation line
    * @param outerPoints Points of the offset line
@@ -144,7 +145,7 @@ export class OffsetAnnotationLine extends AnnotationLine {
     offsetRadius: number,
     scale: number
   ): void {
-    super.addClosedLine(points, POLYGON_VERTICE_RADIUS / scale, POLYGON_STROKE_WIDTH / scale);
+    super.addClosedLine(points, POLYGON_VERTEX_COLOR / scale, POLYGON_STROKE_WIDTH / scale);
     this._offsetRadius = offsetRadius;
     this._outerPoints = outerPoints;
     this.createPath(scale);
@@ -157,7 +158,7 @@ export class OffsetAnnotationLine extends AnnotationLine {
       this._selectedPolyline = new AnnotationPolygon(this.g, this.type, 'none', this.color, nanoid(), false, this.name);
       this._selectedPolyline.addClosedPolygon(
         this._outerPoints.slice(0, -1),
-        POLYGON_VERTICE_RADIUS / scale,
+        POLYGON_VERTEX_COLOR / scale,
         POLYGON_STROKE_WIDTH / scale
       );
 
@@ -172,7 +173,7 @@ export class OffsetAnnotationLine extends AnnotationLine {
         this._pathElement?.attr('d', this._lineFunction(this._outerPoints) + '');
       };
 
-      this._selectedPolyline.dragEndHandler = (event) => {
+      this._selectedPolyline.dragEndHandler = () => {
         polygonChanged.changed = true;
       };
     }

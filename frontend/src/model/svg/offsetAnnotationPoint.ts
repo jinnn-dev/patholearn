@@ -2,9 +2,9 @@ import { select, Selection } from 'd3-selection';
 import { arc } from 'd3-shape';
 import { nanoid } from 'nanoid';
 import OpenSeadragon from 'openseadragon';
-import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
-import { ANNOTATION_COLOR, COLOR } from '../../model/viewer/colors';
-import { POLYGON_INFLATE_OFFSET } from '../../model/viewer/config';
+import { ANNOTATION_TYPE } from '../viewer/annotationType';
+import { ANNOTATION_COLOR, COLOR } from '../viewer/colors';
+import { POLYGON_INFLATE_OFFSET } from '../viewer/config';
 import { AnnotationPoint } from './annotationPoint';
 
 export class OffsetAnnotationPoint extends AnnotationPoint {
@@ -47,7 +47,7 @@ export class OffsetAnnotationPoint extends AnnotationPoint {
     this._offsetRadius = newOffset;
 
     const lineArc = arc().innerRadius(0).outerRadius(this._offsetRadius).startAngle(0).endAngle(360);
-    this._offsetElement?.attr('d', lineArc);
+    this._offsetElement?.attr('d', lineArc as any);
   }
 
   update(r: number, strokeWidth: number): void {
@@ -68,7 +68,7 @@ export class OffsetAnnotationPoint extends AnnotationPoint {
     this.element?.remove();
     this._offsetElement = select(this.g)
       .append('path')
-      .attr('d', lineArc)
+      .attr('d', lineArc as any)
       .attr('id', this.id)
       .style('fill', this.color + ANNOTATION_COLOR.FILL_OPACITY)
       .attr('transform', 'translate(' + this.vertex!.x + ',' + this.vertex!.y + ')');

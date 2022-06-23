@@ -1,4 +1,3 @@
-import { InfoAnnotatationData } from 'model/viewer/export/infoAnnotationData';
 import { Point } from 'openseadragon';
 import { Annotation } from '../../../model/svg/annotation';
 import { AnnotationData } from '../../../model/viewer/export/annotationData';
@@ -15,8 +14,6 @@ export interface AnnotationBaseData {
 }
 
 export interface AnnotationBaseOffsetData extends AnnotationBaseData {}
-
-export interface InfoAnnotationBaseData extends AnnotationBaseData, InfoAnnotatationData {}
 
 export abstract class AnnotationFactory<T extends Annotation> {
   public abstract create(annotationData: AnnotationBaseData): T;

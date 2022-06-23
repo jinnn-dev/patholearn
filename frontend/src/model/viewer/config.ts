@@ -1,5 +1,5 @@
 export const POLYGON_SNAPPING_RADIUS = 20;
-export const POLYGON_VERTICE_RADIUS = 7;
+export const POLYGON_VERTEX_COLOR = 7;
 export const POLYGON_STROKE_WIDTH = 4;
 export const POLYGON_INFLATE_OFFSET = 0.005;
 export const ANNOTATION_OFFSET_SCALAR = 10000;

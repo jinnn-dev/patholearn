@@ -73,6 +73,8 @@ export class TaskService {
    * Creates a new base task from csv File
    *
    * @param createTask The content to create the base task
+   * @param csv_file CSV file from which the tasks should be created from
+   * @param images Images that should be used
    * @returns Promise with the created base task
    */
   public static async createBaseTaskFromCsv(
@@ -296,7 +298,7 @@ export class TaskService {
    *
    * @param task_id ID of the task
    * @param annotation Content of the annotation
-   * @returns Promise with the create result
+   * @returns Promise with the creation result
    */
   public static async createTaskAnnotation(task_id: number, annotation: any): Promise<any> {
     const [_, response] = await handleError(
@@ -330,7 +332,7 @@ export class TaskService {
    *
    * @param task_id ID of the task
    * @param annotation Content of the annotation
-   * @returns Promise with the create result
+   * @returns Promise with the creation result
    */
   public static async createUserAnnotation(task_id: number, annotation: any): Promise<any> {
     const [_, response] = await handleError(
@@ -362,7 +364,7 @@ export class TaskService {
   }
 
   /**
-   * Deletes a annotation from the task data or solution
+   * Deletes an annotation from the task data or solution
    *
    * @param task_id ID of the task
    * @param annotation_id ID of the annotation
@@ -379,7 +381,7 @@ export class TaskService {
   }
 
   /**
-   * Delets a annotation from the user solution
+   * Delets an annotation from the user solution
    *
    * @param task_id ID of the task
    * @param annotation_id ID of the annotation
@@ -419,7 +421,7 @@ export class TaskService {
   }
 
   /**
-   * Updates a annotation group
+   * Updates an annotation group
    *
    * @param task_id ID task
    * @param oldName Old name of the annotation group

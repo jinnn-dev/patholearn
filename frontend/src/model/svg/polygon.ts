@@ -2,8 +2,8 @@ import { select, Selection } from 'd3-selection';
 import { nanoid } from 'nanoid';
 import OpenSeadragon from 'openseadragon';
 import { polygonChanged } from '../../components/viewer/core/viewerState';
-import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
-import { COLOR } from '../../model/viewer/colors';
+import { ANNOTATION_TYPE } from '../viewer/annotationType';
+import { COLOR } from '../viewer/colors';
 import { AnnotationLine } from './annotationLine';
 import { Circle } from './circle';
 import { VertexElement } from './vertice';
@@ -93,7 +93,7 @@ export class AnnotationPolygon extends AnnotationLine {
    *
    * @param points New points of the polygon
    * @param r Vertex radius
-   * @param strokeWidth Width of the the stroke
+   * @param strokeWidth Width of the stroke
    */
   updatePolygonPoints(points: OpenSeadragon.Point[], r: number, strokeWidth: number): void {
     this.polyline?.remove();
@@ -108,7 +108,8 @@ export class AnnotationPolygon extends AnnotationLine {
 
   dragHandler(event: OpenSeadragon.OSDEvent<any>, node: HTMLElement, viewer: OpenSeadragon.Viewer): void {
     if (this.reactive) polygonChanged.changed = false;
-    var viewportDelta = viewer.viewport.deltaPointsFromPixels(event.delta);
+    // @ts-ignore
+    const viewportDelta = viewer.viewport.deltaPointsFromPixels(event.delta);
     const selected = select(node);
     selected.attr('cx', Number(selected.attr('cx')) + Number(viewportDelta.x));
     selected.attr('cy', Number(selected.attr('cy')) + Number(viewportDelta.y));
@@ -163,14 +164,11 @@ export class AnnotationPolygon extends AnnotationLine {
    * @returns If the point is equals to the first point of the polygon
    */
   isFirstVertex(x: number, y: number, radius: number): boolean {
-    if (
+    return (
       (x - this.vertice[0].viewport.x) * (x - this.vertice[0].viewport.x) +
         (y - this.vertice[0].viewport.y) * (y - this.vertice[0].viewport.y) <=
       radius * radius
-    )
-      return true;
-
-    return false;
+    );
   }
 
   resetColors(): void {
@@ -188,10 +186,10 @@ export class AnnotationPolygon extends AnnotationLine {
   getSize() {
     let total = 0;
     for (let i = 0; i < this.vertice.length / 2; i++) {
-      var addX = this.vertice[i].viewport.x;
-      var addY = this.vertice[i == this.vertice.length - 1 ? 0 : i + 1].viewport.y;
-      var subX = this.vertice[i == this.vertice.length - 1 ? 0 : i + 1].viewport.x;
-      var subY = this.vertice[i].viewport.y;
+      const addX = this.vertice[i].viewport.x;
+      const addY = this.vertice[i == this.vertice.length - 1 ? 0 : i + 1].viewport.y;
+      const subX = this.vertice[i == this.vertice.length - 1 ? 0 : i + 1].viewport.x;
+      const subY = this.vertice[i].viewport.y;
 
       total += addX * addY * 0.5;
       total -= subX * subY * 0.5;

@@ -4,10 +4,10 @@ import { ANNOTATION_TYPE } from '../viewer/annotationType';
 import { ANNOTATION_COLOR } from '../viewer/colors';
 
 /**
- * Abstract class representing a annotation
+ * Abstract class representing an annotation
  */
 export abstract class Annotation {
-  constructor(
+  protected constructor(
     g: HTMLElement,
     type: ANNOTATION_TYPE,
     color: string,
@@ -109,6 +109,7 @@ export abstract class Annotation {
    *
    * @param viewer The current OpenSeadragon Viewer
    * @param scale The viewer scale
+   * @param trackable If the Annotation should be trackable
    */
   abstract select(viewer: OpenSeadragon.Viewer, scale: number, trackable?: boolean): void;
 

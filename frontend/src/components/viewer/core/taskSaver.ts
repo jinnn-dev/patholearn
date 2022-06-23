@@ -197,7 +197,7 @@ export class TaskSaver {
   }
 
   /**
-   * Saves an user solution annotation
+   * Saves a user solution annotation
    *
    * @param task Task to save an annotation to
    * @param annotation Usersolution Annotation
@@ -258,8 +258,7 @@ export class TaskSaver {
     annotations: Annotation[],
     viewer: OpenSeadragon.Viewer
   ): Promise<UserSolution> {
-    const solution_data = TaskSaver.serialize(annotations, viewer);
-    create.solution_data = solution_data;
+    create.solution_data = TaskSaver.serialize(annotations, viewer);
     return TaskService.saveUserSolution(create);
   }
 
@@ -289,9 +288,8 @@ export class TaskSaver {
         const centerPoint = point.vertex;
         const borderPoint = new Point(centerPoint!.x + annotation.offsetRadius, centerPoint!.y);
         const imageBorderpoint = viewportToImage(borderPoint, viewer);
-        const radius = imagePoint.distanceTo(imageBorderpoint);
 
-        (elem as OffsetAnnotationPointData).offsetImageRadius = radius;
+        (elem as OffsetAnnotationPointData).offsetImageRadius = imagePoint.distanceTo(imageBorderpoint);
         (elem as OffsetAnnotationPointData).offsetRadius = annotation.offsetRadius;
       }
     } else {

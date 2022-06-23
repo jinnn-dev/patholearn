@@ -3,7 +3,7 @@ import { nanoid } from 'nanoid';
 import OpenSeadragon, { Point } from 'openseadragon';
 import { polygonChanged } from '../../components/viewer/core/viewerState';
 import { BoundingBox } from '../boundingBox';
-import { POLYGON_VERTICE_RADIUS } from '../viewer/config';
+import { POLYGON_VERTEX_COLOR } from '../viewer/config';
 import { ANNOTATION_TYPE } from '../viewer/annotationType';
 import { ANNOTATION_COLOR, COLOR } from '../viewer/colors';
 import { Annotation } from './annotation';
@@ -160,7 +160,7 @@ export class AnnotationLine extends Annotation {
   }
 
   /**
-   * Creates a SVG-Polyline and appends it
+   * Creates an SVG-Polyline and appends it
    *
    * @param strokeWidth Strokewidth of the polyline
    * @returns The created polyline
@@ -280,8 +280,8 @@ export class AnnotationLine extends Annotation {
 
       this.vertice.forEach((vertice) => {
         vertice.element.append();
-        vertice.element.updateRadius(POLYGON_VERTICE_RADIUS / scale);
-        vertice.element.updateStrokeWidth((POLYGON_VERTICE_RADIUS - 2) / scale);
+        vertice.element.updateRadius(POLYGON_VERTEX_COLOR / scale);
+        vertice.element.updateStrokeWidth((POLYGON_VERTEX_COLOR - 2) / scale);
         vertice.element.updateStrokeColor(this.color);
         if (trackable) {
           select('[id ="' + vertice.element.id + '"]').each(function () {
