@@ -1,9 +1,9 @@
-import { AnnotationCoord } from './annotationCoord';
+import { AnnotationCoordinates } from './annotationCoordinates';
 import { AnnotationData } from './annotationData';
 
 export interface OffsetAnnotationPolygonData extends AnnotationData {
-  outerPoints: AnnotationCoord;
-  innerPoints: AnnotationCoord;
+  outerPoints: AnnotationCoordinates;
+  innerPoints: AnnotationCoordinates;
   innerOffset: number;
   outerOffset: number;
   changedManual: boolean;

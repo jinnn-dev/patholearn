@@ -1,7 +1,7 @@
-import { ExtractionResultList } from '../model/viewer/export/extractionResult';
 import { handleError } from './error-handler';
 import { ApiService } from './api.service';
 import { BASE_API_URL } from '../config';
+import { ExtractionResultList } from '../model/viewer/extract/extractionResultList';
 
 export class ImageService {
   public static async convertImagesToAnnotations(

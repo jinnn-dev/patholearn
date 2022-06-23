@@ -1,9 +1,8 @@
 <script lang='ts' setup>
 import { onMounted, PropType, ref } from 'vue';
 
-import { Task } from '../../model/task';
-import { TaskStatus } from '../../model/result';
-import { BaseTask } from '../../model/baseTask';
+import { Task } from '../../model/task/task';
+import { BaseTask } from '../../model/task/baseTask';
 import { TaskService } from '../../services/task.service';
 import TaskLayer from './TaskLayer.vue';
 import RoleOnly from '../containers/RoleOnly.vue';
@@ -11,6 +10,7 @@ import PrimaryButton from '../general/PrimaryButton.vue';
 import ModalDialog from '../containers/ModalDialog.vue';
 import SaveButton from '../general/SaveButton.vue';
 import Icon from '../general/Icon.vue';
+import { TaskStatus } from '../../core/types/taskStatus';
 
 interface LayeredTasks {
   [key: number]: Task[];

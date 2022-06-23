@@ -2,7 +2,7 @@
 import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 import { reactive, ref } from 'vue';
-import { Task, TaskCreate, TaskType } from '../../model/task';
+import { Task, TaskCreate } from '../../model/task/task';
 import { TaskImageService } from '../../services/task-image.service';
 import { TaskService } from '../../services/task.service';
 import { knowledgeLevel, taskTypes } from './task-config';
@@ -14,6 +14,7 @@ import CustomSlider from '../form/CustomSlider.vue';
 import MultiImageUpload from '../form/MultiImageUpload.vue';
 import PrimaryButton from '../general/PrimaryButton.vue';
 import SaveButton from '../general/SaveButton.vue';
+import { TaskType } from '../../core/types/taskType';
 
 const emit = defineEmits(['close', 'taskCreated']);
 

@@ -1,6 +1,6 @@
 <script lang='ts' setup>
 import { PropType, ref } from 'vue';
-import { TaskGroup, UpdateTaskGroup } from '../model/taskGroup';
+import { TaskGroup, UpdateTaskGroup } from '../model/task/taskGroup';
 import { TaskGroupService } from '../services/task-group.service';
 import { onClickOutside } from '@vueuse/core';
 import SkeletonCard from './containers/SkeletonCard.vue';

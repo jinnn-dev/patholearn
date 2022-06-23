@@ -2,7 +2,7 @@
 import { onMounted, reactive, ref, watchEffect } from 'vue';
 import { Course, UpdateCourse } from '../model/course';
 import { useRoute } from 'vue-router';
-import { TaskGroup } from '../model/taskGroup';
+import { TaskGroup } from '../model/task/taskGroup';
 import { CourseService } from '../services/course.service';
 import { TaskService } from '../services/task.service';
 import { TaskGroupService } from '../services/task-group.service';

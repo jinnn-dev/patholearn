@@ -2,19 +2,24 @@
 import OpenSeadragon from 'openseadragon';
 import { computed, onMounted, onUnmounted, PropType, reactive, ref, watch } from 'vue';
 import { getSlideUrl } from '../../config';
-import { RESULT_POLYGON_COLOR, TaskStatus } from '../../model/result';
-import { Annotation } from '../../model/viewer/svg/annotation/annotation';
+import { Annotation } from '../../core/viewer/svg/annotation/annotation';
 import { AnnotationGroup as AnnotationGroupModel } from '../../model/task/annotationGroup';
-import { Task } from '../../model/task';
-import { ANNOTATION_TYPE, isUserSolution } from '../../model/viewer/annotationType';
-import { ANNOTATION_COLOR } from '../../model/viewer/colors';
+import { Task } from '../../model/task/task';
+import { ANNOTATION_TYPE, isUserSolution } from '../../core/viewer/types/annotationType';
+import { ANNOTATION_COLOR } from '../../core/viewer/types/colors';
 import { AnnotationData } from '../../model/viewer/export/annotationData';
-import { isDrawingTool, Tool, TOOL_ANNOTATION, TOOL_COLORS, TOOL_KEYBOARD_SHORTCUTS } from '../../model/viewer/tools';
+import {
+  isDrawingTool,
+  Tool,
+  TOOL_ANNOTATION,
+  TOOL_COLORS,
+  TOOL_KEYBOARD_SHORTCUTS
+} from '../../core/viewer/types/tools';
 import { TaskService } from '../../services/task.service';
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
 import { AnnotationViewer } from '../../core/viewer/annotationViewer';
-import { options } from '../../core/viewer/options';
-import { userMouseClickHandler } from '../../core/viewer/userMouseClickHandler';
+import { generateViewerOptions } from '../../core/viewer/config/generateViewerOptions';
+import { userMouseClickHandler } from '../../core/viewer/helper/userMouseClickHandler';
 import {
   isTaskSaving,
   polygonChanged,
@@ -29,7 +34,7 @@ import {
   showAllAnnotations,
   showGroup,
   updateAnnotation
-} from './taskViewerHelper';
+} from '../../core/viewer/helper/taskViewerHelper';
 import { TaskResult } from '../../model/task/result/taskResult';
 import AnnotationSettings from './annotation-settings/AnnotationSettings.vue';
 import CustomSelect from '../form/CustomSelect.vue';
@@ -40,6 +45,7 @@ import SavingInfo from './SavingInfo.vue';
 import BackgroundAnnotationSwitcher from './BackgroundAnnotationSwitcher.vue';
 import InfoTooltip from '../InfoTooltip.vue';
 import AnnotationGroup from './AnnotationGroup.vue';
+import { RESULT_POLYGON_COLOR, TaskStatus } from '../../core/types/taskStatus';
 
 const props = defineProps({
   slide_name: String,
@@ -195,7 +201,7 @@ watch(
 );
 
 onMounted(() => {
-  const viewerOptions = options('viewerImage', getSlideUrl(props.slide_name as string));
+  const viewerOptions = generateViewerOptions('viewerImage', getSlideUrl(props.slide_name as string));
 
   drawingViewer.value = new AnnotationViewer(viewerOptions);
 

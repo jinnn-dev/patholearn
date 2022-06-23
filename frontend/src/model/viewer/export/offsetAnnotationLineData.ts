@@ -1,8 +1,8 @@
-import { AnnotationCoord } from './annotationCoord';
+import { AnnotationCoordinates } from './annotationCoordinates';
 import { AnnotationData } from './annotationData';
 
 export interface OffsetAnnotationLineData extends AnnotationData {
-  outerPoints: AnnotationCoord;
+  outerPoints: AnnotationCoordinates;
   offsetRadius: number;
   changedManual: boolean;
 }

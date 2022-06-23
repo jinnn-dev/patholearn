@@ -86,7 +86,7 @@
 </template>
 <script lang='ts'>
 import { defineComponent, PropType, reactive, ref, watch } from 'vue';
-import { Task, TaskType } from '../../model/task';
+import { Task } from '../../model/task/task';
 import { TaskService } from '../../services/task.service';
 import { knowledgeLevel, taskTypes } from './task-config';
 import InputField from '../form/InputField.vue';
@@ -96,6 +96,7 @@ import CustomSlider from '../form/CustomSlider.vue';
 import ToggleButton from '../form/ToggleButton.vue';
 import PrimaryButton from '../general/PrimaryButton.vue';
 import SaveButton from '../general/SaveButton.vue';
+import { TaskType } from '../../core/types/taskType';
 
 export default defineComponent({
   components: { SaveButton, PrimaryButton, ToggleButton, CustomSlider, AccordionItem, Accordion, InputField },

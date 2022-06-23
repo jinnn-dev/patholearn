@@ -1,10 +1,10 @@
 import { select } from 'd3-selection';
-import { Annotation } from '../../model/viewer/svg/annotation/annotation';
-import { ANNOTATION_TYPE, isInfoAnnotation, isSolution, isUserSolution } from '../../model/viewer/annotationType';
-import { ANNOTATION_COLOR, getFillColor } from '../../model/viewer/colors';
-import { POLYGON_STROKE_WIDTH, POLYGON_VERTEX_COLOR } from '../../model/viewer/config';
+import { Annotation } from './svg/annotation/annotation';
+import { ANNOTATION_TYPE, isInfoAnnotation, isSolution, isUserSolution } from './types/annotationType';
+import { ANNOTATION_COLOR, getFillColor } from './types/colors';
+import { POLYGON_STROKE_WIDTH, POLYGON_VERTEX_COLOR } from './config/defaultValues';
 import { AnnotationData } from '../../model/viewer/export/annotationData';
-import { generateAnnotation } from '../../model/viewer/svg/factories/generateAnnotation';
+import { generateAnnotation } from './svg/factories/generateAnnotation';
 
 export class AnnotationManager {
   private readonly _infoNode: HTMLElement;

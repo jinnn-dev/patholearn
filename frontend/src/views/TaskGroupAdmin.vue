@@ -1,7 +1,7 @@
 <script lang='ts' setup>
 import { onMounted, reactive, ref } from 'vue';
-import { BaseTask } from '../model/baseTask';
-import { TaskGroup } from '../model/taskGroup';
+import { BaseTask } from '../model/task/baseTask';
+import { TaskGroup } from '../model/task/taskGroup';
 import { useRoute } from 'vue-router';
 import { TaskGroupService } from '../services/task-group.service';
 import { Slide } from '../model/slide';

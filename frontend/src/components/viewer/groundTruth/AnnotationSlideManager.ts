@@ -1,5 +1,5 @@
 import { Viewer } from 'openseadragon';
-import { SvgOverlay } from '../../../core/viewer/svg-overlay';
+import { SvgOverlay } from '../../../core/viewer/svg/svg-overlay';
 
 export class AnnotationSlideManager {
   private readonly _viewer: Viewer;

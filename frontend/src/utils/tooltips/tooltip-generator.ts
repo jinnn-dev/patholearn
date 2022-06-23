@@ -4,7 +4,8 @@ import 'tippy.js/animations/shift-away.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/dist/svg-arrow.css';
 import 'tippy.js/dist/tippy.css';
-import { RESULT_RESPONSE_DETAIL, RESULT_RESPONSE_NAME, TaskResultDetail, TaskStatus } from '../../model/result';
+import { RESULT_RESPONSE_DETAIL, RESULT_RESPONSE_NAME, TaskStatus } from '../../core/types/taskStatus';
+import { TaskResultDetail } from '../../model/task/result/taskResultDetail';
 
 export class TooltipGenerator {
   private static instances: Instance[] = [];

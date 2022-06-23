@@ -1,6 +1,6 @@
 <script lang='ts' setup>
 import { computed, onMounted, PropType, ref, watch } from 'vue';
-import { isInfoTool, Tool, TOOL_COMPONENTS, TOOL_HINTS } from '../../model/viewer/tools';
+import { isInfoTool, Tool, TOOL_COMPONENTS, TOOL_HINTS } from '../../core/viewer/types/tools';
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
 import { userSolutionLocked, viewerLoadingState } from '../../core/viewer/viewerState';
 import { Instance } from 'tippy.js';

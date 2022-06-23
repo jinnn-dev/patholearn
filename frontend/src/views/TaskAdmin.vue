@@ -1,8 +1,8 @@
 <script lang='ts' setup>
 import { defineAsyncComponent, onMounted, onUnmounted, ref } from 'vue';
-import { BaseTask } from '../model/baseTask';
+import { BaseTask } from '../model/task/baseTask';
 import { useRoute } from 'vue-router';
-import { Task, TaskType } from '../model/task';
+import { Task } from '../model/task/task';
 import { viewerLoadingState } from '../core/viewer/viewerState';
 import { TaskService } from '../services/task.service';
 import SelectImagesTask from '../components/tasks/image-select/SelectImagesTask.vue';
@@ -10,6 +10,7 @@ import TaskContainer from '../components/task/TaskContainer.vue';
 import TaskHeader from '../components/task/TaskHeader.vue';
 import ViewerBackButton from '../components/viewer/ViewerBackButton.vue';
 import ViewerLoading from '../components/viewer/ViewerLoading.vue';
+import { TaskType } from '../core/types/taskType';
 
 const TaskViewerAdmin = defineAsyncComponent({
   loader: () => import('../components/viewer/TaskViewerAdmin.vue')

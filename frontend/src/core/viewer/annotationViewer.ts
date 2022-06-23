@@ -1,29 +1,29 @@
 import { select } from 'd3-selection';
 import OpenSeadragon, { Point, Viewer } from 'openseadragon';
-import { Annotation } from '../../model/viewer/svg/annotation/annotation';
-import { AnnotationLine } from '../../model/viewer/svg/annotation/annotationLine';
-import { AnnotationPoint } from '../../model/viewer/svg/annotation/annotationPoint';
-import { AnnotationRectangle } from '../../model/viewer/svg/annotation/annotationRect';
-import InfoAnnotationLine from '../../model/viewer/svg/annotation/info/infoAnnotationLine';
-import InfoAnnotationPoint from '../../model/viewer/svg/annotation/info/infoAnnotationPoint';
-import InfoAnnotationPolygon from '../../model/viewer/svg/annotation/info/infoAnnotationPolygon';
-import { MouseCircle } from '../../model/viewer/svg/mouseCircle';
-import { OffsetAnnotationLine } from '../../model/viewer/svg/annotation/offset/offsetAnnotationLine';
-import { OffsetAnnotationPoint } from '../../model/viewer/svg/annotation/offset/offsetAnnotationPoint';
-import { OffsetAnnotationRectangle } from '../../model/viewer/svg/annotation/offset/offsetAnnotationRect';
-import { OffsetAnnotationPolygon } from '../../model/viewer/svg/annotation/offset/offsetAnnotationPolygon';
-import { AnnotationPolygon } from '../../model/viewer/svg/annotation/annotationPolygon';
-import { Task } from '../../model/task';
+import { Annotation } from './svg/annotation/annotation';
+import { AnnotationLine } from './svg/annotation/annotationLine';
+import { AnnotationPoint } from './svg/annotation/annotationPoint';
+import { AnnotationRectangle } from './svg/annotation/annotationRect';
+import InfoAnnotationLine from './svg/annotation/info/infoAnnotationLine';
+import InfoAnnotationPoint from './svg/annotation/info/infoAnnotationPoint';
+import InfoAnnotationPolygon from './svg/annotation/info/infoAnnotationPolygon';
+import { MouseCircle } from './svg/mouseCircle';
+import { OffsetAnnotationLine } from './svg/annotation/offset/offsetAnnotationLine';
+import { OffsetAnnotationPoint } from './svg/annotation/offset/offsetAnnotationPoint';
+import { OffsetAnnotationRectangle } from './svg/annotation/offset/offsetAnnotationRect';
+import { OffsetAnnotationPolygon } from './svg/annotation/offset/offsetAnnotationPolygon';
+import { AnnotationPolygon } from './svg/annotation/annotationPolygon';
+import { Task } from '../../model/task/task';
 import { UserSolution, UserSolutionCreate } from '../../model/userSolution';
-import { ANNOTATION_TYPE, isUserSolution } from '../../model/viewer/annotationType';
-import { ANNOTATION_COLOR } from '../../model/viewer/colors';
+import { ANNOTATION_TYPE, isUserSolution } from './types/annotationType';
+import { ANNOTATION_COLOR } from './types/colors';
 import {
   ANNOTATION_OFFSET_SCALAR,
   POLYGON_INFLATE_OFFSET,
   POLYGON_SNAPPING_RADIUS,
   POLYGON_STROKE_WIDTH,
   POLYGON_VERTEX_COLOR
-} from '../../model/viewer/config';
+} from './config/defaultValues';
 import { AnnotationData } from '../../model/viewer/export/annotationData';
 import { AnnotationRectangleData } from '../../model/viewer/export/annotationRectangleData';
 import { OffsetAnnotationPolygonData } from '../../model/viewer/export/offsetAnnotationPolygonData';
@@ -31,10 +31,10 @@ import { PointData } from '../../model/viewer/export/pointData';
 import { AnnotationParser } from '../../utils/annotation-parser';
 import { imageToViewport, pointIsInImage, webToViewport } from '../../utils/seadragon.utils';
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
-import { snapAnnotation, SnapResult } from './annotation-snapper';
+import { snapAnnotation, SnapResult } from './helper/annotation-snapper';
 import { AnnotationManager } from './annotationManager';
-import { SVG_ID } from './options';
-import { SvgOverlay } from './svg-overlay';
+import { SVG_ID } from './config/generateViewerOptions';
+import { SvgOverlay } from './svg/svg-overlay';
 import { TaskSaver } from './taskSaver';
 import { viewerLoadingState, viewerScale, viewerZoom } from './viewerState';
 

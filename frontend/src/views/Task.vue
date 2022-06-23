@@ -1,8 +1,8 @@
 <script lang='ts' setup>
 import { onMounted, onUnmounted, ref, watch } from 'vue';
-import { BaseTask } from '../model/baseTask';
+import { BaseTask } from '../model/task/baseTask';
 import { useRoute } from 'vue-router';
-import { Task, TaskType } from '../model/task';
+import { Task } from '../model/task/task';
 import { Course } from '../model/course';
 import { showSolution, userSolutionLocked, viewerLoadingState } from '../core/viewer/viewerState';
 import { TaskService } from '../services/task.service';
@@ -16,6 +16,7 @@ import ViewerBackButton from '../components/viewer/ViewerBackButton.vue';
 import NotCourseMember from '../components/NotCourseMember.vue';
 import ViewerLoading from '../components/viewer/ViewerLoading.vue';
 import { TaskResult } from '../model/task/result/taskResult';
+import { TaskType } from '../core/types/taskType';
 
 const baseTask = ref<BaseTask>();
 const route = useRoute();

@@ -1,10 +1,10 @@
 <script lang='ts' setup>
 import { PropType, ref } from 'vue';
 import { UserSolution } from '../../model/userSolution';
-import { TaskStatus } from '../../model/result';
 import Icon from '../general/Icon.vue';
 import RoleOnly from '../containers/RoleOnly.vue';
 import ConfirmDialog from '../general/ConfirmDialog.vue';
+import { TaskStatus } from '../../core/types/taskStatus';
 
 const props = defineProps({
   isOwner: {

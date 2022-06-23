@@ -1,4 +1,4 @@
-import { SLIDE_STATUS } from './slideStatus';
+import { SLIDE_STATUS } from '../core/types/slideStatus';
 
 export interface Slide {
   id: number;

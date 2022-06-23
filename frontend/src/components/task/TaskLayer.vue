@@ -1,8 +1,8 @@
 <script lang='ts' setup>
 import { PropType, ref } from 'vue';
-import { Task, TaskType } from '../../model/task';
+import { Task } from '../../model/task/task';
 import { TaskService } from '../../services/task.service';
-import { ANNOTATION_TYPE } from '../../model/viewer/annotationType';
+import { ANNOTATION_TYPE } from '../../core/viewer/types/annotationType';
 import RoleOnly from '../containers/RoleOnly.vue';
 import ModalDialog from '../containers/ModalDialog.vue';
 import UpdateTask from './UpdateTask.vue';
@@ -10,6 +10,7 @@ import CreateTask from './CreateTask.vue';
 import PrimaryButton from '../general/PrimaryButton.vue';
 import TaskItem from './TaskItem.vue';
 import Icon from '../general/Icon.vue';
+import { TaskType } from '../../core/types/taskType';
 
 const props = defineProps({
   layerIndex: {

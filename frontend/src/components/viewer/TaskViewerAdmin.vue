@@ -1,25 +1,31 @@
 <script lang='ts' setup>
 import { select, selectAll } from 'd3-selection';
-import { AnnotationRectangle } from 'model/viewer/svg/annotation/annotationRect';
+import { AnnotationRectangle } from 'core/viewer/svg/annotation/annotationRect';
 import { AnnotationData } from 'model/viewer/export/annotationData';
 import OpenSeadragon from 'openseadragon';
 import { computed, onMounted, PropType, reactive, ref, watch } from 'vue';
 import { getSlideUrl } from '../../config';
-import { AnnotationLine } from '../../model/viewer/svg/annotation/annotationLine';
-import { OffsetAnnotationLine } from '../../model/viewer/svg/annotation/offset/offsetAnnotationLine';
-import { OffsetAnnotationPoint } from '../../model/viewer/svg/annotation/offset/offsetAnnotationPoint';
-import { OffsetAnnotationRectangle } from '../../model/viewer/svg/annotation/offset/offsetAnnotationRect';
-import { OffsetAnnotationPolygon } from '../../model/viewer/svg/annotation/offset/offsetAnnotationPolygon';
+import { AnnotationLine } from '../../core/viewer/svg/annotation/annotationLine';
+import { OffsetAnnotationLine } from '../../core/viewer/svg/annotation/offset/offsetAnnotationLine';
+import { OffsetAnnotationPoint } from '../../core/viewer/svg/annotation/offset/offsetAnnotationPoint';
+import { OffsetAnnotationRectangle } from '../../core/viewer/svg/annotation/offset/offsetAnnotationRect';
+import { OffsetAnnotationPolygon } from '../../core/viewer/svg/annotation/offset/offsetAnnotationPolygon';
 import type { AnnotationGroup as AnnotationGroupModel } from '../../model/task/annotationGroup';
-import { Task, TaskType } from '../../model/task';
-import { ANNOTATION_TYPE, isInfoAnnotation, isSolution } from '../../model/viewer/annotationType';
-import { ANNOTATION_COLOR } from '../../model/viewer/colors';
-import { isDrawingTool, Tool, TOOL_ANNOTATION, TOOL_COLORS, TOOL_KEYBOARD_SHORTCUTS } from '../../model/viewer/tools';
+import { Task } from '../../model/task/task';
+import { ANNOTATION_TYPE, isInfoAnnotation, isSolution } from '../../core/viewer/types/annotationType';
+import { ANNOTATION_COLOR } from '../../core/viewer/types/colors';
+import {
+  isDrawingTool,
+  Tool,
+  TOOL_ANNOTATION,
+  TOOL_COLORS,
+  TOOL_KEYBOARD_SHORTCUTS
+} from '../../core/viewer/types/tools';
 import { TaskService } from '../../services/task.service';
 import { AnnotationParser, ParseResult } from '../../utils/annotation-parser';
-import { adminMouseClickHandler } from '../../core/viewer/adminMouseClickHandler';
+import { adminMouseClickHandler } from '../../core/viewer/helper/adminMouseClickHandler';
 import { AnnotationViewer } from '../../core/viewer/annotationViewer';
-import { options } from '../../core/viewer/options';
+import { generateViewerOptions } from '../../core/viewer/config/generateViewerOptions';
 import { isTaskSaving, polygonChanged, selectedPolygon, viewerLoadingState } from '../../core/viewer/viewerState';
 import {
   focusBackgroundAnnotation,
@@ -28,8 +34,7 @@ import {
   showAllAnnotations,
   showGroup,
   updateAnnotation
-} from './taskViewerHelper';
-import { ExtractionResultList } from '../../model/viewer/export/extractionResult';
+} from '../../core/viewer/helper/taskViewerHelper';
 import ConfirmDialog from '../general/ConfirmDialog.vue';
 import InfoTooltip from '../InfoTooltip.vue';
 import BackgroundAnnotationSwitcher from './BackgroundAnnotationSwitcher.vue';
@@ -43,6 +48,8 @@ import CustomSlider from '../form/CustomSlider.vue';
 import CustomSelect from '../form/CustomSelect.vue';
 import ColorPicker from '../general/ColorPicker.vue';
 import AnnotationGroup from './AnnotationGroup.vue';
+import { ExtractionResultList } from '../../model/viewer/extract/extractionResultList';
+import { TaskType } from '../../core/types/taskType';
 
 const props = defineProps({
   slide_name: String,
@@ -245,7 +252,7 @@ watch(
 onMounted(() => {
   viewerLoadingState.annotationsLoaded = false;
 
-  const viewerOptions = options('viewerImage', getSlideUrl(props.slide_name as string));
+  const viewerOptions = generateViewerOptions('viewerImage', getSlideUrl(props.slide_name as string));
 
   drawingViewer.value = new AnnotationViewer(viewerOptions);
 

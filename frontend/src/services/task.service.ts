@@ -1,10 +1,10 @@
 import { ImageSelectStatistic } from 'model/imageSelectStatistic';
-import { BaseTask, CreateBaseTask, UpdateBaseTask } from '../model/baseTask';
+import { BaseTask, CreateBaseTask, UpdateBaseTask } from '../model/task/baseTask';
 import { MembersolutionSummary } from '../model/membersolutionSummary';
 import { TaskResult } from '../model/task/result/taskResult';
-import { Task, TaskCreate, TaskUpdate } from '../model/task';
+import { Task, TaskCreate, TaskUpdate } from '../model/task/task';
 import { AnnotationGroup } from '../model/task/annotationGroup';
-import { TaskHint, TaskHintCreate, TaskHintUpdate } from '../model/taskHint';
+import { TaskHint, TaskHintCreate, TaskHintUpdate } from '../model/task/taskHint';
 import { UserSolution, UserSolutionCreate, UserSolutionUpdate } from '../model/userSolution';
 import { ApiService } from './api.service';
 import { handleError } from './error-handler';

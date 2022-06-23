@@ -2,12 +2,13 @@ import { select, Selection } from 'd3-selection';
 import OpenSeadragon, { MouseTracker, TileCache, Viewer } from 'openseadragon';
 import { ref, Ref } from 'vue';
 import { SLIDE_IMAGE_URL } from '../../../config';
-import { ImageSelectFeedback, RESULT_POLYGON_COLOR } from '../../../model/result';
-import { ANNOTATION_COLOR } from '../../../model/viewer/colors';
+import { ANNOTATION_COLOR } from '../../../core/viewer/types/colors';
 import { shuffle } from '../../../utils/seadragon.utils';
-import { options, SVG_ID } from '../../../core/viewer/options';
-import { BACKGROUND_NODE_ID, SvgOverlay } from '../../../core/viewer/svg-overlay';
+import { generateViewerOptions, SVG_ID } from '../../../core/viewer/config/generateViewerOptions';
+import { BACKGROUND_NODE_ID, SvgOverlay } from '../../../core/viewer/svg/svg-overlay';
 import { viewerLoadingState } from '../../../core/viewer/viewerState';
+import { RESULT_POLYGON_COLOR } from '../../../core/types/taskStatus';
+import { ImageSelectFeedback } from '../../../model/task/result/imageSelectFeedback';
 
 export class ImageSelectViewer {
   private _viewer: Viewer;
@@ -36,7 +37,7 @@ export class ImageSelectViewer {
     this._rects = [];
     this._imageSelectFeedback = [];
 
-    const viewerOptions = options(
+    const viewerOptions = generateViewerOptions(
       'viewerImage',
       'https://images.unsplash.com/photo-1634546703473-d8809bba39b2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1587&q=80'
     );

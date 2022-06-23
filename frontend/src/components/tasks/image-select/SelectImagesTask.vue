@@ -5,14 +5,14 @@
 </template>
 <script lang='ts'>
 import { defineComponent, onMounted, PropType, ref, watch } from 'vue';
-import { ImageSelectFeedback } from '../../../model/result';
-import { Task } from '../../../model/task';
-import { ANNOTATION_COLOR } from '../../../model/viewer/colors';
+import { Task } from '../../../model/task/task';
+import { ANNOTATION_COLOR } from '../../../core/viewer/types/colors';
 import { TaskService } from '../../../services/task.service';
 import { isTaskSaving, userSolutionLocked } from '../../../core/viewer/viewerState';
 import { ImageSelectViewer } from './imageSelectViewer';
 import SavingInfo from '../../viewer/SavingInfo.vue';
 import { TaskResult } from 'model/task/result/taskResult';
+import { ImageSelectFeedback } from '../../../model/task/result/imageSelectFeedback';
 
 export default defineComponent({
   components: { SavingInfo },

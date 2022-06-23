@@ -1,8 +1,8 @@
 <script lang='ts' setup>
 import { computed, PropType, ref } from 'vue';
-import { Task } from '../../../model/task';
+import { Task } from '../../../model/task/task';
 import { getTaskHints, store } from '../../../utils/hint.store';
-import { TaskHint } from '../../../model/taskHint';
+import { TaskHint } from '../../../model/task/taskHint';
 import PrimaryButton from '../../general/PrimaryButton.vue';
 import HintCreator from './HintCreator.vue';
 import Hint from './Hint.vue';

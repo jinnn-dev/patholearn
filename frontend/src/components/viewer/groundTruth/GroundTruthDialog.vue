@@ -4,7 +4,7 @@ import { AnnotationViewer } from '../../../core/viewer/annotationViewer';
 import { AnnotationParser, ParseResult } from '../../../utils/annotation-parser';
 import { TempUploadImage } from '../../../model/tempUploadImage';
 import { SlideService } from '../../../services/slide.service';
-import { ANNOTATION_TYPE } from '../../../model/viewer/annotationType';
+import { ANNOTATION_TYPE } from '../../../core/viewer/types/annotationType';
 import ModalDialog from '../../containers/ModalDialog.vue';
 import SaveButton from '../../general/SaveButton.vue';
 import PrimaryButton from '../../general/PrimaryButton.vue';

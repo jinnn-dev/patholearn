@@ -1,5 +1,5 @@
 import { SLIDE_API_URL } from '../config';
-import { TaskImage } from '../model/taskImage';
+import { TaskImage } from '../model/task/taskImage';
 import { ApiService } from './api.service';
 import { handleError } from './error-handler';
 

@@ -3,7 +3,7 @@ import { onClickOutside } from '@vueuse/core';
 import { ref, watch } from 'vue';
 import { getThumbnailUrl } from '../../config';
 import { Slide } from '../../model/slide';
-import { SLIDE_STATUS } from '../../model/slideStatus';
+import { SLIDE_STATUS } from '../../core/types/slideStatus';
 import { SlideService } from '../../services/slide.service';
 import InputField from '../form/InputField.vue';
 import LazyImage from '../LazyImage.vue';

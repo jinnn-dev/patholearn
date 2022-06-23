@@ -1,6 +1,6 @@
 <script lang='ts' setup>
 import { useAnnotationSlide } from './useAnnotationSlide';
-import { options } from '../../../core/viewer/options';
+import { generateViewerOptions } from '../../../core/viewer/config/generateViewerOptions';
 import { getSlideUrl } from '../../../config';
 
 const props = defineProps({
@@ -9,7 +9,7 @@ const props = defineProps({
     required: true
   }
 });
-const { viewer } = useAnnotationSlide(options('annotation-slide-viewer', getSlideUrl(props.slideId)));
+const { viewer } = useAnnotationSlide(generateViewerOptions('annotation-slide-viewer', getSlideUrl(props.slideId)));
 </script>
 <template>
   <div id='annotation-slide-viewer' class='w-full h-full'></div>

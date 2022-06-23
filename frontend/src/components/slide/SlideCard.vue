@@ -2,7 +2,7 @@
 import { onMounted, PropType, ref } from 'vue';
 import { getThumbnailUrl } from '../../config';
 import { Slide } from '../../model/slide';
-import { SLIDE_STATUS } from '../../model/slideStatus';
+import { SLIDE_STATUS } from '../../core/types/slideStatus';
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
 import SkeletonCard from '../containers/SkeletonCard.vue';
 import Icon from '../general/Icon.vue';

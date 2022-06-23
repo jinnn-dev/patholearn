@@ -6,7 +6,7 @@ import { getSlideUrl } from '../../config';
 import { Slide } from '../../model/slide';
 import { SlideService } from '../../services/slide.service';
 import { debounceRef } from '../../utils/debounceRef';
-import { options } from '../../core/viewer/options';
+import { generateViewerOptions } from '../../core/viewer/config/generateViewerOptions';
 import ViewerBackButton from './ViewerBackButton.vue';
 import ZSlider from './ZSlider.vue';
 
@@ -25,7 +25,7 @@ const currentIndex = ref(0);
 
 onMounted(async () => {
   const route = useRoute();
-  // OpenSeadragon(options('viewerImage', getSlideUrl(route.params.id as string)));
+  // OpenSeadragon(viewerOptions('viewerImage', getSlideUrl(route.params.id as string)));
   const slide_id = route.params.id as string;
   slide.value = await SlideService.getSlide(slide_id, false);
 
@@ -35,7 +35,7 @@ onMounted(async () => {
     slideUrls.value = slide.value.children.map((child_id) => getSlideUrl(slide_id + '/' + child_id));
   }
 
-  viewer.value = OpenSeadragon(options('viewerImage', [slideUrls.value[0]]));
+  viewer.value = OpenSeadragon(generateViewerOptions('viewerImage', [slideUrls.value[0]]));
 
   new OpenSeadragon.TileCache({
     maxImageCacheCount: 500

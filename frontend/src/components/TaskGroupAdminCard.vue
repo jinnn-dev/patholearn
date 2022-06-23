@@ -2,7 +2,7 @@
 import { onClickOutside } from '@vueuse/core';
 import { nextTick, PropType, ref } from 'vue';
 import { SLIDE_IMAGE_URL } from '../config';
-import { BaseTask, UpdateBaseTask } from '../model/baseTask';
+import { BaseTask, UpdateBaseTask } from '../model/task/baseTask';
 import { ImageSelectStatistic } from '../model/imageSelectStatistic';
 import { MembersolutionSummary } from '../model/membersolutionSummary';
 import { TaskService } from '../services/task.service';

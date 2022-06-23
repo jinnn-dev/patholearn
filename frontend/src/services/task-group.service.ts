@@ -1,4 +1,4 @@
-import { TaskGroup, UpdateTaskGroup } from '../model/taskGroup';
+import { TaskGroup, UpdateTaskGroup } from '../model/task/taskGroup';
 import { ApiService } from './api.service';
 import { handleError } from './error-handler';
 

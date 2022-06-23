@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { TaskHint } from '../model/taskHint';
+import { TaskHint } from '../model/task/taskHint';
 import { TaskService } from '../services/task.service';
 
 interface Store {

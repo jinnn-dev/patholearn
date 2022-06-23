@@ -1,9 +1,10 @@
 <script lang='ts' setup>
 import { PropType } from 'vue';
-import { Task, TaskType } from '../../model/task';
+import { Task } from '../../model/task/task';
 import { TaskResult as TR } from '../../model/task/result/taskResult';
 import TaskQuestion from './TaskQuestion.vue';
 import TaskResult from './TaskResult.vue';
+import { TaskType } from '../../core/types/taskType';
 
 defineProps({
   selectedTask: {

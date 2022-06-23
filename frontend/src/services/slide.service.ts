@@ -1,7 +1,7 @@
-import { SLIDE_STATUS } from 'model/slideStatus';
+import { SLIDE_STATUS } from 'core/types/slideStatus';
 import { BASE_API_URL, SLIDE_API_URL } from '../config';
 import { Slide } from '../model/slide';
-import { ExtractionResult } from '../model/viewer/export/extractionResult';
+import { ExtractionResult } from '../model/viewer/extract/extractionResult';
 import { ApiService } from './api.service';
 import { handleError } from './error-handler';
 

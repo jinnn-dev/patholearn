@@ -1,12 +1,13 @@
 import { Simplify } from 'curvereduce';
 import { nanoid } from 'nanoid';
 import OpenSeadragon, { Point } from 'openseadragon';
-import { ANNOTATION_TYPE } from '../model/viewer/annotationType';
-import { ANNOTATION_COLOR } from '../model/viewer/colors';
+import { ANNOTATION_TYPE } from '../core/viewer/types/annotationType';
+import { ANNOTATION_COLOR } from '../core/viewer/types/colors';
 import { AnnotationData } from '../model/viewer/export/annotationData';
-import { ExtractionResult, ExtractionResultList } from '../model/viewer/export/extractionResult';
+import { ExtractionResult } from '../model/viewer/extract/extractionResult';
 import { PointData } from '../model/viewer/export/pointData';
 import { imageToViewport } from './seadragon.utils';
+import { ExtractionResultList } from '../model/viewer/extract/extractionResultList';
 
 export interface ParseResult {
   name: string | null;

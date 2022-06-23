@@ -1,6 +1,6 @@
 <script lang='ts' setup>
 import { PropType } from 'vue';
-import { TaskHint } from '../../../model/taskHint';
+import { TaskHint } from '../../../model/task/taskHint';
 import { SLIDE_IMAGE_URL } from '../../../config';
 import UploadPreviewImage from '../../UploadPreviewImage.vue';
 
