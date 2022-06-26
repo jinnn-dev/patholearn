@@ -588,21 +588,24 @@ def get_statistic_to_base_task(*, db: Session = Depends(get_db), short_name: str
             mapped_tasks[task_id] = crud_task.get(db, id=task_id)
 
     task_data = []
+    loaded_images = []
 
     for task in mapped_tasks.values():
         if task.task_data:
             task_data.extend(task.task_data)
+        if len(task_data) > 0 and task.task_type == TaskType.IMAGE_SELECT:
+            print(task_data)
+            image_query = "&taskimageid=".join(task_data)
+            loaded_images.append(
+                requests.get(
+                    settings.SLIDE_URL + "/task-images?taskimageid=" + image_query
+                ).json()
+            )
+        else:
+            return ImageSelectStatistic(
+                wrong_image_statistics=[], wrong_label_statistics=[]
+            )
 
-    if len(task_data) > 0 and task.task_type == TaskType.IMAGE_SELECT:
-        print(task_data)
-        image_query = "&taskimageid=".join(task_data)
-        loaded_images = requests.get(
-            settings.SLIDE_URL + "/task-images?taskimageid=" + image_query
-        ).json()
-    else:
-        return ImageSelectStatistic(
-            wrong_image_statistics=[], wrong_label_statistics=[]
-        )
     most_wrong_picked_images = {}
     most_wrong_classified_images = {}
 
