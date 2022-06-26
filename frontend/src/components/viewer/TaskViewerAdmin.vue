@@ -36,7 +36,7 @@ import {
   updateAnnotation
 } from '../../core/viewer/helper/taskViewerHelper';
 import ConfirmDialog from '../general/ConfirmDialog.vue';
-import InfoTooltip from '../InfoTooltip.vue';
+import InfoTooltip from './InfoTooltip.vue';
 import BackgroundAnnotationSwitcher from './BackgroundAnnotationSwitcher.vue';
 import SampleSolutionEditor from './groundTruth/SampleSolutionEditor.vue';
 import SavingInfo from './SavingInfo.vue';

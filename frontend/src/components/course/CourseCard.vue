@@ -1,10 +1,10 @@
 <script lang='ts' setup>
-import SkeletonCard from './containers/SkeletonCard.vue';
-import NewTaskBadge from './NewTaskBadge.vue';
-import TaskCountBadge from './TaskCountBadge.vue';
-import ProgressBar from './ProgressBar.vue';
+import SkeletonCard from '../containers/SkeletonCard.vue';
+import NewTaskBadge from '../task/NewTaskBadge.vue';
+import TaskCountBadge from '../task/TaskCountBadge.vue';
+import ProgressBar from '../task/ProgressBar.vue';
 import { PropType } from 'vue';
-import { Course } from '../model/course';
+import { Course } from '../../model/course';
 
 defineProps({
   course: {

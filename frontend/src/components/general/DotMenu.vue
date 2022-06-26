@@ -1,5 +1,5 @@
 <script lang='ts' setup>
-import Icon from './general/Icon.vue';
+import Icon from './Icon.vue';
 
 defineProps({
   optionsOpen: Boolean

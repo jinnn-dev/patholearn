@@ -6,7 +6,7 @@ import { Slide } from '../../model/slide';
 import { SLIDE_STATUS } from '../../core/types/slideStatus';
 import { SlideService } from '../../services/slide.service';
 import InputField from '../form/InputField.vue';
-import LazyImage from '../LazyImage.vue';
+import LazyImage from '../general/LazyImage.vue';
 
 const emit = defineEmits(['slideChanged']);
 

@@ -7,13 +7,13 @@ import ModalDialog from '../components/containers/ModalDialog.vue';
 import PrimaryButton from '../components/general/PrimaryButton.vue';
 import InputArea from '../components/form/InputArea.vue';
 import InputField from '../components/form/InputField.vue';
-import NoContent from '../components/NoContent.vue';
-import CourseCard from '../components/CourseCard.vue';
+import NoContent from '../components/general/NoContent.vue';
+import CourseCard from '../components/course/CourseCard.vue';
 import ContentContainer from '../components/containers/ContentContainer.vue';
 import SkeletonCard from '../components/containers/SkeletonCard.vue';
 import RoleOnly from '../components/containers/RoleOnly.vue';
 import Icon from '../components/general/Icon.vue';
-import CourseSearch from '../components/CourseSearch.vue';
+import CourseSearch from '../components/course/CourseSearch.vue';
 import ConfirmButtons from '../components/general/ConfirmButtons.vue';
 
 const courses = ref<Course[]>([]);

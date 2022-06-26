@@ -16,9 +16,9 @@ import Icon from '../components/general/Icon.vue';
 import SlideSelect from '../components/slide/SlideSelect.vue';
 import InputField from '../components/form/InputField.vue';
 import ContentContainer from '../components/containers/ContentContainer.vue';
-import TaskGroupAdminCard from '../components/TaskGroupAdminCard.vue';
-import NoContent from '../components/NoContent.vue';
-import ContentHeader from '../components/ContentHeader.vue';
+import TaskGroupAdminCard from '../components/task/TaskGroupAdminCard.vue';
+import NoContent from '../components/general/NoContent.vue';
+import ContentHeader from '../components/general/ContentHeader.vue';
 import ConfirmButtons from '../components/general/ConfirmButtons.vue';
 
 const uploadImages = ref<{ fileUrl: string; file: File }[]>([]);

@@ -7,13 +7,13 @@ import { TaskGroupService } from '../services/task-group.service';
 import { TaskService } from '../services/task.service';
 import { BaseTask } from '../model/task/baseTask';
 import ContentContainer from '../components/containers/ContentContainer.vue';
-import TaskCountBadge from '../components/TaskCountBadge.vue';
-import NewTaskBadge from '../components/NewTaskBadge.vue';
+import TaskCountBadge from '../components/task/TaskCountBadge.vue';
+import NewTaskBadge from '../components/task/NewTaskBadge.vue';
 import SkeletonCard from '../components/containers/SkeletonCard.vue';
-import ProgressBar from '../components/ProgressBar.vue';
-import NoContent from '../components/NoContent.vue';
-import NotCourseMember from '../components/NotCourseMember.vue';
-import ContentHeader from '../components/ContentHeader.vue';
+import ProgressBar from '../components/task/ProgressBar.vue';
+import NoContent from '../components/general/NoContent.vue';
+import NotCourseMember from '../components/course/NotCourseMember.vue';
+import ContentHeader from '../components/general/ContentHeader.vue';
 
 const showModal = ref<Boolean>(false);
 

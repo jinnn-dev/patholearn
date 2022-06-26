@@ -7,7 +7,7 @@ import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
 import SkeletonCard from '../containers/SkeletonCard.vue';
 import Icon from '../general/Icon.vue';
 import PrimaryButton from '../general/PrimaryButton.vue';
-import LazyImage from '../LazyImage.vue';
+import LazyImage from '../general/LazyImage.vue';
 import ModalDialog from '../containers/ModalDialog.vue';
 import ConfirmDialog from '../general/ConfirmDialog.vue';
 

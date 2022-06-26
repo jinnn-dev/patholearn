@@ -2,7 +2,7 @@
 import { PropType } from 'vue';
 import { TaskHint } from '../../../model/task/taskHint';
 import { SLIDE_IMAGE_URL } from '../../../config';
-import UploadPreviewImage from '../../UploadPreviewImage.vue';
+import UploadPreviewImage from '../../general/UploadPreviewImage.vue';
 
 defineEmits(['edit']);
 defineProps({

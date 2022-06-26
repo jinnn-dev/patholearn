@@ -1,7 +1,7 @@
 <script lang='ts' setup>
 import { PropType } from 'vue';
-import { User } from '../model/user';
-import NoContent from './NoContent.vue';
+import { User } from '../../model/user';
+import NoContent from '../general/NoContent.vue';
 
 defineProps({
   members: Array as PropType<User[]>

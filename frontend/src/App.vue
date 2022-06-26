@@ -2,7 +2,7 @@
 import { getEnv } from './config';
 import { ref } from 'vue';
 import { detect } from 'detect-browser';
-import ErrorBar from './components/ErrorBar.vue';
+import ErrorBar from './components/general/ErrorBar.vue';
 
 const title = getEnv('APP_TITLE');
 document.title = title || '';

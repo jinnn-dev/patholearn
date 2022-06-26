@@ -1,21 +1,21 @@
 <script lang='ts' setup>
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
-import { getInfoImageUrl } from '../config';
-import { InfoImage } from '../model/infoImage';
-import { InfoImageService } from '../services/info-image.service';
-import { InfoTooltipGenerator } from '../utils/tooltips/info-tooltip-generator';
-import { infotooltipState, resetInfoTooltipState } from '../utils/tooltips/info-tooltip-state';
-import ModalDialog from './containers/ModalDialog.vue';
-import SaveButton from './general/SaveButton.vue';
-import PrimaryButton from './general/PrimaryButton.vue';
-import MultiImageUpload from './form/MultiImageUpload.vue';
-import FormField from './form/FormField.vue';
-import UploadPreviewImage from './UploadPreviewImage.vue';
-import InputArea from './form/InputArea.vue';
-import InputField from './form/InputField.vue';
-import LazyImage from './LazyImage.vue';
-import Icon from './general/Icon.vue';
-import ConfirmButtons from './general/ConfirmButtons.vue';
+import { getInfoImageUrl } from '../../config';
+import { InfoImage } from '../../model/infoImage';
+import { InfoImageService } from '../../services/info-image.service';
+import { InfoTooltipGenerator } from '../../utils/tooltips/info-tooltip-generator';
+import { infotooltipState, resetInfoTooltipState } from '../../utils/tooltips/info-tooltip-state';
+import ModalDialog from '../containers/ModalDialog.vue';
+import SaveButton from '../general/SaveButton.vue';
+import PrimaryButton from '../general/PrimaryButton.vue';
+import MultiImageUpload from '../form/MultiImageUpload.vue';
+import FormField from '../form/FormField.vue';
+import UploadPreviewImage from '../general/UploadPreviewImage.vue';
+import InputArea from '../form/InputArea.vue';
+import InputField from '../form/InputField.vue';
+import LazyImage from '../general/LazyImage.vue';
+import Icon from '../general/Icon.vue';
+import ConfirmButtons from '../general/ConfirmButtons.vue';
 
 const props = defineProps({
   isAdmin: {

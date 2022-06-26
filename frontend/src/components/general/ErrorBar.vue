@@ -1,5 +1,5 @@
 <script lang='ts' setup>
-import { errorState } from '../services/error-handler';
+import { errorState } from '../../services/error-handler';
 import ErrorNotification from './ErrorNotification.vue';
 
 const removeItem = (index: number) => {

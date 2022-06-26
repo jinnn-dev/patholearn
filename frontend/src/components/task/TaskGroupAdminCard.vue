@@ -1,25 +1,25 @@
 <script lang='ts' setup>
 import { onClickOutside } from '@vueuse/core';
 import { nextTick, PropType, ref } from 'vue';
-import { SLIDE_IMAGE_URL } from '../config';
-import { BaseTask, UpdateBaseTask } from '../model/task/baseTask';
-import { ImageSelectStatistic } from '../model/imageSelectStatistic';
-import { MembersolutionSummary } from '../model/membersolutionSummary';
-import { TaskService } from '../services/task.service';
-import { TooltipGenerator } from '../utils/tooltips/tooltip-generator';
-import ModalDialog from './containers/ModalDialog.vue';
-import SaveButton from './general/SaveButton.vue';
-import PrimaryButton from './general/PrimaryButton.vue';
-import InputField from './form/InputField.vue';
-import NoContent from './NoContent.vue';
-import LazyImage from './LazyImage.vue';
-import Icon from './general/Icon.vue';
-import SkeletonCard from './containers/SkeletonCard.vue';
-import Spinner from './Spinner.vue';
-import ToggleButton from './form/ToggleButton.vue';
+import { SLIDE_IMAGE_URL } from '../../config';
+import { BaseTask, UpdateBaseTask } from '../../model/task/baseTask';
+import { ImageSelectStatistic } from '../../model/imageSelectStatistic';
+import { MembersolutionSummary } from '../../model/membersolutionSummary';
+import { TaskService } from '../../services/task.service';
+import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
+import ModalDialog from '../containers/ModalDialog.vue';
+import SaveButton from '../general/SaveButton.vue';
+import PrimaryButton from '../general/PrimaryButton.vue';
+import InputField from '../form/InputField.vue';
+import NoContent from '../general/NoContent.vue';
+import LazyImage from '../general/LazyImage.vue';
+import Icon from '../general/Icon.vue';
+import SkeletonCard from '../containers/SkeletonCard.vue';
+import Spinner from '../general/Spinner.vue';
+import ToggleButton from '../form/ToggleButton.vue';
 import TaskCountBadge from './TaskCountBadge.vue';
-import DotMenu from './DotMenu.vue';
-import ConfirmButtons from './general/ConfirmButtons.vue';
+import DotMenu from '../general/DotMenu.vue';
+import ConfirmButtons from '../general/ConfirmButtons.vue';
 
 const props = defineProps({
   baseTask: Object as PropType<BaseTask>

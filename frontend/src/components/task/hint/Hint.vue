@@ -5,7 +5,7 @@ import { TaskService } from '../../../services/task.service';
 import { SLIDE_IMAGE_URL } from '../../../config';
 import PrimaryButton from '../../general/PrimaryButton.vue';
 import Icon from '../../general/Icon.vue';
-import UploadPreviewImage from '../../UploadPreviewImage.vue';
+import UploadPreviewImage from '../../general/UploadPreviewImage.vue';
 
 const emit = defineEmits(['edit', 'delete']);
 

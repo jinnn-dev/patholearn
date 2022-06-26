@@ -11,8 +11,8 @@ import AuthInput from '../components/auth/AuthInput.vue';
 import Icon from '../components/general/Icon.vue';
 import ContentContainer from '../components/containers/ContentContainer.vue';
 import SkeletonCard from '../components/containers/SkeletonCard.vue';
-import CardLoading from '../components/CardLoading.vue';
-import Subheader from '../components/Subheader.vue';
+import CardLoading from '../components/general/CardLoading.vue';
+import Subheader from '../components/general/Subheader.vue';
 import ConfirmButtons from '../components/general/ConfirmButtons.vue';
 
 const initialState = {

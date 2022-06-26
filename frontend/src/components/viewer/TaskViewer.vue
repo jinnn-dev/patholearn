@@ -43,7 +43,7 @@ import ConfirmDialog from '../general/ConfirmDialog.vue';
 import EscapeInfo from './EscapeInfo.vue';
 import SavingInfo from './SavingInfo.vue';
 import BackgroundAnnotationSwitcher from './BackgroundAnnotationSwitcher.vue';
-import InfoTooltip from '../InfoTooltip.vue';
+import InfoTooltip from './InfoTooltip.vue';
 import AnnotationGroup from './AnnotationGroup.vue';
 import { RESULT_POLYGON_COLOR, TaskStatus } from '../../core/types/taskStatus';
 

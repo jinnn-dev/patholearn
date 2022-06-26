@@ -4,7 +4,7 @@ import { Slide } from '../model/slide';
 import { SlideService } from '../services/slide.service';
 import ContentContainer from '../components/containers/ContentContainer.vue';
 import SlideCard from '../components/slide/SlideCard.vue';
-import NoContent from '../components/NoContent.vue';
+import NoContent from '../components/general/NoContent.vue';
 import SkeletonCard from '../components/containers/SkeletonCard.vue';
 import PrimaryButton from '../components/general/PrimaryButton.vue';
 import SlideUpload from '../components/slide/SlideUpload.vue';

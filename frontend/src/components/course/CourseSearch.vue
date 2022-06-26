@@ -1,12 +1,12 @@
 <script lang='ts' setup>
-import { debounceRef } from '../utils/debounceRef';
+import { debounceRef } from '../../utils/debounceRef';
 import { ref, watch } from 'vue';
-import { Course } from '../model/course';
-import { CourseService } from '../services/course.service';
+import { Course } from '../../model/course';
+import { CourseService } from '../../services/course.service';
 import { onClickOutside } from '@vueuse/core';
-import InputField from './form/InputField.vue';
-import Icon from './general/Icon.vue';
-import SaveButton from './general/SaveButton.vue';
+import InputField from '../form/InputField.vue';
+import Icon from '../general/Icon.vue';
+import SaveButton from '../general/SaveButton.vue';
 
 const emit = defineEmits(['joined']);
 

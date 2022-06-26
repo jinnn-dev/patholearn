@@ -1,19 +1,19 @@
 <script lang='ts' setup>
 import { PropType, ref } from 'vue';
-import { TaskGroup, UpdateTaskGroup } from '../model/task/taskGroup';
-import { TaskGroupService } from '../services/task-group.service';
+import { TaskGroup, UpdateTaskGroup } from '../../model/task/taskGroup';
+import { TaskGroupService } from '../../services/task-group.service';
 import { onClickOutside } from '@vueuse/core';
-import SkeletonCard from './containers/SkeletonCard.vue';
-import TaskCountBadge from './TaskCountBadge.vue';
-import Spinner from './Spinner.vue';
-import RoleOnly from './containers/RoleOnly.vue';
-import ModalDialog from './containers/ModalDialog.vue';
-import PrimaryButton from './general/PrimaryButton.vue';
-import SaveButton from './general/SaveButton.vue';
-import InputField from './form/InputField.vue';
-import Icon from './general/Icon.vue';
-import DotMenu from './DotMenu.vue';
-import ConfirmButtons from './general/ConfirmButtons.vue';
+import SkeletonCard from '../containers/SkeletonCard.vue';
+import TaskCountBadge from '../task/TaskCountBadge.vue';
+import Spinner from '../general/Spinner.vue';
+import RoleOnly from '../containers/RoleOnly.vue';
+import ModalDialog from '../containers/ModalDialog.vue';
+import PrimaryButton from '../general/PrimaryButton.vue';
+import SaveButton from '../general/SaveButton.vue';
+import InputField from '../form/InputField.vue';
+import Icon from '../general/Icon.vue';
+import DotMenu from '../general/DotMenu.vue';
+import ConfirmButtons from '../general/ConfirmButtons.vue';
 
 const props = defineProps({
   taskgroup: {

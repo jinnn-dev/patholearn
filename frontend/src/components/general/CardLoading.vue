@@ -1,5 +1,5 @@
 <script lang='ts' setup>
-import SkeletonCard from './containers/SkeletonCard.vue';
+import SkeletonCard from '../containers/SkeletonCard.vue';
 
 defineProps({
   loading: Boolean

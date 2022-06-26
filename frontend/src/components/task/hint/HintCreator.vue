@@ -6,7 +6,7 @@ import { TaskService } from '../../../services/task.service';
 import Icon from '../../general/Icon.vue';
 import InputField from '../../form/InputField.vue';
 import InputArea from '../../form/InputArea.vue';
-import UploadPreviewImage from '../../UploadPreviewImage.vue';
+import UploadPreviewImage from '../../general/UploadPreviewImage.vue';
 import MultiImageUpload from '../../form/MultiImageUpload.vue';
 import SaveButton from '../../general/SaveButton.vue';
 import { HintType } from '../../../core/types/hintType';

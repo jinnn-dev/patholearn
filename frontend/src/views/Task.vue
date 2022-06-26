@@ -13,7 +13,7 @@ import SaveButton from '../components/general/SaveButton.vue';
 import TaskContainer from '../components/task/TaskContainer.vue';
 import TaskHeader from '../components/task/TaskHeader.vue';
 import ViewerBackButton from '../components/viewer/ViewerBackButton.vue';
-import NotCourseMember from '../components/NotCourseMember.vue';
+import NotCourseMember from '../components/course/NotCourseMember.vue';
 import ViewerLoading from '../components/viewer/ViewerLoading.vue';
 import { TaskResult } from '../model/task/result/taskResult';
 import { TaskType } from '../core/types/taskType';

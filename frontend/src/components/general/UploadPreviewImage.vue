@@ -1,13 +1,13 @@
 <script lang='ts' setup>
 import { computed, onMounted, ref } from 'vue';
-import { TooltipGenerator } from '../utils/tooltips/tooltip-generator';
-import ModalDialog from './containers/ModalDialog.vue';
-import PrimaryButton from './general/PrimaryButton.vue';
-import SaveButton from './general/SaveButton.vue';
-import InputField from './form/InputField.vue';
-import Icon from './general/Icon.vue';
+import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
+import ModalDialog from '../containers/ModalDialog.vue';
+import PrimaryButton from './PrimaryButton.vue';
+import SaveButton from './SaveButton.vue';
+import InputField from '../form/InputField.vue';
+import Icon from './Icon.vue';
 import LazyImage from './LazyImage.vue';
-import ConfirmButtons from './general/ConfirmButtons.vue';
+import ConfirmButtons from './ConfirmButtons.vue';
 
 const props = defineProps({
   index: Number,

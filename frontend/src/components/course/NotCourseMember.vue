@@ -1,8 +1,8 @@
 <script lang='ts' setup>
 import { PropType, ref } from 'vue';
-import { Course } from '../model/course';
-import { CourseService } from '../services/course.service';
-import SaveButton from './general/SaveButton.vue';
+import { Course } from '../../model/course';
+import { CourseService } from '../../services/course.service';
+import SaveButton from '../general/SaveButton.vue';
 
 const props = defineProps({
   course: Object as PropType<Course>

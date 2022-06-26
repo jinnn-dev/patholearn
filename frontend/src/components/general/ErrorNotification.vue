@@ -1,6 +1,6 @@
 <script lang='ts' setup>
 import { computed, onMounted, PropType } from 'vue';
-import { CustomError } from '../services/error-handler';
+import { CustomError } from '../../services/error-handler';
 
 const props = defineProps({
   error: {

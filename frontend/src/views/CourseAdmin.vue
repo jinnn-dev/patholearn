@@ -12,13 +12,13 @@ import SaveButton from '../components/general/SaveButton.vue';
 import PrimaryButton from '../components/general/PrimaryButton.vue';
 import InputField from '../components/form/InputField.vue';
 import ContentContainer from '../components/containers/ContentContainer.vue';
-import CourseMembers from '../components/CourseMembers.vue';
-import NoContent from '../components/NoContent.vue';
-import CourseAdminCard from '../components/CourseAdminCard.vue';
+import CourseMembers from '../components/course/CourseMembers.vue';
+import NoContent from '../components/general/NoContent.vue';
+import CourseAdminCard from '../components/course/CourseAdminCard.vue';
 import SkeletonCard from '../components/containers/SkeletonCard.vue';
 import Icon from '../components/general/Icon.vue';
-import Subheader from '../components/Subheader.vue';
-import ContentHeader from '../components/ContentHeader.vue';
+import Subheader from '../components/general/Subheader.vue';
+import ContentHeader from '../components/general/ContentHeader.vue';
 import ConfirmButtons from '../components/general/ConfirmButtons.vue';
 
 const course = ref<Course>();
