@@ -377,4 +377,15 @@ export class AnnotationRectangle extends Annotation {
     const bottomLeft = this.vertice[0].viewport.plus(new OpenSeadragon.Point(0, this.height));
     return [this.vertice[0].viewport, bottomLeft, this.vertice[1].viewport, topRight];
   }
+
+  getBoundingBox(): OpenSeadragon.Rect | null {
+    if (!this._vertice) {
+      return null;
+    }
+    const x = this._vertice[0].viewport.x;
+    const y = this._vertice[0].viewport.y;
+    const width = this._width;
+    const height = this._height;
+    return new OpenSeadragon.Rect(x, y, width, height);
+  }
 }

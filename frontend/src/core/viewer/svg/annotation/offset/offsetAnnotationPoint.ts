@@ -103,4 +103,16 @@ export class OffsetAnnotationPoint extends AnnotationPoint {
       this._offsetElement?.attr('name', this.name);
     }
   }
+
+  getBoundingBox(): OpenSeadragon.Rect | null {
+    if (!this.vertex) {
+      return null;
+    }
+    return new OpenSeadragon.Rect(
+      this.vertex.x - this._offsetRadius,
+      this.vertex.y - this._offsetRadius,
+      this._offsetRadius * 2,
+      this._offsetRadius * 2
+    );
+  }
 }

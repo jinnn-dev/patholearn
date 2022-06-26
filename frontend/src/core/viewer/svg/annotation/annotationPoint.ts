@@ -152,4 +152,18 @@ export class AnnotationPoint extends Annotation {
       this._element?.attr('name', this.name);
     }
   }
+
+  getBoundingBox(): OpenSeadragon.Rect | null {
+    if (!this._vertex) {
+      return null;
+    }
+    const pointOffset = 0.03;
+
+    return new OpenSeadragon.Rect(
+      this._vertex.x - pointOffset,
+      this._vertex.y - pointOffset,
+      pointOffset * 2,
+      pointOffset * 2
+    );
+  }
 }

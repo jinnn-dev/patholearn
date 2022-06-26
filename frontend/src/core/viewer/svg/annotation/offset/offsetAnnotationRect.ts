@@ -2,7 +2,7 @@ import { select, Selection } from 'd3-selection';
 import { curveLinearClosed, line, Line } from 'd3-shape';
 import { geom, operation } from 'jsts';
 import { nanoid } from 'nanoid';
-import OpenSeadragon from 'openseadragon';
+import OpenSeadragon, { Rect } from 'openseadragon';
 import { polygonChanged } from '../../../viewerState';
 import { ANNOTATION_TYPE } from '../../../types/annotationType';
 import { COLOR } from '../../../types/colors';
@@ -290,6 +290,39 @@ export class OffsetAnnotationRectangle extends AnnotationRectangle {
     }
 
     return inflated;
+  }
+
+  getBoundingBox(): OpenSeadragon.Rect | null {
+    if (this._outerPoints.length < 2) {
+      return null;
+    }
+
+    let minX = this._outerPoints[0].x;
+    let minY = this._outerPoints[0].y;
+    let maxX = this._outerPoints[1].x;
+    let maxY = this._outerPoints[1].y;
+
+    for (const vertex of this._outerPoints) {
+      const x = vertex.x;
+      const y = vertex.y;
+
+      if (x < minX) {
+        minX = x;
+      }
+      if (x > maxX) {
+        maxX = x;
+      }
+
+      if (y < minY) {
+        minY = y;
+      }
+
+      if (y > maxY) {
+        maxY = y;
+      }
+    }
+
+    return new Rect(minX, minY, maxX - minX, maxY - minY);
   }
 
   private createPath(scale: number, _?: number): void {

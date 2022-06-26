@@ -1,6 +1,6 @@
 import { select, Selection } from 'd3-selection';
 import { nanoid } from 'nanoid';
-import OpenSeadragon, { Point } from 'openseadragon';
+import OpenSeadragon, { Point, Rect } from 'openseadragon';
 import { polygonChanged } from '../../viewerState';
 import { BoundingBox } from '../../../../model/boundingBox';
 import { POLYGON_VERTEX_COLOR } from '../../config/defaultValues';
@@ -427,7 +427,7 @@ export class AnnotationLine extends Annotation {
     this.polyline?.remove();
   }
 
-  public getBoundingBox(): BoundingBox | null {
+  getBoundingBox(): OpenSeadragon.Rect | null {
     if (this.vertice.length < 2) {
       return null;
     }
@@ -457,11 +457,6 @@ export class AnnotationLine extends Annotation {
       }
     }
 
-    return {
-      x: minX,
-      y: minY,
-      width: maxX - minX,
-      height: maxY - minY
-    };
+    return new Rect(minX, minY, maxX - minX, maxY - minY);
   }
 }

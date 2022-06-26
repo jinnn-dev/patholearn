@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import OpenSeadragon from 'openseadragon';
+import OpenSeadragon, { Rect } from 'openseadragon';
 import { ANNOTATION_TYPE } from '../../types/annotationType';
 import { ANNOTATION_COLOR } from '../../types/colors';
 
@@ -155,6 +155,11 @@ export abstract class Annotation {
    * @param stroke Color of the stroke
    */
   abstract changeRenderColor(fillColor: string, stroke: string): void;
+
+  /**
+   * Returns Axis-Aligned Bounding Box of the annotation
+   */
+  abstract getBoundingBox(): Rect | null;
 
   /**
    * Removes annotation

@@ -31,12 +31,13 @@ import { PointData } from '../../model/viewer/export/pointData';
 import { AnnotationParser } from '../../utils/annotation-parser';
 import { imageToViewport, pointIsInImage, webToViewport } from '../../utils/seadragon.utils';
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
-import { snapAnnotation, SnapResult } from './helper/annotation-snapper';
+import { snapAnnotation, SnapResult } from './helper/snapAnnotation';
 import { AnnotationManager } from './annotationManager';
 import { SVG_ID } from './config/generateViewerOptions';
 import { SvgOverlay } from './svg/svg-overlay';
 import { TaskSaver } from './taskSaver';
 import { viewerLoadingState, viewerScale, viewerZoom } from './viewerState';
+import { focusAnnotation } from './helper/focusAnnotation';
 
 export class AnnotationViewer {
   private _overlay: SvgOverlay;
@@ -799,6 +800,7 @@ export class AnnotationViewer {
 
     if (polygon) {
       polygon.select(this._viewer, this.scale, trackable);
+      focusAnnotation(polygon, this._viewer);
     }
 
     return polygon;
@@ -882,41 +884,7 @@ export class AnnotationViewer {
     ) {
       return;
     }
-
-    const OFFSET = 2;
-
-    const annotation = this._annotationManager.backgroundAnnotations[index];
-
-    if (annotation instanceof AnnotationRectangle) {
-      const rectangle = annotation as AnnotationRectangle;
-      const x = rectangle.vertice[0].viewport.x;
-      const y = rectangle.vertice[0].viewport.y;
-      const width = annotation.width;
-      const height = annotation.height;
-      this._viewer.viewport.fitBounds(
-        new OpenSeadragon.Rect(x - width / OFFSET, y - height / OFFSET, width * OFFSET, height * OFFSET)
-      );
-    } else {
-      const polygon = annotation as AnnotationPolygon;
-      let minX = Number.MAX_SAFE_INTEGER;
-      let maxX = Number.MIN_SAFE_INTEGER;
-      let minY = Number.MAX_SAFE_INTEGER;
-      let maxY = Number.MIN_SAFE_INTEGER;
-      const points = polygon.vertice.map((vertice) => vertice.viewport);
-      points.forEach((point) => {
-        const x = point.x;
-        const y = point.y;
-        minX = Math.min(minX, x);
-        maxX = Math.max(maxX, x);
-        minY = Math.min(minY, y);
-        maxY = Math.max(maxY, y);
-      });
-      const width = maxX - minX;
-      const height = maxY - minY;
-      this._viewer.viewport.fitBounds(
-        new OpenSeadragon.Rect(minX - width / OFFSET, minY - height / OFFSET, width * OFFSET, height * OFFSET)
-      );
-    }
+    focusAnnotation(this._annotationManager.backgroundAnnotations[index], this._viewer);
   }
 
   convertBackgroundAnnotationToSolutionAnnotation(annotation: AnnotationRectangle) {
