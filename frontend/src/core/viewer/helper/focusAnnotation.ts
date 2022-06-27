@@ -2,7 +2,7 @@ import { Annotation } from '../svg/annotation/annotation';
 import { Rect, Viewer } from 'openseadragon';
 
 export function focusAnnotation(annotation: Annotation, viewer: Viewer) {
-  let VIEWPORT_OFFSET = 1.5;
+  let VIEWPORT_OFFSET = 2;
   let boundingBox = annotation.getBoundingBox() || viewer.viewport.getBounds();
 
   const scaledWidth = boundingBox.width * VIEWPORT_OFFSET;
