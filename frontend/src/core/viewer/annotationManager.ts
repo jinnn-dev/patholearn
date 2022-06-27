@@ -62,7 +62,7 @@ export class AnnotationManager {
     return this._userSolutionAnnotations;
   }
 
-  private readonly _infoAnnotations: Annotation[];
+  private _infoAnnotations: Annotation[];
 
   get infoAnnotations() {
     return this._infoAnnotations;
@@ -236,6 +236,7 @@ export class AnnotationManager {
     this._userSolutionAnnotations = [];
     this._solutionAnnotations = [];
     this._backgroundAnnotations = [];
+    this._infoAnnotations = [];
   }
 
   /**
@@ -244,6 +245,13 @@ export class AnnotationManager {
   clearSolutionAnnotations(): void {
     this._solutionAnnotations = [];
     select(this._solutionNode).selectAll('g > *').remove();
+  }
+
+  /**
+   * Clears all userAnnotations
+   */
+  clearUserAnnotations(): void {
+    this._userSolutionAnnotations = [];
   }
 
   /**
@@ -257,6 +265,8 @@ export class AnnotationManager {
       return this._backgroundAnnotations;
     } else if (isSolution(type)) {
       return this._solutionAnnotations;
+    } else if (isInfoAnnotation(type)) {
+      return this._infoAnnotations;
     } else {
       return this._userSolutionAnnotations;
     }

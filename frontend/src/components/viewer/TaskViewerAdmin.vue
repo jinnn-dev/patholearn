@@ -15,6 +15,7 @@ import { Task } from '../../model/task/task';
 import { ANNOTATION_TYPE, isInfoAnnotation, isSolution } from '../../core/viewer/types/annotationType';
 import { ANNOTATION_COLOR } from '../../core/viewer/types/colors';
 import {
+  isAddPointTool,
   isDrawingTool,
   Tool,
   TOOL_ANNOTATION,
@@ -270,6 +271,7 @@ const setToolbarTools = () => {
     Tool.DELETE,
     Tool.DELETE_ANNOTATION,
     Tool.BASE_DRAWING,
+    Tool.ADD_POINT_SOLUTION,
     Tool.ADD_INFO_POINT,
     Tool.ADD_INFO_LINE,
     Tool.ADD_INFO_POLYGON
@@ -293,9 +295,9 @@ const setToolbarTools = () => {
     toolbarTools.value.push(tool);
   }
 
-  if (tool !== Tool.POINT_SOLUTION) {
-    toolbarTools.value.push(Tool.ADD_POINT_SOLUTION);
-  }
+  // if (tool !== Tool.POINT_SOLUTION) {
+  //   toolbarTools.value.push(Tool.ADD_POINT_SOLUTION);
+  // }
 
   if (props.task?.task_type === 1 && props.task?.annotation_type === 2) {
     if (!toolbarTools.value.includes(Tool.UPLOAD)) {
@@ -360,7 +362,11 @@ const setTool = (data: { tool: Tool; event: any }) => {
     drawingViewer.value?.removeMouseCircle();
   }
 
-  if (isSolution(TOOL_ANNOTATION[currentTool.value!]!) || isInfoAnnotation(TOOL_ANNOTATION[currentTool.value!]!)) {
+  if (
+    isSolution(TOOL_ANNOTATION[currentTool.value!]!) ||
+    isInfoAnnotation(TOOL_ANNOTATION[currentTool.value!]!) ||
+    isAddPointTool(currentTool.value)
+  ) {
     drawingViewer.value?.updateColor(TOOL_COLORS[currentTool.value!]!);
   } else {
     drawingViewer.value?.updateColor(ANNOTATION_COLOR.BACKGROUND_COLOR);
@@ -534,7 +540,7 @@ const moveHandler = (event: any) => {
   drawingViewer.value?.update(event.position.x, event.position.y);
 
   drawingViewer.value?.updateDrawingAnnotationIndicator(
-    ANNOTATION_TYPE.SOLUTION,
+    [ANNOTATION_TYPE.SOLUTION, ANNOTATION_TYPE.INFO_POLYGON],
     currentTool.value === Tool.ADD_POINT_SOLUTION
   );
 };

@@ -21,20 +21,26 @@ export function snapAnnotation(
   let selectedAnnotation: Annotation | undefined;
   let annotationPoint: Point = new Point(0, 0);
   let minimum: number = Number.MAX_SAFE_INTEGER;
-
   annotations.forEach((annotation) => {
     if (
       annotation.type === ANNOTATION_TYPE.SOLUTION_POINT ||
       annotation.type === ANNOTATION_TYPE.USER_SOLUTION_POINT ||
       annotation.type === ANNOTATION_TYPE.USER_SOLUTION_RECT ||
-      annotation.type === ANNOTATION_TYPE.SOLUTION_RECT
+      annotation.type === ANNOTATION_TYPE.SOLUTION_RECT ||
+      annotation.type === ANNOTATION_TYPE.INFO_POINT
     ) {
       return;
     }
+    if (!intersectsAnnotation(annotation, mousePosition)) {
+      return false;
+    }
 
-    const vertices = (annotation as AnnotationLine).vertice.map((vertex) => vertex.viewport);
-
-    if (annotation.type === ANNOTATION_TYPE.SOLUTION || annotation.type === ANNOTATION_TYPE.USER_SOLUTION) {
+    const vertices = (annotation as AnnotationLine).vertice?.map((vertex) => vertex.viewport);
+    if (
+      annotation.type === ANNOTATION_TYPE.SOLUTION ||
+      annotation.type === ANNOTATION_TYPE.USER_SOLUTION ||
+      annotation.type === ANNOTATION_TYPE.INFO_POLYGON
+    ) {
       vertices.push(vertices[0]);
     }
 
@@ -96,4 +102,19 @@ function getDistanceToLine(p1: Point, p2: Point, point: Point): number {
   const numerator = Math.abs((p2.x - p1.x) * (p1.y - point.y) - (p1.x - point.x) * (p2.y - p1.y));
   const denominator = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
   return numerator / denominator;
+}
+
+function intersectsAnnotation(annotation: Annotation, point: Point): boolean {
+  const boundingBox = annotation.getBoundingBox();
+  if (!boundingBox) {
+    return false;
+  }
+  const pointX = point.x;
+  const pointY = point.y;
+  return (
+    pointX > boundingBox.x &&
+    pointX < boundingBox.x + boundingBox.width &&
+    pointY > boundingBox.y &&
+    pointY < boundingBox.y + boundingBox.height
+  );
 }

@@ -16,7 +16,7 @@ import { AnnotationPolygon } from './svg/annotation/annotationPolygon';
 import { Task } from '../../model/task/task';
 import { UserSolution, UserSolutionCreate } from '../../model/userSolution';
 import { ANNOTATION_TYPE, isUserSolution } from './types/annotationType';
-import { ANNOTATION_COLOR } from './types/colors';
+import { ANNOTATION_COLOR, getFillColor } from './types/colors';
 import {
   ANNOTATION_OFFSET_SCALAR,
   POLYGON_INFLATE_OFFSET,
@@ -335,19 +335,23 @@ export class AnnotationViewer {
   /**
    * Updates the drawing annotation indicator
    */
-  updateDrawingAnnotationIndicator(annotationType: ANNOTATION_TYPE, snap: boolean = false): void {
+  updateDrawingAnnotationIndicator(annotationTypes: ANNOTATION_TYPE[], snap: boolean = false): void {
     if (snap) {
-      this._snapResult = snapAnnotation(
-        this._annotationManager.getAnnotations(annotationType),
-        new Point(this._mouseCircle.cx, this._mouseCircle.cy),
-        this.scale
+      let annotations: Annotation[] = [];
+      annotationTypes.forEach((type) =>
+        this._annotationManager.getAnnotations(type).forEach((annotation) => annotations.push(annotation))
       );
-
+      this._snapResult = snapAnnotation(annotations, new Point(this._mouseCircle.cx, this._mouseCircle.cy), this.scale);
       if (this._snapResult) {
         if (this._snapResult.distance) {
           this._mouseCircle.updateCx(this._snapResult.snapPoint.x);
           this._mouseCircle.updateCy(this._snapResult.snapPoint.y);
+          this._mouseCircle.updateFillColor(this._snapResult.selectedAnnotation.color);
+          this._mouseCircle.updateStrokeColor(this._snapResult.selectedAnnotation.color);
         }
+      } else {
+        this._mouseCircle.updateFillColor(getFillColor(ANNOTATION_COLOR.BACKGROUND_COLOR));
+        this._mouseCircle.updateStrokeColor(ANNOTATION_COLOR.BACKGROUND_COLOR);
       }
     }
 
@@ -478,6 +482,13 @@ export class AnnotationViewer {
    */
   clearSolutionAnnotations(): void {
     this._annotationManager.clearSolutionAnnotations();
+  }
+
+  clearUserAnnotations(): void {
+    this._annotationManager.clearUserAnnotations();
+    select('#' + SVG_ID)
+      .selectAll('#' + this._overlay.userSolutionNode().id + ' > *')
+      .remove();
   }
 
   /**

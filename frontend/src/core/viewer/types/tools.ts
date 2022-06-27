@@ -126,7 +126,7 @@ export const TOOL_ANNOTATION: ToolAnnotation = {
   [Tool.ADD_INFO_POLYGON]: ANNOTATION_TYPE.INFO_POLYGON
 };
 
-export const isDrawingTool = (tool: Tool) => {
+export function isDrawingTool(tool: Tool) {
   return (
     tool === Tool.SOLUTION_DRAWING ||
     tool === Tool.USER_SOLUTION_DRAWING ||
@@ -138,8 +138,12 @@ export const isDrawingTool = (tool: Tool) => {
     tool === Tool.ADD_POINT_SOLUTION ||
     tool === Tool.ADD_POINT_USER_SOLUTION
   );
-};
+}
 
 export function isInfoTool(tool: Tool) {
   return tool === Tool.ADD_INFO_POINT || tool === Tool.ADD_INFO_LINE || tool === Tool.ADD_INFO_POLYGON;
+}
+
+export function isAddPointTool(tool: Tool) {
+  return tool === Tool.ADD_POINT_SOLUTION || tool == Tool.ADD_POINT_USER_SOLUTION;
 }

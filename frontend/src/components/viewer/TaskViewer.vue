@@ -389,7 +389,7 @@ const deleteAnnotation = async () => {
 const moveHandler = (event: any) => {
   drawingViewer.value?.update(event.position.x, event.position.y);
   drawingViewer.value?.updateDrawingAnnotationIndicator(
-    ANNOTATION_TYPE.USER_SOLUTION,
+    [ANNOTATION_TYPE.USER_SOLUTION],
     currentTool.value === Tool.ADD_POINT_USER_SOLUTION
   );
 };
@@ -426,7 +426,7 @@ const deleteAnnotations = async () => {
     await TaskService.deleteUserSolution(props.task!.id);
     deleteAnnotationsLoading.value = false;
     showDeleteAnnotationsModal.value = false;
-    drawingViewer.value?.clear();
+    drawingViewer.value?.clearUserAnnotations();
     props.task.user_solution = undefined;
   } else {
     showDeleteAnnotationsModal.value = false;

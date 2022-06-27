@@ -19,7 +19,7 @@ export async function adminMouseClickHandler(
     if (event.quick) {
       const annotation = annotationViewer.addVertexToAnnotation();
       if (annotation) {
-        selectedPolygon.value = annotationViewer.selectAnnotation(annotation.id);
+        selectedPolygon.value = annotationViewer.selectAnnotation(annotation.id, true);
         polygonChanged.changed = true;
         return Tool.SELECT;
       }
