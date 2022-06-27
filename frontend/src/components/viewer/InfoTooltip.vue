@@ -46,6 +46,7 @@ const imagesToDelete = ref<InfoImage[]>([]);
 const imagesToEdit = ref<InfoImage[]>([]);
 
 const isSaving = ref(false);
+const uploadFinished = ref(false);
 
 watch(
   () => infotooltipState.id,
@@ -146,7 +147,7 @@ const openTooltip = async () => {
 
 const updateTooltip = async () => {
   isSaving.value = true;
-
+  uploadFinished.value = false;
   let image_ids: string[] = [];
   if (uploadImages.value.length > 0) {
     const formData = new FormData();
@@ -183,6 +184,7 @@ const updateTooltip = async () => {
   infotooltipState.show = true;
   isSaving.value = false;
   showEdit.value = false;
+  uploadFinished.value = true;
 };
 
 const setImages = (images: { file: File; fileUrl: string }[]) => {
@@ -277,7 +279,7 @@ const deleteExistingImage = (index: number) => {
     </FormField>
 
     <MultiImageUpload
-      :resetArray='!isSaving'
+      :resetArray='uploadFinished'
       label='Neue Bilder hochladen'
       tip='Wähle Bilder aus oder ziehe sie in das Feld'
       @imagesDropped='setImages'
