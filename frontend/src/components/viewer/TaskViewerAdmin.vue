@@ -51,6 +51,7 @@ import ColorPicker from '../general/ColorPicker.vue';
 import AnnotationGroup from './AnnotationGroup.vue';
 import { ExtractionResultList } from '../../model/viewer/extract/extractionResultList';
 import { TaskType } from '../../core/types/taskType';
+import AnnotationValidation from './AnnotationValidation.vue';
 
 const props = defineProps({
   slide_name: String,
@@ -762,6 +763,7 @@ const closeSampleSolutionEditor = () => {
 
   <escape-info :isPolygon='isPolygonDrawing' :show='isPolygonDrawing || isLineDrawing'></escape-info>
 
+  <annotation-validation :invalid-annotations='3'></annotation-validation>
   <saving-info />
 
   <!--  <ground-truth-dialog-->

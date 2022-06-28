@@ -43,6 +43,7 @@ import ConfirmDialog from '../general/ConfirmDialog.vue';
 import EscapeInfo from './EscapeInfo.vue';
 import SavingInfo from './SavingInfo.vue';
 import BackgroundAnnotationSwitcher from './BackgroundAnnotationSwitcher.vue';
+import AnnotationValidation from './AnnotationValidation.vue';
 import InfoTooltip from './InfoTooltip.vue';
 import AnnotationGroup from './AnnotationGroup.vue';
 import { RESULT_POLYGON_COLOR, TaskStatus } from '../../core/types/taskStatus';
@@ -503,6 +504,7 @@ onUnmounted(() => {
   <escape-info :isPolygon='isPolygonDrawing' :show='isPolygonDrawing || isLineDrawing'></escape-info>
 
   <saving-info></saving-info>
+  <annotation-validation :invalid-annotations='3'></annotation-validation>
 
   <background-annotation-switcher
     v-if='task?.task_data && task.task_data.length !== 0'
