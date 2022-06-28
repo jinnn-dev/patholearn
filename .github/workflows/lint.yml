@@ -11,14 +11,18 @@ jobs:
   learn_api:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: psf/black@stable
+      - name: Checkout source code
+        uses: actions/checkout@v2
+      - name: Running black
+        uses: psf/black@stable
         with:
           src: './backend'
   slide_api:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: psf/black@stable
+      - name: Checkout source code
+        uses: actions/checkout@v2
+      - name: Running black
+        uses: psf/black@stable
         with:
           src: './pyramid-creator'

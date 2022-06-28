@@ -1,0 +1,55 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+  workflow_dispatch:
+
+jobs:
+  learn_api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+        with:
+          buildkitd-flags: --debug
+      - name: Build Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./backend/
+          file: ./backend/prod.dockerfile
+          push: false
+          tags: hub.noxz.dev/lern-api-demo:latest
+  slide_api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Build Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./pyramid-creator/
+          file: ./pyramid-creator/prod.dockerfile
+          push: false
+          tags: hub.noxz.dev/slide-api-demo:latest
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Build Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./frontend/
+          file: ./frontend/prod.dockerfile
+          push: false
+          tags: hub.noxz.dev/frontend-demo:latest
