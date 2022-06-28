@@ -664,6 +664,7 @@ const closeSampleSolutionEditor = () => {
       v-if='task?.task_type === 0 || isBackgroundPolygon'
       :initialColor='selectedPolygon.color'
       label='Annotationsfarbe'
+      margin-hor='my-0'
       @changed='updateAnnotationColor'
       @isReleased='polygonChanged.changed = true'
     ></color-picker>
@@ -729,7 +730,7 @@ const closeSampleSolutionEditor = () => {
       <primary-button bgColor='bg-gray-500' @click='resetAnnotationTolerance'>Toleranz zurücksetzen</primary-button>
     </div>
 
-    <div class='mt-4'>
+    <div class='mt-4' v-if='isBackgroundPolygon || isOffsetAnnotationPolygon'>
       <primary-button
         v-if='isBackgroundPolygon'
         bgColor='bg-gray-500'

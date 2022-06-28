@@ -8,11 +8,15 @@ defineProps({
   initialColor: {
     type: String,
     default: '#000'
+  },
+  marginHor: {
+    type: String,
+    default: 'my-4'
   }
 });
 </script>
 <template>
-  <form-field :label='label'>
+  <form-field :label='label' :margin-hor='marginHor'>
     <div class='rounded-lg w-full overflow-hidden'>
       <input
         id='body'
