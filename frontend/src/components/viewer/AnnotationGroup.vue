@@ -93,9 +93,11 @@ const onSubmit = () => {
 </script>
 <template>
   <div class='fixed right-0 top-6 z-10 bg-gray-700/70 backdrop-blur-md rounded-l-lg p-2 w-80'>
-    <div v-if='!annotationGroups || annotationGroups.length === 0' class='my-2'>Keine Klassen vorhanden</div>
+    <div v-if='!annotationGroups || annotationGroups.length === 0' class='text-center text-xl mb-2'>Keine Klassen
+      vorhanden
+    </div>
     <div v-else>
-      <h3 class='text-xl'>Vorhandene Klassen</h3>
+      <h3 class='text-xl text-center mb-2'>Vorhandene Klassen</h3>
       <div class='max-h-[11rem] max-full overflow-auto'>
         <div
           v-for='group in annotationGroups'
@@ -134,7 +136,7 @@ const onSubmit = () => {
       <primary-button
         v-if='isAdmin'
         bgColor='bg-gray-400'
-        class='py-2'
+        class='py-2 mt-2'
         name='Neue Klasse'
         @click='showGroupCreation = true'
       ></primary-button>
