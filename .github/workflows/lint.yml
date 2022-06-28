@@ -10,13 +10,15 @@ on:
 jobs:
   learn_api:
     runs-on: ubuntu-latest
-    working-directory: ./backend
     steps:
       - uses: actions/checkout@v2
       - uses: psf/black@stable
+        with:
+          working-directory: ./backend
   slide_api:
     runs-on: ubuntu-latest
-    working-directory: ./pyramid-creator
     steps:
       - uses: actions/checkout@v2
       - uses: pdf/black@stable
+        with:
+          working-directory: ./pyramid-creator
