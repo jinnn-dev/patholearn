@@ -8,17 +8,26 @@ on:
   workflow_dispatch:
 
 jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: creyD/prettier_action@v4.2
+        with:
+          dry: True
+          working_directory: './frontend/src'
+          prettier_options: --check
   learn_api:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: psf/black@stable
         with:
-          src: "./backend"
+          src: './backend'
   slide_api:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: psf/black@stable
         with:
-          src: "./pyramid-creator"
+          src: './pyramid-creator'
