@@ -14,11 +14,11 @@ jobs:
       - uses: actions/checkout@v2
       - uses: psf/black@stable
         with:
-          working-directory: ./backend
+          src: "./backend"
   slide_api:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: pdf/black@stable
         with:
-          working-directory: ./pyramid-creator
+          src: "./pyramid-creator"
