@@ -8,15 +8,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  frontend:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: creyD/prettier_action@v4.2
-        with:
-          dry: True
-          working_directory: /home/runner/worker/_actions/jinnn-dev/lint/v1/frontend/
-          prettier_options: --check
   learn_api:
     runs-on: ubuntu-latest
     steps:
