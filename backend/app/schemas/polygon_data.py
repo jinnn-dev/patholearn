@@ -11,11 +11,11 @@ class AnnotationType(IntEnum):
     USER_SOLUTION_POINT = 3
     USER_SOLUTION_LINE = 4
     USER_SOLUTION = 5
-    BASE = (6,)
-    SOLUTION_RECT = (7,)
-    USER_SOLUTION_RECT = (8,)
-    INFO_POINT = (9,)
-    INFO_LINE = (10,)
+    BASE = 6
+    SOLUTION_RECT = 7
+    USER_SOLUTION_RECT = 8
+    INFO_POINT = 9
+    INFO_LINE = 10
     INFO_POLYGON = 11
 
 

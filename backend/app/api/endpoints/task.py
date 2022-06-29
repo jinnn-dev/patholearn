@@ -11,6 +11,7 @@ from app.api.deps import (
     get_current_active_user,
     get_db,
 )
+from app.core.annotation_validator import AnnotationValidator
 from app.core.export.task_exporter import TaskExporter
 from app.crud.crud_base_task import crud_base_task
 from app.crud.crud_course import crud_course
@@ -299,6 +300,30 @@ def add_task_annotation(
             solution.append(annotation)
         crud_task.update(db, db_obj=task, obj_in=TaskUpdate(solution=solution))
     return {"Status": "OK"}
+
+
+@router.get("/{task_id}/validate", response_model=Any)
+def validate_task_annotations(
+    *,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_superuser),
+    task_id: int,
+) -> Any:
+    task = crud_task.get(db, id=task_id)
+
+    annotations_to_check = []
+
+    if task.solution is not None:
+        annotations_to_check += task.solution
+
+    if task.info_annotations is not None:
+        annotations_to_check += task.info_annotations
+
+    validation_result = AnnotationValidator.validate_annotations(
+        annotations_to_check, task.task_type
+    )
+
+    return validation_result
 
 
 @router.put("/{task_id}/{annotation_id}", response_model=Any)
