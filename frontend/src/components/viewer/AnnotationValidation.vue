@@ -50,7 +50,7 @@ const updateTooltipContent = () => {
 <template>
   <BlurredContainer :id='itemId' class='fixed left-2 bottom-2 z-20 p-1 rounded-lg cursor-pointer hover:bg-gray-500/80'>
     <div>
-      <Badge class='absolute -right-2 -top-2' bg-color='bg-red-500' :amount='validationResult.length'></Badge>
+      <Badge class='absolute -right-3 -top-3' bg-color='bg-red-900' :amount='validationResult.length'></Badge>
       <div v-if='validationResultIsPending' class='flex justify-center items-center w-[32px] h-[32px]'>
         <spinner class='w-96'></spinner>
       </div>
