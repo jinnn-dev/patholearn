@@ -52,6 +52,7 @@ import AnnotationGroup from './AnnotationGroup.vue';
 import { ExtractionResultList } from '../../model/viewer/extract/extractionResultList';
 import { TaskType } from '../../core/types/taskType';
 import AnnotationValidation from './AnnotationValidation.vue';
+import { ValidationResult } from '../../model/viewer/validation/validationResult';
 
 const props = defineProps({
   slide_name: String,
@@ -123,6 +124,8 @@ const deleteAnnotationId = ref('');
 
 const changeToolTo = ref<Tool>();
 
+const validationResult = ref<ValidationResult[]>([]);
+
 watch(
   () => props.task,
   (newVal, _) => {
@@ -177,6 +180,7 @@ watch(
     selectedPolygon.value?.updateColor(color + ANNOTATION_COLOR.FILL_OPACITY, newVal!);
   }
 );
+
 
 const updateAnnotationColor = (color: string) => {
   let fillColor = color + ANNOTATION_COLOR.FILL_OPACITY;
@@ -263,6 +267,7 @@ onMounted(() => {
     clickHandler: clickHandler,
     moveHandler: moveHandler
   });
+
 });
 
 const setToolbarTools = () => {
@@ -763,7 +768,7 @@ const closeSampleSolutionEditor = () => {
 
   <escape-info :isPolygon='isPolygonDrawing' :show='isPolygonDrawing || isLineDrawing'></escape-info>
 
-  <annotation-validation :invalid-annotations='3'></annotation-validation>
+  <annotation-validation :validation-result='validationResult'></annotation-validation>
   <saving-info />
 
   <!--  <ground-truth-dialog-->
@@ -782,7 +787,6 @@ const closeSampleSolutionEditor = () => {
     @close='closeSampleSolutionEditor'
   >
   </SampleSolutionEditor>
-
   <confirm-dialog
     :loading='deleteAnnotationsLoading'
     :show='showConfirmationDialog'
