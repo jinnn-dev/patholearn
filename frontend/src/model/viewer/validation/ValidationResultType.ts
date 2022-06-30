@@ -11,7 +11,7 @@ type ValidationResultStringRepresentation = {
 
 export const VALIDATION_RESULT: ValidationResultStringRepresentation = {
   [ValidationResultType.MISSING_NAME]: 'Klasse fehlt',
-  [ValidationResultType.INVALID_GEOMETRY]: 'Geometrie ist invalide'
+  [ValidationResultType.INVALID_GEOMETRY]: 'Geometrie ist ungültig'
 };
 
 type ValidationResultIcon = {
