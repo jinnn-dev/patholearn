@@ -63,7 +63,7 @@ const selectAnnotation = (id: string) => {
            @click='selectAnnotation(result.id)'
       >
         <div v-for='resultType in result.result' class='flex flex-col justify-center '>
-          <div class='flex gap-2 my-1'>
+          <div class='flex gap-2 my-1 pl-1'>
 
             <Icon :name='VALIDATION_RESULT_ICON[resultType]'></Icon>
             {{ VALIDATION_RESULT[resultType] }}
