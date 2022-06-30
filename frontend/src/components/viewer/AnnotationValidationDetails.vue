@@ -34,6 +34,8 @@ const closeDetails = () => {
 watch(() => selectedPolygon.value, () => {
   if (selectedPolygon.value) {
     selectedAnnotation.value = selectedPolygon.value.id;
+  } else {
+    selectedAnnotation.value = '';
   }
 });
 

@@ -411,6 +411,7 @@ const setTool = (data: { tool: Tool; event: any }) => {
 
   if (currentTool.value !== Tool.SELECT) {
     polygonChanged.polygon?.unselect();
+
   }
 };
 
