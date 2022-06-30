@@ -54,18 +54,18 @@ class AnnotationValidator:
 
             if not AnnotationValidator.is_geometry_valid(annotation):
                 validation_result_types.append(ValidationResultType.INVALID_GEOMETRY)
-
             if task_type == TaskType.DRAWING_WITH_CLASS:
-                if annotation_type == AnnotationType.BASE or is_info_annotation(
-                    AnnotationType(annotation_type)
-                ):
+                if annotation_type == AnnotationType.BASE:
                     continue
-                if annotation.name is None:
+                if (
+                    annotation.name is None
+                    and is_info_annotation(annotation.type) is False
+                ):
                     validation_result_types.append(ValidationResultType.MISSING_NAME)
 
             if len(validation_result_types) > 0:
                 validation_results.append(
                     ValidationResult(id=annotation.id, result=validation_result_types)
                 )
-
+        logger.info(validation_results)
         return validation_results
