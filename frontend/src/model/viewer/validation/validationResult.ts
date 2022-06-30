@@ -1,4 +1,4 @@
-import { ValidationResultType } from './ValidationResultType';
+import { ValidationResultType } from './validationResultType';
 
 export interface ValidationResult {
   id: string;

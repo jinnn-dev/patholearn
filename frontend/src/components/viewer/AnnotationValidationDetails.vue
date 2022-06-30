@@ -3,7 +3,7 @@ import BlurredContainer from '../general/BlurredContainer.vue';
 import Icon from '../general/Icon.vue';
 import { PropType, ref, watch } from 'vue';
 import { ValidationResult } from '../../model/viewer/validation/validationResult';
-import { VALIDATION_RESULT, VALIDATION_RESULT_ICON } from '../../model/viewer/validation/ValidationResultType';
+import { VALIDATION_RESULT, VALIDATION_RESULT_ICON } from '../../model/viewer/validation/validationResultType';
 import { selectedPolygon } from '../../core/viewer/viewerState';
 import Spinner from '../general/Spinner.vue';
 
