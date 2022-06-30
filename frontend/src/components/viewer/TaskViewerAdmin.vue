@@ -429,6 +429,8 @@ const handleKeyup = async (e: KeyboardEvent) => {
       drawingViewer.value!.stopDraggingIndicator = true;
       await drawingViewer.value?.saveTaskAnnotation(props.task!, annotation);
 
+      await validateAnnotations()
+
       if (drawingViewer.value?.drawingAnnotation) {
         selectAnnotation(drawingViewer.value?.drawingAnnotation?.id);
         changeToolTo.value = Tool.SELECT;
