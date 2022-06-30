@@ -4,6 +4,8 @@ import uuid
 from typing import Any, Dict, List, Union
 
 import pyvips
+from pydantic import parse_obj_as
+
 from app.api.deps import (
     check_if_user_can_access_course,
     check_if_user_can_access_task,
@@ -320,7 +322,7 @@ def validate_task_annotations(
         annotations_to_check += task.info_annotations
 
     validation_result = AnnotationValidator.validate_annotations(
-        annotations_to_check, task.task_type
+        parse_obj_as(List[AnnotationData], annotations_to_check), task.task_type
     )
 
     return validation_result

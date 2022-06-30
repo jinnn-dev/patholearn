@@ -790,7 +790,8 @@ const closeSampleSolutionEditor = () => {
   <escape-info :isPolygon='isPolygonDrawing' :show='isPolygonDrawing || isLineDrawing'></escape-info>
 
   <annotation-validation v-if='validationResult.length > 0' :validation-result-is-pending='validationResultIsPending'
-                         :validation-result='validationResult'>
+                         :validation-result='validationResult' @select-annotation='selectAnnotation'
+                         @close='unselectAnnotation'>
   </annotation-validation>
   <saving-info />
 
