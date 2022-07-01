@@ -428,6 +428,26 @@ def delete_task_annotation(
     return {"Status": "OK"}
 
 
+@router.get("/{task_id}/userSolution/validate", response_model=Any)
+def validate_task_annotations(
+    *,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+    task_id: int,
+) -> Any:
+    task = crud_task.get(db, task_id)
+    user_solution = crud_user_solution.get_solution_to_task_and_user(
+        db, user_id=current_user.id, task_id=task_id
+    )
+    if user_solution is None or user_solution.solution_data is None:
+        return []
+
+    return AnnotationValidator.validate_annotations(
+        parse_obj_as(List[AnnotationData], user_solution.solution_data),
+        task.task_type,
+    )
+
+
 @router.delete("/{task_id}/userSolution/taskResult", response_model=Any)
 def delete_task_result(
     *,
