@@ -448,6 +448,7 @@ const deleteAnnotations = async () => {
     showDeleteAnnotationsModal.value = false;
     drawingViewer.value?.clearUserAnnotations();
     props.task.user_solution = undefined;
+    await validateAnnotations();
   } else {
     showDeleteAnnotationsModal.value = false;
   }
