@@ -90,6 +90,7 @@ const setSelectedTask = (task: Task) => {
 const loadTaskDetails = () => {
   viewerLoadingState.dataLoaded = false;
   viewerLoadingState.tilesLoaded = false;
+
   TaskService.getBaseTask(route.params.id as string)
     .then((res: BaseTask) => {
       baseTask.value = res;
@@ -180,7 +181,6 @@ const loadTaskSolution = async () => {
           :task='selectedTask'
           :task_group_id='baseTask?.task_group_id'
         ></select-images-task>
-
         <div v-else>
           <task-viewer
             v-if='baseTask?.tasks.length === 0 || selectedTask?.task_type !== TaskType.IMAGE_SELECT'

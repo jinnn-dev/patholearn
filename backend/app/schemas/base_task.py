@@ -48,6 +48,7 @@ class BaseTask(BaseTaskInDB):
 
 
 class BaseTaskDetail(BaseTask):
+    course_id: Optional[int] = None
     task_group_id: Optional[int] = None
     task_group_short_name: Optional[str] = None
     tasks: Optional[List[Task]] = None

@@ -262,7 +262,6 @@ def read_task_details(
 
     task_group = crud_task_group.get(db=db, id=base_task.task_group_id)
     base_task.task_group_short_name = task_group.short_name
-
     return base_task
 
 

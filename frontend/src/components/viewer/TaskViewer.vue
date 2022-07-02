@@ -1,6 +1,6 @@
 <script lang='ts' setup>
 import OpenSeadragon from 'openseadragon';
-import { computed, onMounted, onUnmounted, PropType, reactive, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, PropType, reactive, ref, watch } from 'vue';
 import { getSlideUrl } from '../../config';
 import { Annotation } from '../../core/viewer/svg/annotation/annotation';
 import { AnnotationGroup as AnnotationGroupModel } from '../../model/task/annotationGroup';
@@ -160,8 +160,10 @@ watch(
     }
 
     if (props.show_result && props.task?.can_be_solved) {
-      TooltipGenerator.addAll(props.solve_result!.result_detail!);
-      setColors(newVal);
+      nextTick(() => {
+        TooltipGenerator.addAll(props.solve_result!.result_detail!);
+        setColors(newVal);
+      });
     }
   }
 );
