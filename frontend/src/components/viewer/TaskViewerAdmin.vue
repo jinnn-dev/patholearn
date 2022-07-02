@@ -51,6 +51,9 @@ import ColorPicker from '../general/ColorPicker.vue';
 import AnnotationGroup from './AnnotationGroup.vue';
 import { ExtractionResultList } from '../../model/viewer/extract/extractionResultList';
 import { TaskType } from '../../core/types/taskType';
+import AnnotationValidation from './AnnotationValidation.vue';
+import { ValidationResult } from '../../model/viewer/validation/validationResult';
+import { validateTaskAnnotations } from '../../core/viewer/helper/validateAnnotations';
 
 const props = defineProps({
   slide_name: String,
@@ -122,9 +125,12 @@ const deleteAnnotationId = ref('');
 
 const changeToolTo = ref<Tool>();
 
+const validationResult = ref<ValidationResult[]>([]);
+const validationResultIsPending = ref(false);
+
 watch(
   () => props.task,
-  (newVal, _) => {
+  async (newVal, _) => {
     drawingViewer.value?.clear();
     selectedPolygon.value = undefined;
     if (!newVal) {
@@ -151,6 +157,7 @@ watch(
     if (viewerLoadingState.tilesLoaded) {
       if (newVal) {
         setAnnotations(newVal);
+        await validateAnnotations();
       }
     }
   }
@@ -176,6 +183,7 @@ watch(
     selectedPolygon.value?.updateColor(color + ANNOTATION_COLOR.FILL_OPACITY, newVal!);
   }
 );
+
 
 const updateAnnotationColor = (color: string) => {
   let fillColor = color + ANNOTATION_COLOR.FILL_OPACITY;
@@ -232,7 +240,7 @@ const calcNormalizedRadius = (radius: number) => {
 
 watch(
   () => viewerLoadingState.tilesLoaded,
-  (newVal, _) => {
+  async (newVal, _) => {
     if (newVal) {
       if (props.task) {
         if (props.task.task_type === TaskType.DRAWING_WITH_CLASS && !toolbarTools.value.includes(Tool.UPLOAD)) {
@@ -246,6 +254,8 @@ watch(
       }
 
       viewerLoadingState.annotationsLoaded = true;
+
+      await validateAnnotations();
     }
   }
 );
@@ -262,6 +272,7 @@ onMounted(() => {
     clickHandler: clickHandler,
     moveHandler: moveHandler
   });
+
 });
 
 const setToolbarTools = () => {
@@ -340,8 +351,10 @@ const onApplyAnnotations = async (result: ParseResult[]) => {
 
   await saveTask(ANNOTATION_TYPE.SOLUTION);
 
+
   applyAnnotationsLoading.value = false;
   showUploadDialog.value = false;
+
 };
 
 const setTool = (data: { tool: Tool; event: any }) => {
@@ -398,6 +411,7 @@ const setTool = (data: { tool: Tool; event: any }) => {
 
   if (currentTool.value !== Tool.SELECT) {
     polygonChanged.polygon?.unselect();
+
   }
 };
 
@@ -415,6 +429,8 @@ const handleKeyup = async (e: KeyboardEvent) => {
       isTaskSaving.value = true;
       drawingViewer.value!.stopDraggingIndicator = true;
       await drawingViewer.value?.saveTaskAnnotation(props.task!, annotation);
+
+      await validateAnnotations();
 
       if (drawingViewer.value?.drawingAnnotation) {
         selectAnnotation(drawingViewer.value?.drawingAnnotation?.id);
@@ -453,6 +469,8 @@ const saveTask = async (type?: ANNOTATION_TYPE) => {
     await drawingViewer.value?.saveTaskAnnotation(props.task!);
   }
   isTaskSaving.value = false;
+
+  await validateAnnotations();
 };
 
 const updateSelectedAnnotation = async () => {
@@ -461,6 +479,8 @@ const updateSelectedAnnotation = async () => {
     task: props.task!,
     annotationViewer: drawingViewer.value!
   });
+
+  await validateAnnotations();
 };
 
 const updateAnnotationName = (newName: { name: string; color: string }) => {
@@ -482,7 +502,8 @@ const clickHandler = async (event: any) => {
     (selectionId: string) => {
       deleteAnnotationId.value = selectionId;
       showDeleteAnnotationDialog.value = true;
-    }
+    },
+    validateAnnotations
   );
 
   if (tool !== undefined) {
@@ -496,6 +517,7 @@ const deleteAnnotation = async () => {
   isTaskSaving.value = false;
   showDeleteAnnotationDialog.value = false;
   changeToolTo.value = Tool.MOVE;
+  await validateAnnotations();
 };
 
 const selectAnnotation = (annotationId: string) => {
@@ -571,6 +593,7 @@ const deleteAllAnnotations = async () => {
   deleteAnnotationsLoading.value = false;
   showConfirmationDialog.value = false;
   drawingViewer.value?.clear();
+  await validateAnnotations();
 };
 
 const focusAnnotation = (index: number) => {
@@ -609,6 +632,7 @@ const updateInfoAnnotation = async (updateContent: {
     props.task!
   );
   isTaskSaving.value = false;
+  await validateAnnotations();
 };
 
 const convertToSolutionAnnotation = async () => {
@@ -624,6 +648,7 @@ const convertToSolutionAnnotation = async () => {
   await drawingViewer.value?.saveTaskAnnotation(props.task!, annotation);
   selectAnnotation(annotation?.id!);
   isTaskSaving.value = false;
+  await validateAnnotations();
 };
 
 const convertToBackgroundAnnotation = async () => {
@@ -641,6 +666,12 @@ const convertToBackgroundAnnotation = async () => {
   selectAnnotation(annotation?.id!);
 
   isTaskSaving.value = false;
+};
+
+const validateAnnotations = async () => {
+  validationResultIsPending.value = true;
+  validationResult.value = await validateTaskAnnotations(props.task!.id);
+  validationResultIsPending.value = false;
 };
 
 const closeSampleSolutionEditor = () => {
@@ -762,6 +793,10 @@ const closeSampleSolutionEditor = () => {
 
   <escape-info :isPolygon='isPolygonDrawing' :show='isPolygonDrawing || isLineDrawing'></escape-info>
 
+  <annotation-validation v-if='validationResult.length > 0' :validation-result-is-pending='validationResultIsPending'
+                         :validation-result='validationResult' @select-annotation='selectAnnotation'
+                         @close='unselectAnnotation'>
+  </annotation-validation>
   <saving-info />
 
   <!--  <ground-truth-dialog-->
@@ -780,7 +815,6 @@ const closeSampleSolutionEditor = () => {
     @close='closeSampleSolutionEditor'
   >
   </SampleSolutionEditor>
-
   <confirm-dialog
     :loading='deleteAnnotationsLoading'
     :show='showConfirmationDialog'

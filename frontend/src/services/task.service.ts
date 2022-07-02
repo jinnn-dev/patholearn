@@ -8,6 +8,7 @@ import { TaskHint, TaskHintCreate, TaskHintUpdate } from '../model/task/taskHint
 import { UserSolution, UserSolutionCreate, UserSolutionUpdate } from '../model/userSolution';
 import { ApiService } from './api.service';
 import { handleError } from './error-handler';
+import { ValidationResult } from '../model/viewer/validation/validationResult';
 
 export class TaskService {
   /**
@@ -323,6 +324,24 @@ export class TaskService {
         resource: this._apiUrl(`/task/${task_id}/annotations`)
       }),
       'Task annotations could not be deleted'
+    );
+    return response!.data;
+  }
+
+  public static async validateTaskAnnotations(task_id: number): Promise<ValidationResult[]> {
+    const [_, response] = await handleError(
+      ApiService.get<ValidationResult[]>({
+        resource: this._apiUrl(`/task/${task_id}/validate`)
+      })
+    );
+    return response!.data;
+  }
+
+  public static async validateUserSolutionAnnotations(task_id: number): Promise<ValidationResult[]> {
+    const [_, response] = await handleError(
+      ApiService.get<ValidationResult[]>({
+        resource: this._apiUrl(`/task/${task_id}/userSolution/validate`)
+      })
     );
     return response!.data;
   }

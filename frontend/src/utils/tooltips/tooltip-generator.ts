@@ -80,19 +80,25 @@ export class TooltipGenerator {
   }
 
   public static disableTooltip(elementId: string) {
-    const index = this.instances.findIndex((item) => item.reference.id === elementId);
-    if (index > -1) {
-      const tooltip = this.instances[index];
+    const tooltip = TooltipGenerator.getTooltipByElementId(elementId);
+    if (tooltip) {
       tooltip.disable();
     }
   }
 
   public static enableTooltip(elementId: string) {
-    const index = this.instances.findIndex((item) => item.reference.id === elementId);
-    if (index > -1) {
-      const tooltip = this.instances[index];
+    const tooltip = TooltipGenerator.getTooltipByElementId(elementId);
+    if (tooltip) {
       tooltip.enable();
     }
+  }
+
+  private static getTooltipByElementId(elementId: string): Instance | undefined {
+    const index = this.instances.findIndex((item) => item.reference.id === elementId);
+    if (index < 0) {
+      return undefined;
+    }
+    return this.instances[index];
   }
 
   public static addGeneralTooltip({
@@ -119,6 +125,11 @@ export class TooltipGenerator {
       this.instances.push(instance);
       return instance;
     }
+  }
+
+  public static updateTooltipContent(elementId: string, newContent: string) {
+    const tooltip = TooltipGenerator.getTooltipByElementId(elementId);
+    tooltip?.setContent(newContent);
   }
 
   private static _generateContent(percentage: number, header: string, content?: string): string {

@@ -4,6 +4,8 @@ import uuid
 from typing import Any, Dict, List, Union
 
 import pyvips
+from pydantic import parse_obj_as
+
 from app.api.deps import (
     check_if_user_can_access_course,
     check_if_user_can_access_task,
@@ -11,6 +13,7 @@ from app.api.deps import (
     get_current_active_user,
     get_db,
 )
+from app.core.annotation_validator import AnnotationValidator
 from app.core.export.task_exporter import TaskExporter
 from app.crud.crud_base_task import crud_base_task
 from app.crud.crud_course import crud_course
@@ -301,6 +304,30 @@ def add_task_annotation(
     return {"Status": "OK"}
 
 
+@router.get("/{task_id}/validate", response_model=Any)
+def validate_task_annotations(
+    *,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_superuser),
+    task_id: int,
+) -> Any:
+    task = crud_task.get(db, id=task_id)
+
+    annotations_to_check = []
+
+    if task.solution is not None:
+        annotations_to_check += task.solution
+
+    if task.info_annotations is not None:
+        annotations_to_check += task.info_annotations
+
+    validation_result = AnnotationValidator.validate_annotations(
+        parse_obj_as(List[AnnotationData], annotations_to_check), task.task_type
+    )
+
+    return validation_result
+
+
 @router.put("/{task_id}/{annotation_id}", response_model=Any)
 def update_task_annotation(
     *,
@@ -399,6 +426,26 @@ def delete_task_annotation(
         ),
     )
     return {"Status": "OK"}
+
+
+@router.get("/{task_id}/userSolution/validate", response_model=Any)
+def validate_task_annotations(
+    *,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+    task_id: int,
+) -> Any:
+    task = crud_task.get(db, task_id)
+    user_solution = crud_user_solution.get_solution_to_task_and_user(
+        db, user_id=current_user.id, task_id=task_id
+    )
+    if user_solution is None or user_solution.solution_data is None:
+        return []
+
+    return AnnotationValidator.validate_annotations(
+        parse_obj_as(List[AnnotationData], user_solution.solution_data),
+        task.task_type,
+    )
 
 
 @router.delete("/{task_id}/userSolution/taskResult", response_model=Any)
