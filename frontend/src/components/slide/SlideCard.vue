@@ -10,6 +10,9 @@ import PrimaryButton from '../general/PrimaryButton.vue';
 import LazyImage from '../general/LazyImage.vue';
 import ModalDialog from '../containers/ModalDialog.vue';
 import ConfirmDialog from '../general/ConfirmDialog.vue';
+import { useService } from '../../composables/useService';
+import { SlideService } from '../../services/slide.service';
+import Spinner from '../general/Spinner.vue';
 
 const props = defineProps({
   slide: {
@@ -24,9 +27,11 @@ const props = defineProps({
 
 defineEmits(['delete']);
 
-const showInfoDialog = ref(false);
+const showMetadataDialog = ref(false);
 
 const showDeleteDialog = ref(false);
+
+const { loading, result, err, run } = useService(SlideService.getSlide);
 
 const getStatusColor = (status: SLIDE_STATUS) => {
   let color;
@@ -46,6 +51,16 @@ const getStatusColor = (status: SLIDE_STATUS) => {
       break;
   }
   return 'border-' + color + ' text-' + color;
+};
+
+const showMetadata = async () => {
+  if (!props.slide.metadata || props.slide.metadata.length === 0) {
+    await run(props.slide.slide_id, true);
+    if (result.value) {
+      props.slide.metadata = result.value?.metadata;
+    }
+  }
+  showMetadataDialog.value = true;
 };
 
 onMounted(() => {
@@ -102,9 +117,11 @@ onMounted(() => {
             bgColor='bg-gray-500'
             bgHoverColor='bg-gray-400'
             class='w-10 h-10'
-            @click='showInfoDialog = true'
+            :loading='loading'
+            @click='showMetadata'
           >
-            <Icon :height='30' :width='30' class='text-white' name='info' />
+            <spinner v-if='loading'></spinner>
+            <Icon v-else :height='30' :width='30' class='text-white' name='info' />
           </primary-button>
           <primary-button bgColor='bg-red-600' class='w-10 h-10' @click.stop='showDeleteDialog = true'>
             <Icon :height='30' :width='30' name='trash' />
@@ -138,10 +155,10 @@ onMounted(() => {
     </div>
   </skeleton-card>
 
-  <modal-dialog :show='showInfoDialog' customClasses='w-1/2 mb-8 mt-8'>
+  <modal-dialog :show='showMetadataDialog' customClasses='w-1/2 mb-8 mt-8'>
     <div class='sticky top-0 flex justify-end bg-gray-800 p-2'>
       <div class='w-full text-4xl'>Metadaten</div>
-      <primary-button bgColor='bg-gray-500' class='w-12' @click='showInfoDialog = false'>
+      <primary-button bgColor='bg-gray-500' class='w-12' @click='showMetadataDialog = false'>
         <Icon name='x'></Icon>
       </primary-button>
     </div>

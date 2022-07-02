@@ -8,48 +8,31 @@ import NoContent from '../components/general/NoContent.vue';
 import SkeletonCard from '../components/containers/SkeletonCard.vue';
 import PrimaryButton from '../components/general/PrimaryButton.vue';
 import SlideUpload from '../components/slide/SlideUpload.vue';
+import { useService } from '../composables/useService';
 
-const slides = ref<Slide[]>([]);
-const slideLoading = ref<Boolean>(true);
-const slideError = ref<Boolean>(false);
-
-const slideDeleteLoading = ref<Boolean>(false);
 
 onMounted(() => {
   loadSlides();
 });
 
-const loadSlides = () => {
-  slideLoading.value = true;
+const { loading, result: slides, err: slideError, run, reset } = useService(SlideService.getSlides);
 
-  SlideService.getSlides()
-    .then((res: Slide[]) => {
-      slides.value = res;
-    })
-    .catch((err) => {
-      console.log(err);
-      slideError.value = true;
-    })
-    .finally(() => {
-      slideLoading.value = false;
-    });
+const { loading: slideDeleteLoading, run: doDelete } = useService(SlideService.deleteSlide);
+
+const loadSlides = async () => {
+  reset();
+  await run({
+    metadata: false
+  });
 };
 
 const onUpload = (slide: Slide) => {
-  slides.value.push(slide);
+  slides.value?.push(slide);
 };
 
-const deleteSlide = (slide: Slide, index: number) => {
-  slideDeleteLoading.value = true;
-  SlideService.deleteSlide(slide.slide_id).then(
-    (_) => {
-      slideDeleteLoading.value = false;
-      slides.value.splice(index, 1);
-    },
-    (err) => {
-      console.log(err);
-    }
-  );
+const deleteSlide = async (slide: Slide, index: number) => {
+  await doDelete(slide.slide_id);
+  slides.value?.splice(index, 1);
 };
 </script>
 <template>
@@ -70,13 +53,13 @@ const deleteSlide = (slide: Slide, index: number) => {
       </div>
 
       <div
-        v-if='slideLoading'
+        v-if='loading'
         class='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 h-32'
       >
-        <skeleton-card v-for='i of [1, 2, 3]' :key='i' :loading='slideLoading' class='my-4 min-h-42'></skeleton-card>
+        <skeleton-card v-for='i of [1, 2, 3]' :key='i' :loading='loading' class='my-4 min-h-42'></skeleton-card>
       </div>
       <div v-else>
-        <div v-if='slides.length === 0 && !slideError' class='text-4xl'>
+        <div v-if='slides?.length === 0 && !slideError' class='text-4xl'>
           <no-content text='Keine Bilder vorhanden'></no-content>
         </div>
         <div v-if='slideError' class='text-4xl text-center'>Fehler beim Laden der Bilder</div>
