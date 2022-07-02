@@ -14,6 +14,6 @@ defineProps({
       {{ isPolygon ? `des Polygons abzubrechen` : 'Linie zu beenden' }}
     </div>
 
-    <div>Drücke die <kbd>&larr;</kbd> um den letzten Punkt zu löschen</div>
+    <div>Drücke die <kbd class='px-7'>&larr;</kbd>-Taste um den letzten Punkt zu löschen</div>
   </div>
 </template>
