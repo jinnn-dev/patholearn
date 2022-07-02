@@ -337,6 +337,15 @@ export class TaskService {
     return response!.data;
   }
 
+  public static async validateUserSolutionAnnotations(task_id: number): Promise<ValidationResult[]> {
+    const [_, response] = await handleError(
+      ApiService.get<ValidationResult[]>({
+        resource: this._apiUrl(`/task/${task_id}/userSolution/validate`)
+      })
+    );
+    return response!.data;
+  }
+
   /**
    * Adds a new annotation to the user solution
    *

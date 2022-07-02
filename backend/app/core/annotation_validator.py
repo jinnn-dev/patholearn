@@ -67,5 +67,4 @@ class AnnotationValidator:
                 validation_results.append(
                     ValidationResult(id=annotation.id, result=validation_result_types)
                 )
-        logger.info(validation_results)
         return validation_results

@@ -12,7 +12,8 @@ export async function userMouseClickHandler(
   annotationViewer: AnnotationViewer,
   selectedPolygonData: any,
   saveCallback: Function,
-  deleteAnnotation: Function
+  deleteAnnotation: Function,
+  validationCallback: Function
 ): Promise<Tool | undefined> {
   if (currentTool === Tool.ADD_POINT_SOLUTION || currentTool === Tool.ADD_POINT_USER_SOLUTION) {
     if (event.quick) {

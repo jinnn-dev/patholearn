@@ -47,6 +47,10 @@ import AnnotationValidation from './AnnotationValidation.vue';
 import InfoTooltip from './InfoTooltip.vue';
 import AnnotationGroup from './AnnotationGroup.vue';
 import { RESULT_POLYGON_COLOR, TaskStatus } from '../../core/types/taskStatus';
+import { ValidationResult } from '../../model/viewer/validation/validationResult';
+import { validateTaskAnnotations, validateUserSolutionAnnotations } from '../../core/viewer/helper/validateAnnotations';
+import { select } from 'd3-selection';
+import { INFO_NODE_ID, SVG_ID, USER_SOLUTION_NODE_ID } from '../../core/viewer/svg/svg-overlay';
 
 const props = defineProps({
   slide_name: String,
@@ -92,6 +96,9 @@ const annotationToBeDeleted = ref('');
 
 const changeToolTo = ref<Tool>();
 
+const validationResult = ref<ValidationResult[]>([]);
+const validationResultIsPending = ref(false);
+
 watch(
   () => selectedPolygonData.name,
   (newVal, _) => {
@@ -104,7 +111,7 @@ watch(
 
 watch(
   () => props.task,
-  (newVal, _) => {
+  async (newVal, _) => {
     drawingViewer.value?.clear();
 
     setToolbarTools();
@@ -122,6 +129,8 @@ watch(
         userSolutionLocked.value = true;
         setColors(props.solve_result);
       }
+
+      await validateAnnotations();
     }
   }
 );
@@ -184,7 +193,7 @@ watch(
 
 watch(
   () => viewerLoadingState.tilesLoaded,
-  (newVal, _) => {
+  async (newVal, _) => {
     if (newVal) {
       if (props.task) {
         setAnnotations(props.task);
@@ -196,7 +205,10 @@ watch(
           TooltipGenerator.addAll(props.solve_result!.result_detail!);
           setColors(props.task?.user_solution?.task_result);
         }
+
       }
+
+      await validateAnnotations();
     }
   }
 );
@@ -336,6 +348,7 @@ const saveUserSolution = async (type?: ANNOTATION_TYPE, annotation?: Annotation)
     await drawingViewer.value?.saveUserAnnotation(props.task!, annotation);
   }
   isTaskSaving.value = false;
+  await validateAnnotations();
 };
 
 const updateSelectedAnnotation = async () => {
@@ -344,6 +357,7 @@ const updateSelectedAnnotation = async () => {
     task: props.task!,
     annotationViewer: drawingViewer.value!
   });
+  await validateAnnotations();
 };
 
 const updateAnnotationName = (newName: { name: string; color: string }) => {
@@ -365,7 +379,8 @@ const clickHandler = async (event: any) => {
     (annotationId: string) => {
       showDeleteAnnotationDialog.value = true;
       annotationToBeDeleted.value = annotationId;
-    }
+    },
+    validateAnnotations
   );
 
   if (tool !== undefined) {
@@ -378,6 +393,10 @@ const unselectAnnotation = () => {
   selectedPolygon.value = undefined;
 };
 
+const selectAnnotation = (annotationId: string) => {
+  selectedPolygon.value = drawingViewer.value!.selectAnnotation(annotationId, true);
+};
+
 const deleteAnnotation = async () => {
   isTaskSaving.value = true;
   await drawingViewer.value?.deleteAnnotationByID(props.task!, annotationToBeDeleted.value);
@@ -385,6 +404,7 @@ const deleteAnnotation = async () => {
   isTaskSaving.value = false;
 
   changeToolTo.value = Tool.MOVE;
+  await validateAnnotations();
 };
 
 const moveHandler = (event: any) => {
@@ -419,7 +439,6 @@ const groupCreated = (group: AnnotationGroupModel) => {
   props.task?.annotation_groups.push(group);
 };
 
-//
 
 const deleteAnnotations = async () => {
   if (props.task?.user_solution) {
@@ -456,6 +475,12 @@ const setAnnotations = (task: Task) => {
   if (task.solution) {
     drawingViewer.value?.addAnnotations(task.solution as AnnotationData[]);
   }
+};
+
+const validateAnnotations = async () => {
+  validationResultIsPending.value = true;
+  validationResult.value = await validateUserSolutionAnnotations(props.task!.id);
+  validationResultIsPending.value = false;
 };
 
 onUnmounted(() => {
@@ -504,7 +529,10 @@ onUnmounted(() => {
   <escape-info :isPolygon='isPolygonDrawing' :show='isPolygonDrawing || isLineDrawing'></escape-info>
 
   <saving-info></saving-info>
-  <annotation-validation :invalid-annotations='3'></annotation-validation>
+  <annotation-validation v-if='validationResult.length > 0' :validation-result='validationResult'
+                         :validation-result-is-pending='validationResultIsPending'
+                         @select-annotation='selectAnnotation' @close='unselectAnnotation'>
+  </annotation-validation>
 
   <background-annotation-switcher
     v-if='task?.task_data && task.task_data.length !== 0'
