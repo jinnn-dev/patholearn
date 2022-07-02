@@ -56,6 +56,7 @@ export class ImageSelectViewer {
     //   this._tilesSources.push(SLIDE_IMAGE_URL + '/' + image);
     // }
 
+    // @ts-ignore
     viewerOptions.tileSources = this._tilesSources.map((image) => {
       return {
         type: 'image',
