@@ -92,15 +92,15 @@ const toggleAnnotationVisibility = () => {
 };
 </script>
 <template>
-  <div class='fixed z-10 top-1/2 transform -translate-y-1/2 overflow-hidden flex flex-col gap-8'>
-    <div class='overflow-hidden rounded-r-lg bg-gray-600/70 backdrop-blur-md'>
+  <div class='fixed z-10 top-1/2 transform -translate-y-1/2 overflow-hidden flex flex-col gap-8 left-3'>
+    <div class='overflow-hidden rounded-lg bg-gray-600/70 backdrop-blur-md'>
       <tool-item :comp='annotationToolComponent' :hint='annotationHint' @click='toggleAnnotationVisibility'>
       </tool-item>
     </div>
     <div
       v-if='!userSolutionLocked && !viewerLoadingState.solveResultLoading'
       :class="annotationVisible ? 'opacity-100' : 'opacity-20'"
-      class='bg-gray-600/70 backdrop-blur-md text-white rounded-r-lg overflow-hidden'
+      class='bg-gray-600/70 backdrop-blur-md text-white rounded-lg overflow-hidden'
     >
       <tool-item
         v-for='tool in defaultTools'
@@ -116,7 +116,7 @@ const toggleAnnotationVisibility = () => {
     <div
       v-if='infoTools && infoTools?.length > 0'
       :class="annotationVisible ? 'opacity-100' : 'opacity-20'"
-      class='bg-gray-600/70 backdrop-blur-md text-white rounded-r-lg overflow-hidden'
+      class='bg-gray-600/70 backdrop-blur-md text-white rounded-lg overflow-hidden'
     >
       <div id='infoHeader' class='py-1 text-gray-200 bg-gray-700 text-center px-0.5 select-none'>INFO</div>
       <tool-item

@@ -128,7 +128,7 @@ const deleteBaseTask = () => {
 </script>
 <template>
   <div
-    :class="[isCollapsed ? 'right-0' : 'right-80']"
+    :class="[isCollapsed ? 'right-0' : 'right-[20.75rem]']"
     :title="isCollapsed ? 'Ausklappen' : 'Einklappen'"
     class='transition-all cursor-pointer absolute z-10 top-1/2 -translate-y-1/2 bg-gray-700/70 backdrop-blur-md text-3xl rounded-l-lg h-12 flex flex-col items-center justify-center'
     @click='isCollapsed = !isCollapsed'
@@ -137,8 +137,8 @@ const deleteBaseTask = () => {
   </div>
 
   <div
-    :class="[isCollapsed ? '-right-80' : 'right-0']"
-    class='transition-all w-80 fixed z-10 right-0 top-1/2 -translate-y-1/2 rounded-l-lg overflow-hidden bg-gray-700/70 backdrop-blur-md'
+    :class="[isCollapsed ? '-right-[20.75rem]' : 'right-3']"
+    class='transition-all w-80 fixed z-10 right-0 top-1/2 -translate-y-1/2 rounded-lg overflow-hidden bg-gray-700/70 backdrop-blur-md'
   >
     <div class='flex gap-4 justify-between items-center m-2 text-center text-xl'>
       <h3>{{ baseTask?.name }}</h3>

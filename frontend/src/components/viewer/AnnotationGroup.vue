@@ -92,7 +92,7 @@ const onSubmit = () => {
 };
 </script>
 <template>
-  <div class='fixed right-0 top-6 z-10 bg-gray-700/70 backdrop-blur-md rounded-l-lg p-2 w-80'>
+  <div class='fixed right-3 top-3 z-10 bg-gray-700/70 backdrop-blur-md rounded-lg p-2 w-80'>
     <div v-if='!annotationGroups || annotationGroups.length === 0' class='text-center text-xl'>Keine Klassen
       vorhanden
     </div>

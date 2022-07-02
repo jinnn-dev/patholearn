@@ -16,7 +16,7 @@ defineProps({
 
 <template>
   <router-link :to='routeName' class='flex items-center rounded-lg'>
-    <primary-button bgColor='bg-gray-700' class='fixed top-4 left-2 z-10 w-auto shadow-md'>
+    <primary-button bgColor='bg-gray-700' class='fixed top-3 left-3 z-10 w-auto shadow-md'>
       <Icon name='arrow-left' />
       <div class='ml-1'>{{ text }}</div>
     </primary-button>
