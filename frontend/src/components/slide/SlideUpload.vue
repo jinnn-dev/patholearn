@@ -6,7 +6,6 @@ import Icon from '../general/Icon.vue';
 import ModalDialog from '../containers/ModalDialog.vue';
 import FormField from '../form/FormField.vue';
 import InputField from '../form/InputField.vue';
-import SaveButton from '../general/SaveButton.vue';
 import ConfirmButtons from '../general/ConfirmButtons.vue';
 
 const emit = defineEmits(['slide-uploaded']);
@@ -115,8 +114,15 @@ const resetDialog = () => {
 
           {{ errorMessage }}
         </div>
-        <confirm-buttons :loading='loading' reject-text='Abbrechen' @reject='showUpload = false; resetDialog()'
-                         confirm-text='Hochladen'></confirm-buttons>
+        <confirm-buttons
+          :loading='loading'
+          confirm-text='Hochladen'
+          reject-text='Abbrechen'
+          @reject='
+            showUpload = false;
+            resetDialog();
+          '
+        ></confirm-buttons>
       </form>
     </modal-dialog>
   </div>

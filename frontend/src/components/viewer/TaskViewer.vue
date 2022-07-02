@@ -48,9 +48,7 @@ import InfoTooltip from './InfoTooltip.vue';
 import AnnotationGroup from './AnnotationGroup.vue';
 import { RESULT_POLYGON_COLOR, TaskStatus } from '../../core/types/taskStatus';
 import { ValidationResult } from '../../model/viewer/validation/validationResult';
-import { validateTaskAnnotations, validateUserSolutionAnnotations } from '../../core/viewer/helper/validateAnnotations';
-import { select } from 'd3-selection';
-import { INFO_NODE_ID, SVG_ID, USER_SOLUTION_NODE_ID } from '../../core/viewer/svg/svg-overlay';
+import { validateUserSolutionAnnotations } from '../../core/viewer/helper/validateAnnotations';
 
 const props = defineProps({
   slide_name: String,
@@ -207,7 +205,6 @@ watch(
           TooltipGenerator.addAll(props.solve_result!.result_detail!);
           setColors(props.task?.user_solution?.task_result);
         }
-
       }
 
       await validateAnnotations();
@@ -441,7 +438,6 @@ const groupCreated = (group: AnnotationGroupModel) => {
   props.task?.annotation_groups.push(group);
 };
 
-
 const deleteAnnotations = async () => {
   if (props.task?.user_solution) {
     deleteAnnotationsLoading.value = true;
@@ -532,9 +528,13 @@ onUnmounted(() => {
   <escape-info :isPolygon='isPolygonDrawing' :show='isPolygonDrawing || isLineDrawing'></escape-info>
 
   <saving-info></saving-info>
-  <annotation-validation v-if='validationResult.length > 0' :validation-result='validationResult'
-                         :validation-result-is-pending='validationResultIsPending'
-                         @select-annotation='selectAnnotation' @close='unselectAnnotation'>
+  <annotation-validation
+    v-if='validationResult.length > 0'
+    :validation-result='validationResult'
+    :validation-result-is-pending='validationResultIsPending'
+    @close='unselectAnnotation'
+    @select-annotation='selectAnnotation'
+  >
   </annotation-validation>
 
   <background-annotation-switcher

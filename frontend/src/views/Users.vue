@@ -5,7 +5,6 @@ import useVuelidate from '@vuelidate/core';
 import { User } from '../model/user';
 import { AuthService } from '../services/auth.service';
 import ModalDialog from '../components/containers/ModalDialog.vue';
-import SaveButton from '../components/general/SaveButton.vue';
 import PrimaryButton from '../components/general/PrimaryButton.vue';
 import AuthInput from '../components/auth/AuthInput.vue';
 import Icon from '../components/general/Icon.vue';
@@ -194,8 +193,12 @@ const onSubmit = () => {
         <Icon name='key' size='24' />
       </auth-input>
       <div v-if='!passwordMatch' class='text-red-500'>Passwörter stimmen nicht überein.</div>
-      <confirm-buttons :loading='adminIsCreating' reject-text='Abbrechen' @reject='closeModal'
-                       confirm-text='Speichern'></confirm-buttons>
+      <confirm-buttons
+        :loading='adminIsCreating'
+        confirm-text='Speichern'
+        reject-text='Abbrechen'
+        @reject='closeModal'
+      ></confirm-buttons>
     </form>
   </modal-dialog>
 </template>

@@ -18,12 +18,7 @@ defineProps({
 });
 </script>
 <template>
-  <primary-button
-    :bgColor='bgColor'
-    :bgHoverColor='bgHoverColor'
-    :disabled='loading'
-    :fontWeight='fontWeight'
-  >
+  <primary-button :bgColor='bgColor' :bgHoverColor='bgHoverColor' :disabled='loading' :fontWeight='fontWeight'>
     <div class='transition'>
       <svg
         v-if='loading'

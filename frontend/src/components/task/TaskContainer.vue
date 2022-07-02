@@ -8,7 +8,6 @@ import TaskLayer from './TaskLayer.vue';
 import RoleOnly from '../containers/RoleOnly.vue';
 import PrimaryButton from '../general/PrimaryButton.vue';
 import ModalDialog from '../containers/ModalDialog.vue';
-import SaveButton from '../general/SaveButton.vue';
 import Icon from '../general/Icon.vue';
 import { TaskStatus } from '../../core/types/taskStatus';
 import ConfirmButtons from '../general/ConfirmButtons.vue';
@@ -174,8 +173,11 @@ const deleteBaseTask = () => {
       <div class='relative'>
         <h1 class='text-2xl'>Möchtest du die Aufgabe löschen?</h1>
         <div class='my-4'>Alle Aufgaben und Lösungen werden gelöscht.</div>
-        <confirm-buttons :loading='deleteLoading' @reject='showDeleteBaseTask = false'
-                         @confirm='deleteBaseTask'></confirm-buttons>
+        <confirm-buttons
+          :loading='deleteLoading'
+          @confirm='deleteBaseTask'
+          @reject='showDeleteBaseTask = false'
+        ></confirm-buttons>
       </div>
     </modal-dialog>
   </role-only>

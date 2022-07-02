@@ -114,10 +114,10 @@ onMounted(() => {
         </div>
         <div class='flex gap-2'>
           <primary-button
+            :loading='loading'
             bgColor='bg-gray-500'
             bgHoverColor='bg-gray-400'
             class='w-10 h-10'
-            :loading='loading'
             @click='showMetadata'
           >
             <spinner v-if='loading'></spinner>

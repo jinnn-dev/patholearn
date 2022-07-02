@@ -13,6 +13,7 @@ export class AnnotationRectangle extends Annotation {
   private _mouseTrackers: OpenSeadragon.MouseTracker[];
   private _dragEndHandler?: (event: OpenSeadragon.OSDEvent<any>) => void;
   private _resultPolylines: Selection<SVGPolylineElement, unknown, null, undefined>[];
+  private readonly _fillColor: string;
 
   constructor(
     g: HTMLElement,
@@ -80,8 +81,6 @@ export class AnnotationRectangle extends Annotation {
   set isClosed(closed: boolean) {
     this._isClosed = closed;
   }
-
-  private readonly _fillColor: string;
 
   get fillColor() {
     return this._fillColor;

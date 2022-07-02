@@ -6,8 +6,6 @@ import { InfoImageService } from '../../services/info-image.service';
 import { InfoTooltipGenerator } from '../../utils/tooltips/info-tooltip-generator';
 import { infotooltipState, resetInfoTooltipState } from '../../utils/tooltips/info-tooltip-state';
 import ModalDialog from '../containers/ModalDialog.vue';
-import SaveButton from '../general/SaveButton.vue';
-import PrimaryButton from '../general/PrimaryButton.vue';
 import MultiImageUpload from '../form/MultiImageUpload.vue';
 import FormField from '../form/FormField.vue';
 import UploadPreviewImage from '../general/UploadPreviewImage.vue';
@@ -299,13 +297,16 @@ const deleteExistingImage = (index: number) => {
       <div v-if="uploadProgress == 100.0" class="font-semibold">Wird gespeichert...</div>
     </div> -->
 
-    <confirm-buttons :loading='isSaving'
-                     reject-text='Abbrechen'
-                     @reject='showEdit = false; infotooltipState.show = true;'
-                     confirm-text='Speichern'
-                     @confirm='updateTooltip'
+    <confirm-buttons
+      :loading='isSaving'
+      confirm-text='Speichern'
+      reject-text='Abbrechen'
+      @confirm='updateTooltip'
+      @reject='
+        showEdit = false;
+        infotooltipState.show = true;
+      '
     >
-
     </confirm-buttons>
   </modal-dialog>
 </template>

@@ -2,20 +2,20 @@
   <div class='mb-4'>
     <div
       id='accordion-item-header'
+      :class="expand ? 'rounded-t-lg' : 'rounded-lg'"
+      class='flex items-center bg-gray-700/60 p-2 hover:underline cursor-pointer'
       @click='
         $parent.select(index);
         toggleDisplay();
       '
-      class='flex items-center bg-gray-700/60 p-2 hover:underline cursor-pointer'
-      :class="expand ? 'rounded-t-lg' : 'rounded-lg'"
     >
       <Icon
-        name='caret-right'
-        height='20'
-        width='20'
-        class='mr-1 transform'
         :class="expand ? 'rotate-45' : 'rotate-0'"
+        class='mr-1 transform'
+        height='20'
+        name='caret-right'
         strokeWidth='24'
+        width='20'
       />
       <span class='font-semibold'>{{ title }}</span>
     </div>

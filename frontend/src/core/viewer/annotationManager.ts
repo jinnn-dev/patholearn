@@ -8,6 +8,9 @@ import { generateAnnotation } from './svg/factories/generateAnnotation';
 
 export class AnnotationManager {
   private readonly _infoNode: HTMLElement;
+  private readonly _backgroundNode: HTMLElement;
+  private readonly _solutionNode: HTMLElement;
+  private readonly _userSolutionNode: HTMLElement;
 
   constructor(
     backgroundNode: HTMLElement,
@@ -26,19 +29,13 @@ export class AnnotationManager {
     this._infoAnnotations = [];
   }
 
-  private readonly _backgroundNode: HTMLElement;
-
   get backgroundNode() {
     return this._backgroundNode;
   }
 
-  private readonly _solutionNode: HTMLElement;
-
   get solutionNode() {
     return this._solutionNode;
   }
-
-  private readonly _userSolutionNode: HTMLElement;
 
   get userSolutionNode() {
     return this._userSolutionNode;

@@ -8,8 +8,6 @@ import TaskCountBadge from '../task/TaskCountBadge.vue';
 import Spinner from '../general/Spinner.vue';
 import RoleOnly from '../containers/RoleOnly.vue';
 import ModalDialog from '../containers/ModalDialog.vue';
-import PrimaryButton from '../general/PrimaryButton.vue';
-import SaveButton from '../general/SaveButton.vue';
 import InputField from '../form/InputField.vue';
 import Icon from '../general/Icon.vue';
 import DotMenu from '../general/DotMenu.vue';
@@ -123,8 +121,11 @@ onClickOutside(target, () => (dotMenuOpen.value = false));
       <div class='relative'>
         <h1 class='text-2xl'>Möchtest du die Aufgabengruppe löschen?</h1>
         <div class='my-4'>Alle Aufgaben und Lösungen werden gelöscht.</div>
-        <confirm-buttons @reject='showDeleteTaskGroup = false' @confirm='deleteTaskGroup'
-                         :loading='deleteTaskGroupLoading'>
+        <confirm-buttons
+          :loading='deleteTaskGroupLoading'
+          @confirm='deleteTaskGroup'
+          @reject='showDeleteTaskGroup = false'
+        >
         </confirm-buttons>
       </div>
     </modal-dialog>
@@ -132,9 +133,13 @@ onClickOutside(target, () => (dotMenuOpen.value = false));
       <div class='relative'>
         <h1 class='text-2xl'>Aufgabengruppe bearbeiten</h1>
         <InputField v-model='newTaskGroupName' label='Neuer Name'></InputField>
-        <confirm-buttons :loading='editTaskGroupLoading'
-                         reject-text='Abbrechen' @reject='showEditTaskGroup = false'
-                         confirm-text='Speichern' @confirm='editTaskGroup'>
+        <confirm-buttons
+          :loading='editTaskGroupLoading'
+          confirm-text='Speichern'
+          reject-text='Abbrechen'
+          @confirm='editTaskGroup'
+          @reject='showEditTaskGroup = false'
+        >
         </confirm-buttons>
       </div>
     </modal-dialog>

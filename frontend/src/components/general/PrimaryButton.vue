@@ -26,7 +26,6 @@ const props = defineProps({
     type: String,
     default: 'submit'
   }
-
 });
 
 const generatedBgColor = computed(() => {

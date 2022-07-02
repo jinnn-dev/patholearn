@@ -8,7 +8,6 @@ import { TaskService } from '../services/task.service';
 import { TaskGroupService } from '../services/task-group.service';
 import router from '../router';
 import ModalDialog from '../components/containers/ModalDialog.vue';
-import SaveButton from '../components/general/SaveButton.vue';
 import PrimaryButton from '../components/general/PrimaryButton.vue';
 import InputField from '../components/form/InputField.vue';
 import ContentContainer from '../components/containers/ContentContainer.vue';
@@ -235,8 +234,12 @@ const editCourse = async () => {
         >
         </input-field>
 
-        <confirm-buttons :loading='taskGroupLoading' reject-text='Abbrechen' @reject='onTaskGroupClose'
-                         confirm-text='Speichern'></confirm-buttons>
+        <confirm-buttons
+          :loading='taskGroupLoading'
+          confirm-text='Speichern'
+          reject-text='Abbrechen'
+          @reject='onTaskGroupClose'
+        ></confirm-buttons>
       </form>
     </div>
   </modal-dialog>
@@ -262,8 +265,13 @@ const editCourse = async () => {
           @click.prevent='deleteCourse'
         ></primary-button>
       </div>
-      <confirm-buttons :loading='editCourseLoading' reject-text='Abbrechen' @reject='showEditCourse = false'
-                       confirm-text='Speichern' @confirm='editCourse'></confirm-buttons>
+      <confirm-buttons
+        :loading='editCourseLoading'
+        confirm-text='Speichern'
+        reject-text='Abbrechen'
+        @confirm='editCourse'
+        @reject='showEditCourse = false'
+      ></confirm-buttons>
     </div>
   </modal-dialog>
   <!-- <modal-dialog :show="showEditCourse">

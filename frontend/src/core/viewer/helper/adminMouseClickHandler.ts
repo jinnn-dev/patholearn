@@ -5,7 +5,6 @@ import { isDrawingTool, Tool, TOOL_ANNOTATION } from '../types/tools';
 import { AnnotationViewer } from '../annotationViewer';
 import { SVG_ID } from '../config/generateViewerOptions';
 import { isTaskSaving, polygonChanged, selectedPolygon } from '../viewerState';
-import { validateTaskAnnotations } from './validateAnnotations';
 
 export async function adminMouseClickHandler(
   event: any,
@@ -73,7 +72,7 @@ export async function adminMouseClickHandler(
       select('#' + SVG_ID)
         .selectAll('*')
         .selectAll('polyline, path, circle, rect')
-        .on('click', async function() {
+        .on('click', async function () {
           const selectionId = select(this).attr('id');
           deleteAnnotation(selectionId);
         });
@@ -83,7 +82,7 @@ export async function adminMouseClickHandler(
       select('#' + SVG_ID)
         .selectAll('*')
         .selectAll('polyline, path, circle, rect')
-        .on('click', function() {
+        .on('click', function () {
           const selectionId = select(this).attr('id');
 
           selectionCallback(selectionId);

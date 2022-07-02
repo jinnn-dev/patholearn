@@ -1,4 +1,4 @@
-<script setup lang='ts'>
+<script lang='ts' setup>
 import BlurredContainer from '../general/BlurredContainer.vue';
 import Icon from '../general/Icon.vue';
 import Badge from '../general/Badge.vue';
@@ -35,9 +35,12 @@ const toolTipContent = computed(() => {
   }
 });
 
-watch(() => props.validationResult, () => {
-  updateTooltipContent();
-});
+watch(
+  () => props.validationResult,
+  () => {
+    updateTooltipContent();
+  }
+);
 
 onMounted(() => {
   TooltipGenerator.addGeneralTooltip({
@@ -57,24 +60,28 @@ const close = (emitToParent: boolean) => {
     emit('close');
   }
 };
-
 </script>
 <template>
-  <annotation-validation-details v-if='showDetails' @close='close'
-                                 :validation-result='validationResult'
-                                 :loading='validationResultIsPending'
-                                 @select-annotation='$emit("selectAnnotation", $event)'>
+  <annotation-validation-details
+    v-if='showDetails'
+    :loading='validationResultIsPending'
+    :validation-result='validationResult'
+    @close='close'
+    @select-annotation="$emit('selectAnnotation', $event)"
+  >
   </annotation-validation-details>
-  <BlurredContainer :id='itemId'
-                    class='fixed left-2 bottom-2 z-20 p-1 rounded-lg cursor-pointer hover:bg-gray-500/80 transition'
-                    @click='showDetails = true' v-else>
+  <BlurredContainer
+    v-else
+    :id='itemId'
+    class='fixed left-2 bottom-2 z-20 p-1 rounded-lg cursor-pointer hover:bg-gray-500/80 transition'
+    @click='showDetails = true'
+  >
     <div>
-      <Badge class='absolute -right-3 -top-3' bg-color='bg-red-900' :amount='validationResult.length'></Badge>
+      <Badge :amount='validationResult.length' bg-color='bg-red-900' class='absolute -right-3 -top-3'></Badge>
       <div v-if='validationResultIsPending' class='flex justify-center items-center w-[32px] h-[32px]'>
         <spinner class='w-96'></spinner>
       </div>
-      <Icon class='text-red-500' name='warning' size='32' v-else></Icon>
+      <Icon v-else class='text-red-500' name='warning' size='32'></Icon>
     </div>
   </BlurredContainer>
-
 </template>

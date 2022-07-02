@@ -2,7 +2,6 @@
 import { ref } from 'vue';
 import PrimaryButton from './PrimaryButton.vue';
 import ModalDialog from '../containers/ModalDialog.vue';
-import SaveButton from './SaveButton.vue';
 import ConfirmButtons from './ConfirmButtons.vue';
 
 const emit = defineEmits(['confirmation']);
@@ -39,7 +38,7 @@ const confirm = () => {
     <div class='relative'>
       <h1 class='text-2xl'>{{ header }}</h1>
       <div class='my-4'>{{ info }}</div>
-      <confirm-buttons :loading='loading' @reject='showConfirmationDialog = false' @confirm='confirm'></confirm-buttons>
+      <confirm-buttons :loading='loading' @confirm='confirm' @reject='showConfirmationDialog = false'></confirm-buttons>
     </div>
   </modal-dialog>
 </template>

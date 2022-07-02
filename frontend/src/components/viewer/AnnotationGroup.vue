@@ -93,8 +93,8 @@ const onSubmit = () => {
 </script>
 <template>
   <div class='fixed right-3 top-3 z-10 bg-gray-700/70 backdrop-blur-md rounded-lg p-2 w-80'>
-    <div v-if='!annotationGroups || annotationGroups.length === 0' class='text-center text-xl'>Keine Klassen
-      vorhanden
+    <div v-if='!annotationGroups || annotationGroups.length === 0' class='text-center text-xl'>
+      Keine Klassen vorhanden
     </div>
     <div v-else>
       <h3 class='text-xl text-center'>Vorhandene Klassen</h3>
@@ -164,8 +164,12 @@ const onSubmit = () => {
           </div>
         </div>
 
-        <confirm-buttons :loading='groupCreationLoading' reject-text='Abbrechen' @reject='showGroupCreation = false'
-                         confirm-text='Speichern'></confirm-buttons>
+        <confirm-buttons
+          :loading='groupCreationLoading'
+          confirm-text='Speichern'
+          reject-text='Abbrechen'
+          @reject='showGroupCreation = false'
+        ></confirm-buttons>
       </form>
     </modal-dialog>
   </role-only>

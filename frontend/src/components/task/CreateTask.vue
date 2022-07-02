@@ -304,10 +304,16 @@ const resetForm = () => {
         </AccordionItem>
       </Accordion>
 
-      <confirm-buttons class='mt-4' :loading='taskCreationLoading' reject-text='Abbrechen'
-                       @reject='$emit("close");resetForm()'
-                       confirm-text='Speichern'></confirm-buttons>
-      
+      <confirm-buttons
+        :loading='taskCreationLoading'
+        class='mt-4'
+        confirm-text='Speichern'
+        reject-text='Abbrechen'
+        @reject="
+          $emit('close');
+          resetForm();
+        "
+      ></confirm-buttons>
     </form>
   </div>
 </template>

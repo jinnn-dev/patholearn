@@ -8,7 +8,6 @@ import ModalDialog from '../../containers/ModalDialog.vue';
 import BlurredContainer from '../../general/BlurredContainer.vue';
 import MultiImageUpload from '../../form/MultiImageUpload.vue';
 import PrimaryButton from '../../general/PrimaryButton.vue';
-import SaveButton from '../../general/SaveButton.vue';
 import TextEdit from '../../form/TextEdit.vue';
 import Accordion from '../../containers/Accordion.vue';
 import AccordionItem from '../../containers/AccordionItem.vue';
@@ -115,9 +114,14 @@ const closeDialog = () => {
           <div v-if='containsWrongFormat' class='text-red-500 font-semibold'>
             Es sind nur Dateien im PNG-Format erlaubt
           </div>
-          <confirm-buttons class='w-1/2 flex justify-end' :loading='loading' reject-text='Abbrechen'
-                           @reject='closeDialog' confirm-text='Hochladen'
-                           @confirm='convertImages'></confirm-buttons>
+          <confirm-buttons
+            :loading='loading'
+            class='w-1/2 flex justify-end'
+            confirm-text='Hochladen'
+            reject-text='Abbrechen'
+            @confirm='convertImages'
+            @reject='closeDialog'
+          ></confirm-buttons>
         </div>
 
         <div v-else class='flex flex-col justify-center items-center w-2/3 overflow-y-auto'>

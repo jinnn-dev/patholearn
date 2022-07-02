@@ -278,8 +278,12 @@ const editTask = (task: BaseTask) => {
           <div v-if='uploadProgress === 100.0' class='font-semibold'>Aufgaben werden erstellt...</div>
         </div>
 
-        <confirm-buttons :loading='taskLoading' reject-text='Abbrechen' @reject='onTaskClose'
-                         confirm-text='Speichern'></confirm-buttons>
+        <confirm-buttons
+          :loading='taskLoading'
+          confirm-text='Speichern'
+          reject-text='Abbrechen'
+          @reject='onTaskClose'
+        ></confirm-buttons>
       </form>
     </div>
   </modal-dialog>
@@ -288,8 +292,11 @@ const editTask = (task: BaseTask) => {
     <div class='relative'>
       <h1 class='text-2xl'>Möchtest du die Aufgabengruppe löschen?</h1>
       <div class='my-4'>Alle zugehörigen Aufgaben und Lösungen werden gelöscht.</div>
-      <confirm-buttons :loading='deleteLoading' @reject='showTaskgroupDelete = false'
-                       @confirm='deleteTaskGroup'></confirm-buttons>
+      <confirm-buttons
+        :loading='deleteLoading'
+        @confirm='deleteTaskGroup'
+        @reject='showTaskgroupDelete = false'
+      ></confirm-buttons>
     </div>
   </modal-dialog>
 
@@ -298,7 +305,7 @@ const editTask = (task: BaseTask) => {
       <div class='relative'>
         <h1 class='text-2xl'>Möchtest du die Aufgabe löschen?</h1>
         <div class='my-4'>Alle Aufgaben und Lösungen werden gelöscht.</div>
-        <confirm-buttons :loading='deleteBaseLoading' @reject='showDeleteBaseTask = false' @confirm='deleteBaseTask'>
+        <confirm-buttons :loading='deleteBaseLoading' @confirm='deleteBaseTask' @reject='showDeleteBaseTask = false'>
         </confirm-buttons>
       </div>
     </modal-dialog>

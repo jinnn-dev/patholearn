@@ -184,7 +184,6 @@ watch(
   }
 );
 
-
 const updateAnnotationColor = (color: string) => {
   let fillColor = color + ANNOTATION_COLOR.FILL_OPACITY;
 
@@ -272,7 +271,6 @@ onMounted(() => {
     clickHandler: clickHandler,
     moveHandler: moveHandler
   });
-
 });
 
 const setToolbarTools = () => {
@@ -351,10 +349,8 @@ const onApplyAnnotations = async (result: ParseResult[]) => {
 
   await saveTask(ANNOTATION_TYPE.SOLUTION);
 
-
   applyAnnotationsLoading.value = false;
   showUploadDialog.value = false;
-
 };
 
 const setTool = (data: { tool: Tool; event: any }) => {
@@ -411,7 +407,6 @@ const setTool = (data: { tool: Tool; event: any }) => {
 
   if (currentTool.value !== Tool.SELECT) {
     polygonChanged.polygon?.unselect();
-
   }
 };
 
@@ -761,7 +756,7 @@ const closeSampleSolutionEditor = () => {
       <primary-button bgColor='bg-gray-500' @click='resetAnnotationTolerance'>Toleranz zurücksetzen</primary-button>
     </div>
 
-    <div class='mt-4' v-if='isBackgroundPolygon || isOffsetAnnotationPolygon'>
+    <div v-if='isBackgroundPolygon || isOffsetAnnotationPolygon' class='mt-4'>
       <primary-button
         v-if='isBackgroundPolygon'
         bgColor='bg-gray-500'
@@ -793,9 +788,13 @@ const closeSampleSolutionEditor = () => {
 
   <escape-info :isPolygon='isPolygonDrawing' :show='isPolygonDrawing || isLineDrawing'></escape-info>
 
-  <annotation-validation v-if='validationResult.length > 0' :validation-result-is-pending='validationResultIsPending'
-                         :validation-result='validationResult' @select-annotation='selectAnnotation'
-                         @close='unselectAnnotation'>
+  <annotation-validation
+    v-if='validationResult.length > 0'
+    :validation-result='validationResult'
+    :validation-result-is-pending='validationResultIsPending'
+    @close='unselectAnnotation'
+    @select-annotation='selectAnnotation'
+  >
   </annotation-validation>
   <saving-info />
 

@@ -93,14 +93,6 @@ export class TooltipGenerator {
     }
   }
 
-  private static getTooltipByElementId(elementId: string): Instance | undefined {
-    const index = this.instances.findIndex((item) => item.reference.id === elementId);
-    if (index < 0) {
-      return undefined;
-    }
-    return this.instances[index];
-  }
-
   public static addGeneralTooltip({
     target,
     content,
@@ -130,6 +122,14 @@ export class TooltipGenerator {
   public static updateTooltipContent(elementId: string, newContent: string) {
     const tooltip = TooltipGenerator.getTooltipByElementId(elementId);
     tooltip?.setContent(newContent);
+  }
+
+  private static getTooltipByElementId(elementId: string): Instance | undefined {
+    const index = this.instances.findIndex((item) => item.reference.id === elementId);
+    if (index < 0) {
+      return undefined;
+    }
+    return this.instances[index];
   }
 
   private static _generateContent(percentage: number, header: string, content?: string): string {

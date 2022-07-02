@@ -2,8 +2,6 @@
 import { computed, onMounted, ref } from 'vue';
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
 import ModalDialog from '../containers/ModalDialog.vue';
-import PrimaryButton from './PrimaryButton.vue';
-import SaveButton from './SaveButton.vue';
 import InputField from '../form/InputField.vue';
 import Icon from './Icon.vue';
 import LazyImage from './LazyImage.vue';
@@ -146,10 +144,13 @@ const updateImage = () => {
 
     <input-field v-model='newImageName' :required='true' label='Bildname' type='text'></input-field>
     <confirm-buttons
-      reject-text='Abbrechen'
-      @reject='showEdit = false; newImageName = splittedName[0];'
       confirm-text='Speichern'
+      reject-text='Abbrechen'
       @confirm='updateImage'
+      @reject='
+        showEdit = false;
+        newImageName = splittedName[0];
+      '
     ></confirm-buttons>
   </modal-dialog>
 </template>

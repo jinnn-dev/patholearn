@@ -1,4 +1,4 @@
-<script setup lang='ts'>
+<script lang='ts' setup>
 defineProps({
   amount: Number,
   bgColor: {
@@ -8,7 +8,7 @@ defineProps({
 });
 </script>
 <template>
-  <div class='flex justify-center items-center text-sm rounded-full w-6 h-6 select-none' :class='bgColor'>
+  <div :class='bgColor' class='flex justify-center items-center text-sm rounded-full w-6 h-6 select-none'>
     {{ amount }}
   </div>
 </template>

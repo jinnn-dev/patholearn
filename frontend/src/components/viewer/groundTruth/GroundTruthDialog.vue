@@ -125,9 +125,14 @@ const emit = defineEmits(['applyAnnotations', 'closeDialog']);
       </div>
     </div>
 
-    <confirm-buttons class='mt-8' :loading='loading' reject-text='Abbrechen' @reject='$emit("closeDialog")'
-                     :confirm-text="loading ? 'Wird verarbeitet...' : 'Hinzufügen'"
-                     @confirm='applyAnnotations'>
+    <confirm-buttons
+      :confirm-text="loading ? 'Wird verarbeitet...' : 'Hinzufügen'"
+      :loading='loading'
+      class='mt-8'
+      reject-text='Abbrechen'
+      @confirm='applyAnnotations'
+      @reject="$emit('closeDialog')"
+    >
     </confirm-buttons>
   </modal-dialog>
 </template>

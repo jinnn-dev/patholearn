@@ -1,5 +1,5 @@
 <script lang='ts' setup>
-import { onMounted, ref } from 'vue';
+import { onMounted } from 'vue';
 import { Slide } from '../model/slide';
 import { SlideService } from '../services/slide.service';
 import ContentContainer from '../components/containers/ContentContainer.vue';
@@ -9,7 +9,6 @@ import SkeletonCard from '../components/containers/SkeletonCard.vue';
 import PrimaryButton from '../components/general/PrimaryButton.vue';
 import SlideUpload from '../components/slide/SlideUpload.vue';
 import { useService } from '../composables/useService';
-
 
 onMounted(() => {
   loadSlides();

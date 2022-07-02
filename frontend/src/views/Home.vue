@@ -165,9 +165,12 @@ const onCourseJoin = (course: Course) => {
           placeholder='Das ist der tollste Kurs'
           tip='Gebe deinem Kurs eine optionale Beschreibung'
         ></input-area>
-        <confirm-buttons :loading='courseIsCreating'
-                         reject-text='Abbrechen' confirm-text='Speichern'
-                         @reject='hideModal'>
+        <confirm-buttons
+          :loading='courseIsCreating'
+          confirm-text='Speichern'
+          reject-text='Abbrechen'
+          @reject='hideModal'
+        >
         </confirm-buttons>
       </form>
     </div>

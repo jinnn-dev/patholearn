@@ -70,9 +70,13 @@
         </AccordionItem> -->
       </Accordion>
 
-      <confirm-buttons class='mt-4' :loading='taskUpdateLoading' reject-text='Abbrechen' @reject='$emit("close")'
-                       confirm-text='Speichern'></confirm-buttons>
-      
+      <confirm-buttons
+        :loading='taskUpdateLoading'
+        class='mt-4'
+        confirm-text='Speichern'
+        reject-text='Abbrechen'
+        @reject="$emit('close')"
+      ></confirm-buttons>
     </form>
   </div>
 </template>

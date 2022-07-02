@@ -2,7 +2,6 @@ import { select, Selection } from 'd3-selection';
 import { nanoid } from 'nanoid';
 import OpenSeadragon, { Point, Rect } from 'openseadragon';
 import { polygonChanged } from '../../viewerState';
-import { BoundingBox } from '../../../../model/boundingBox';
 import { POLYGON_VERTEX_COLOR } from '../../config/defaultValues';
 import { ANNOTATION_TYPE } from '../../types/annotationType';
 import { ANNOTATION_COLOR, COLOR } from '../../types/colors';

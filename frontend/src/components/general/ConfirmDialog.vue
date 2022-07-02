@@ -1,7 +1,5 @@
 <script lang='ts' setup>
 import ModalDialog from '../containers/ModalDialog.vue';
-import PrimaryButton from './PrimaryButton.vue';
-import SaveButton from './SaveButton.vue';
 import ConfirmButtons from './ConfirmButtons.vue';
 
 const emit = defineEmits(['confirmation', 'reject']);
@@ -28,12 +26,7 @@ const reject = () => {
       <h2 v-if='detail' class='mt-4'>
         {{ detail }}
       </h2>
-      <confirm-buttons class='mt-4'
-                       :loading='loading'
-                       @reject='reject'
-                       @confirm='confirm'>
-
-      </confirm-buttons>
+      <confirm-buttons :loading='loading' class='mt-4' @confirm='confirm' @reject='reject'></confirm-buttons>
     </div>
   </modal-dialog>
 </template>

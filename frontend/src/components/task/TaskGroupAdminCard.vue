@@ -315,11 +315,12 @@ onClickOutside(target, () => (openDotMenu.value = false));
     <div class='relative min-w-[20rem]'>
       <h1 class='text-2xl'>Aufgaben bearbeiten</h1>
       <InputField v-model='newTaskName' label='Neuer Name'></InputField>
-      <confirm-buttons :loading='editTaskLoading'
-                       reject-text='Abbrechen'
-                       @reject='showEditTask = false'
-                       confirm-text='Speichern'
-                       @confirm='editBaseTask'
+      <confirm-buttons
+        :loading='editTaskLoading'
+        confirm-text='Speichern'
+        reject-text='Abbrechen'
+        @confirm='editBaseTask'
+        @reject='showEditTask = false'
       ></confirm-buttons>
     </div>
   </modal-dialog>
