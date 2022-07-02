@@ -700,7 +700,7 @@ const closeSampleSolutionEditor = () => {
       @isReleased='polygonChanged.changed = true'
     ></color-picker>
     <custom-select
-      v-if='task?.task_type === 1'
+      v-if='task?.task_type === 1 && !isBackgroundPolygon'
       :initial-data='selectedPolygon.name'
       :isSearchable='false'
       :values='task?.annotation_groups'
