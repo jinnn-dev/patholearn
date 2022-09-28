@@ -1,4 +1,4 @@
-.env
+.env*
 minio_data/
 convert.py
 result.json
