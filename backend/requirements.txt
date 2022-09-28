@@ -13,7 +13,7 @@ starlette>=0.16.0
 pydantic[email]
 shortuuid~=1.0.1
 requests~=2.25.1
-opencv-python>=4.5.3.56
+opencv-python==4.5.5.64
 Shapely~=1.8.0
 numpy>=1.21.2
 imutils~=0.5.4
