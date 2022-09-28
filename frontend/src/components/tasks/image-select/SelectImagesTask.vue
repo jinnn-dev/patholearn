@@ -1,9 +1,9 @@
 <template>
   <saving-info></saving-info>
 
-  <div id='viewerImage' ref='viewerRef' class='h-screen bg-gray-900' @keyup='handleKeyup'></div>
+  <div id="viewerImage" ref="viewerRef" class="h-screen bg-gray-900" @keyup="handleKeyup"></div>
 </template>
-<script lang='ts'>
+<script lang="ts">
 import { defineComponent, onMounted, PropType, ref, watch } from 'vue';
 import { Task } from '../../../model/task/task';
 import { ANNOTATION_COLOR } from '../../../core/viewer/types/colors';
@@ -11,7 +11,7 @@ import { TaskService } from '../../../services/task.service';
 import { isTaskSaving, userSolutionLocked } from '../../../core/viewer/viewerState';
 import { ImageSelectViewer } from './imageSelectViewer';
 import SavingInfo from '../../viewer/SavingInfo.vue';
-import { TaskResult } from 'model/task/result/taskResult';
+import { TaskResult } from '../../../model/task/result/taskResult';
 import { ImageSelectFeedback } from '../../../model/task/result/imageSelectFeedback';
 
 export default defineComponent({

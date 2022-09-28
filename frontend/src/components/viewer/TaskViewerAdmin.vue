@@ -1,7 +1,7 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import { select, selectAll } from 'd3-selection';
-import { AnnotationRectangle } from 'core/viewer/svg/annotation/annotationRect';
-import { AnnotationData } from 'model/viewer/export/annotationData';
+import { AnnotationRectangle } from '../../core/viewer/svg/annotation/annotationRect';
+import { AnnotationData } from '../../model/viewer/export/annotationData';
 import OpenSeadragon from 'openseadragon';
 import { computed, onMounted, PropType, reactive, ref, watch } from 'vue';
 import { getSlideUrl } from '../../config';
@@ -568,7 +568,7 @@ const updateGroup = async (data: { group: AnnotationGroupModel; newName: string;
   if (index !== undefined) {
     const ids: Set<string> = new Set();
 
-    selectAll('[name ="' + data.group.name + '"]').each(function(d, i) {
+    selectAll('[name ="' + data.group.name + '"]').each(function (d, i) {
       ids.add(select(this).attr('id'));
     });
 
@@ -676,124 +676,124 @@ const closeSampleSolutionEditor = () => {
 </script>
 <template>
   <annotation-group
-    v-if='task?.task_type === 1'
-    :annotationGroups='task.annotation_groups'
-    :is-admin='true'
-    :taskId='task.id'
-    @groupUpdated='updateGroup'
-    @hideGroup='hideGroup'
-    @showGroup='showGroup'
+    v-if="task?.task_type === 1"
+    :annotationGroups="task.annotation_groups"
+    :is-admin="true"
+    :taskId="task.id"
+    @groupUpdated="updateGroup"
+    @hideGroup="hideGroup"
+    @showGroup="showGroup"
   ></annotation-group>
 
-  <annotation-settings v-if='selectedPolygon'>
+  <annotation-settings v-if="selectedPolygon">
     <color-picker
-      v-if='task?.task_type === 0 || isBackgroundPolygon'
-      :initialColor='selectedPolygon.color'
-      label='Annotationsfarbe'
-      margin-hor='my-0'
-      @changed='updateAnnotationColor'
-      @isReleased='polygonChanged.changed = true'
+      v-if="task?.task_type === 0 || isBackgroundPolygon"
+      :initialColor="selectedPolygon.color"
+      label="Annotationsfarbe"
+      margin-hor="my-0"
+      @changed="updateAnnotationColor"
+      @isReleased="polygonChanged.changed = true"
     ></color-picker>
     <custom-select
-      v-if='task?.task_type === 1 && !isBackgroundPolygon'
-      :initial-data='selectedPolygon.name'
-      :isSearchable='false'
-      :values='task?.annotation_groups'
-      displayType='small'
-      field='name'
-      label='Annotationsklasse:'
-      @valueChanged='updateAnnotationName'
+      v-if="task?.task_type === 1 && !isBackgroundPolygon"
+      :initial-data="selectedPolygon.name"
+      :isSearchable="false"
+      :values="task?.annotation_groups"
+      displayType="small"
+      field="name"
+      label="Annotationsklasse:"
+      @valueChanged="updateAnnotationName"
     />
 
     <custom-slider
-      v-if='isOffsetAnnotationPoint'
-      :initialPosition='selectedPolygonData.offsetRadius'
-      :max='maxRadius'
-      :min='0'
-      :step='-1'
-      :tooltips='false'
-      label='Kreisradius'
-      @isReleased='polygonChanged.changed = true'
-      @valueChanged='updateAnnotationPointOffsetRadius'
+      v-if="isOffsetAnnotationPoint"
+      :initialPosition="selectedPolygonData.offsetRadius"
+      :max="maxRadius"
+      :min="0"
+      :step="-1"
+      :tooltips="false"
+      label="Kreisradius"
+      @isReleased="polygonChanged.changed = true"
+      @valueChanged="updateAnnotationPointOffsetRadius"
     />
 
     <custom-slider
-      v-if='isOffsetAnnotationLine && !isAnnotationChangedManually'
-      :initialPosition='selectedPolygonData.offsetRadius'
-      :max='maxRadius'
-      :min='0'
-      :step='-1'
-      :tooltips='false'
-      label='Toleranzabstand'
-      @isReleased='polygonChanged.changed = true'
-      @valueChanged='updateAnnotationLineOffsetRadius'
+      v-if="isOffsetAnnotationLine && !isAnnotationChangedManually"
+      :initialPosition="selectedPolygonData.offsetRadius"
+      :max="maxRadius"
+      :min="0"
+      :step="-1"
+      :tooltips="false"
+      label="Toleranzabstand"
+      @isReleased="polygonChanged.changed = true"
+      @valueChanged="updateAnnotationLineOffsetRadius"
     />
 
-    <div v-if='isOffsetAnnotationPolygon && !isAnnotationChangedManually'>
+    <div v-if="isOffsetAnnotationPolygon && !isAnnotationChangedManually">
       <custom-slider
-        :initialPosition='selectedPolygonData.outerOffset'
-        :max='maxRadius'
-        :min='0'
-        :step='-1'
-        :tooltips='false'
-        label='Äußerer Toleranzabstand:'
-        @isReleased='polygonChanged.changed = true'
-        @valueChanged='updateOuterOffsetRadius'
+        :initialPosition="selectedPolygonData.outerOffset"
+        :max="maxRadius"
+        :min="0"
+        :step="-1"
+        :tooltips="false"
+        label="Äußerer Toleranzabstand:"
+        @isReleased="polygonChanged.changed = true"
+        @valueChanged="updateOuterOffsetRadius"
       />
       <CustomSlider
-        :initialPosition='selectedPolygonData.innerOffset'
-        :max='maxRadius'
-        :min='0'
-        :step='-1'
-        :tooltips='false'
-        label=' Innerer Toleranzabstand:'
-        @isReleased='polygonChanged.changed = true'
-        @valueChanged='updateInnerOffsetRadius'
+        :initialPosition="selectedPolygonData.innerOffset"
+        :max="maxRadius"
+        :min="0"
+        :step="-1"
+        :tooltips="false"
+        label=" Innerer Toleranzabstand:"
+        @isReleased="polygonChanged.changed = true"
+        @valueChanged="updateInnerOffsetRadius"
       />
     </div>
 
-    <div v-if='isAnnotationChangedManually' class='my-4'>
-      <primary-button bgColor='bg-gray-500' @click='resetAnnotationTolerance'>Toleranz zurücksetzen</primary-button>
+    <div v-if="isAnnotationChangedManually" class="my-4">
+      <primary-button bgColor="bg-gray-500" @click="resetAnnotationTolerance">Toleranz zurücksetzen</primary-button>
     </div>
 
-    <div v-if='isBackgroundPolygon || isOffsetAnnotationPolygon' class='mt-4'>
+    <div v-if="isBackgroundPolygon || isOffsetAnnotationPolygon" class="mt-4">
       <primary-button
-        v-if='isBackgroundPolygon'
-        bgColor='bg-gray-500'
-        class='w-64'
-        name='Zu Lösungsannotation konvertieren (Polygon)'
-        @click.prevent='convertToSolutionAnnotation()'
+        v-if="isBackgroundPolygon"
+        bgColor="bg-gray-500"
+        class="w-64"
+        name="Zu Lösungsannotation konvertieren (Polygon)"
+        @click.prevent="convertToSolutionAnnotation()"
       >
       </primary-button>
 
       <primary-button
-        v-if='isOffsetAnnotationPolygon'
-        bgColor='bg-gray-500'
-        class='w-64'
-        name='Zu Hintergrundannotation konvertieren (Rechteck)'
-        @click.prevent='convertToBackgroundAnnotation()'
+        v-if="isOffsetAnnotationPolygon"
+        bgColor="bg-gray-500"
+        class="w-64"
+        name="Zu Hintergrundannotation konvertieren (Rechteck)"
+        @click.prevent="convertToBackgroundAnnotation()"
       >
       </primary-button>
     </div>
   </annotation-settings>
 
   <tool-bar
-    :changeToolTo='changeToolTo'
-    :setMoving='setMoving'
-    :tools='toolbarTools'
-    @hideAnnotations='hideAllAnnotations'
-    @showAnnotations='showAllAnnotations'
-    @toolUpdate='setTool'
+    :changeToolTo="changeToolTo"
+    :setMoving="setMoving"
+    :tools="toolbarTools"
+    @hideAnnotations="hideAllAnnotations"
+    @showAnnotations="showAllAnnotations"
+    @toolUpdate="setTool"
   ></tool-bar>
 
-  <escape-info :isPolygon='isPolygonDrawing' :show='isPolygonDrawing || isLineDrawing'></escape-info>
+  <escape-info :isPolygon="isPolygonDrawing" :show="isPolygonDrawing || isLineDrawing"></escape-info>
 
   <annotation-validation
-    v-if='validationResult.length > 0'
-    :validation-result='validationResult'
-    :validation-result-is-pending='validationResultIsPending'
-    @close='unselectAnnotation'
-    @select-annotation='selectAnnotation'
+    v-if="validationResult.length > 0"
+    :validation-result="validationResult"
+    :validation-result-is-pending="validationResultIsPending"
+    @close="unselectAnnotation"
+    @select-annotation="selectAnnotation"
   >
   </annotation-validation>
   <saving-info />
@@ -808,38 +808,38 @@ const closeSampleSolutionEditor = () => {
   <!--  ></ground-truth-dialog>-->
 
   <SampleSolutionEditor
-    :show-dialog='showUploadDialog'
-    :slide-id='slide_name'
-    @applyAnnotations='parseAnnotations'
-    @close='closeSampleSolutionEditor'
+    :show-dialog="showUploadDialog"
+    :slide-id="slide_name"
+    @applyAnnotations="parseAnnotations"
+    @close="closeSampleSolutionEditor"
   >
   </SampleSolutionEditor>
   <confirm-dialog
-    :loading='deleteAnnotationsLoading'
-    :show='showConfirmationDialog'
-    header='Sollen alle Annotationen gelöscht werden?'
-    @confirmation='deleteAllAnnotations'
-    @reject='showConfirmationDialog = false'
+    :loading="deleteAnnotationsLoading"
+    :show="showConfirmationDialog"
+    header="Sollen alle Annotationen gelöscht werden?"
+    @confirmation="deleteAllAnnotations"
+    @reject="showConfirmationDialog = false"
   ></confirm-dialog>
 
   <background-annotation-switcher
-    v-if='task?.task_data && task?.task_data?.length !== 0'
-    :backgroundAnnotations='task?.task_data?.length'
-    @focus='focusAnnotation'
+    v-if="task?.task_data && task?.task_data?.length !== 0"
+    :backgroundAnnotations="task?.task_data?.length"
+    @focus="focusAnnotation"
   ></background-annotation-switcher>
 
   <info-tooltip
-    :is-admin='true'
-    @hide-tooltip='unselectAnnotation'
-    @update-tooltip='updateInfoAnnotation'
+    :is-admin="true"
+    @hide-tooltip="unselectAnnotation"
+    @update-tooltip="updateInfoAnnotation"
   ></info-tooltip>
 
   <confirm-dialog
-    :loading='isTaskSaving'
-    :show='showDeleteAnnotationDialog'
-    header='Soll die Annotation gelöscht werden?'
-    @confirmation='deleteAnnotation'
-    @reject='showDeleteAnnotationDialog = false'
+    :loading="isTaskSaving"
+    :show="showDeleteAnnotationDialog"
+    header="Soll die Annotation gelöscht werden?"
+    @confirmation="deleteAnnotation"
+    @reject="showDeleteAnnotationDialog = false"
   ></confirm-dialog>
-  <div id='viewerImage' ref='viewerRef' class='h-screen bg-gray-900 overflow-hidden' @keyup='handleKeyup'></div>
+  <div id="viewerImage" ref="viewerRef" class="h-screen bg-gray-900 overflow-hidden" @keyup="handleKeyup"></div>
 </template>

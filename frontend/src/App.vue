@@ -1,4 +1,4 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import { getEnv } from './config';
 import { ref } from 'vue';
 import { detect } from 'detect-browser';
@@ -8,7 +8,7 @@ const title = getEnv('APP_TITLE');
 document.title = title || '';
 
 //set favicon dynamicly
-let link = document.querySelector('link[rel~=\'icon\']');
+let link = document.querySelector("link[rel~='icon']");
 if (!link) {
   link = document.createElement('link');
   // @ts-ignore
@@ -39,13 +39,13 @@ if (detectedBrowser) {
 <template>
   <!--  <div-->
   <!--    class='hidden backdrop-blur backdrop-blur-0 backdrop-blur-sm backdrop-blur-md backdrop-blur-lg backdrop-blur-xl backdrop-blur-2xl backdrop-blur-3xl'></div>-->
-  <div class='w-full bg-gray-800 text-gray-100 min-h-screen'>
+  <div class="w-full bg-gray-800 text-gray-100 min-h-screen">
     <div
-      v-if='showBrowserWarning'
-      class='absolute right-5 top-5 border-red-500 border-2 px-10 py-5 bg-red-500/20 rounded-lg'
+      v-if="showBrowserWarning"
+      class="absolute right-5 top-5 border-red-500 border-2 px-10 py-5 bg-red-500/20 rounded-lg"
     >
-      <p class='text-lg'>Dein Browser wird von dieser Software nicht unterstützt!</p>
-      <p class='text-sm text-gray-200'>Bitte wechsel zu einem Chromium-basierten Browser wie Chrome oder Edge</p>
+      <p class="text-lg">Dein Browser wird von dieser Software nicht unterstützt!</p>
+      <p class="text-sm text-gray-200">Bitte wechsel zu einem Chromium-basierten Browser wie Chrome oder Edge</p>
     </div>
     <router-view />
   </div>
