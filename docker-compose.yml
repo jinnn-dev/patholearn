@@ -1,11 +1,11 @@
-version: '3.3'
+version: "3.3"
 services:
   lern_api:
     build:
-      context: ./backend/.
+      context: ./learn-api/.
       dockerfile: dev.dockerfile
     volumes:
-      - ./backend/app:/app
+      - ./learn-api/app:/app
     environment:
       - DATABASE_URL=${DATABASE_DRIVER}://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_IP}/${DATABASE_DB}?${DATABASE_QUERY_PARAMETERS}
       - RABBIT_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
@@ -16,7 +16,7 @@ services:
       - SENTRY_PATH=${SENTRY_PATH}
       - SENTRY_ENVIRONMENT_TAG=${SENTRY_ENVIRONMENT_TAG}
     ports:
-      - '8000:8000'
+      - "8000:8000"
 
   frontend:
     image: node:16
@@ -37,17 +37,17 @@ services:
       MYSQL_PASSWORD: ${DATABASE_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
     ports:
-      - '3306:${DATABASE_PORT}'
+      - "3306:${DATABASE_PORT}"
     volumes:
       - my-db:/var/lib/mysql
 
   slide_api:
     image: slide_api
     build:
-      context: ./pyramid-creator/.
+      context: ./slide-api/.
       dockerfile: Dockerfile
     ports:
-      - '8001:8000'
+      - "8001:8000"
     command: uvicorn app.app:app --reload --host 0.0.0.0 --port 8000 --no-server-header
     environment:
       - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
@@ -55,8 +55,8 @@ services:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
     volumes:
-      - ./pyramid-creator/app:/app
-      - ./pyramid-creator/data:/data
+      - ./slide-api/app:/app
+      - ./slide-api/data:/data
 
   slide_worker:
     image: slide_api
@@ -64,8 +64,8 @@ services:
       - slide_api
     command: watchmedo auto-restart --recursive --directory="./app" --patterns="*.py" -- celery --app worker.celery_app worker --loglevel=info
     volumes:
-      - ./pyramid-creator/app:/app
-      - ./pyramid-creator/data:/data
+      - ./slide-api/app:/app
+      - ./slide-api/data:/data
     environment:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
@@ -78,7 +78,7 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
     ports:
-      - '27017:${MONGO_PORT}'
+      - "27017:${MONGO_PORT}"
     volumes:
       - mongodb_data:/mongodb
     command: --quiet
@@ -86,8 +86,8 @@ services:
   minio:
     image: minio/minio
     ports:
-      - '9000:9000'
-      - '9001:9001'
+      - "9000:9000"
+      - "9001:9001"
     volumes:
       - ./minio_data:/data
     environment:
@@ -98,7 +98,7 @@ services:
   rabbit:
     image: rabbitmq:latest
     ports:
-      - '5672:5672'
+      - "5672:5672"
 
 volumes:
   my-db:

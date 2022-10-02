@@ -21,8 +21,8 @@ jobs:
       - name: Build Docker image
         uses: docker/build-push-action@v2
         with:
-          context: ./backend/
-          file: ./backend/prod.dockerfile
+          context: ./learn-api/
+          file: ./learn-api/prod.dockerfile
           push: false
           tags: hub.noxz.dev/lern-api-demo:latest
   slide_api:
@@ -35,8 +35,8 @@ jobs:
       - name: Build Docker image
         uses: docker/build-push-action@v2
         with:
-          context: ./pyramid-creator/
-          file: ./pyramid-creator/prod.dockerfile
+          context: ./slide-api/
+          file: ./slide-api/prod.dockerfile
           push: false
           tags: hub.noxz.dev/slide-api-demo:latest
   frontend:

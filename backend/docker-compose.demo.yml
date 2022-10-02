@@ -9,9 +9,9 @@ services:
       MYSQL_PASSWORD: ${DATABASE_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
     ports:
-      - '3306:3306'
+      - "3306:3306"
     expose:
-      - '3306'
+      - "3306"
     volumes:
       - my-db:/var/lib/mysql
   rabbit:
@@ -19,10 +19,10 @@ services:
     ports:
       - "5672:5672"
     expose:
-      - '5672'
+      - "5672"
     restart: unless-stopped
   api:
-    image: hub.noxz.dev/lernsoftware-backend:0.2.0
+    image: hub.noxz.dev/lernsoftware-learn-api:0.2.0
 
     environment:
       - DATABASE_URL=mysql+mysqlconnector://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_IP}/${DATABASE_DB}?charset=utf8mb4

@@ -2,14 +2,14 @@ version: "3.3"
 services:
   lern_api:
     build:
-      context: ./backend/.
+      context: ./learn-api/.
       dockerfile: dev.dockerfile
       args:
         - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
         - MYSQL_HOST=${DATABASE_IP}
         - MYSQL_DATABASE=${DATABASE_DB}
     volumes:
-      - ./backend/app:/app
+      - ./learn-api/app:/app
     environment:
       - DATABASE_URL=${DATABASE_DRIVER}://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_IP}/${DATABASE_DB}?${DATABASE_QUERY_PARAMETERS}
       - RABBIT_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
@@ -65,7 +65,7 @@ services:
 
   slide_api:
     build:
-      context: ./pyramid-creator/.
+      context: ./slide-api/.
       dockerfile: dev.dockerfile
     image: ${DOCKER_PREFIX}/${DOCKER_APPLICATION_TITLE}-slide_api:dev
     ports:
@@ -78,8 +78,8 @@ services:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
     volumes:
-      - ./pyramid-creator/app:/app
-      - ./pyramid-creator/data:/data
+      - ./slide-api/app:/app
+      - ./slide-api/data:/data
     depends_on:
       - slide_db
 
@@ -89,8 +89,8 @@ services:
       - slide_api
     command: watchmedo auto-restart --recursive --directory="./app" --patterns="*.py" -- celery --app worker.celery_app worker --loglevel=info
     volumes:
-      - ./pyramid-creator/app:/app
-      - ./pyramid-creator/data:/data
+      - ./slide-api/app:/app
+      - ./slide-api/data:/data
     environment:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
