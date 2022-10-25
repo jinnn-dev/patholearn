@@ -21,8 +21,7 @@ app = FastAPI()
 #     set_tag("environment", settings.SENTRY_ENVIRONMENT_TAG)
 
 origins = [
-    "http://10.168.2.105:3000",
-    "http://localhost:3000",
+    "http://localhost:5173",
     "http://localhost:8001",
 ]
 

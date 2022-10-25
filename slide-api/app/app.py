@@ -10,9 +10,8 @@ minio_wrapper = MinioWrapper()
 minio_wrapper.init_buckets()
 
 origins = [
-    "http://10.168.2.105:3000",
-    "http://localhost:3000",
-    "http://localhost:8000" "*",
+    "http://localhost:8000",
+    "http://localhost:5173"
 ]
 
 app.add_middleware(
