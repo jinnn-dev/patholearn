@@ -25,6 +25,7 @@ origins = [
     "http://localhost:8001",
 ]
 
+
 app.add_middleware(GZipMiddleware, minimum_size=500)
 
 # if settings.SENTRY_METRICS:
