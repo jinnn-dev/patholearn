@@ -664,8 +664,9 @@ const convertToBackgroundAnnotation = async () => {
 };
 
 const validateAnnotations = async () => {
+  if (!props.task) return;
   validationResultIsPending.value = true;
-  validationResult.value = await validateTaskAnnotations(props.task!.id);
+  validationResult.value = await validateTaskAnnotations(props.task.id);
   validationResultIsPending.value = false;
 };
 
