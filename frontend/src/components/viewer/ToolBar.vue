@@ -1,4 +1,4 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import { computed, onMounted, PropType, ref, watch } from 'vue';
 import { isInfoTool, Tool, TOOL_COMPONENTS, TOOL_HINTS } from '../../core/viewer/types/tools';
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
@@ -63,16 +63,9 @@ const createTooltip = () => {
   infoHeaderTooltip.value = TooltipGenerator.addGeneralTooltip({
     target: '#infoHeader',
     content: 'Werkzeuge um zusätzliche Informationen auf dem Slide zu hinterlegen',
-    placement: 'left'
+    placement: 'top'
   });
 };
-
-onMounted(() => {
-  changeTool(Tool.MOVE, null);
-  // nextTick(() => {
-  //   createTooltip();
-  // });
-});
 
 const changeTool = (tool: Tool, event: any) => {
   if (annotationVisible.value) {
@@ -92,41 +85,46 @@ const toggleAnnotationVisibility = () => {
 };
 </script>
 <template>
-  <div class='fixed z-10 top-1/2 transform -translate-y-1/2 overflow-hidden flex flex-col gap-8 left-3'>
-    <div class='overflow-hidden rounded-lg bg-gray-600/70 backdrop-blur-md'>
-      <tool-item :comp='annotationToolComponent' :hint='annotationHint' @click='toggleAnnotationVisibility'>
+  <div class="fixed z-10 left-1/2 transform -translate-x-1/2 overflow-hidden flex gap-8 bottom-3">
+    <div class="overflow-hidden rounded-lg bg-gray-600/70 backdrop-blur-md flex">
+      <tool-item :comp="annotationToolComponent" :hint="annotationHint" @click="toggleAnnotationVisibility">
       </tool-item>
     </div>
     <div
-      v-if='!userSolutionLocked && !viewerLoadingState.solveResultLoading'
+      v-if="!userSolutionLocked && !viewerLoadingState.solveResultLoading"
       :class="annotationVisible ? 'opacity-100' : 'opacity-20'"
-      class='bg-gray-600/70 backdrop-blur-md text-white rounded-lg overflow-hidden'
+      class="bg-gray-600/70 backdrop-blur-md text-white rounded-lg overflow-hidden flex"
     >
       <tool-item
-        v-for='tool in defaultTools'
-        :key='tool'
+        v-for="tool in defaultTools"
+        :key="tool"
         :class="currentTool === tool ? 'bg-gray-300' : ''"
-        :comp='TOOL_COMPONENTS[tool]'
-        :hide-tooltip='!annotationVisible'
-        :hint='TOOL_HINTS[tool]'
-        @click='changeTool(tool, $event)'
+        :comp="TOOL_COMPONENTS[tool]"
+        :hide-tooltip="!annotationVisible"
+        :hint="TOOL_HINTS[tool]"
+        @click="changeTool(tool, $event)"
       ></tool-item>
     </div>
 
     <div
-      v-if='infoTools && infoTools?.length > 0'
+      v-if="infoTools && infoTools?.length > 0"
       :class="annotationVisible ? 'opacity-100' : 'opacity-20'"
-      class='bg-gray-600/70 backdrop-blur-md text-white rounded-lg overflow-hidden'
+      class="bg-gray-600/70 backdrop-blur-md text-white rounded-lg overflow-hidden flex"
     >
-      <div id='infoHeader' class='py-1 text-gray-200 bg-gray-700 text-center px-0.5 select-none'>INFO</div>
+      <div
+        id="infoHeader"
+        class="py-1 text-gray-200 bg-gray-700 text-center px-1 select-none flex items-center justify-center"
+      >
+        INFO
+      </div>
       <tool-item
-        v-for='tool in infoTools'
-        :key='tool'
+        v-for="tool in infoTools"
+        :key="tool"
         :class="currentTool === tool ? 'bg-gray-300' : ''"
-        :comp='TOOL_COMPONENTS[tool]'
-        :hide-tooltip='!annotationVisible'
-        :hint='TOOL_HINTS[tool]'
-        @click='changeTool(tool, $event)'
+        :comp="TOOL_COMPONENTS[tool]"
+        :hide-tooltip="!annotationVisible"
+        :hint="TOOL_HINTS[tool]"
+        @click="changeTool(tool, $event)"
       ></tool-item>
     </div>
   </div>

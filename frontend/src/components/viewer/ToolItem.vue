@@ -1,4 +1,4 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import { nextTick, onMounted, PropType, ref, watch } from 'vue';
 import { nanoid } from 'nanoid';
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
@@ -41,7 +41,7 @@ const createTooltip = () => {
   tooltip.value = TooltipGenerator.addGeneralTooltip({
     target: '#' + props.comp + tooltipId.value,
     content: props.hint || '',
-    placement: 'right'
+    placement: 'top'
   });
   tooltipReferenceId.value = tooltip.value?.reference.id;
 };
@@ -54,10 +54,10 @@ onMounted(() => {
 </script>
 <template>
   <div
-    :id='comp + tooltipId'
+    :id="comp + tooltipId"
     :class="!hideTooltip && 'hover:bg-gray-300 cursor-pointer'"
-    class='transition flex justify-center items-center p-2 select-none'
+    class="transition flex justify-center items-center p-2 select-none"
   >
-    <Icon :name='comp' class='fill-white' />
+    <Icon :name="comp" class="fill-white" />
   </div>
 </template>
