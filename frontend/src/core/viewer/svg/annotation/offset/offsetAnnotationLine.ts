@@ -1,6 +1,5 @@
 import { select, Selection } from 'd3-selection';
 import { curveLinearClosed, Line, line } from 'd3-shape';
-import { geom, operation } from 'jsts';
 import { nanoid } from 'nanoid';
 import OpenSeadragon, { Rect } from 'openseadragon';
 import { polygonChanged } from '../../../viewerState';
@@ -9,6 +8,7 @@ import { ANNOTATION_COLOR, COLOR } from '../../../types/colors';
 import { POLYGON_INFLATE_OFFSET, POLYGON_STROKE_WIDTH, POLYGON_VERTEX_COLOR } from '../../../config/defaultValues';
 import { AnnotationLine } from '../annotationLine';
 import { AnnotationPolygon } from '../annotationPolygon';
+import { inflateGeometry } from '../../../../viewer/helper/inflateGeometry';
 
 export class OffsetAnnotationLine extends AnnotationLine {
   private readonly _lineFunction: Line<any>;
@@ -255,22 +255,8 @@ export class OffsetAnnotationLine extends AnnotationLine {
   }
 
   private inflateLine(inflateValue: number) {
-    const coord = [];
-
-    for (const vertex of this.vertice) {
-      coord.push(new geom.Coordinate(vertex.viewport.x, vertex.viewport.y));
-    }
-
-    const geometryFactory = new geom.GeometryFactory();
-    const shell = geometryFactory.createLineString(coord);
-    const polygon = shell.buffer(inflateValue, 2, operation.buffer.BufferParameters.CAP_ROUND);
-    const inflated = [];
-    const oCoord = polygon.getCoordinates();
-
-    for (const c of oCoord) {
-      inflated.push(new OpenSeadragon.Point(c.x, c.y));
-    }
-
+    const points = this.vertice.map((vertex) => vertex.viewport);
+    const inflated = inflateGeometry(points, inflateValue, false);
     inflated.pop();
 
     this._outerPoints = inflated;
@@ -278,8 +264,6 @@ export class OffsetAnnotationLine extends AnnotationLine {
 
   private createPath(scale?: number): void {
     if (!this._pathElement && scale) {
-      const points = this._outerPoints;
-      points.push(points[0]);
       this._pathElement = select(this.g)
         .append('path')
         .attr('id', this.id)

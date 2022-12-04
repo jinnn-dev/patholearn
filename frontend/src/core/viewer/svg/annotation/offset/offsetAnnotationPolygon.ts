@@ -1,6 +1,5 @@
 import { select, Selection } from 'd3-selection';
 import { curveLinearClosed, Line, line } from 'd3-shape';
-import { geom, operation } from 'jsts';
 import { nanoid } from 'nanoid';
 import OpenSeadragon, { Rect } from 'openseadragon';
 import { polygonChanged } from '../../../viewerState';
@@ -8,8 +7,7 @@ import { ANNOTATION_TYPE } from '../../../types/annotationType';
 import { COLOR } from '../../../types/colors';
 import { POLYGON_INFLATE_OFFSET, POLYGON_STROKE_WIDTH, POLYGON_VERTEX_COLOR } from '../../../config/defaultValues';
 import { AnnotationPolygon } from '../annotationPolygon';
-
-// import * as jsts from 'jsts';
+import { inflateGeometry } from '../../../../viewer/helper/inflateGeometry';
 
 export class OffsetAnnotationPolygon extends AnnotationPolygon {
   private _outerPoints: OpenSeadragon.Point[];
@@ -323,27 +321,9 @@ export class OffsetAnnotationPolygon extends AnnotationPolygon {
   }
 
   private inflatePolygon(inflateValue: number): OpenSeadragon.Point[] {
-    const coord = [];
-
-    for (const vertice of this.vertice) {
-      coord.push(new geom.Coordinate(vertice.viewport.x, vertice.viewport.y));
-    }
-
-    coord.push(coord[0]);
-
-    const geometryFactory = new geom.GeometryFactory();
-    const linearRing = geometryFactory.createLinearRing(coord);
-    const shell = geometryFactory.createPolygon(linearRing, []);
-
-    const polygon = shell.buffer(inflateValue, 2, operation.buffer.BufferParameters.CAP_FLAT);
-    const inflated = [];
-    const oCoord = polygon.getCoordinates();
-
-    for (const c of oCoord) {
-      inflated.push(new OpenSeadragon.Point(c.x, c.y));
-    }
-
-    return inflated;
+    const points = this.vertice.map((vertex) => vertex.viewport);
+    points.push(points[0]);
+    return inflateGeometry(points, inflateValue);
   }
 
   private createPath(scale: number, _?: number): void {
