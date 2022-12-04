@@ -66,7 +66,7 @@ class Solver:
                 task_feedback=task_result,
                 correct_image_indices=correct_images,
                 wrong_image_indices=wrong_images,
-                solution_data=solution_data
+                solution_data=solution_data,
             )
         else:
             min_correct = (
