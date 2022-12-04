@@ -473,9 +473,22 @@ def solve_task(
     user_solution = crud_user_solution.get_solution_to_task_and_user(
         db, task_id=task_id, user_id=current_user.id
     )
-    if not user_solution:
-        return None
-    task_result = Solver.solve(user_solution=user_solution.solution_data, task=task)
+    if user_solution is None:
+        base_task = crud_base_task.get(db=db, id=task.base_task_id)
+        user_solution = crud_user_solution.create(
+            db=db,
+            obj_in=UserSolutionCreate(
+                task_id=task.id,
+                user_id=current_user.id,
+                base_task_id=task.base_task_id,
+                task_group_id=base_task.task_group_id,
+                course_id=base_task.course_id,
+                solution_data=[],
+                percentage_solved=0.0,
+            ),
+        )
+    task_result = Solver.solve(user_solution=user_solution, task=task)
+
     solution_update = UserSolutionUpdate(task_result=task_result)
     if task_result.task_status == TaskStatus.CORRECT:
         solution_update.percentage_solved = 1.0

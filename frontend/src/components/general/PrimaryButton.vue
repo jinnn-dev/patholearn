@@ -1,5 +1,7 @@
-<script lang='ts' setup>
-import { computed } from 'vue';
+<script lang="ts" setup>
+import { computed, PropType } from 'vue';
+
+type ButtonTypes = 'button' | 'submit' | 'reset';
 
 const props = defineProps({
   name: String,
@@ -23,7 +25,7 @@ const props = defineProps({
     default: false
   },
   type: {
-    type: String,
+    type: String as PropType<ButtonTypes>,
     default: 'submit'
   }
 });
@@ -39,12 +41,12 @@ const generatedBgColor = computed(() => {
     :class="`${bgColor} ${fontWeight} ${textColor} ${
       disabled ? 'cursor-not-allowed' : `cursor-pointer hover:${bgHoverColor || generatedBgColor}  hover:ring-2`
     }`"
-    :disabled='disabled'
-    :type='type'
-    class='flex justify-center items-center w-full transition rounded-lg py-2 text-md px-2 ring-gray-100 w-full min-w-[4rem]'
+    :disabled="disabled"
+    :type="type"
+    class="flex justify-center items-center transition rounded-lg py-2 text-md px-2 ring-gray-100 w-full min-w-[4rem]"
   >
     <slot></slot>
     {{ name }}
-    <slot class='self-end' name='rightIcon'></slot>
+    <slot class="self-end" name="rightIcon"></slot>
   </button>
 </template>

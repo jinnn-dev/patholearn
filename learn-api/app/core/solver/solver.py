@@ -15,15 +15,14 @@ from app.schemas.polygon_data import (
     RectangleData,
 )
 from app.schemas.task import Task, TaskFeedback, TaskStatus, TaskType
+from app.schemas.user_solution import UserSolution
 from app.utils.logger import logger
 from app.utils.timer import Timer
 
 
 class Solver:
     @staticmethod
-    def solve(
-        *, user_solution: Union[List[AnnotationData], List[str]], task: Task
-    ) -> TaskFeedback:
+    def solve(*, user_solution: UserSolution, task: Task) -> TaskFeedback:
         """
         Solves the given user solution to the task and generates feedback for it
 
@@ -38,7 +37,6 @@ class Solver:
         task_result.result_detail = []
         task_annotation_type = task.annotation_type
         task_solution = task.solution
-
         if not task.can_be_solved:
             return TaskFeedback(
                 task_id=task.id,
@@ -57,7 +55,11 @@ class Solver:
 
         if task.task_type == TaskType.IMAGE_SELECT:
             solution_data = task.solution
-            user_solution_data = user_solution
+            user_solution_data = (
+                []
+                if user_solution.solution_data is None
+                else user_solution.solution_data
+            )
             correct_images, wrong_images = SelectImagesAnalysis.check_select_images(
                 task_solution=solution_data, user_solution=user_solution_data
             )
@@ -73,9 +75,14 @@ class Solver:
                 task.min_correct if task.task_type == 0 else len(task.solution)
             )
             should_check_name = False if task.task_type == 0 else True
+            if len(user_solution.solution_data) == 0:
+                task_result.task_status = TaskStatus.TOO_LESS_INPUTS
+                task_result.response_text = "Deine Lösung enthält keine Annotationen"
+                return task_result
 
-            if len(user_solution) < min_correct:
-                annotation_diff = min_correct - len(user_solution)
+            user_solution_data = user_solution.solution_data
+            if len(user_solution_data) < min_correct:
+                annotation_diff = min_correct - len(user_solution_data)
                 task_result.task_status = TaskStatus.TOO_LESS_INPUTS
                 task_result.response_text = (
                     f"Es {'fehlt noch eine ' if annotation_diff == 1 else f'fehlen noch {annotation_diff}'} "
@@ -83,7 +90,7 @@ class Solver:
                 )
 
             parsed_user_solution = parse_obj_as(
-                List[Union[RectangleData, AnnotationData]], user_solution
+                List[Union[RectangleData, AnnotationData]], user_solution_data
             )
 
             if task_annotation_type == AnnotationType.SOLUTION_POINT:
