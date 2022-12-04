@@ -1,4 +1,4 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { BaseTask } from '../model/task/baseTask';
 import { useRoute } from 'vue-router';
@@ -17,6 +17,7 @@ import NotCourseMember from '../components/course/NotCourseMember.vue';
 import ViewerLoading from '../components/viewer/ViewerLoading.vue';
 import { TaskResult } from '../model/task/result/taskResult';
 import { TaskType } from '../core/types/taskType';
+import { TaskStatus } from '../core/types/taskStatus';
 
 const baseTask = ref<BaseTask>();
 const route = useRoute();
@@ -109,20 +110,27 @@ const loadTaskDetails = () => {
 };
 
 const solveTask = async () => {
-  if (selectedTask.value?.user_solution?.solution_data) {
-    isSolving.value = true;
-    const solveResult = await TaskService.solveTask(selectedTask.value!.id);
+  isSolving.value = true;
+  const solveResult = await TaskService.solveTask(selectedTask.value!.id);
 
-    solve_result.value = solveResult;
-    userSolutionLocked.value = true;
-    selectedTask.value!.user_solution!.task_result = solveResult;
-    showSolution.value = false;
-    isSolving.value = false;
-    if (solveResult) showTaskResult.value = true;
-
-    if (selectedTask.value.task_type !== TaskType.IMAGE_SELECT) {
-      await getTaskHints(selectedTask.value.id);
-    }
+  solve_result.value = solveResult;
+  userSolutionLocked.value = true;
+  if (!selectedTask.value!.user_solution) {
+    selectedTask.value!.user_solution = {
+      percentage_solved: 0.0,
+      solution_data: []
+    };
+  }
+  selectedTask.value!.user_solution.task_result = solveResult;
+  selectedTask.value!.user_solution.percentage_solved = solveResult.task_status === TaskStatus.CORRECT ? 1.0 : 0.0;
+  showSolution.value = false;
+  isSolving.value = false;
+  if (solveResult) showTaskResult.value = true;
+  if (!selectedTask.value) {
+    return;
+  }
+  if (selectedTask.value.task_type !== TaskType.IMAGE_SELECT) {
+    await getTaskHints(selectedTask.value.id);
   }
 };
 
@@ -146,53 +154,53 @@ const loadTaskSolution = async () => {
 };
 </script>
 <template>
-  <viewer-loading :show='!viewerLoadingState.dataLoaded || !viewerLoadingState.tilesLoaded'></viewer-loading>
+  <viewer-loading :show="!viewerLoadingState.dataLoaded || !viewerLoadingState.tilesLoaded"></viewer-loading>
 
-  <div v-if='viewerLoadingState.dataLoaded'>
-    <div v-if='!isMember'>
-      <not-course-member :course='course' @courseJoined='loadTaskDetails'></not-course-member>
+  <div v-if="viewerLoadingState.dataLoaded">
+    <div v-if="!isMember">
+      <not-course-member :course="course" @courseJoined="loadTaskDetails"></not-course-member>
     </div>
     <div v-else>
       <div>
-        <viewer-back-button :routeName='`/group/${baseTask?.task_group_short_name}`'></viewer-back-button>
-        <task-header :selectedTask='selectedTask' :solveResult='solve_result'></task-header>
+        <viewer-back-button :routeName="`/group/${baseTask?.task_group_short_name}`"></viewer-back-button>
+        <task-header :selectedTask="selectedTask" :solveResult="solve_result"></task-header>
 
-        <task-container :baseTask='baseTask' @taskSelected='setSelectedTask($event)'></task-container>
+        <task-container :baseTask="baseTask" @taskSelected="setSelectedTask($event)"></task-container>
 
         <!-- <hint-overlay :taskId="selectedTask?.id" /> -->
 
-        <div class='fixed z-10 bottom-8 right-8'>
+        <div class="fixed z-10 bottom-8 right-8">
           <save-button
-            :disabled='userSolutionLocked'
+            :disabled="userSolutionLocked"
             :label="selectedTask?.can_be_solved ? 'Überprüfe Lösung' : 'Ich bin fertig'"
-            :loading='isSolving'
-            fontWeight='font-medium'
-            @click='solveTask'
+            :loading="isSolving"
+            fontWeight="font-medium"
+            @click="solveTask"
           ></save-button>
         </div>
 
         <select-images-task
-          v-if='selectedTask?.task_type === TaskType.IMAGE_SELECT'
-          :base_task_id='baseTask?.id'
-          :course_id='baseTask?.course_id'
-          :is_solving='isSolving'
-          :show_result='showTaskResult'
-          :solve_result='solve_result || selectedTask?.user_solution?.task_result'
-          :task='selectedTask'
-          :task_group_id='baseTask?.task_group_id'
+          v-if="selectedTask?.task_type === TaskType.IMAGE_SELECT"
+          :base_task_id="baseTask?.id"
+          :course_id="baseTask?.course_id"
+          :is_solving="isSolving"
+          :show_result="showTaskResult"
+          :solve_result="solve_result || selectedTask?.user_solution?.task_result"
+          :task="selectedTask"
+          :task_group_id="baseTask?.task_group_id"
         ></select-images-task>
         <div v-else>
           <task-viewer
-            v-if='baseTask?.tasks.length === 0 || selectedTask?.task_type !== TaskType.IMAGE_SELECT'
-            :base_task_id='baseTask?.id'
-            :course_id='baseTask?.course_id'
-            :is_solving='isSolving'
-            :show_result='showTaskResult'
-            :slide_name='baseTask?.slide_id'
-            :solve_result='solve_result || selectedTask?.user_solution?.task_result'
-            :task='selectedTask'
-            :task_group_id='baseTask?.task_group_id'
-            @userAnnotationChanged='resetTaskResult'
+            v-if="baseTask?.tasks.length === 0 || selectedTask?.task_type !== TaskType.IMAGE_SELECT"
+            :base_task_id="baseTask?.id"
+            :course_id="baseTask?.course_id"
+            :is_solving="isSolving"
+            :show_result="showTaskResult"
+            :slide_name="baseTask?.slide_id"
+            :solve_result="solve_result || selectedTask?.user_solution?.task_result"
+            :task="selectedTask"
+            :task_group_id="baseTask?.task_group_id"
+            @userAnnotationChanged="resetTaskResult"
           ></task-viewer>
         </div>
       </div>
