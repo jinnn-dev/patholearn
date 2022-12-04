@@ -62,16 +62,11 @@ class Solver:
                 task_solution=solution_data, user_solution=user_solution_data
             )
 
-            if len(correct_images) < len(solution_data):
-                task_result.task_status = TaskStatus.PARTIAL
-                task_result.response_text = (
-                    "Du hast noch nicht alle korrekten Bilder ausgewählt"
-                )
-
             task_result = FeedbackGenerator.generate_image_select_feedback(
                 task_feedback=task_result,
                 correct_image_indices=correct_images,
                 wrong_image_indices=wrong_images,
+                solution_data=solution_data
             )
         else:
             min_correct = (

@@ -484,7 +484,6 @@ def solve_task(
             db, user_id=current_user.id, task_id=task_id
         )
         solution_update.percentage_solved = 0.0
-
     crud_user_solution.update(db, db_obj=user_solution, obj_in=solution_update)
 
     crud_task_statistic.create(

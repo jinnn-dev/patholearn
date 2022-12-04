@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Tuple, Union, Any
 
 from app.core.solver.feedback_config import FeedbackConfig
 from app.core.solver.task_result_factory import TaskResultFactory
@@ -418,7 +418,21 @@ class FeedbackGenerator:
         task_feedback: TaskFeedback,
         correct_image_indices: List[str],
         wrong_image_indices: List[str],
+        solution_data: List[Any],
     ) -> TaskFeedback:
+        if len(correct_image_indices) < len(solution_data) > 0:
+            task_feedback.task_status = TaskStatus.PARTIAL
+            task_feedback.response_text = (
+                "Du hast noch nicht alle korrekten Bilder ausgewählt"
+            )
+
+        if (
+            len(wrong_image_indices) == 0
+            and len(correct_image_indices) == 0
+            and len(solution_data) == 0
+        ):
+            return TaskResultFactory.correct_status(task_feedback)
+
         for correct_index in correct_image_indices:
             select_image_feedback = SelectImageFeedback()
             select_image_feedback.status = TaskStatus.CORRECT
