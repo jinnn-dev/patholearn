@@ -1,4 +1,4 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 import { reactive, ref } from 'vue';
@@ -14,6 +14,7 @@ import CustomSlider from '../form/CustomSlider.vue';
 import MultiImageUpload from '../form/MultiImageUpload.vue';
 import { TaskType } from '../../core/types/taskType';
 import ConfirmButtons from '../general/ConfirmButtons.vue';
+import { IconNames } from '../../../icons';
 
 const emit = defineEmits(['close', 'taskCreated']);
 
@@ -50,7 +51,7 @@ const typeSelection = [
   }
 ];
 
-const taskCreationLoading = ref<Boolean>(false);
+const taskCreationLoading = ref<boolean>(false);
 
 const initialState = {
   layer: null,
@@ -147,8 +148,7 @@ const uploadImageSelectImages = async () => {
     formData.append('names', image.file.name);
   }
 
-  return TaskImageService.uploadMultipleTaskImages(formData, (_: any) => {
-  });
+  return TaskImageService.uploadMultipleTaskImages(formData, (_: any) => {});
 };
 
 const setImages = (images: { fileUrl: string; file: File }[]) => {
@@ -163,141 +163,141 @@ const resetForm = () => {
 </script>
 <template>
   <div>
-    <h1 class='text-2xl text-center'>
+    <h1 class="text-2xl text-center">
       Füge eine neue Aufgabe der
       {{ layerIndex }}. Ebene hinzu
     </h1>
-    <form class='w-full' @submit.prevent='onSubmit'>
+    <form class="w-full" @submit.prevent="onSubmit">
       <input-field
-        v-model='taskCreationForm.task_question'
-        :required='true'
-        label='Fragestellung'
-        placeholder='Markiere...'
-        type='text'
+        v-model="(taskCreationForm.task_question as string)"
+        :required="true"
+        label="Fragestellung"
+        placeholder="Markiere..."
+        type="text"
       >
       </input-field>
       <Accordion>
-        <AccordionItem :first='true' title='Aufgabeneinstellungen'>
+        <AccordionItem :first="true" title="Aufgabeneinstellungen">
           <div>Wähle einen Aufgabentyp:</div>
 
-          <div class='flex justify-evenly gap-4 mt-4'>
+          <div class="flex justify-evenly gap-4 mt-4">
             <div
               :class="selectedTaskType === 0 && 'bg-gray-500 ring-2 ring-highlight-900'"
-              class='transition flex justify-center items-center w-48 h-20 bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg'
-              @click='selectedTaskType = 0'
+              class="transition flex justify-center items-center w-48 h-20 bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg"
+              @click="selectedTaskType = 0"
             >
-              <div class='flex flex-col justify-center items-center text-center'>
-                <Icon name='polygon' size='46' />
+              <div class="flex flex-col justify-center items-center text-center">
+                <Icon name="polygon" size="46" />
                 Annotationen zeichen
               </div>
             </div>
             <div
               :class="selectedTaskType === 1 && 'bg-gray-500 ring-2 ring-highlight-900'"
-              class='transition flex justify-center items-center w-48 h-20 bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg'
-              @click='
+              class="transition flex justify-center items-center w-48 h-20 bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg"
+              @click="
                 selectedTaskType = 1;
                 taskCreationForm.task_type = 2;
-              '
+              "
             >
-              <div class='flex flex-col justify-center items-center text-center'>
-                <Icon name='squares-four' size='46' />
+              <div class="flex flex-col justify-center items-center text-center">
+                <Icon name="squares-four" size="46" />
                 Bilder auswählen
               </div>
             </div>
           </div>
 
-          <div v-if='selectedTaskType === 0' class='my-4'>
+          <div v-if="selectedTaskType === 0" class="my-4">
             <div>
               <div>Wähle eine Annotationseigenschaft:</div>
-              <div class='flex flex-col w-full justify-evenly gap-2 my-4'>
+              <div class="flex flex-col w-full justify-evenly gap-2 my-4">
                 <div
-                  v-for='taskType in taskTypes'
-                  :key='taskType.index'
+                  v-for="taskType in taskTypes"
+                  :key="taskType.index"
                   :class="taskCreationForm.task_type === taskType.index && 'bg-gray-500 ring-2 ring-highlight-900'"
-                  class='transition flex justify-center items-center bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg p-2'
-                  @click='taskCreationForm.task_type = taskType.index'
+                  class="transition flex justify-center items-center bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg p-2"
+                  @click="taskCreationForm.task_type = taskType.index"
                 >
-                  <div class='flex flex-col gap-3 justify-center items-center'>
+                  <div class="flex flex-col gap-3 justify-center items-center">
                     {{ taskType.description }}
                   </div>
                 </div>
               </div>
-              <div class='text-gray-200 flex text-sm items-center'>
-                <Icon height='20' name='info' width='20' />
-                <div class='ml-2'>Annotationsklassen geben einer Annotation einen bestimmten Typ / Namen.</div>
+              <div class="text-gray-200 flex text-sm items-center">
+                <Icon height="20" name="info" width="20" />
+                <div class="ml-2">Annotationsklassen geben einer Annotation einen bestimmten Typ / Namen.</div>
               </div>
             </div>
 
-            <div class='my-8'>
-              <div class='mb-4'>Welche Art von Annotation soll für die Aufgabe verwendet werden:</div>
-              <div class='flex w-full justify-evenly'>
+            <div class="my-8">
+              <div class="mb-4">Welche Art von Annotation soll für die Aufgabe verwendet werden:</div>
+              <div class="flex w-full justify-evenly">
                 <div
-                  v-for='item in typeSelection'
-                  :key='item.index'
+                  v-for="item in typeSelection"
+                  :key="item.index"
                   :class="taskCreationForm.annotation_type === item.index && 'bg-gray-500 ring-2 ring-highlight-900'"
-                  class='transition flex justify-center items-center w-32 h-20 bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg'
-                  @click='taskCreationForm.annotation_type = item.index'
+                  class="transition flex justify-center items-center w-32 h-20 bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg"
+                  @click="taskCreationForm.annotation_type = item.index"
                 >
-                  <div class='flex flex-col gap-2 justify-center items-center'>
-                    <Icon :height='30' :name='item.icon' :width='30' />
+                  <div class="flex flex-col gap-2 justify-center items-center">
+                    <Icon :height="30" :name="(item.icon as IconNames)" :width="30" />
                     {{ item.type }}
                   </div>
                 </div>
               </div>
-              <div class='h-8 mt-4'>
-                <div class='text-gray-200 flex text-sm items-center'>
-                  <Icon height='20' name='info' width='20' />
-                  <div class='ml-2'>
+              <div class="h-8 mt-4">
+                <div class="text-gray-200 flex text-sm items-center">
+                  <Icon height="20" name="info" width="20" />
+                  <div class="ml-2">
                     Polygon: Die Annotationen können aus Polygonen, Rechtecken und Ellipsen bestehen
                   </div>
                 </div>
               </div>
             </div>
-            <div class='my-8'>
+            <div class="my-8">
               <div>Welches Vorwissen ist bei den Lernenden vorhanden:</div>
-              <div class='my-2 mb-4 break-words text-sm text-gray-200 py-2'>
+              <div class="my-2 mb-4 break-words text-sm text-gray-200 py-2">
                 Die Vorwissensstufe bestimmt den Schwierigkeitsgrad der Aufgabe. Mit steigender Stufe wird das Feedback
                 weniger unterstützend. Außerdem wird die Aufgabenüberprüfung strenger.
               </div>
-              <div class='flex w-full justify-evenly gap-2 my-2'>
+              <div class="flex w-full justify-evenly gap-2 my-2">
                 <div
-                  v-for='level in knowledgeLevel'
-                  :key='level.index'
+                  v-for="level in knowledgeLevel"
+                  :key="level.index"
                   :class="taskCreationForm.knowledge_level === level.index && 'bg-gray-500 ring-2 ring-highlight-900'"
-                  class='transition flex justify-center items-center bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg p-2'
-                  @click='taskCreationForm.knowledge_level = level.index'
+                  class="transition flex justify-center items-center bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg p-2"
+                  @click="taskCreationForm.knowledge_level = level.index"
                 >
-                  <div class='flex gap-3 justify-center items-center text-center'>
+                  <div class="flex gap-3 justify-center items-center text-center">
                     {{ level.name }}
                   </div>
                 </div>
               </div>
             </div>
-            <div v-if='taskCreationForm.task_type === 0' class='my-4'>
+            <div v-if="taskCreationForm.task_type === 0" class="my-4">
               <div>Wie viele Annotationen müssen die Lernenden mindestens richtig treffen:</div>
               <CustomSlider
-                :initial-position='taskCreationForm.min_correct'
-                :max='50'
-                :min='0'
-                :tooltips='true'
-                class='pb-4 pt-11'
-                @is-released='taskCreationForm.min_correct = $event'
+                :initial-position="taskCreationForm.min_correct"
+                :max="50"
+                :min="0"
+                :tooltips="true"
+                class="pb-4 pt-11"
+                @is-released="taskCreationForm.min_correct = $event"
               ></CustomSlider>
             </div>
           </div>
 
-          <div v-if='selectedTaskType === 1'>
-            <div class='my-2 flex gap-2 flex-col'>
-              <div class='mt-2'>Wähle eine Reihe von Bilder:</div>
+          <div v-if="selectedTaskType === 1">
+            <div class="my-2 flex gap-2 flex-col">
+              <div class="mt-2">Wähle eine Reihe von Bilder:</div>
 
               <MultiImageUpload
-                :reset-array='resetImageSelectImage'
-                label='Bilder hochladen'
-                tip='Wähle Bilder aus oder ziehe sie in das Feld'
-                @images-dropped='setImages'
+                :reset-array="resetImageSelectImage"
+                label="Bilder hochladen"
+                tip="Wähle Bilder aus oder ziehe sie in das Feld"
+                @images-dropped="setImages"
               ></MultiImageUpload>
             </div>
-            <div v-if='noImageSelectedError' class='text-red-400 font-semibold'>
+            <div v-if="noImageSelectedError" class="text-red-400 font-semibold">
               Bitte wähle mindestens ein Bild aus
             </div>
           </div>
@@ -305,10 +305,10 @@ const resetForm = () => {
       </Accordion>
 
       <confirm-buttons
-        :loading='taskCreationLoading'
-        class='mt-4'
-        confirm-text='Speichern'
-        reject-text='Abbrechen'
+        :loading="taskCreationLoading"
+        class="mt-4"
+        confirm-text="Speichern"
+        reject-text="Abbrechen"
         @reject="
           $emit('close');
           resetForm();
