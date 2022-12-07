@@ -15,6 +15,7 @@ import MultiImageUpload from '../form/MultiImageUpload.vue';
 import { TaskType } from '../../core/types/taskType';
 import ConfirmButtons from '../general/ConfirmButtons.vue';
 import { IconNames } from '../../../icons';
+import ToggleButton from '../form/ToggleButton.vue';
 
 const emit = defineEmits(['close', 'taskCreated']);
 
@@ -59,7 +60,8 @@ const initialState = {
   task_type: 0,
   annotation_type: 0,
   knowledge_level: 0,
-  min_correct: 1
+  min_correct: 1,
+  can_be_solved: true
 };
 
 const taskCreationForm = reactive<{
@@ -69,6 +71,7 @@ const taskCreationForm = reactive<{
   annotation_type: number;
   knowledge_level: number;
   min_correct: number;
+  can_be_solved: boolean;
 }>({
   ...initialState
 });
@@ -128,7 +131,8 @@ const onSubmit = async () => {
         knowledge_level: taskCreationForm.knowledge_level,
         min_correct: taskCreationForm.min_correct,
         annotation_groups: [],
-        hints: []
+        hints: [],
+        can_be_solved: taskCreationForm.can_be_solved
       };
       TaskService.createTask(createTask).then((res: Task) => {
         emit('taskCreated', res);
@@ -284,6 +288,13 @@ const resetForm = () => {
                 @is-released="taskCreationForm.min_correct = $event"
               ></CustomSlider>
             </div>
+
+            <div>Soll die Aufgabe von Nutzern lösbar sein?</div>
+            <toggle-button
+              :enabled="taskCreationForm.can_be_solved"
+              class="my-2"
+              @changed="taskCreationForm.can_be_solved = $event"
+            ></toggle-button>
           </div>
 
           <div v-if="selectedTaskType === 1">
