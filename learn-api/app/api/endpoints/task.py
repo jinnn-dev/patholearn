@@ -43,6 +43,7 @@ from app.schemas.task import (
     TaskUpdate,
 )
 from app.schemas.task_hint import TaskHint, TaskHintCreate, TaskHintUpdate
+from app.schemas.user import UserInDBBase
 from app.schemas.user_solution import UserSolutionUpdate
 from app.core.annotation_type import is_info_annotation
 from app.utils.minio_client import MinioClient, minio_client
@@ -52,6 +53,8 @@ from fastapi.datastructures import UploadFile
 from fastapi.params import File
 from sqlalchemy.orm import Session
 from starlette.responses import StreamingResponse
+from app.utils.logger import logger
+
 
 router = APIRouter()
 
@@ -567,6 +570,50 @@ def delete_user_solution_annotation(
         db, db_obj=user_solution, obj_in=UserSolutionUpdate(solution_data=solution_data)
     )
     return {"Status": "OK"}
+
+
+@router.get("/{task_id}/userSolution", response_model=Any)
+def get_user_solutions_info(
+    *,
+    db: Session = Depends(get_db),
+    task_id: int,
+    current_user: User = Depends(get_current_active_superuser),
+):
+    task = crud_task.get(db=db, id=task_id)
+    base_task = crud_base_task.get(db=db, id=task.base_task_id)
+    check_if_user_can_access_course(
+        db=db, user_id=current_user.id, course_id=base_task.course_id
+    )
+
+    course_members = crud_course.get_members(db=db, course_id=base_task.course_id)
+    member_ids = map(lambda member: member.id, course_members)
+
+    user_solutions = crud_user_solution.get_user_solution_to_users(
+        db=db, task_id=task.id, user_ids=list(member_ids)
+    )
+
+    parsed_objs = parse_obj_as(List[UserInDBBase], course_members)
+
+    return parsed_objs
+
+
+@router.get("/{task_id}/userSolution/user/{user_id}")
+def get_user_solution_to_user(
+    *,
+    db: Session = Depends(get_db),
+    task_id: int,
+    user_id: int,
+    current_user: User = Depends(get_current_active_superuser),
+):
+    task = crud_task.get(db=db, id=task_id)
+    base_task = crud_base_task.get(db=db, id=task.base_task_id)
+    check_if_user_can_access_course(
+        db=db, user_id=current_user.id, course_id=base_task.course_id
+    )
+
+    return crud_user_solution.get_solution_to_task_and_user(
+        db=db, task_id=task_id, user_id=user_id
+    )
 
 
 @router.get(

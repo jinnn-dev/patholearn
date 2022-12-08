@@ -18,6 +18,8 @@ export class AnnotationPoint extends Annotation {
     super(g, type, color, id, true, name);
   }
 
+  private radius?: number;
+
   private _vertex?: OpenSeadragon.Point;
 
   get vertex(): OpenSeadragon.Point | undefined {
@@ -52,12 +54,14 @@ export class AnnotationPoint extends Annotation {
    * @param strokeWidth Width of the circle stroke
    */
   createElement(r: number, strokeWidth: number): void {
+    this.radius = r;
+
     this._element = select(this.g)
       .append('circle')
       .attr('id', this.id)
       .attr('cx', this._vertex!.x)
       .attr('cy', this._vertex!.y)
-      .attr('r', r)
+      .attr('r', this.radius)
       .style('fill', this.color);
 
     if (this.name) {
@@ -112,6 +116,13 @@ export class AnnotationPoint extends Annotation {
 
   remove(): void {
     this._element?.remove();
+  }
+
+  redraw(): void {
+    if (!this.radius) {
+      return;
+    }
+    this.createElement(this.radius, 0);
   }
 
   update(r: number, strokeWidth: number): void {

@@ -166,6 +166,8 @@ export abstract class Annotation {
    */
   abstract remove(): void;
 
+  abstract redraw(): void;
+
   /**
    * Updates the annotation Class of the annotation
    *

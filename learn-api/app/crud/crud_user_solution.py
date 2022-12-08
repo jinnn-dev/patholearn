@@ -5,8 +5,11 @@ from sqlalchemy.orm import Session
 
 from app.crud.base import CRUDBase
 from app.models.user_solution import UserSolution
+from app.schemas.user import UserInDBBase
 from app.schemas.user_solution import UserSolution as SchemaSolution
 from app.schemas.user_solution import UserSolutionCreate, UserSolutionUpdate
+from app.models.user import User
+from app.utils.logger import logger
 
 
 class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUpdate]):
@@ -26,6 +29,33 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
             .filter(UserSolution.user_id == user_id)
             .filter(UserSolution.task_id == task_id)
             .first()
+        )
+
+    def get_user_solution_to_users(
+        self, db: Session, *, task_id: int, user_ids: List[int]
+    ):
+        # return [
+        #     user_id.user_id
+        #     for user_id in db.query(UserSolution)
+        #     .filter(self.model.task_id == task_id)
+        #     .all()
+        # ]
+        return db.query(UserSolution).filter(self.model.task_id == task_id).all()
+
+    def get_user_solution_info_and_user_to_task(self, db: Session, *, task_id: int):
+        """
+        Returns all user solutions infos to the given task
+
+        :param db: DB-Session
+        :param task_id: Id of the task
+        :return All found user solutions info and users
+        """
+        return (
+            db.query(User.firstname, User.lastname, User.id, UserSolution)
+            .select_from(UserSolution)
+            .join(User, self.model.user_id == User.id)
+            .filter(self.model.task_id == task_id)
+            .all()
         )
 
     def get_solution_to_task(

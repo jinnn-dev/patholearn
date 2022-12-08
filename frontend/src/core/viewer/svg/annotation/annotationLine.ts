@@ -31,6 +31,8 @@ export class AnnotationLine extends Annotation {
 
   private _vertice: VertexElement[];
 
+  private _strokeWidth?: number;
+
   get vertice() {
     return this._vertice;
   }
@@ -93,13 +95,14 @@ export class AnnotationLine extends Annotation {
    * @param strokeWidth Strokewidth of the vertex
    */
   addVertex(viewportCoord: OpenSeadragon.Point, r: number, strokeWidth: number): void {
+    this._strokeWidth ??= strokeWidth;
     const circle: Circle = new Circle(
       this.g,
       viewportCoord.x,
       viewportCoord.y,
       r,
       this.color,
-      strokeWidth,
+      this._strokeWidth,
       this.color,
       this.id + '-' + this._vertice.length
     );
@@ -127,13 +130,14 @@ export class AnnotationLine extends Annotation {
   }
 
   addVertexInBetween(point: OpenSeadragon.Point, indexToInsertAt: number, r: number, strokeWidth: number) {
+    this._strokeWidth ??= strokeWidth;
     const circle = new Circle(
       this.g,
       point.x,
       point.y,
       r,
       this.color,
-      strokeWidth,
+      this._strokeWidth,
       this.color,
       this.id + '-' + this._vertice.length
     );
@@ -164,14 +168,15 @@ export class AnnotationLine extends Annotation {
    * @param strokeWidth Strokewidth of the polyline
    * @returns The created polyline
    */
-  createPolyline(strokeWidth: number): Selection<SVGPolylineElement, unknown, null, undefined> {
+  createPolyline(strokeWidth?: number): Selection<SVGPolylineElement, unknown, null, undefined> {
+    this._strokeWidth ??= strokeWidth;
     if (!this._polyline) {
       this._polyline = select(this.g)
         .append('polyline')
         .attr('points', this._polylinePoints.toString().replace('[', '').replace(']', ''))
         .attr('id', this.id)
         .style('fill', 'none')
-        .style('stroke-width', strokeWidth)
+        .style('stroke-width', strokeWidth || this._strokeWidth!)
         .attr('stroke', this.color);
 
       if (this.name) {
@@ -190,6 +195,7 @@ export class AnnotationLine extends Annotation {
    * @param strokeWidth Strokewidth
    */
   addClosedLine(points: OpenSeadragon.Point[], r: number, strokeWidth: number): void {
+    this._strokeWidth ??= strokeWidth;
     for (const point of points) {
       const circle: Circle = new Circle(
         this.g,
@@ -197,7 +203,7 @@ export class AnnotationLine extends Annotation {
         point.y,
         r,
         this.color,
-        strokeWidth,
+        this._strokeWidth,
         this.color,
         this.id + '-' + this.vertice.length
       );
@@ -319,6 +325,8 @@ export class AnnotationLine extends Annotation {
     for (const polyline of this._resultPolylines) {
       polyline.style('stroke-width', strokeWidth);
     }
+
+    this._strokeWidth ??= strokeWidth;
   }
 
   popLastVertex(): void {
@@ -424,6 +432,11 @@ export class AnnotationLine extends Annotation {
    */
   remove(): void {
     this.polyline?.remove();
+    this._polyline = undefined;
+  }
+
+  redraw(): void {
+    this.createPolyline();
   }
 
   getBoundingBox(): OpenSeadragon.Rect | null {

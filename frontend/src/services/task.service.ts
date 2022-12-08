@@ -150,6 +150,16 @@ export class TaskService {
     return response!.data;
   }
 
+  public static async getUserSolutionToUser(taskId: number, userId: number): Promise<UserSolution> {
+    const [_, response] = await handleError(
+      ApiService.get<UserSolution>({
+        resource: this._apiUrl(`/task/${taskId}/userSolution/user/${userId}`)
+      }),
+      'User solution could not be loaded'
+    );
+    return response!.data;
+  }
+
   /**
    * Creates a new user solution
    *
@@ -190,6 +200,15 @@ export class TaskService {
         data: solutionUpdate
       }),
       'User solution could not be updated'
+    );
+    return response!.data;
+  }
+
+  public static async getUserSolutionInfo(task_id: number): Promise<any> {
+    const [_, response] = await handleError(
+      ApiService.get({
+        resource: this._apiUrl(`/task/${task_id}/userSolution`)
+      })
     );
     return response!.data;
   }
