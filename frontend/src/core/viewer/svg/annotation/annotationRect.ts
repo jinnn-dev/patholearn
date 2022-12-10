@@ -22,9 +22,10 @@ export class AnnotationRectangle extends Annotation {
     color: string = COLOR.STROKE_COLOR,
     id: string = nanoid(),
     reactive: boolean = true,
-    name?: string
+    name?: string,
+    editable?: boolean
   ) {
-    super(g, type, color, id, reactive, name);
+    super(g, type, color, id, reactive, name, editable);
     this._fillColor = fillColor;
     this._vertice = [];
     this._mouseTrackers = [];
@@ -202,9 +203,11 @@ export class AnnotationRectangle extends Annotation {
       vertex.element.updateRadius(POLYGON_VERTEX_COLOR / scale);
       vertex.element.updateStrokeWidth(POLYGON_VERTEX_COLOR / scale);
       vertex.element.updateStrokeColor(this.color);
-      select('[id ="' + vertex.element.id + '"]').each(function () {
-        self.addTracking(this as HTMLElement, viewer);
-      });
+      if (this.editable) {
+        select('[id ="' + vertex.element.id + '"]').each(function () {
+          self.addTracking(this as HTMLElement, viewer);
+        });
+      }
 
       if (this.reactive) {
         polygonChanged.polygon = self;
@@ -348,6 +351,8 @@ export class AnnotationRectangle extends Annotation {
         .attr('fill', this._fillColor);
     }
   }
+
+  redraw(): void {}
 
   addResultPolyline(points: string[], strokeWidth: number): void {
     const line = select(this.g)

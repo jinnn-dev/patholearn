@@ -11,6 +11,7 @@ export interface AnnotationBaseData {
   strokeColor?: string;
   fillColor?: string;
   scale?: number;
+  editable?: boolean;
 }
 
 export interface AnnotationBaseOffsetData extends AnnotationBaseData {}

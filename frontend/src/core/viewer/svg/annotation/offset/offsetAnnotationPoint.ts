@@ -16,9 +16,10 @@ export class OffsetAnnotationPoint extends AnnotationPoint {
     offsetRadius: number = POLYGON_INFLATE_OFFSET,
     color: string = COLOR.STROKE_COLOR,
     id: string = nanoid(),
-    name?: string
+    name?: string,
+    editable?: boolean
   ) {
-    super(g, type, color, id, name);
+    super(g, type, color, id, name, editable);
 
     this._offsetRadius = offsetRadius;
   }

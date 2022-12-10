@@ -583,7 +583,7 @@ export class AnnotationViewer {
     }
   }
 
-  parseUserSolutionAnnotations(solutionData: AnnotationData[]) {
+  parseUserSolutionAnnotations(solutionData: AnnotationData[], editable: boolean) {
     for (const data of solutionData) {
       const points: PointData[] = [];
       data.coord.image.forEach((point: PointData) => {
@@ -596,7 +596,7 @@ export class AnnotationViewer {
       });
       data.coord.viewport = points;
     }
-    const annotations = this._annotationManager.addAnnotation(solutionData, this.scale);
+    const annotations = this._annotationManager.addAnnotation(solutionData, this.scale, editable);
     return annotations;
   }
 

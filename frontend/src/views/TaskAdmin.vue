@@ -11,7 +11,6 @@ import TaskHeader from '../components/task/TaskHeader.vue';
 import ViewerBackButton from '../components/viewer/ViewerBackButton.vue';
 import ViewerLoading from '../components/viewer/ViewerLoading.vue';
 import { TaskType } from '../core/types/taskType';
-import { showAllAnnotations } from 'core/viewer/helper/taskViewerHelper';
 
 const TaskViewerAdmin = defineAsyncComponent({
   loader: () => import('../components/viewer/TaskViewerAdmin.vue')

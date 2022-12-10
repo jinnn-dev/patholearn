@@ -736,7 +736,7 @@ const showUserSolutionAnnotations = async (userId: number) => {
     const userSolution = await TaskService.getUserSolutionToUser(props.task!.id, userId);
 
     if (userSolution !== null) {
-      const annotations = drawingViewer.value?.parseUserSolutionAnnotations(userSolution.solution_data);
+      const annotations = drawingViewer.value?.parseUserSolutionAnnotations(userSolution.solution_data, false);
 
       if (annotations !== undefined) {
         loadedUserSolutions.set(userId, annotations);

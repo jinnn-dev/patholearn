@@ -23,7 +23,8 @@ export class LineFactory extends AnnotationFactory<AnnotationLine> {
       annotationData.node,
       infoData.type,
       annotationData.strokeColor,
-      infoData.id
+      infoData.id,
+      annotationData.editable
     );
     annotationLine.addClosedLine(points, annotationData.radius, annotationData.strokeWidth);
     return annotationLine;
@@ -38,7 +39,7 @@ export class LineFactory extends AnnotationFactory<AnnotationLine> {
       annotationData.strokeColor,
       annotationData.data.id
     );
-
+    annotationLine.editable = annotationData.editable === undefined ? true : annotationData.editable;
     annotationLine.name = annotationData.data.name;
 
     annotationLine.addClosedLine(points, annotationData.radius, annotationData.strokeWidth);
@@ -59,7 +60,7 @@ export class LineFactory extends AnnotationFactory<AnnotationLine> {
       annotationData.data.id,
       offsetAnnotationLineData.changedManual
     );
-
+    offsetAnnotationLine.editable = annotationData.editable === undefined ? true : annotationData.editable;
     offsetAnnotationLine.name = annotationData.data.name;
 
     const outerPoints = offsetAnnotationLineData.outerPoints.viewport!.map((point) => new Point(point.x, point.y));

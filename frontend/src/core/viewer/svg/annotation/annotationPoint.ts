@@ -13,9 +13,10 @@ export class AnnotationPoint extends Annotation {
     type: ANNOTATION_TYPE,
     color: string = COLOR.STROKE_COLOR,
     id: string = nanoid(),
-    name?: string
+    name?: string,
+    editable?: boolean
   ) {
-    super(g, type, color, id, true, name);
+    super(g, type, color, id, true, name, editable);
   }
 
   private radius?: number;
@@ -143,7 +144,7 @@ export class AnnotationPoint extends Annotation {
   }
 
   select(viewer: OpenSeadragon.Viewer, scale: number, trackable: boolean = true): void {
-    if (trackable) {
+    if (trackable && this.editable) {
       this.addTracking(viewer);
     }
     this._element?.attr('stroke', '#000').attr('stroke-width', POLYGON_STROKE_WIDTH / scale);

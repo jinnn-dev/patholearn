@@ -18,9 +18,10 @@ export class AnnotationLine extends Annotation {
     color: string = COLOR.STROKE_COLOR,
     id: string = nanoid(),
     reactive: boolean = true,
-    name?: string
+    name?: string,
+    editable?: boolean
   ) {
-    super(g, type, color, id, reactive, name);
+    super(g, type, color, id, reactive, name, editable);
 
     this._vertice = [];
     this._polylinePoints = [];
@@ -288,7 +289,8 @@ export class AnnotationLine extends Annotation {
         vertice.element.updateRadius(POLYGON_VERTEX_COLOR / scale);
         vertice.element.updateStrokeWidth((POLYGON_VERTEX_COLOR - 2) / scale);
         vertice.element.updateStrokeColor(this.color);
-        if (trackable) {
+
+        if (trackable && this.editable) {
           select('[id ="' + vertice.element.id + '"]').each(function () {
             self.addTracking(this as HTMLElement, viewer);
           });
