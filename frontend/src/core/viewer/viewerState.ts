@@ -1,4 +1,5 @@
-import { UserSolution } from 'model/userSolution';
+import { User } from 'model/user';
+import { UserSolution } from '../../model/userSolution';
 import { reactive, ref } from 'vue';
 import { Annotation } from './svg/annotation/annotation';
 
@@ -37,4 +38,5 @@ export const viewerScale = ref<number>();
 export const selectedPolygon = ref<Annotation | null>();
 
 export const loadedUserSolutions = new Map<number, any>();
+export const annotationsToUser = new Map<string, User>();
 export const updateUserSolutions = ref<boolean>(false);

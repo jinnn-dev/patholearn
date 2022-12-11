@@ -44,7 +44,11 @@ from app.schemas.task import (
 )
 from app.schemas.task_hint import TaskHint, TaskHintCreate, TaskHintUpdate
 from app.schemas.user import UserInDBBase
-from app.schemas.user_solution import UserSolutionUpdate
+from app.schemas.user_solution import (
+    UserSolutionUpdate,
+    UserSolutionWithUser,
+    UserSolution,
+)
 from app.core.annotation_type import is_info_annotation
 from app.utils.minio_client import MinioClient, minio_client
 from app.utils.timer import Timer
@@ -610,10 +614,18 @@ def get_user_solution_to_user(
     check_if_user_can_access_course(
         db=db, user_id=current_user.id, course_id=base_task.course_id
     )
-
-    return crud_user_solution.get_solution_to_task_and_user(
+    result = crud_user_solution.get_solution_to_task_and_user(
         db=db, task_id=task_id, user_id=user_id
     )
+
+    if result is None:
+        return None
+
+    user_solution = parse_obj_as(UserSolution, result[0])
+    user_solution_with_suer = UserSolutionWithUser(
+        user_solution=user_solution, user=parse_obj_as(UserInDBBase, result[1])
+    )
+    return user_solution_with_suer
 
 
 @router.get(

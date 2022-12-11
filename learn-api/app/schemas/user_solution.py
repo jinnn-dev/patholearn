@@ -2,6 +2,7 @@ from typing import Any, List, Optional, Union
 
 from pydantic import BaseModel
 
+from app.schemas.user import User
 from app.schemas.polygon_data import AnnotationData
 from app.schemas.task import TaskFeedback
 
@@ -44,3 +45,8 @@ class UserSolutionInDB(UserSolutionBase):
 
 class UserSolution(UserSolutionInDB):
     pass
+
+
+class UserSolutionWithUser(BaseModel):
+    user_solution: UserSolution
+    user: User

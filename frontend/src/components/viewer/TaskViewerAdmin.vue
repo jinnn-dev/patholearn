@@ -32,7 +32,8 @@ import {
   polygonChanged,
   selectedPolygon,
   viewerLoadingState,
-  loadedUserSolutions
+  loadedUserSolutions,
+  annotationsToUser
 } from '../../core/viewer/viewerState';
 import {
   focusBackgroundAnnotation,
@@ -145,6 +146,7 @@ watch(
   () => props.task,
   async (newVal, _) => {
     loadedUserSolutions.clear();
+    annotationsToUser.clear();
     drawingViewer.value?.clear();
     selectedPolygon.value = undefined;
     if (!newVal) {
@@ -736,9 +738,15 @@ const showUserSolutionAnnotations = async (userId: number) => {
     const userSolution = await TaskService.getUserSolutionToUser(props.task!.id, userId);
 
     if (userSolution !== null) {
-      const annotations = drawingViewer.value?.parseUserSolutionAnnotations(userSolution.solution_data, false);
+      const annotations = drawingViewer.value?.parseUserSolutionAnnotations(
+        userSolution.user_solution.solution_data,
+        false
+      );
 
       if (annotations !== undefined) {
+        for (const annotation of annotations) {
+          annotationsToUser.set(annotation.id, userSolution.user);
+        }
         loadedUserSolutions.set(userId, annotations);
       }
     }
@@ -792,6 +800,20 @@ const closeSampleSolutionEditor = () => {
     />
     <form-field v-else label="Annotationsklasse" margin-hor="my-0">
       <div>{{ selectedPolygon.name || 'Keine Klasse gewählt' }}</div>
+    </form-field>
+
+    <form-field
+      v-if="isUserSolution(selectedPolygon.type) && annotationsToUser.get(selectedPolygon.id) !== undefined"
+      label="Nutzer"
+      margin-hor="my-0"
+    >
+      <div class="flex gap-2">
+        <div>{{ annotationsToUser.get(selectedPolygon.id)!.firstname }}</div>
+        <div v-if="annotationsToUser.get(selectedPolygon.id)!.middlename">
+          {{ annotationsToUser.get(selectedPolygon.id)!.middlename }}
+        </div>
+        <div>{{ annotationsToUser.get(selectedPolygon.id)!.lastname }}</div>
+      </div>
     </form-field>
 
     <custom-slider

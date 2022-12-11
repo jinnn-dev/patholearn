@@ -6,7 +6,9 @@ from sqlalchemy.orm import Session
 from app.crud.base import CRUDBase
 from app.models.user_solution import UserSolution
 from app.schemas.user import UserInDBBase
-from app.schemas.user_solution import UserSolution as SchemaSolution
+from app.schemas.user_solution import (
+    UserSolution as SchemaSolution,
+)
 from app.schemas.user_solution import UserSolutionCreate, UserSolutionUpdate
 from app.models.user import User
 from app.utils.logger import logger
@@ -15,7 +17,7 @@ from app.utils.logger import logger
 class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUpdate]):
     def get_solution_to_task_and_user(
         self, db: Session, *, user_id: int, task_id: int
-    ) -> SchemaSolution:
+    ) -> (UserSolution, UserInDBBase):
         """
         Returns the UserSolution to the given user and task.
 
@@ -25,9 +27,10 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         :return: The found UserSolution
         """
         return (
-            db.query(self.model)
+            db.query(self.model, User)
             .filter(UserSolution.user_id == user_id)
             .filter(UserSolution.task_id == task_id)
+            .join(User, User.id == UserSolution.user_id)
             .first()
         )
 
