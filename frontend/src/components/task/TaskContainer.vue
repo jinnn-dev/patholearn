@@ -12,6 +12,7 @@ import Icon from '../general/Icon.vue';
 import { TaskStatus } from '../../core/types/taskStatus';
 import ConfirmButtons from '../general/ConfirmButtons.vue';
 import SelectUserSolution from './SelectUserSolution.vue';
+import Spinner from '../general/Spinner.vue';
 
 interface LayeredTasks {
   [key: number]: Task[];
@@ -47,6 +48,8 @@ const users = ref<any[]>();
 
 const activatedUsers = ref<number[]>();
 
+const userSolutionsLoading = ref<boolean>(false);
+
 onMounted(async () => {
   props.baseTask?.tasks.forEach((task) => {
     if (!taskMap.value[task.layer]) taskMap.value[task.layer] = [];
@@ -71,7 +74,9 @@ onMounted(async () => {
 const changeSliderPosition = async (position: SliderPosition) => {
   sliderPosition.value = position;
   if (sliderPosition.value === 'solutions' && users.value === undefined) {
+    userSolutionsLoading.value = true;
     users.value = await TaskService.getUserSolutionInfo(selectedTask.value!.id);
+    userSolutionsLoading.value = false;
   }
 };
 
@@ -213,7 +218,11 @@ const deleteBaseTask = () => {
     </div>
 
     <div class="relative max-h-[22.5rem] overflow-auto" v-if="sliderPosition === 'solutions'">
+      <div v-if="userSolutionsLoading" class="w-full flex justify-center gap-4 my-2">
+        <Spinner></Spinner> Nutzer werden geladen
+      </div>
       <select-user-solution
+        v-else
         :users="users"
         @show-user-solution="showUserSolution($event)"
         @hide-user-solution="hideUserSolution($event)"

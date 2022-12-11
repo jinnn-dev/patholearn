@@ -608,6 +608,7 @@ export class AnnotationViewer {
   removeUserAnnotations(annotations: Annotation[]) {
     for (const annotation of annotations) {
       this._annotationManager.deleteUserAnnotationFromImage(annotation);
+      annotation.unselect();
       annotation.remove();
     }
   }

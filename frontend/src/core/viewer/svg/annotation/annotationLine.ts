@@ -315,6 +315,7 @@ export class AnnotationLine extends Annotation {
   }
 
   update(r: number, strokeWidth: number): void {
+    this._strokeWidth = strokeWidth;
     if (this.isSelected) {
       this._vertice.forEach((vertice) => {
         vertice.element.updateStrokeWidth(strokeWidth).updateRadius(r);

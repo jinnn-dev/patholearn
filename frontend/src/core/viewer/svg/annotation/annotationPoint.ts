@@ -127,6 +127,7 @@ export class AnnotationPoint extends Annotation {
   }
 
   update(r: number, strokeWidth: number): void {
+    this.radius = r;
     this._element?.attr('stroke-width', strokeWidth).attr('r', r);
   }
 

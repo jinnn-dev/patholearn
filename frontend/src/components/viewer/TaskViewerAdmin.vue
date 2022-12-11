@@ -749,7 +749,7 @@ const showUserSolutionAnnotations = async (userId: number) => {
 
 const hideUserSolutionAnnotations = (userId: number) => {
   const annotations = loadedUserSolutions.get(userId);
-
+  unselectAnnotation();
   if (annotations) {
     drawingViewer.value?.removeUserAnnotations(annotations);
   }
