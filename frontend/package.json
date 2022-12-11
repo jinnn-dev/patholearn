@@ -7,6 +7,7 @@
     "serve": "vite preview",
     "test": "jest test --coverage",
     "dev-build": "vite build --mode development",
+    "staging-build": "vite build --mode staging",
     "gen:icons": "node scripts/generateIcons.js",
     "pretty": "prettier --write \"./**/*.{js,ts,vue}\""
   },
