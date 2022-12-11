@@ -602,7 +602,9 @@ export class AnnotationViewer {
 
   addUserSolutionAnnotations(annotations: Annotation[]) {
     this._annotationManager.userSolutionAnnotations.push(...annotations);
-    annotations.forEach((annotation) => annotation.redraw());
+    annotations.forEach((annotation) =>
+      annotation.redraw(POLYGON_VERTEX_COLOR / this.scale, POLYGON_STROKE_WIDTH / this.scale)
+    );
   }
 
   removeUserAnnotations(annotations: Annotation[]) {

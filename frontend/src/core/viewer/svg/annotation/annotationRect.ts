@@ -352,7 +352,7 @@ export class AnnotationRectangle extends Annotation {
     }
   }
 
-  redraw(): void {}
+  redraw(radius: number, strokeWidth: number): void {}
 
   addResultPolyline(points: string[], strokeWidth: number): void {
     const line = select(this.g)
