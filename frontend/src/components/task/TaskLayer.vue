@@ -1,4 +1,4 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import { PropType, ref } from 'vue';
 import { Task } from '../../model/task/task';
 import { TaskService } from '../../services/task.service';
@@ -80,52 +80,52 @@ const downloadUserSolutions = async (task: Task) => {
 };
 </script>
 <template>
-  <div class='w-full flex items-center justify-between p-2 bg-gray-600 sticky top-0'>
-    <div class='mr-2'>{{ layerIndex }}. Ebene</div>
-    <role-only v-if='isOwner' class='flex gap-2'>
+  <div class="w-full flex items-center justify-between p-2 bg-gray-600 sticky top-0">
+    <div class="mr-2">{{ layerIndex }}. Ebene</div>
+    <role-only v-if="isOwner" class="flex gap-2">
       <Icon
-        v-if='layerIndex !== 1'
-        class='text-white cursor-pointer'
-        name='minus'
-        weight='bold'
-        @click='removeLayer'
+        v-if="layerIndex !== 1"
+        class="text-white cursor-pointer"
+        name="minus"
+        weight="bold"
+        @click="removeLayer"
       ></Icon>
     </role-only>
   </div>
-  <div class='w-full cursor-pointer'>
+  <div class="w-full cursor-pointer">
     <task-item
-      v-for='(task, taskIndex) in tasks'
-      :key='task.id'
+      v-for="(task, taskIndex) in tasks"
+      :key="task.id"
       :class="selectedTaskId === task.id ? 'ring-2 ring-highlight-800' : ''"
-      :isOwner='isOwner'
-      :question='task.task_question'
-      :showDownload='
+      :isOwner="isOwner"
+      :question="task.task_question"
+      :showDownload="
         task.annotation_type === ANNOTATION_TYPE.SOLUTION_POINT && task.task_type !== TaskType.IMAGE_SELECT
-      '
-      :userSolution='task.user_solution'
-      @deleteTask='deleteTask(task.id, taskIndex)'
-      @downloadUserSolutions='downloadUserSolutions(task)'
-      @editTask='editTask(task)'
-      @click.stop='selectTask(task)'
+      "
+      :userSolution="task.user_solution"
+      @deleteTask="deleteTask(task.id, taskIndex)"
+      @downloadUserSolutions="downloadUserSolutions(task)"
+      @editTask="editTask(task)"
+      @click.stop="selectTask(task)"
     ></task-item>
-    <role-only v-if='isOwner'>
-      <div class='p-2 px-18 my-2'>
-        <primary-button class='' @click='taskCreationModal = true'>Neue Aufgabe</primary-button>
+    <role-only v-if="isOwner">
+      <div class="p-2 px-18 my-2">
+        <primary-button class="" @click="taskCreationModal = true">Neue Aufgabe</primary-button>
       </div>
     </role-only>
   </div>
 
   <role-only>
-    <modal-dialog :show='taskCreationModal' customClasses='w-2/5'>
+    <modal-dialog :show="taskCreationModal" customClasses="w-2/5">
       <CreateTask
-        :baseTaskId='baseTaskId'
-        :layerIndex='layerIndex'
-        @close='taskCreationModal = false'
+        :baseTaskId="baseTaskId"
+        :layerIndex="layerIndex"
+        @close="taskCreationModal = false"
         @taskCreated="$emit('taskCreated', $event)"
       />
     </modal-dialog>
-    <modal-dialog :show='taskUpdateModal' customClasses='w-2/5'>
-      <UpdateTask :task='selectedTask' @close='taskUpdateModal = false' @taskUpdated="$emit('taskUpdated', $event)" />
+    <modal-dialog :show="taskUpdateModal" customClasses="w-2/5">
+      <UpdateTask :task="selectedTask" @close="taskUpdateModal = false" @taskUpdated="$emit('taskUpdated', $event)" />
     </modal-dialog>
   </role-only>
 </template>

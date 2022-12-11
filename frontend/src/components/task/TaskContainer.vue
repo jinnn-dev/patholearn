@@ -177,21 +177,21 @@ const deleteBaseTask = () => {
         <h3>{{ baseTask?.name }}</h3>
       </div>
 
-      <div v-if="isOwner" class="bg-gray-500 rounded-lg">
+      <div v-if="isOwner" class="rounded-lg bg-gray-900/20">
         <div class="flex justify-center text-center">
           <div
             class="flex-1 flex justify-center cursor-pointer rounded-lg py-2"
-            :class="sliderPosition === 'tasks' && ' bg-gray-600'"
+            :class="sliderPosition === 'tasks' && ' bg-gray-500'"
             @click="changeSliderPosition('tasks')"
           >
-            <div class="w-fit px-2 font-semibold">Aufgaben</div>
+            <div class="w-fit px-2 font-semibold text-sm">Aufgaben</div>
           </div>
           <div
             class="flex-1 flex justify-center cursor-pointer rounded-lg py-2"
-            :class="sliderPosition === 'solutions' && 'bg-gray-600'"
+            :class="sliderPosition === 'solutions' && 'bg-gray-500'"
             @click="changeSliderPosition('solutions')"
           >
-            <div class="w-fit px-2 font-semibold">Nutzerlösungen</div>
+            <div class="w-fit px-2 font-semibold text-sm">Nutzerlösungen</div>
           </div>
         </div>
       </div>
