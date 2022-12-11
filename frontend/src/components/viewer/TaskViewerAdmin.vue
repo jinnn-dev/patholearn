@@ -794,19 +794,21 @@ const closeSampleSolutionEditor = () => {
       @changed="updateAnnotationColor"
       @isReleased="polygonChanged.changed = true"
     ></color-picker>
-    <custom-select
-      v-if="task?.task_type === 1 && !isBackgroundPolygon && !isUserSolution(selectedPolygon.type)"
-      :initial-data="selectedPolygon.name"
-      :isSearchable="false"
-      :values="task?.annotation_groups"
-      displayType="small"
-      field="name"
-      label="Annotationsklasse:"
-      @valueChanged="updateAnnotationName"
-    />
-    <form-field v-else label="Annotationsklasse" margin-hor="my-0">
-      <div>{{ selectedPolygon.name || 'Keine Klasse gewählt' }}</div>
-    </form-field>
+    <div v-if="task?.task_type === 1">
+      <custom-select
+        v-if="!isBackgroundPolygon && !isUserSolution(selectedPolygon.type)"
+        :initial-data="selectedPolygon.name"
+        :isSearchable="false"
+        :values="task?.annotation_groups"
+        displayType="small"
+        field="name"
+        label="Annotationsklasse:"
+        @valueChanged="updateAnnotationName"
+      />
+      <form-field v-else label="Annotationsklasse" margin-hor="my-0">
+        <div>{{ selectedPolygon.name || 'Keine Klasse gewählt' }}</div>
+      </form-field>
+    </div>
 
     <form-field
       v-if="isUserSolution(selectedPolygon.type) && annotationsToUser.get(selectedPolygon.id) !== undefined"
