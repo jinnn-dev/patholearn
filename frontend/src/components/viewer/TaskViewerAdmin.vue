@@ -560,8 +560,10 @@ const clickHandler = async (event: any) => {
     selectAnnotation,
     saveTask,
     (selectionId: string) => {
-      deleteAnnotationId.value = selectionId;
-      showDeleteAnnotationDialog.value = true;
+      if (!annotationsToUser.has(selectionId)) {
+        deleteAnnotationId.value = selectionId;
+        showDeleteAnnotationDialog.value = true;
+      }
     },
     validateAnnotations
   );
@@ -652,7 +654,7 @@ const deleteAllAnnotations = async () => {
   props.task!.task_data = result.solution as AnnotationData[];
   deleteAnnotationsLoading.value = false;
   showConfirmationDialog.value = false;
-  drawingViewer.value?.clear();
+  drawingViewer.value?.clearSolutionAnnotations();
   await validateAnnotations();
 };
 
@@ -935,6 +937,7 @@ const closeSampleSolutionEditor = () => {
     :loading="deleteAnnotationsLoading"
     :show="showConfirmationDialog"
     header="Sollen alle Annotationen gelöscht werden?"
+    detail="Nutzerlösungen werden nicht gelöscht"
     @confirmation="deleteAllAnnotations"
     @reject="showConfirmationDialog = false"
   ></confirm-dialog>

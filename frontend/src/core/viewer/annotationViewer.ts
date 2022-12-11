@@ -496,7 +496,6 @@ export class AnnotationViewer {
    */
   clear(): void {
     this._annotationManager.clear();
-
     select('#' + SVG_ID)
       .selectAll('g > *')
       .remove();
