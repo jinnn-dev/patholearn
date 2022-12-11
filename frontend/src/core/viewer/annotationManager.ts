@@ -257,6 +257,11 @@ export class AnnotationManager {
     select(this._solutionNode).selectAll('g > *').remove();
   }
 
+  clearBackgroundAnnotations() {
+    this._backgroundAnnotations = [];
+    select(this._backgroundNode).select('g > *').remove();
+  }
+
   /**
    * Clears all userAnnotations
    */

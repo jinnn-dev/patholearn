@@ -119,10 +119,8 @@ export class AnnotationPoint extends Annotation {
     this._element?.remove();
   }
 
-  redraw(): void {
-    if (!this.radius) {
-      return;
-    }
+  redraw(radius: number, strokeWidth: number): void {
+    this.radius = radius;
     this.createElement(this.radius, 0);
   }
 

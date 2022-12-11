@@ -73,7 +73,7 @@ onMounted(async () => {
 
 const changeSliderPosition = async (position: SliderPosition) => {
   sliderPosition.value = position;
-  if (sliderPosition.value === 'solutions' && users.value === undefined) {
+  if (sliderPosition.value === 'solutions' && users.value === undefined && selectedTask.value) {
     userSolutionsLoading.value = true;
     users.value = await TaskService.getUserSolutionInfo(selectedTask.value!.id);
     userSolutionsLoading.value = false;
@@ -173,21 +173,25 @@ const deleteBaseTask = () => {
     class="transition-all w-80 fixed z-10 right-0 top-1/2 -translate-y-1/2 rounded-lg overflow-hidden bg-gray-700/70 backdrop-blur-md"
   >
     <div class="m-2">
-      <div class="items-center text-center text-xl mb-1">
+      <div class="items-center text-center text-xl mb-2">
         <h3>{{ baseTask?.name }}</h3>
       </div>
 
-      <div v-if="isOwner" class="mx-4">
-        <div class="flex justify-center gap-4 text-center">
-          <div class="flex-1 flex justify-center cursor-pointer" @click="changeSliderPosition('tasks')">
-            <div class="w-fit px-2" :class="sliderPosition === 'tasks' && 'border-b-2 border-highlight-900'">
-              Aufgaben
-            </div>
+      <div v-if="isOwner" class="rounded-lg bg-gray-900/20">
+        <div class="flex justify-center text-center">
+          <div
+            class="flex-1 flex justify-center cursor-pointer rounded-lg py-2"
+            :class="sliderPosition === 'tasks' && ' bg-gray-500'"
+            @click="changeSliderPosition('tasks')"
+          >
+            <div class="w-fit px-2 font-semibold text-sm">Aufgaben</div>
           </div>
-          <div class="flex-1 flex justify-center cursor-pointer" @click="changeSliderPosition('solutions')">
-            <div class="w-fit px-2" :class="sliderPosition === 'solutions' && 'border-b-2 border-highlight-900'">
-              Nutzerlösungen
-            </div>
+          <div
+            class="flex-1 flex justify-center cursor-pointer rounded-lg py-2"
+            :class="sliderPosition === 'solutions' && 'bg-gray-500'"
+            @click="changeSliderPosition('solutions')"
+          >
+            <div class="w-fit px-2 font-semibold text-sm">Nutzerlösungen</div>
           </div>
         </div>
       </div>
@@ -222,11 +226,12 @@ const deleteBaseTask = () => {
         <Spinner></Spinner> Nutzer werden geladen
       </div>
       <select-user-solution
-        v-else
+        v-else-if="!userSolutionsLoading && users"
         :users="users"
         @show-user-solution="showUserSolution($event)"
         @hide-user-solution="hideUserSolution($event)"
       ></select-user-solution>
+      <div v-else class="text-center m-2">Keine Nutzerlösungen vorhanden</div>
     </div>
   </div>
 

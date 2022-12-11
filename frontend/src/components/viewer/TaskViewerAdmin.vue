@@ -32,7 +32,9 @@ import {
   polygonChanged,
   selectedPolygon,
   viewerLoadingState,
-  loadedUserSolutions
+  loadedUserSolutions,
+  annotationsToUser,
+  userSolutionAnnotationsLoading
 } from '../../core/viewer/viewerState';
 import {
   focusBackgroundAnnotation,
@@ -47,6 +49,7 @@ import InfoTooltip from './InfoTooltip.vue';
 import BackgroundAnnotationSwitcher from './BackgroundAnnotationSwitcher.vue';
 import SampleSolutionEditor from './groundTruth/SampleSolutionEditor.vue';
 import SavingInfo from './SavingInfo.vue';
+import LoadingIndicator from './LoadingIndicator.vue';
 import EscapeInfo from './EscapeInfo.vue';
 import ToolBar from './ToolBar.vue';
 import AnnotationSettings from './annotation-settings/AnnotationSettings.vue';
@@ -145,6 +148,7 @@ watch(
   () => props.task,
   async (newVal, _) => {
     loadedUserSolutions.clear();
+    annotationsToUser.clear();
     drawingViewer.value?.clear();
     selectedPolygon.value = undefined;
     if (!newVal) {
@@ -556,8 +560,10 @@ const clickHandler = async (event: any) => {
     selectAnnotation,
     saveTask,
     (selectionId: string) => {
-      deleteAnnotationId.value = selectionId;
-      showDeleteAnnotationDialog.value = true;
+      if (!annotationsToUser.has(selectionId)) {
+        deleteAnnotationId.value = selectionId;
+        showDeleteAnnotationDialog.value = true;
+      }
     },
     validateAnnotations
   );
@@ -648,7 +654,8 @@ const deleteAllAnnotations = async () => {
   props.task!.task_data = result.solution as AnnotationData[];
   deleteAnnotationsLoading.value = false;
   showConfirmationDialog.value = false;
-  drawingViewer.value?.clear();
+  drawingViewer.value?.clearSolutionAnnotations();
+  drawingViewer.value?.clearBackgroundAnnotations();
   await validateAnnotations();
 };
 
@@ -733,12 +740,20 @@ const validateAnnotations = async () => {
 
 const showUserSolutionAnnotations = async (userId: number) => {
   if (!loadedUserSolutions.has(userId)) {
+    userSolutionAnnotationsLoading.value = true;
     const userSolution = await TaskService.getUserSolutionToUser(props.task!.id, userId);
+    userSolutionAnnotationsLoading.value = false;
 
     if (userSolution !== null) {
-      const annotations = drawingViewer.value?.parseUserSolutionAnnotations(userSolution.solution_data, false);
+      const annotations = drawingViewer.value?.parseUserSolutionAnnotations(
+        userSolution.user_solution.solution_data,
+        false
+      );
 
       if (annotations !== undefined) {
+        for (const annotation of annotations) {
+          annotationsToUser.set(annotation.id, userSolution.user);
+        }
         loadedUserSolutions.set(userId, annotations);
       }
     }
@@ -773,25 +788,41 @@ const closeSampleSolutionEditor = () => {
 
   <annotation-settings v-if="selectedPolygon">
     <color-picker
-      v-if="task?.task_type === 0 || isBackgroundPolygon"
+      v-if="(task?.task_type === 0 || isBackgroundPolygon) && !isUserSolution(selectedPolygon.type)"
       :initialColor="selectedPolygon.color"
       label="Annotationsfarbe"
       margin-hor="my-0"
       @changed="updateAnnotationColor"
       @isReleased="polygonChanged.changed = true"
     ></color-picker>
-    <custom-select
-      v-if="task?.task_type === 1 && !isBackgroundPolygon && !isUserSolution(selectedPolygon.type)"
-      :initial-data="selectedPolygon.name"
-      :isSearchable="false"
-      :values="task?.annotation_groups"
-      displayType="small"
-      field="name"
-      label="Annotationsklasse:"
-      @valueChanged="updateAnnotationName"
-    />
-    <form-field v-else label="Annotationsklasse" margin-hor="my-0">
-      <div>{{ selectedPolygon.name || 'Keine Klasse gewählt' }}</div>
+    <div v-if="task?.task_type === 1">
+      <custom-select
+        v-if="!isBackgroundPolygon && !isUserSolution(selectedPolygon.type)"
+        :initial-data="selectedPolygon.name"
+        :isSearchable="false"
+        :values="task?.annotation_groups"
+        displayType="small"
+        field="name"
+        label="Annotationsklasse:"
+        @valueChanged="updateAnnotationName"
+      />
+      <form-field v-else label="Annotationsklasse" margin-hor="my-0">
+        <div>{{ selectedPolygon.name || 'Keine Klasse gewählt' }}</div>
+      </form-field>
+    </div>
+
+    <form-field
+      v-if="isUserSolution(selectedPolygon.type) && annotationsToUser.get(selectedPolygon.id) !== undefined"
+      label="Nutzer"
+      margin-hor="my-0"
+    >
+      <div class="flex gap-2">
+        <div>{{ annotationsToUser.get(selectedPolygon.id)!.firstname }}</div>
+        <div v-if="annotationsToUser.get(selectedPolygon.id)!.middlename">
+          {{ annotationsToUser.get(selectedPolygon.id)!.middlename }}
+        </div>
+        <div>{{ annotationsToUser.get(selectedPolygon.id)!.lastname }}</div>
+      </div>
     </form-field>
 
     <custom-slider
@@ -886,6 +917,7 @@ const closeSampleSolutionEditor = () => {
   >
   </annotation-validation>
   <saving-info />
+  <loading-indicator></loading-indicator>
 
   <!--  <ground-truth-dialog-->
   <!--    :showDialog='showUploadDialog'-->
@@ -908,6 +940,7 @@ const closeSampleSolutionEditor = () => {
     :loading="deleteAnnotationsLoading"
     :show="showConfirmationDialog"
     header="Sollen alle Annotationen gelöscht werden?"
+    detail="Nutzerlösungen werden nicht gelöscht"
     @confirmation="deleteAllAnnotations"
     @reject="showConfirmationDialog = false"
   ></confirm-dialog>

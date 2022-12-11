@@ -18,6 +18,11 @@ do
             shift
             shift
             ;;
+        -m|--mode)
+            MODE="$2"
+            shift
+            shift
+            ;;
         -*|--*)
             echo "Unkown option $1"
             exit 1
@@ -32,7 +37,7 @@ then
 fi
 if [ -z "$IMAGE" ]
 then
-    echo "You must give an image name (-i or --image"
+    echo "You must give an image name (-i or --image)"
     exit -1
 fi
 if [ -z "$TAG" ]
@@ -40,8 +45,14 @@ then
     echo "No tag given. Using default value 'latest'"
     TAG="latest"
 fi
-
+# if [ -z "$MODE"]
+# then
+#     echo "No mode given. Using default value 'prod'"
+#     MODE="prod"
+# fi
 cd $DIRECTORY
-docker buildx build --tag hafen.noxz.dev/patholearn/$IMAGE:$TAG -o type=image --platform=linux/amd64 --push -f prod.dockerfile .
+dockerfile="${MODE}.dockerfile"
+echo $dockerfile
+docker buildx build --tag hafen.noxz.dev/patholearn/$IMAGE:$TAG -o type=image --platform=linux/amd64 --push -f $dockerfile .
 
-echo 'Build and publish of '
+echo 'Build and publish of docker image'

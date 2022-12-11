@@ -5,7 +5,7 @@ import { TaskResult } from '../model/task/result/taskResult';
 import { Task, TaskCreate, TaskUpdate } from '../model/task/task';
 import { AnnotationGroup } from '../model/task/annotationGroup';
 import { TaskHint, TaskHintCreate, TaskHintUpdate } from '../model/task/taskHint';
-import { UserSolution, UserSolutionCreate, UserSolutionUpdate } from '../model/userSolution';
+import { UserSolution, UserSolutionCreate, UserSolutionUpdate, UserSolutionWithUser } from '../model/userSolution';
 import { ApiService } from './api.service';
 import { handleError } from './error-handler';
 import { ValidationResult } from '../model/viewer/validation/validationResult';
@@ -150,9 +150,9 @@ export class TaskService {
     return response!.data;
   }
 
-  public static async getUserSolutionToUser(taskId: number, userId: number): Promise<UserSolution> {
+  public static async getUserSolutionToUser(taskId: number, userId: number): Promise<UserSolutionWithUser> {
     const [_, response] = await handleError(
-      ApiService.get<UserSolution>({
+      ApiService.get<UserSolutionWithUser>({
         resource: this._apiUrl(`/task/${taskId}/userSolution/user/${userId}`)
       }),
       'User solution could not be loaded'

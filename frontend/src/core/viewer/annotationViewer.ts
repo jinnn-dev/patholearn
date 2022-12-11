@@ -484,6 +484,10 @@ export class AnnotationViewer {
     this._annotationManager.clearSolutionAnnotations();
   }
 
+  clearBackgroundAnnotations(): void {
+    this._annotationManager.clearBackgroundAnnotations();
+  }
+
   clearUserAnnotations(): void {
     this._annotationManager.clearUserAnnotations();
     select('#' + SVG_ID)
@@ -496,7 +500,6 @@ export class AnnotationViewer {
    */
   clear(): void {
     this._annotationManager.clear();
-
     select('#' + SVG_ID)
       .selectAll('g > *')
       .remove();
@@ -602,7 +605,9 @@ export class AnnotationViewer {
 
   addUserSolutionAnnotations(annotations: Annotation[]) {
     this._annotationManager.userSolutionAnnotations.push(...annotations);
-    annotations.forEach((annotation) => annotation.redraw());
+    annotations.forEach((annotation) =>
+      annotation.redraw(POLYGON_VERTEX_COLOR / this.scale, POLYGON_STROKE_WIDTH / this.scale)
+    );
   }
 
   removeUserAnnotations(annotations: Annotation[]) {

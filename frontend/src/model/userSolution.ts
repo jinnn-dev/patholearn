@@ -1,4 +1,5 @@
 import { TaskResult } from './task/result/taskResult';
+import { User } from './user';
 
 export interface UserSolution {
   percentage_solved: number;
@@ -17,4 +18,9 @@ export interface UserSolutionCreate {
 export interface UserSolutionUpdate {
   task_id: number;
   solution_data: any;
+}
+
+export interface UserSolutionWithUser {
+  user_solution: UserSolution;
+  user: User;
 }

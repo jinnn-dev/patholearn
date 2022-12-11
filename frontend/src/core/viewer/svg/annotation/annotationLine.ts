@@ -438,8 +438,8 @@ export class AnnotationLine extends Annotation {
     this._polyline = undefined;
   }
 
-  redraw(): void {
-    this.createPolyline();
+  redraw(radius: number, strokeWidth: number): void {
+    this.createPolyline(strokeWidth);
   }
 
   getBoundingBox(): OpenSeadragon.Rect | null {

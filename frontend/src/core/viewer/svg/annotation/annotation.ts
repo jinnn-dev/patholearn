@@ -178,7 +178,7 @@ export abstract class Annotation {
    */
   abstract remove(): void;
 
-  abstract redraw(): void;
+  abstract redraw(radius: number, strokeWidth: number): void;
 
   /**
    * Updates the annotation Class of the annotation

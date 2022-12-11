@@ -1,9 +1,9 @@
-<script lang="ts" setup>
-import { isTaskSaving } from '../../core/viewer/viewerState';
+<script setup lang="ts">
+import { userSolutionAnnotationsLoading } from '../../core/viewer/viewerState';
 </script>
 <template>
   <div
-    v-if="isTaskSaving"
+    v-if="userSolutionAnnotationsLoading"
     class="flex justify-center items-center fixed bottom-16 left-1/2 -translate-x-1/2 bg-gray-800 z-[2] rounded-lg p-2"
   >
     <svg
@@ -19,6 +19,6 @@ import { isTaskSaving } from '../../core/viewer/viewerState';
         fill="currentColor"
       ></path>
     </svg>
-    Saving...
+    Lade Nutzerlösung...
   </div>
 </template>
