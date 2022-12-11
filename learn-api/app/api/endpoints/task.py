@@ -614,7 +614,7 @@ def get_user_solution_to_user(
     check_if_user_can_access_course(
         db=db, user_id=current_user.id, course_id=base_task.course_id
     )
-    result = crud_user_solution.get_solution_to_task_and_user(
+    result = crud_user_solution.get_solution_and_user_to_task(
         db=db, task_id=task_id, user_id=user_id
     )
 

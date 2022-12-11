@@ -15,11 +15,11 @@ from app.utils.logger import logger
 
 
 class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUpdate]):
-    def get_solution_to_task_and_user(
+    def get_solution_and_user_to_task(
         self, db: Session, *, user_id: int, task_id: int
-    ) -> (UserSolution, UserInDBBase):
+    ) -> UserSolution:
         """
-        Returns the UserSolution to the given user and task.
+        Returns the UserSolution and User to the given user and task.
 
         :param db: DB-Session
         :param user_id: if of the user
@@ -31,6 +31,24 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
             .filter(UserSolution.user_id == user_id)
             .filter(UserSolution.task_id == task_id)
             .join(User, User.id == UserSolution.user_id)
+            .first()
+        )
+
+    def get_solution_to_task_and_user(
+        self, db: Session, *, user_id: int, task_id: int
+    ) -> UserSolution:
+        """
+        Returns the UserSolution to the given user and task.
+
+        :param db: DB-Session
+        :param user_id: if of the user
+        :param task_id: id of the task
+        :return: The found UserSolution
+        """
+        return (
+            db.query(self.model)
+            .filter(UserSolution.user_id == user_id)
+            .filter(UserSolution.task_id == task_id)
             .first()
         )
 
