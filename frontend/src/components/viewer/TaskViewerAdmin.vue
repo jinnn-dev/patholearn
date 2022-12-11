@@ -787,7 +787,7 @@ const closeSampleSolutionEditor = () => {
 
   <annotation-settings v-if="selectedPolygon">
     <color-picker
-      v-if="task?.task_type === 0 || isBackgroundPolygon"
+      v-if="(task?.task_type === 0 || isBackgroundPolygon) && !isUserSolution(selectedPolygon.type)"
       :initialColor="selectedPolygon.color"
       label="Annotationsfarbe"
       margin-hor="my-0"
