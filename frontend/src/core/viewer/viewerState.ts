@@ -40,3 +40,4 @@ export const selectedPolygon = ref<Annotation | null>();
 export const loadedUserSolutions = new Map<number, any>();
 export const annotationsToUser = new Map<string, User>();
 export const updateUserSolutions = ref<boolean>(false);
+export const userSolutionAnnotationsLoading = ref<boolean>(false);

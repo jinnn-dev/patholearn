@@ -33,7 +33,8 @@ import {
   selectedPolygon,
   viewerLoadingState,
   loadedUserSolutions,
-  annotationsToUser
+  annotationsToUser,
+  userSolutionAnnotationsLoading
 } from '../../core/viewer/viewerState';
 import {
   focusBackgroundAnnotation,
@@ -48,6 +49,7 @@ import InfoTooltip from './InfoTooltip.vue';
 import BackgroundAnnotationSwitcher from './BackgroundAnnotationSwitcher.vue';
 import SampleSolutionEditor from './groundTruth/SampleSolutionEditor.vue';
 import SavingInfo from './SavingInfo.vue';
+import LoadingIndicator from './LoadingIndicator.vue';
 import EscapeInfo from './EscapeInfo.vue';
 import ToolBar from './ToolBar.vue';
 import AnnotationSettings from './annotation-settings/AnnotationSettings.vue';
@@ -735,7 +737,9 @@ const validateAnnotations = async () => {
 
 const showUserSolutionAnnotations = async (userId: number) => {
   if (!loadedUserSolutions.has(userId)) {
+    userSolutionAnnotationsLoading.value = true;
     const userSolution = await TaskService.getUserSolutionToUser(props.task!.id, userId);
+    userSolutionAnnotationsLoading.value = false;
 
     if (userSolution !== null) {
       const annotations = drawingViewer.value?.parseUserSolutionAnnotations(
@@ -908,6 +912,7 @@ const closeSampleSolutionEditor = () => {
   >
   </annotation-validation>
   <saving-info />
+  <loading-indicator></loading-indicator>
 
   <!--  <ground-truth-dialog-->
   <!--    :showDialog='showUploadDialog'-->
