@@ -17,9 +17,10 @@ export default class InfoAnnotationPoint extends AnnotationPoint implements Info
     g: HTMLElement,
     type: ANNOTATION_TYPE,
     color: string = ANNOTATION_COLOR.INFO_COLOR,
-    id: string = nanoid()
+    id: string = nanoid(),
+    editable?: boolean
   ) {
-    super(g, type, color, id);
+    super(g, type, color, id, undefined, editable);
     this._headerText = headerText;
     this._detailText = detailText;
     this._images = images;

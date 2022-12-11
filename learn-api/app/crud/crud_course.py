@@ -170,5 +170,8 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
 
         return course.owner_id == user_id
 
+    def get_members(self, db: Session, *, course_id: int) -> List:
+        return self.get(db, id=course_id).members
+
 
 crud_course = CRUDCourse(Course)

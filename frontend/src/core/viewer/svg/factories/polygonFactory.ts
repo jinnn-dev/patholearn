@@ -24,7 +24,8 @@ export class PolygonFactory extends AnnotationFactory<AnnotationPolygon> {
       annotationData.data.type,
       annotationData.fillColor,
       annotationData.strokeColor,
-      annotationData.data.id
+      annotationData.data.id,
+      annotationData.editable
     );
     annotationPolygon.name = annotationData.data.name;
     annotationPolygon.addClosedPolygon(points, annotationData.radius, annotationData.strokeWidth);
@@ -43,6 +44,8 @@ export class PolygonFactory extends AnnotationFactory<AnnotationPolygon> {
       annotationData.data.id
     );
     annotationPolygon.name = annotationData.data.name;
+    annotationPolygon.editable = annotationData.editable === undefined ? true : annotationData.editable;
+
     annotationPolygon.addClosedPolygon(points, annotationData.radius, annotationData.strokeWidth);
 
     return annotationPolygon;
@@ -61,7 +64,9 @@ export class PolygonFactory extends AnnotationFactory<AnnotationPolygon> {
       offsetPolygonData.outerOffset,
       offsetPolygonData.innerOffset,
       annotationData.data.id,
-      offsetPolygonData.changedManual
+      offsetPolygonData.changedManual,
+      undefined,
+      annotationData.editable
     );
 
     offsetPolygonAnnotation.name = annotationData.data.name;

@@ -12,7 +12,8 @@ export function generateAnnotation(
   node: HTMLElement,
   scale: number,
   fillColor: string,
-  strokeColor: string
+  strokeColor: string,
+  editable: boolean = true
 ): Annotation {
   const radius = POLYGON_VERTEX_COLOR / scale;
   const strokeWidth = POLYGON_STROKE_WIDTH / scale;
@@ -27,7 +28,8 @@ export function generateAnnotation(
         strokeWidth: strokeWidth,
         fillColor: fillColor,
         strokeColor: strokeColor,
-        scale: scale
+        scale: scale,
+        editable: editable
       });
 
       break;
@@ -40,7 +42,8 @@ export function generateAnnotation(
         strokeWidth: strokeWidth,
         fillColor: fillColor,
         strokeColor: strokeColor,
-        scale: scale
+        scale: scale,
+        editable: editable
       });
 
       break;
@@ -50,7 +53,8 @@ export function generateAnnotation(
         node: node,
         data: data,
         strokeWidth: strokeWidth,
-        radius: radius
+        radius: radius,
+        editable: editable
       });
 
       break;
@@ -60,7 +64,8 @@ export function generateAnnotation(
         scale: scale,
         node: node,
         radius: 0,
-        strokeWidth: 0
+        strokeWidth: 0,
+        editable: editable
       });
 
       break;
@@ -70,7 +75,8 @@ export function generateAnnotation(
         node: node,
         strokeWidth: strokeWidth,
         radius: radius,
-        strokeColor: strokeColor
+        strokeColor: strokeColor,
+        editable: editable
       });
       break;
     case ANNOTATION_TYPE.USER_SOLUTION_LINE:
@@ -79,7 +85,8 @@ export function generateAnnotation(
         node: node,
         radius: radius,
         strokeWidth: strokeWidth,
-        strokeColor: strokeColor
+        strokeColor: strokeColor,
+        editable: editable
       });
 
       break;
@@ -91,7 +98,8 @@ export function generateAnnotation(
         radius: radius,
         strokeWidth: strokeWidth,
         strokeColor: strokeColor,
-        fillColor: fillColor
+        fillColor: fillColor,
+        editable: editable
       });
 
       break;
@@ -103,7 +111,8 @@ export function generateAnnotation(
         radius: radius,
         strokeWidth: strokeWidth,
         strokeColor: strokeColor,
-        fillColor: fillColor
+        fillColor: fillColor,
+        editable: editable
       };
       if (data.coord.viewport!.length > 2) {
         generatedAnnotation = PolygonFactory.getInstance().create(annotationData);
@@ -118,7 +127,8 @@ export function generateAnnotation(
         node: node,
         strokeWidth: strokeWidth,
         radius: radius,
-        strokeColor: strokeColor
+        strokeColor: strokeColor,
+        editable: editable
       });
       break;
     case ANNOTATION_TYPE.INFO_LINE:
@@ -127,7 +137,8 @@ export function generateAnnotation(
         node: node,
         radius: radius,
         strokeWidth: strokeWidth,
-        strokeColor: strokeColor
+        strokeColor: strokeColor,
+        editable: editable
       });
       break;
     case ANNOTATION_TYPE.INFO_POLYGON:
@@ -137,7 +148,8 @@ export function generateAnnotation(
         radius: radius,
         strokeWidth: strokeWidth,
         fillColor: fillColor,
-        strokeColor: strokeColor
+        strokeColor: strokeColor,
+        editable: editable
       });
       break;
     default:
@@ -147,7 +159,8 @@ export function generateAnnotation(
         radius: radius,
         strokeWidth: strokeWidth,
         fillColor: fillColor,
-        strokeColor: strokeColor
+        strokeColor: strokeColor,
+        editable: editable
       });
 
       break;

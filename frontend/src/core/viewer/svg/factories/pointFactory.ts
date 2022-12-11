@@ -20,7 +20,8 @@ export class PointFactory extends AnnotationFactory<AnnotationPoint> {
       annotationData.node,
       infoData.type,
       annotationData.strokeColor,
-      infoData.id
+      infoData.id,
+      annotationData.editable
     );
 
     annotationPoint.setPoint(
@@ -41,6 +42,7 @@ export class PointFactory extends AnnotationFactory<AnnotationPoint> {
     );
 
     annotationPoint.name = annotationData.data.name;
+    annotationPoint.editable = annotationData.editable === undefined ? true : annotationData.editable;
 
     annotationPoint.setPoint(
       new Point(annotationData.data.coord.viewport![0].x, annotationData.data.coord.viewport![0].y),
@@ -62,6 +64,7 @@ export class PointFactory extends AnnotationFactory<AnnotationPoint> {
       annotationData.data.id
     );
     offsetAnnotationPoint.name = annotationData.data.name;
+    offsetAnnotationPoint.editable = annotationData.editable === undefined ? true : annotationData.editable;
 
     offsetAnnotationPoint.setPoint(
       new Point(annotationData.data.coord.viewport![0].x, annotationData.data.coord.viewport![0].y),

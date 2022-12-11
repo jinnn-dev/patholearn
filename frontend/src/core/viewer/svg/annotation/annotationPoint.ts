@@ -13,10 +13,13 @@ export class AnnotationPoint extends Annotation {
     type: ANNOTATION_TYPE,
     color: string = COLOR.STROKE_COLOR,
     id: string = nanoid(),
-    name?: string
+    name?: string,
+    editable?: boolean
   ) {
-    super(g, type, color, id, true, name);
+    super(g, type, color, id, true, name, editable);
   }
+
+  private radius?: number;
 
   private _vertex?: OpenSeadragon.Point;
 
@@ -52,12 +55,14 @@ export class AnnotationPoint extends Annotation {
    * @param strokeWidth Width of the circle stroke
    */
   createElement(r: number, strokeWidth: number): void {
+    this.radius = r;
+
     this._element = select(this.g)
       .append('circle')
       .attr('id', this.id)
       .attr('cx', this._vertex!.x)
       .attr('cy', this._vertex!.y)
-      .attr('r', r)
+      .attr('r', this.radius)
       .style('fill', this.color);
 
     if (this.name) {
@@ -114,7 +119,15 @@ export class AnnotationPoint extends Annotation {
     this._element?.remove();
   }
 
+  redraw(): void {
+    if (!this.radius) {
+      return;
+    }
+    this.createElement(this.radius, 0);
+  }
+
   update(r: number, strokeWidth: number): void {
+    this.radius = r;
     this._element?.attr('stroke-width', strokeWidth).attr('r', r);
   }
 
@@ -132,7 +145,7 @@ export class AnnotationPoint extends Annotation {
   }
 
   select(viewer: OpenSeadragon.Viewer, scale: number, trackable: boolean = true): void {
-    if (trackable) {
+    if (trackable && this.editable) {
       this.addTracking(viewer);
     }
     this._element?.attr('stroke', '#000').attr('stroke-width', POLYGON_STROKE_WIDTH / scale);

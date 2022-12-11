@@ -12,7 +12,7 @@ import { OffsetAnnotationRectangle } from '../../core/viewer/svg/annotation/offs
 import { OffsetAnnotationPolygon } from '../../core/viewer/svg/annotation/offset/offsetAnnotationPolygon';
 import type { AnnotationGroup as AnnotationGroupModel } from '../../model/task/annotationGroup';
 import { Task } from '../../model/task/task';
-import { ANNOTATION_TYPE, isInfoAnnotation, isSolution } from '../../core/viewer/types/annotationType';
+import { ANNOTATION_TYPE, isInfoAnnotation, isSolution, isUserSolution } from '../../core/viewer/types/annotationType';
 import { ANNOTATION_COLOR } from '../../core/viewer/types/colors';
 import {
   isAddPointTool,
@@ -27,7 +27,13 @@ import { AnnotationParser, ParseResult } from '../../utils/annotation-parser';
 import { adminMouseClickHandler } from '../../core/viewer/helper/adminMouseClickHandler';
 import { AnnotationViewer } from '../../core/viewer/annotationViewer';
 import { generateViewerOptions } from '../../core/viewer/config/generateViewerOptions';
-import { isTaskSaving, polygonChanged, selectedPolygon, viewerLoadingState } from '../../core/viewer/viewerState';
+import {
+  isTaskSaving,
+  polygonChanged,
+  selectedPolygon,
+  viewerLoadingState,
+  loadedUserSolutions
+} from '../../core/viewer/viewerState';
 import {
   focusBackgroundAnnotation,
   hideAllAnnotations,
@@ -47,6 +53,7 @@ import AnnotationSettings from './annotation-settings/AnnotationSettings.vue';
 import PrimaryButton from '../general/PrimaryButton.vue';
 import CustomSlider from '../form/CustomSlider.vue';
 import CustomSelect from '../form/CustomSelect.vue';
+import FormField from '../form/FormField.vue';
 import ColorPicker from '../general/ColorPicker.vue';
 import AnnotationGroup from './AnnotationGroup.vue';
 import { ExtractionResultList } from '../../model/viewer/extract/extractionResultList';
@@ -54,6 +61,8 @@ import { TaskType } from '../../core/types/taskType';
 import AnnotationValidation from './AnnotationValidation.vue';
 import { ValidationResult } from '../../model/viewer/validation/validationResult';
 import { validateTaskAnnotations } from '../../core/viewer/helper/validateAnnotations';
+import SelectUserSolution from '../task/SelectUserSolution.vue';
+import { user } from '../../../icons';
 
 const props = defineProps({
   slide_name: String,
@@ -63,7 +72,9 @@ const props = defineProps({
   },
   base_task_id: Number,
   task_group_id: Number,
-  course_id: Number
+  course_id: Number,
+  showUserSolutionId: Number,
+  hideUserSolutionId: Number
 });
 
 const showConfirmationDialog = ref<boolean>(false);
@@ -128,9 +139,12 @@ const changeToolTo = ref<Tool>();
 const validationResult = ref<ValidationResult[]>([]);
 const validationResultIsPending = ref(false);
 
+const visibleUserSolutions = ref<number[]>([]);
+
 watch(
   () => props.task,
   async (newVal, _) => {
+    loadedUserSolutions.clear();
     drawingViewer.value?.clear();
     selectedPolygon.value = undefined;
     if (!newVal) {
@@ -184,6 +198,52 @@ watch(
   }
 );
 
+watch(
+  () => props.showUserSolutionId,
+  (newVal, oldVal) => {
+    if (newVal === undefined || newVal === oldVal) {
+      return;
+    }
+    showUserSolutionAnnotations(newVal);
+  }
+);
+
+watch(
+  () => props.hideUserSolutionId,
+  (newVal, oldVal) => {
+    if (newVal === undefined || newVal === oldVal) {
+      return;
+    }
+
+    hideUserSolutionAnnotations(newVal);
+  }
+);
+
+// watch(
+//   () => props.selectedUserSolutions,
+//   async (newVal, _) => {
+//     if (!props.selectedUserSolutions) {
+//       visibleUserSolutions.value = [];
+//       return;
+//     }
+//     for (const userId of props.selectedUserSolutions) {
+//       const userSolutionIsVisibleIndex = visibleUserSolutions.value.indexOf(userId);
+//       if (userSolutionIsVisibleIndex !== -1) {
+//         // hideUsersolution
+//       } else {
+//         if (!loadedUserSolutions.has(userId)) {
+//           const userSolution = await TaskService.getUserSolutionToUser(props.task!.id, userId);
+//           loadedUserSolutions.set(userId, userSolution);
+//           showUserSolutionAnnotations(userId);
+//         }
+//       }
+//     }
+//   },
+//   {
+//     deep: true
+//   }
+// );
+
 const updateAnnotationColor = (color: string) => {
   let fillColor = color + ANNOTATION_COLOR.FILL_OPACITY;
 
@@ -196,8 +256,9 @@ const updateAnnotationColor = (color: string) => {
 const updateAnnotationPointOffsetRadius = (newRadius: number) => {
   selectedPolygonData.offsetRadius = newRadius;
   const normalizedRadius = calcNormalizedRadius(newRadius);
-
-  (selectedPolygon.value as OffsetAnnotationPoint).updateOffset(normalizedRadius);
+  if (selectedPolygon.value && isSolution(selectedPolygon.value?.type)) {
+    (selectedPolygon.value as OffsetAnnotationPoint).updateOffset(normalizedRadius);
+  }
 };
 
 const updateAnnotationLineOffsetRadius = (newRadius: number) => {
@@ -670,6 +731,30 @@ const validateAnnotations = async () => {
   validationResultIsPending.value = false;
 };
 
+const showUserSolutionAnnotations = async (userId: number) => {
+  if (!loadedUserSolutions.has(userId)) {
+    const userSolution = await TaskService.getUserSolutionToUser(props.task!.id, userId);
+
+    if (userSolution !== null) {
+      const annotations = drawingViewer.value?.parseUserSolutionAnnotations(userSolution.solution_data, false);
+
+      if (annotations !== undefined) {
+        loadedUserSolutions.set(userId, annotations);
+      }
+    }
+  } else {
+    drawingViewer.value?.addUserSolutionAnnotations(loadedUserSolutions.get(userId));
+  }
+};
+
+const hideUserSolutionAnnotations = (userId: number) => {
+  const annotations = loadedUserSolutions.get(userId);
+  unselectAnnotation();
+  if (annotations) {
+    drawingViewer.value?.removeUserAnnotations(annotations);
+  }
+};
+
 const closeSampleSolutionEditor = () => {
   showUploadDialog.value = false;
   changeToolTo.value = Tool.MOVE;
@@ -696,7 +781,7 @@ const closeSampleSolutionEditor = () => {
       @isReleased="polygonChanged.changed = true"
     ></color-picker>
     <custom-select
-      v-if="task?.task_type === 1 && !isBackgroundPolygon"
+      v-if="task?.task_type === 1 && !isBackgroundPolygon && !isUserSolution(selectedPolygon.type)"
       :initial-data="selectedPolygon.name"
       :isSearchable="false"
       :values="task?.annotation_groups"
@@ -705,6 +790,9 @@ const closeSampleSolutionEditor = () => {
       label="Annotationsklasse:"
       @valueChanged="updateAnnotationName"
     />
+    <form-field v-else label="Annotationsklasse" margin-hor="my-0">
+      <div>{{ selectedPolygon.name || 'Keine Klasse gewählt' }}</div>
+    </form-field>
 
     <custom-slider
       v-if="isOffsetAnnotationPoint"
@@ -790,7 +878,7 @@ const closeSampleSolutionEditor = () => {
   <escape-info :isPolygon="isPolygonDrawing" :show="isPolygonDrawing || isLineDrawing"></escape-info>
 
   <annotation-validation
-    v-if="validationResult.length > 0"
+    v-if="validationResult.length > 0 || true"
     :validation-result="validationResult"
     :validation-result-is-pending="validationResultIsPending"
     @close="unselectAnnotation"
@@ -815,6 +903,7 @@ const closeSampleSolutionEditor = () => {
     @close="closeSampleSolutionEditor"
   >
   </SampleSolutionEditor>
+
   <confirm-dialog
     :loading="deleteAnnotationsLoading"
     :show="showConfirmationDialog"

@@ -25,9 +25,10 @@ export class OffsetAnnotationRectangle extends AnnotationRectangle {
     inflationInnerOffset: number = POLYGON_INFLATE_OFFSET,
     id: string = nanoid(),
     changedManual: boolean = false,
-    name?: string
+    name?: string,
+    editable?: boolean
   ) {
-    super(g, type, fill_color, stroke_color, id, true, name);
+    super(g, type, fill_color, stroke_color, id, true, name, editable);
     this._outerPoints = [];
     this._innerPoints = [];
     this._inflationOuterOffset = inflationOuterOffset;

@@ -1,4 +1,4 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import { onMounted, PropType, ref } from 'vue';
 
 import { Task } from '../../model/task/task';
@@ -11,10 +11,14 @@ import ModalDialog from '../containers/ModalDialog.vue';
 import Icon from '../general/Icon.vue';
 import { TaskStatus } from '../../core/types/taskStatus';
 import ConfirmButtons from '../general/ConfirmButtons.vue';
+import SelectUserSolution from './SelectUserSolution.vue';
+import Spinner from '../general/Spinner.vue';
 
 interface LayeredTasks {
   [key: number]: Task[];
 }
+
+type SliderPosition = 'tasks' | 'solutions';
 
 const props = defineProps({
   baseTask: {
@@ -27,18 +31,26 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['baseTaskDeleted', 'taskSelected']);
+const emit = defineEmits(['baseTaskDeleted', 'taskSelected', 'show-user-solution', 'hide-user-solution']);
 
-const showDeleteBaseTask = ref<Boolean>(false);
-const deleteLoading = ref<Boolean>(false);
+const showDeleteBaseTask = ref<boolean>(false);
+const deleteLoading = ref<boolean>(false);
 
 const taskMap = ref<LayeredTasks>({});
 
 const selectedTask = ref<Task>();
 
-const isCollapsed = ref<Boolean>(false);
+const isCollapsed = ref<boolean>(false);
 
-onMounted(() => {
+const sliderPosition = ref<SliderPosition>('tasks');
+
+const users = ref<any[]>();
+
+const activatedUsers = ref<number[]>();
+
+const userSolutionsLoading = ref<boolean>(false);
+
+onMounted(async () => {
   props.baseTask?.tasks.forEach((task) => {
     if (!taskMap.value[task.layer]) taskMap.value[task.layer] = [];
     taskMap.value[task.layer].push(task);
@@ -58,6 +70,27 @@ onMounted(() => {
     }
   }
 });
+
+const changeSliderPosition = async (position: SliderPosition) => {
+  sliderPosition.value = position;
+  if (sliderPosition.value === 'solutions' && users.value === undefined) {
+    userSolutionsLoading.value = true;
+    users.value = await TaskService.getUserSolutionInfo(selectedTask.value!.id);
+    userSolutionsLoading.value = false;
+  }
+};
+
+const showUserSolution = (userId: number) => {
+  emit('show-user-solution', userId);
+};
+
+const hideUserSolution = (userId: number) => {
+  emit('hide-user-solution', userId);
+};
+// const userSolutionClicked = (userId: number) => {
+//   emit('toggleUserSolution', userId);
+// };
+
 const updateTask = (task: Task) => {
   const index = taskMap.value[task.layer].findIndex((item) => item.id === task.id);
   taskMap.value[task.layer][index] = task;
@@ -129,54 +162,83 @@ const deleteBaseTask = () => {
   <div
     :class="[isCollapsed ? 'right-0' : 'right-[20.75rem]']"
     :title="isCollapsed ? 'Ausklappen' : 'Einklappen'"
-    class='transition-all cursor-pointer absolute z-10 top-1/2 -translate-y-1/2 bg-gray-700/70 backdrop-blur-md text-3xl rounded-l-lg h-12 flex flex-col items-center justify-center'
-    @click='isCollapsed = !isCollapsed'
+    class="transition-all cursor-pointer absolute z-10 top-1/2 -translate-y-1/2 bg-gray-700/70 backdrop-blur-md text-3xl rounded-l-lg h-12 flex flex-col items-center justify-center"
+    @click="isCollapsed = !isCollapsed"
   >
-    <Icon :class="[isCollapsed ? 'rotate-180' : 'rotate-90']" class='transition-all' name='caret-left' />
+    <Icon :class="[isCollapsed ? 'rotate-180' : 'rotate-90']" class="transition-all" name="caret-left" />
   </div>
 
   <div
     :class="[isCollapsed ? '-right-[20.75rem]' : 'right-3']"
-    class='transition-all w-80 fixed z-10 right-0 top-1/2 -translate-y-1/2 rounded-lg overflow-hidden bg-gray-700/70 backdrop-blur-md'
+    class="transition-all w-80 fixed z-10 right-0 top-1/2 -translate-y-1/2 rounded-lg overflow-hidden bg-gray-700/70 backdrop-blur-md"
   >
-    <div class='flex gap-4 justify-between items-center m-2 text-center text-xl'>
-      <h3>{{ baseTask?.name }}</h3>
+    <div class="m-2">
+      <div class="items-center text-center text-xl mb-1">
+        <h3>{{ baseTask?.name }}</h3>
+      </div>
+
+      <div v-if="isOwner" class="mx-4">
+        <div class="flex justify-center gap-4 text-center">
+          <div class="flex-1 flex justify-center cursor-pointer" @click="changeSliderPosition('tasks')">
+            <div class="w-fit px-2" :class="sliderPosition === 'tasks' && 'border-b-2 border-highlight-900'">
+              Aufgaben
+            </div>
+          </div>
+          <div class="flex-1 flex justify-center cursor-pointer" @click="changeSliderPosition('solutions')">
+            <div class="w-fit px-2" :class="sliderPosition === 'solutions' && 'border-b-2 border-highlight-900'">
+              Nutzerlösungen
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class='relative max-h-[22.5rem] overflow-auto'>
-      <div class='flex flex-col justify-center items-center w-full'>
-        <div v-for='(layer, index) in taskMap' :key='index' class='w-full'>
+    <div class="relative max-h-[22.5rem] overflow-auto" v-if="sliderPosition === 'tasks'">
+      <div class="flex flex-col justify-center items-center w-full">
+        <div v-for="(layer, index) in taskMap" :key="index" class="w-full">
           <task-layer
-            :baseTaskId='baseTask.id'
-            :isOwner='isOwner'
-            :layerIndex='+index'
-            :selectedTaskId='selectedTask?.id'
-            :tasks='layer'
-            @layerDeleted='deleteLayer($event)'
-            @taskCreated='createTask($event)'
-            @taskDeleted='deleteTask(index, $event)'
-            @taskSelected='changeTask($event)'
-            @taskUpdated='updateTask($event)'
+            :baseTaskId="baseTask.id"
+            :isOwner="isOwner"
+            :layerIndex="+index"
+            :selectedTaskId="selectedTask?.id"
+            :tasks="layer"
+            @layerDeleted="deleteLayer($event)"
+            @taskCreated="createTask($event)"
+            @taskDeleted="deleteTask(index, $event)"
+            @taskSelected="changeTask($event)"
+            @taskUpdated="updateTask($event)"
           ></task-layer>
         </div>
-        <role-only v-if='isOwner' class='w-full'>
-          <div class='p-1.5 py-4 px-20 w-full bg-gray-800'>
-            <primary-button bgColor='bg-gray-500' class='p-2' @click='addNewLayer'> Neue Ebene</primary-button>
+        <role-only v-if="isOwner" class="w-full">
+          <div class="p-1.5 py-4 px-20 w-full bg-gray-800">
+            <primary-button bgColor="bg-gray-500" class="p-2" @click="addNewLayer"> Neue Ebene</primary-button>
           </div>
         </role-only>
       </div>
     </div>
+
+    <div class="relative max-h-[22.5rem] overflow-auto" v-if="sliderPosition === 'solutions'">
+      <div v-if="userSolutionsLoading" class="w-full flex justify-center gap-4 my-2">
+        <Spinner></Spinner> Nutzer werden geladen
+      </div>
+      <select-user-solution
+        v-else
+        :users="users"
+        @show-user-solution="showUserSolution($event)"
+        @hide-user-solution="hideUserSolution($event)"
+      ></select-user-solution>
+    </div>
   </div>
 
-  <role-only>
-    <modal-dialog :show='showDeleteBaseTask'>
-      <div class='relative'>
-        <h1 class='text-2xl'>Möchtest du die Aufgabe löschen?</h1>
-        <div class='my-4'>Alle Aufgaben und Lösungen werden gelöscht.</div>
+  <role-only v-if="sliderPosition === 'tasks'">
+    <modal-dialog :show="showDeleteBaseTask">
+      <div class="relative">
+        <h1 class="text-2xl">Möchtest du die Aufgabe löschen?</h1>
+        <div class="my-4">Alle Aufgaben und Lösungen werden gelöscht.</div>
         <confirm-buttons
-          :loading='deleteLoading'
-          @confirm='deleteBaseTask'
-          @reject='showDeleteBaseTask = false'
+          :loading="deleteLoading"
+          @confirm="deleteBaseTask"
+          @reject="showDeleteBaseTask = false"
         ></confirm-buttons>
       </div>
     </modal-dialog>

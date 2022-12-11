@@ -97,15 +97,16 @@ export class AnnotationManager {
    * @param data Serialized solution annotation
    * @param scale Current scale of the viewer
    */
-  addSolutionAnnotation(data: AnnotationData, scale: number): void {
-    this._solutionAnnotations.push(
-      this._generateAnnotation(
-        data,
-        scale,
-        data.color + ANNOTATION_COLOR.FILL_OPACITY || ANNOTATION_COLOR.SOLUTION_COLOR + ANNOTATION_COLOR.FILL_OPACITY,
-        data.color || ANNOTATION_COLOR.SOLUTION_COLOR
-      )
+  addSolutionAnnotation(data: AnnotationData, scale: number, editable: boolean = true) {
+    const annotation = this._generateAnnotation(
+      data,
+      scale,
+      data.color + ANNOTATION_COLOR.FILL_OPACITY || ANNOTATION_COLOR.SOLUTION_COLOR + ANNOTATION_COLOR.FILL_OPACITY,
+      data.color || ANNOTATION_COLOR.SOLUTION_COLOR,
+      editable
     );
+    this._solutionAnnotations.push(annotation);
+    return annotation;
   }
 
   /**
@@ -123,16 +124,17 @@ export class AnnotationManager {
    * @param data Serialized user solution annotation
    * @param scale Current scale of the viewer
    */
-  addUserSolutionAnnotation(data: AnnotationData, scale: number): void {
-    this._userSolutionAnnotations.push(
-      this._generateAnnotation(
-        data,
-        scale,
-        data.color + ANNOTATION_COLOR.FILL_OPACITY ||
-          ANNOTATION_COLOR.USER_SOLUTION_COLOR + ANNOTATION_COLOR.FILL_OPACITY,
-        data.color || ANNOTATION_COLOR.USER_SOLUTION_COLOR
-      )
+  addUserSolutionAnnotation(data: AnnotationData, scale: number, editable: boolean = true) {
+    const annotation = this._generateAnnotation(
+      data,
+      scale,
+      data.color + ANNOTATION_COLOR.FILL_OPACITY ||
+        ANNOTATION_COLOR.USER_SOLUTION_COLOR + ANNOTATION_COLOR.FILL_OPACITY,
+      data.color || ANNOTATION_COLOR.USER_SOLUTION_COLOR,
+      editable
     );
+    this._userSolutionAnnotations.push(annotation);
+    return annotation;
   }
 
   /**
@@ -150,21 +152,28 @@ export class AnnotationManager {
    * @param data Serialized background annotation
    * @param scale Current viewer scale
    */
-  addBackgroundAnnotation(data: AnnotationData, scale: number): void {
-    this._backgroundAnnotations.push(
-      this._generateAnnotation(data, scale, 'none', data.color || ANNOTATION_COLOR.BACKGROUND_COLOR)
+  addBackgroundAnnotation(data: AnnotationData, scale: number, editable: boolean = true) {
+    const annotation = this._generateAnnotation(
+      data,
+      scale,
+      'none',
+      data.color || ANNOTATION_COLOR.BACKGROUND_COLOR,
+      editable
     );
+    this._backgroundAnnotations.push(annotation);
+    return annotation;
   }
 
-  addInfoAnnotation(data: AnnotationData, scale: number): void {
-    this._infoAnnotations.push(
-      this._generateAnnotation(
-        data,
-        scale,
-        getFillColor(data.color) || getFillColor(ANNOTATION_COLOR.INFO_COLOR),
-        data.color || ANNOTATION_COLOR.INFO_COLOR
-      )
+  addInfoAnnotation(data: AnnotationData, scale: number, editable: boolean = true) {
+    const annotation = this._generateAnnotation(
+      data,
+      scale,
+      getFillColor(data.color) || getFillColor(ANNOTATION_COLOR.INFO_COLOR),
+      data.color || ANNOTATION_COLOR.INFO_COLOR,
+      editable
     );
+    this._infoAnnotations.push(annotation);
+    return annotation;
   }
 
   /**
@@ -173,18 +182,22 @@ export class AnnotationManager {
    * @param data Serialized annotations
    * @param scale Current viewer scale
    */
-  addAnnotation(data: AnnotationData[], scale: number): void {
+  addAnnotation(data: AnnotationData[], scale: number, editable: boolean = true) {
+    let annotations = [];
     for (const annotation of data) {
+      let instacedAnnotation;
       if (annotation.type === ANNOTATION_TYPE.BASE) {
-        this.addBackgroundAnnotation(annotation, scale);
+        instacedAnnotation = this.addBackgroundAnnotation(annotation, scale, editable);
       } else if (isInfoAnnotation(annotation.type)) {
-        this.addInfoAnnotation(annotation, scale);
+        instacedAnnotation = this.addInfoAnnotation(annotation, scale, editable);
       } else if (isSolution(annotation.type)) {
-        this.addSolutionAnnotation(annotation, scale);
+        instacedAnnotation = this.addSolutionAnnotation(annotation, scale, editable);
       } else {
-        this.addUserSolutionAnnotation(annotation, scale);
+        instacedAnnotation = this.addUserSolutionAnnotation(annotation, scale, editable);
       }
+      annotations.push(instacedAnnotation);
     }
+    return annotations;
   }
 
   /**
@@ -269,6 +282,11 @@ export class AnnotationManager {
     }
   }
 
+  deleteUserAnnotationFromImage(annotation: Annotation) {
+    const index = this._userSolutionAnnotations.findIndex((an) => an.id === annotation.id);
+    this._userSolutionAnnotations.splice(index, 1);
+  }
+
   /**
    * Returns the SVG node to the given type
    *
@@ -349,7 +367,13 @@ export class AnnotationManager {
     return resultAnnotation!;
   }
 
-  private _generateAnnotation(data: AnnotationData, scale: number, fillColor: string, strokeColor: string): Annotation {
-    return generateAnnotation(data, this.getNode(data.type), scale, fillColor, strokeColor);
+  private _generateAnnotation(
+    data: AnnotationData,
+    scale: number,
+    fillColor: string,
+    strokeColor: string,
+    editable: boolean = true
+  ): Annotation {
+    return generateAnnotation(data, this.getNode(data.type), scale, fillColor, strokeColor, editable);
   }
 }

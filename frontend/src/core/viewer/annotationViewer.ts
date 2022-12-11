@@ -34,7 +34,7 @@ import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
 import { snapAnnotation, SnapResult } from './helper/snapAnnotation';
 import { AnnotationManager } from './annotationManager';
 import { SVG_ID } from './config/generateViewerOptions';
-import { SvgOverlay } from './svg/svg-overlay';
+import { SvgOverlay, USER_SOLUTION_NODE_ID } from './svg/svg-overlay';
 import { TaskSaver } from './taskSaver';
 import { viewerLoadingState, viewerScale, viewerZoom } from './viewerState';
 import { focusAnnotation } from './helper/focusAnnotation';
@@ -580,6 +580,36 @@ export class AnnotationViewer {
       this._annotationManager.addAnnotation(dataInstance, this.scale);
     } else {
       this._annotationManager.addAnnotation(data as AnnotationRectangleData[], this.scale);
+    }
+  }
+
+  parseUserSolutionAnnotations(solutionData: AnnotationData[], editable: boolean) {
+    for (const data of solutionData) {
+      const points: PointData[] = [];
+      data.coord.image.forEach((point: PointData) => {
+        let viewportPoint = imageToViewport(new Point(point.x, point.y), this._viewer);
+        const viewportPointData: PointData = {
+          x: viewportPoint.x,
+          y: viewportPoint.y
+        };
+        points.push(viewportPointData);
+      });
+      data.coord.viewport = points;
+    }
+    const annotations = this._annotationManager.addAnnotation(solutionData, this.scale, editable);
+    return annotations;
+  }
+
+  addUserSolutionAnnotations(annotations: Annotation[]) {
+    this._annotationManager.userSolutionAnnotations.push(...annotations);
+    annotations.forEach((annotation) => annotation.redraw());
+  }
+
+  removeUserAnnotations(annotations: Annotation[]) {
+    for (const annotation of annotations) {
+      this._annotationManager.deleteUserAnnotationFromImage(annotation);
+      annotation.unselect();
+      annotation.remove();
     }
   }
 

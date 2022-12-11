@@ -17,9 +17,10 @@ export default class InfoAnnotationPolygon extends AnnotationPolygon implements 
     color: string = ANNOTATION_COLOR.INFO_COLOR,
     id: string = nanoid(),
     reactive: boolean = true,
-    name?: string
+    name?: string,
+    editable?: boolean
   ) {
-    super(g, type, fill_color, color, id, reactive, name);
+    super(g, type, fill_color, color, id, reactive, name, editable);
     this._headerText = headerText;
     this._detailText = detailText;
     this._images = images;

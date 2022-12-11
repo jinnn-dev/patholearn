@@ -13,7 +13,8 @@ export abstract class Annotation {
     color: string,
     id: string = nanoid(),
     reactive: boolean = true,
-    name?: string
+    name?: string,
+    editable: boolean = true
   ) {
     this._id = id;
     this._g = g;
@@ -22,6 +23,7 @@ export abstract class Annotation {
     this._reactive = reactive;
     this._name = name;
     this._isSelected = false;
+    this._editable = editable;
   }
 
   private _id: string;
@@ -104,6 +106,16 @@ export abstract class Annotation {
     this._mouseTracker = mouseTracker;
   }
 
+  private _editable: boolean;
+
+  get editable(): boolean {
+    return this._editable;
+  }
+
+  set editable(editable: boolean) {
+    this._editable = editable;
+  }
+
   /**
    * Selects the annotation
    *
@@ -165,6 +177,8 @@ export abstract class Annotation {
    * Removes annotation
    */
   abstract remove(): void;
+
+  abstract redraw(): void;
 
   /**
    * Updates the annotation Class of the annotation

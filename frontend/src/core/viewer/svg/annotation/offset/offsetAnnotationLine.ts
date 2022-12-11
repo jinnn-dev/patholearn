@@ -22,9 +22,10 @@ export class OffsetAnnotationLine extends AnnotationLine {
     offsetRadius: number = POLYGON_INFLATE_OFFSET,
     id: string = nanoid(),
     changedManual: boolean = false,
-    name?: string
+    name?: string,
+    editable?: boolean
   ) {
-    super(g, type, color, id, true, name);
+    super(g, type, color, id, true, name, editable);
     this._outerPoints = [];
     this._offsetRadius = offsetRadius;
 

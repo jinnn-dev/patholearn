@@ -18,9 +18,10 @@ export class AnnotationPolygon extends AnnotationLine {
     color: string = COLOR.STROKE_COLOR,
     id: string = nanoid(),
     reactive: boolean = true,
-    name?: string
+    name?: string,
+    editable?: boolean
   ) {
-    super(g, type, color, id, reactive, name);
+    super(g, type, color, id, reactive, name, editable);
     this._fill_color = fill_color;
   }
 
