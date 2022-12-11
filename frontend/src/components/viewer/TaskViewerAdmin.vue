@@ -655,6 +655,7 @@ const deleteAllAnnotations = async () => {
   deleteAnnotationsLoading.value = false;
   showConfirmationDialog.value = false;
   drawingViewer.value?.clearSolutionAnnotations();
+  drawingViewer.value?.clearBackgroundAnnotations();
   await validateAnnotations();
 };
 

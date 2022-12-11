@@ -484,6 +484,10 @@ export class AnnotationViewer {
     this._annotationManager.clearSolutionAnnotations();
   }
 
+  clearBackgroundAnnotations(): void {
+    this._annotationManager.clearBackgroundAnnotations();
+  }
+
   clearUserAnnotations(): void {
     this._annotationManager.clearUserAnnotations();
     select('#' + SVG_ID)
