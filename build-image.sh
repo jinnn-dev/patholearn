@@ -45,11 +45,11 @@ then
     echo "No tag given. Using default value 'latest'"
     TAG="latest"
 fi
-# if [ -z "$MODE"]
-# then
-#     echo "No mode given. Using default value 'prod'"
-#     MODE="prod"
-# fi
+if [ -z "$MODE"]
+then
+    echo "No mode given. Using default value 'prod'"
+    MODE="prod"
+fi
 cd $DIRECTORY
 dockerfile="${MODE}.dockerfile"
 echo $dockerfile
