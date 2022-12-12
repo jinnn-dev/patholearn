@@ -104,7 +104,7 @@ const selectedPolygonData = reactive<{
   offsetRadius: (selectedPolygon.value as OffsetAnnotationPoint)?.offsetRadius
 });
 
-const showUploadDialog = ref<Boolean>(false);
+const showUploadDialog = ref<boolean>(false);
 const file = ref();
 
 const applyAnnotationsLoading = ref<Boolean>(false);
@@ -132,7 +132,7 @@ const isPolygonDrawing = computed(() => drawingViewer.value?.isPolygonDrawing);
 
 const maxRadius = 100;
 
-const setMoving = ref<Boolean>(false);
+const setMoving = ref<boolean>(false);
 
 const showDeleteAnnotationDialog = ref(false);
 const deleteAnnotationId = ref('');
