@@ -1,4 +1,4 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import { PropType, reactive, ref } from 'vue';
 import { AnnotationGroup } from '../../model/task/annotationGroup';
 import { TaskService } from '../../services/task.service';
@@ -29,7 +29,7 @@ const props = defineProps({
 
 const emit = defineEmits(['showGroup', 'hideGroup', 'groupCreated', 'groupUpdated']);
 
-const showGroupCreation = ref<Boolean>(false);
+const showGroupCreation = ref<boolean>(false);
 
 const hiddenElements = ref<AnnotationGroup[]>([]);
 
@@ -40,7 +40,7 @@ const groupCreationForm = reactive({
   color: '#FF00FF'
 });
 
-const groupCreationLoading = ref<Boolean>(false);
+const groupCreationLoading = ref<boolean>(false);
 
 const isHidden = (group: AnnotationGroup) => {
   return hiddenElements.value?.includes(group);
@@ -92,83 +92,83 @@ const onSubmit = () => {
 };
 </script>
 <template>
-  <div class='fixed right-3 top-3 z-10 bg-gray-700/70 backdrop-blur-md rounded-lg p-2 w-80'>
-    <div v-if='!annotationGroups || annotationGroups.length === 0' class='text-center text-xl'>
+  <div class="fixed right-3 top-3 z-10 bg-gray-700/70 backdrop-blur-md rounded-lg p-2 w-80">
+    <div v-if="!annotationGroups || annotationGroups.length === 0" class="text-center text-xl">
       Keine Klassen vorhanden
     </div>
     <div v-else>
-      <h3 class='text-xl text-center'>Vorhandene Klassen</h3>
-      <div class='max-h-[11rem] max-full overflow-auto'>
+      <h3 class="text-xl text-center">Vorhandene Klassen</h3>
+      <div class="max-h-[11rem] max-full overflow-auto">
         <div
-          v-for='group in annotationGroups'
-          :key='group.name + group.color'
-          class='bg-gray-500 rounded-lg px-2 py-1 flex items-center my-2'
+          v-for="group in annotationGroups"
+          :key="group.name + group.color"
+          class="bg-gray-500 rounded-lg px-2 py-1 flex items-center my-2"
         >
-          <div :title="!isHidden(group) ? 'Klasse einblenden' : 'Klasse ausblenden'" class='mr-2'>
+          <div :title="!isHidden(group) ? 'Klasse einblenden' : 'Klasse ausblenden'" class="mr-2">
             <Icon
-              v-if='!isHidden(group)'
-              class='cursor-pointer'
-              name='eye'
-              @click.stop='toggleAnnotationGroup(group)'
+              v-if="!isHidden(group)"
+              class="cursor-pointer"
+              name="eye"
+              @click.stop="toggleAnnotationGroup(group)"
             />
-            <Icon v-else class='cursor-pointer' name='eye-slash' @click.stop='toggleAnnotationGroup(group)' />
+            <Icon v-else class="cursor-pointer" name="eye-slash" @click.stop="toggleAnnotationGroup(group)" />
           </div>
           <!-- <div class="w-4 h-4 mr-3 flex-shrink-0 rounded-full" :style="`background-color:${group.color}`"></div> -->
           <color-picker
-            v-if='isSuperUser() && isAdmin'
-            :initialColor='group.color'
-            class='w-4 h-4 mr-3 flex-shrink-0'
-            @changed='groupUpdateColor = $event'
-            @isReleased='updateGroup(group.name, groupUpdateColor, group)'
+            v-if="isSuperUser() && isAdmin"
+            :initialColor="group.color"
+            class="w-4 h-4 mr-3 flex-shrink-0"
+            @changed="groupUpdateColor = $event"
+            @isReleased="updateGroup(group.name, groupUpdateColor, group)"
           ></color-picker>
-          <div v-else :style='`background-color: ${group.color}`' class='w-4 h-4 mr-3 flex-shrink-0 rounded-full'></div>
+          <div v-else :style="`background-color: ${group.color}`" class="w-4 h-4 mr-3 flex-shrink-0 rounded-full"></div>
           <text-edit
-            v-if='isSuperUser() && isAdmin'
-            :value='group.name'
-            class='w-full items-center'
-            @valueChanged='updateGroup($event, group.color, group)'
+            v-if="isSuperUser() && isAdmin"
+            :value="group.name"
+            class="w-full items-center"
+            @valueChanged="updateGroup($event, group.color, group)"
           ></text-edit>
-          <div v-else class='w-full items-center'>{{ group.name }}</div>
+          <div v-else class="w-full items-center">{{ group.name }}</div>
         </div>
       </div>
     </div>
     <role-only>
       <primary-button
-        v-if='isAdmin'
-        bgColor='bg-gray-400'
-        class='py-2 mt-2'
-        name='Neue Klasse'
-        @click='showGroupCreation = true'
+        v-if="isAdmin"
+        bgColor="bg-gray-400"
+        class="py-2 mt-2"
+        name="Neue Klasse"
+        @click="showGroupCreation = true"
       ></primary-button>
     </role-only>
   </div>
 
   <role-only>
-    <modal-dialog :show='showGroupCreation'>
-      <h1 class='text-2xl text-center'>Neue Annotationsklasse</h1>
+    <modal-dialog :show="showGroupCreation">
+      <h1 class="text-2xl text-center">Neue Annotationsklasse</h1>
 
-      <form class='w-full' @submit.prevent='onSubmit'>
+      <form class="w-full" @submit.prevent="onSubmit">
         <input-field
-          v-model='groupCreationForm.name'
-          :required='true'
-          class='mb-2'
-          label='Klassenname'
-          placeholder='Classis...'
-          tip='Gib der Annotationsklasse einen Namen'
+          v-model="groupCreationForm.name"
+          :required="true"
+          class="mb-2"
+          label="Klassenname"
+          placeholder="Classis..."
+          tip="Gib der Annotationsklasse einen Namen"
         ></input-field>
 
-        <div class='flex flex-col mb-4'>
-          <label class='text-gray-200' for='body'>Klassenfarbe:</label>
-          <div class='rounded-lg overflow-hidden h-8'>
-            <input id='body' v-model='groupCreationForm.color' name='body' type='color' />
+        <div class="flex flex-col mb-4">
+          <label class="text-gray-200" for="body">Klassenfarbe:</label>
+          <div class="rounded-lg overflow-hidden h-8">
+            <input id="body" v-model="groupCreationForm.color" name="body" type="color" />
           </div>
         </div>
 
         <confirm-buttons
-          :loading='groupCreationLoading'
-          confirm-text='Speichern'
-          reject-text='Abbrechen'
-          @reject='showGroupCreation = false'
+          :loading="groupCreationLoading"
+          confirm-text="Speichern"
+          reject-text="Abbrechen"
+          @reject="showGroupCreation = false"
         ></confirm-buttons>
       </form>
     </modal-dialog>
