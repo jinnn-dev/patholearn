@@ -930,7 +930,7 @@ const closeSampleSolutionEditor = () => {
 
   <SampleSolutionEditor
     :show-dialog="showUploadDialog"
-    :slide-id="slide_name"
+    :slide-id="slide_name || ''"
     @applyAnnotations="parseAnnotations"
     @close="closeSampleSolutionEditor"
   >

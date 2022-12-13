@@ -1,4 +1,4 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import { onMounted, reactive, ref } from 'vue';
 import { BaseTask } from '../model/task/baseTask';
 import { TaskGroup } from '../model/task/taskGroup';
@@ -180,132 +180,132 @@ const editTask = (task: BaseTask) => {
   });
 };
 </script>
-<template class='relative'>
+<template class="relative">
   <content-container>
     <template v-slot:header>
       <content-header
-        :link='`/course/${taskGroup?.course_short_name}/admin`'
-        :text='taskGroup?.name'
-        linkText='Zurück zum Kurs'
+        :link="`/course/${taskGroup?.course_short_name}/admin`"
+        :text="taskGroup?.name"
+        linkText="Zurück zum Kurs"
       ></content-header>
     </template>
     <template v-slot:content>
-      <div class='flex justify-between items-center'>
-        <div class='w-full text-xl font-bold text-gray-200 uppercase'>Deine Aufgaben</div>
+      <div class="flex justify-between items-center">
+        <div class="w-full text-xl font-bold text-gray-200 uppercase">Deine Aufgaben</div>
       </div>
-      <div class='my-4 flex justify-between'>
-        <primary-button bgColor='bg-gray-400' class='w-48 h-10' name='Neue Aufgabe' @click='showModal = !showModal'>
-          <Icon class='mr-2' name='plus' weight='bold' />
+      <div class="my-4 flex justify-between">
+        <primary-button bgColor="bg-gray-400" class="w-48 h-10" name="Neue Aufgabe" @click="showModal = !showModal">
+          <Icon class="mr-2" name="plus" weight="bold" />
         </primary-button>
         <primary-button
-          bgColor='bg-gray-700'
-          class='w-56'
-          fontWeight='font-medium'
-          name='Aufgabengruppe löschen'
-          textColor='text-red-400'
-          @click='showTaskgroupDelete = true'
+          bgColor="bg-gray-700"
+          class="w-56"
+          fontWeight="font-medium"
+          name="Aufgabengruppe löschen"
+          textColor="text-red-400"
+          @click="showTaskgroupDelete = true"
         ></primary-button>
       </div>
 
-      <div class='flex flex-wrap my-8'>
-        <no-content v-if='taskGroup?.tasks.length === 0' text='Noch keine Aufgaben erstellt'></no-content>
-        <div v-for='baseTask in taskGroup?.tasks' :key='baseTask.id' class='ml-4 mb-4'>
+      <div class="flex flex-wrap my-8">
+        <no-content v-if="taskGroup?.tasks.length === 0" text="Noch keine Aufgaben erstellt"></no-content>
+        <div v-for="baseTask in taskGroup?.tasks" :key="baseTask.id" class="ml-4 mb-4">
           <task-group-admin-card
-            :baseTask='baseTask'
-            @deleteBaseTask='
+            :baseTask="baseTask"
+            @deleteBaseTask="
               showDeleteBaseTask = true;
               deleteBaseTaskItem = baseTask;
-            '
-            @editBaseTask='editTask'
+            "
+            @editBaseTask="editTask"
           ></task-group-admin-card>
         </div>
       </div>
     </template>
   </content-container>
 
-  <modal-dialog :show='showModal' customClasses='max-w-[50%] min-w-[30rem]'>
-    <div class='relative'>
-      <h1 class='text-2xl text-center'>Erstelle eine neue Aufgabe</h1>
-      <form class='w-full' @submit.prevent='onSubmit'>
+  <modal-dialog :show="showModal" customClasses="max-w-[50%] min-w-[30rem]">
+    <div class="relative">
+      <h1 class="text-2xl text-center">Erstelle eine neue Aufgabe</h1>
+      <form class="w-full" @submit.prevent="onSubmit">
         <input-field
-          v-model='formData.name'
+          v-model="formData.name"
           :errorMessage="taskError ? 'Es gibt bereits eine Aufgabe mit diesem Namen' : ''"
-          :required='true'
-          class='w-full'
-          label='Aufgabenname'
-          placeholder='Markiere alle ...'
-          tip='Gebe der Aufgabe einen eindeutigen Namen'
-          type='text'
+          :required="true"
+          class="w-full"
+          label="Aufgabenname"
+          placeholder="Markiere alle ..."
+          tip="Gebe der Aufgabe einen eindeutigen Namen"
+          type="text"
         >
         </input-field>
-        <slide-select @slideChanged='setSlide($event)'></slide-select>
+        <slide-select @slideChanged="setSlide($event)"></slide-select>
 
         <div>
           <div>
             <div>Aufgaben aus einer CSV-Datei generieren (optional):</div>
-            <div class='flex items-center my-4'>
-              <label class='cursor-pointer flex justify-center bg-gray-500 w-56 rounded-lg py-1' for='slide-upload'>
-                <Icon class='mr-2' name='cloud-arrow-up' />
+            <div class="flex items-center my-4">
+              <label class="cursor-pointer flex justify-center bg-gray-500 w-56 rounded-lg py-1" for="slide-upload">
+                <Icon class="mr-2" name="cloud-arrow-up" />
                 <span>CSV-Datei auswählen</span>
               </label>
-              <div v-if='formData.csv_file' class='ml-4'>
+              <div v-if="formData.csv_file" class="ml-4">
                 {{ formData.csv_file.name }}
               </div>
             </div>
-            <input id='slide-upload' accept='.csv' class='hidden' type='file' @change='onFileUpload' />
+            <input id="slide-upload" accept=".csv" class="hidden" type="file" @change="onFileUpload" />
           </div>
 
-          <div v-if='formData.csv_file'>
+          <div v-if="formData.csv_file">
             <MultiImageUpload
-              label='Füge die entsprechenden Bilder der CSV-Datei hinzu:'
-              @images-dropped='setUploadImages'
+              label="Füge die entsprechenden Bilder der CSV-Datei hinzu:"
+              @images-dropped="setUploadImages"
             >
             </MultiImageUpload>
           </div>
         </div>
-        <div v-if='taskLoading'>
-          <div class='flex gap-3 mb-3 items-center'>
-            <div class='flex-1'>
+        <div v-if="taskLoading">
+          <div class="flex gap-3 mb-3 items-center">
+            <div class="flex-1">
               <div
                 :style="{
                   width: uploadProgress + '%'
                 }"
-                class='animate-pulse bg-green-500 my-2 rounded-lg transition duration-10 h-3'
+                class="animate-pulse bg-green-500 my-2 rounded-lg transition duration-10 h-3"
               ></div>
             </div>
             <div>{{ uploadProgress }}%</div>
           </div>
-          <div v-if='uploadProgress === 100.0' class='font-semibold'>Aufgaben werden erstellt...</div>
+          <div v-if="uploadProgress === 100.0" class="font-semibold">Aufgaben werden erstellt...</div>
         </div>
 
         <confirm-buttons
-          :loading='taskLoading'
-          confirm-text='Speichern'
-          reject-text='Abbrechen'
-          @reject='onTaskClose'
+          :loading="taskLoading"
+          confirm-text="Speichern"
+          reject-text="Abbrechen"
+          @reject="onTaskClose"
         ></confirm-buttons>
       </form>
     </div>
   </modal-dialog>
 
-  <modal-dialog :show='showTaskgroupDelete'>
-    <div class='relative'>
-      <h1 class='text-2xl'>Möchtest du die Aufgabengruppe löschen?</h1>
-      <div class='my-4'>Alle zugehörigen Aufgaben und Lösungen werden gelöscht.</div>
+  <modal-dialog :show="showTaskgroupDelete">
+    <div class="relative">
+      <h1 class="text-2xl">Möchtest du die Aufgabengruppe löschen?</h1>
+      <div class="my-4">Alle zugehörigen Aufgaben und Lösungen werden gelöscht.</div>
       <confirm-buttons
-        :loading='deleteLoading'
-        @confirm='deleteTaskGroup'
-        @reject='showTaskgroupDelete = false'
+        :loading="deleteLoading"
+        @confirm="deleteTaskGroup"
+        @reject="showTaskgroupDelete = false"
       ></confirm-buttons>
     </div>
   </modal-dialog>
 
   <role-only>
-    <modal-dialog :show='showDeleteBaseTask'>
-      <div class='relative'>
-        <h1 class='text-2xl'>Möchtest du die Aufgabe löschen?</h1>
-        <div class='my-4'>Alle Aufgaben und Lösungen werden gelöscht.</div>
-        <confirm-buttons :loading='deleteBaseLoading' @confirm='deleteBaseTask' @reject='showDeleteBaseTask = false'>
+    <modal-dialog :show="showDeleteBaseTask">
+      <div class="relative">
+        <h1 class="text-2xl">Möchtest du die Aufgabe löschen?</h1>
+        <div class="my-4">Alle Aufgaben und Lösungen werden gelöscht.</div>
+        <confirm-buttons :loading="deleteBaseLoading" @confirm="deleteBaseTask" @reject="showDeleteBaseTask = false">
         </confirm-buttons>
       </div>
     </modal-dialog>
