@@ -49,7 +49,7 @@ import AnnotationGroup from './AnnotationGroup.vue';
 import { RESULT_POLYGON_COLOR, TaskStatus } from '../../core/types/taskStatus';
 import { ValidationResult } from '../../model/viewer/validation/validationResult';
 import { validateUserSolutionAnnotations } from '../../core/viewer/helper/validateAnnotations';
-import { TaskResultDetail } from 'model/task/result/taskResultDetail';
+import { TaskResultDetail } from '../../model/task/result/taskResultDetail';
 
 const props = defineProps({
   slide_name: String,
