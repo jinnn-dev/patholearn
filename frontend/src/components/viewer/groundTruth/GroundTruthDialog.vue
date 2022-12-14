@@ -1,4 +1,4 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import { onMounted, PropType, ref } from 'vue';
 import { AnnotationViewer } from '../../../core/viewer/annotationViewer';
 import { AnnotationParser, ParseResult } from '../../../utils/annotation-parser';
@@ -28,9 +28,9 @@ const props = defineProps({
 const file = ref();
 
 const convertResult = ref<ParseResult[]>();
-const conversionLoading = ref<Boolean>();
+const conversionLoading = ref<boolean>();
 
-const isWrongFormat = ref<Boolean>(false);
+const isWrongFormat = ref<boolean>(false);
 
 const selectedImages = ref<TempUploadImage[]>();
 
@@ -87,38 +87,38 @@ const onFileSelected = async (event: any) => {
 const emit = defineEmits(['applyAnnotations', 'closeDialog']);
 </script>
 <template>
-  <modal-dialog :show='showDialog'>
-    <h1 class='text-2xl'>Musterlösung hinzufügen</h1>
-    <div class='my-2'>
-      <form-field label='Ground Thruth' tip='Wähle eine XML- oder PNG-Datei mit der Musterlösung aus'>
-        <div class='flex items-center'>
+  <modal-dialog :show="showDialog">
+    <h1 class="text-2xl">Musterlösung hinzufügen</h1>
+    <div class="my-2">
+      <form-field label="Ground Thruth" tip="Wähle eine XML- oder PNG-Datei mit der Musterlösung aus">
+        <div class="flex items-center">
           <label
-            class='transition cursor-pointer flex justify-center bg-gray-500 hover:bg-gray-300 px-2 w-full rounded-lg py-1'
-            for='slide-upload'
+            class="transition cursor-pointer flex justify-center bg-gray-500 hover:bg-gray-300 px-2 w-full rounded-lg py-1"
+            for="slide-upload"
           >
-            <Icon class='mr-2' name='cloud-arrow-up' />
+            <Icon class="mr-2" name="cloud-arrow-up" />
             <span>Musterlösung auswählen</span>
           </label>
-          <div v-if='file' class='ml-4'>
+          <div v-if="file" class="ml-4">
             {{ file.name }}
           </div>
         </div>
-        <input id='slide-upload' class='hidden' type='file' @change='onFileSelected' />
+        <input id="slide-upload" class="hidden" type="file" @change="onFileSelected" />
       </form-field>
     </div>
-    <div v-if='isWrongFormat' class='text-red-400'>Wähle eine XML- oder PNG-Datei aus</div>
-    <div v-if='conversionLoading && !isWrongFormat'>Konvertiere...</div>
+    <div v-if="isWrongFormat" class="text-red-400">Wähle eine XML- oder PNG-Datei aus</div>
+    <div v-if="conversionLoading && !isWrongFormat">Konvertiere...</div>
     <div v-else>
-      <div v-if='convertResult'>
-        <div v-if='convertResult?.length === 0'>Keine Annotationen gefunden</div>
+      <div v-if="convertResult">
+        <div v-if="convertResult?.length === 0">Keine Annotationen gefunden</div>
         <div v-else>
           <div>Gefundene Annotationen:</div>
-          <div v-for='group in convertResult' :key='group.name' class='flex justify-between my-2'>
-            <div class='w-6 h-6 overflow-hidden rounded-full'>
-              <input id='body' v-model='group.color' class='w-20' name='body' type='color' />
+          <div v-for="group in convertResult" :key="group.name || ''" class="flex justify-between my-2">
+            <div class="w-6 h-6 overflow-hidden rounded-full">
+              <input id="body" v-model="group.color" class="w-20" name="body" type="color" />
             </div>
             <!-- <div class="rounded-full w-6 h-6" :style="`background-color:${group.color}`"></div> -->
-            <text-edit :value='group.name' @valueChanged='updateName($event, group)'></text-edit>
+            <text-edit :value="group.name || ''" @valueChanged="updateName($event, group)"></text-edit>
             <div>{{ group.polygons.length }}x</div>
           </div>
         </div>
@@ -127,10 +127,10 @@ const emit = defineEmits(['applyAnnotations', 'closeDialog']);
 
     <confirm-buttons
       :confirm-text="loading ? 'Wird verarbeitet...' : 'Hinzufügen'"
-      :loading='loading'
-      class='mt-8'
-      reject-text='Abbrechen'
-      @confirm='applyAnnotations'
+      :loading="loading"
+      class="mt-8"
+      reject-text="Abbrechen"
+      @confirm="applyAnnotations"
       @reject="$emit('closeDialog')"
     >
     </confirm-buttons>

@@ -35,21 +35,25 @@ then
     echo "You must give a directory (-d or --directory)"
     exit -1
 fi
+
 if [ -z "$IMAGE" ]
 then
     echo "You must give an image name (-i or --image)"
     exit -1
 fi
+
 if [ -z "$TAG" ]
 then
     echo "No tag given. Using default value 'latest'"
     TAG="latest"
 fi
-if [ -z "$MODE"]
+
+if [ -z "$MODE" ]
 then
     echo "No mode given. Using default value 'prod'"
     MODE="prod"
 fi
+
 cd $DIRECTORY
 dockerfile="${MODE}.dockerfile"
 echo $dockerfile

@@ -109,7 +109,7 @@ export class TaskService {
   public static async updateBaseTask(updateTask: UpdateBaseTask): Promise<BaseTask> {
     const [_, response] = await handleError(
       ApiService.put<BaseTask>({
-        resource: this._apiUrl() + '/',
+        resource: this._apiUrl(),
         data: updateTask
       }),
       'Base task could not be updated'

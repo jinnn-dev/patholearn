@@ -1,4 +1,4 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import OpenSeadragon from 'openseadragon';
 import { computed, nextTick, onMounted, onUnmounted, PropType, reactive, ref, watch } from 'vue';
 import { getSlideUrl } from '../../config';
@@ -49,6 +49,7 @@ import AnnotationGroup from './AnnotationGroup.vue';
 import { RESULT_POLYGON_COLOR, TaskStatus } from '../../core/types/taskStatus';
 import { ValidationResult } from '../../model/viewer/validation/validationResult';
 import { validateUserSolutionAnnotations } from '../../core/viewer/helper/validateAnnotations';
+import { TaskResultDetail } from '../../model/task/result/taskResultDetail';
 
 const props = defineProps({
   slide_name: String,
@@ -78,15 +79,15 @@ const selectedPolygonData = reactive({
 
 const drawingViewer = ref<AnnotationViewer>();
 
-const showUploadDialog = ref<Boolean>(false);
+const showUploadDialog = ref<boolean>(false);
 
-const showDeleteAnnotationsModal = ref<Boolean>(false);
-const deleteAnnotationsLoading = ref<Boolean>(false);
+const showDeleteAnnotationsModal = ref<boolean>(false);
+const deleteAnnotationsLoading = ref<boolean>(false);
 
 const isLineDrawing = computed(() => drawingViewer.value?.isLineDrawing);
 const isPolygonDrawing = computed(() => drawingViewer.value?.isPolygonDrawing);
 
-const setMoving = ref<Boolean>(false);
+const setMoving = ref<boolean>(false);
 
 const showDeleteAnnotationDialog = ref(false);
 
@@ -425,10 +426,13 @@ const setColors = (taskResult: TaskResult) => {
 
   if (taskResult.result_detail) {
     for (const result of taskResult.result_detail) {
-      drawingViewer.value?.changeAnnotationColor(result.id!, RESULT_POLYGON_COLOR[result.status!]!);
-
-      if (result.lines_outside) {
-        drawingViewer.value?.addPolyline(result.id!, result.lines_outside);
+      var taskResultDetail = result as TaskResultDetail;
+      if (!taskResultDetail.id) {
+        continue;
+      }
+      drawingViewer.value?.changeAnnotationColor(taskResultDetail.id, RESULT_POLYGON_COLOR[taskResultDetail.status!]!);
+      if (taskResultDetail.lines_outside) {
+        drawingViewer.value?.addPolyline(taskResultDetail.id!, taskResultDetail.lines_outside);
       }
     }
   }
@@ -488,70 +492,70 @@ onUnmounted(() => {
 </script>
 <template>
   <annotation-group
-    v-if='task?.task_type === 1'
-    :annotationGroups='task.annotation_groups'
-    :taskId='task.id'
-    @groupCreated='groupCreated'
-    @hideGroup='hideGroup'
-    @showGroup='showGroup'
+    v-if="task?.task_type === 1"
+    :annotationGroups="task.annotation_groups"
+    :taskId="task.id"
+    @groupCreated="groupCreated"
+    @hideGroup="hideGroup"
+    @showGroup="showGroup"
   ></annotation-group>
 
-  <annotation-settings v-if='selectedPolygon && task?.task_type === 1' @saved='updateSelectedAnnotation'>
+  <annotation-settings v-if="selectedPolygon && task?.task_type === 1" @saved="updateSelectedAnnotation">
     <custom-select
-      :initial-data='selectedPolygon.name'
-      :isSearchable='false'
-      :values='task?.annotation_groups'
-      displayType='small'
-      field='name'
-      label='Annotationsklasse:'
-      @valueChanged='updateAnnotationName'
+      :initial-data="selectedPolygon.name"
+      :isSearchable="false"
+      :values="task?.annotation_groups"
+      displayType="small"
+      field="name"
+      label="Annotationsklasse:"
+      @valueChanged="updateAnnotationName"
     />
   </annotation-settings>
 
   <tool-bar
-    :changeToolTo='changeToolTo'
-    :setMoving='is_solving || setMoving'
-    :tools='toolbarTools'
-    @hideAnnotations='hideAllAnnotations'
-    @showAnnotations='showAllAnnotations'
-    @toolUpdate='setTool'
+    :changeToolTo="changeToolTo"
+    :setMoving="is_solving || setMoving"
+    :tools="toolbarTools"
+    @hideAnnotations="hideAllAnnotations"
+    @showAnnotations="showAllAnnotations"
+    @toolUpdate="setTool"
   ></tool-bar>
 
   <confirm-dialog
-    :loading='deleteAnnotationsLoading'
-    :show='showDeleteAnnotationsModal'
-    header='Sollen alle Annotationen gelöscht werden?'
-    @confirmation='deleteAnnotations'
-    @reject='showDeleteAnnotationsModal = false'
+    :loading="deleteAnnotationsLoading"
+    :show="showDeleteAnnotationsModal"
+    header="Sollen alle Annotationen gelöscht werden?"
+    @confirmation="deleteAnnotations"
+    @reject="showDeleteAnnotationsModal = false"
   ></confirm-dialog>
 
-  <escape-info :isPolygon='isPolygonDrawing' :show='isPolygonDrawing || isLineDrawing'></escape-info>
+  <escape-info :isPolygon="isPolygonDrawing" :show="isPolygonDrawing || isLineDrawing"></escape-info>
 
   <saving-info></saving-info>
   <annotation-validation
-    v-if='validationResult.length > 0'
-    :validation-result='validationResult'
-    :validation-result-is-pending='validationResultIsPending'
-    @close='unselectAnnotation'
-    @select-annotation='selectAnnotation'
+    v-if="validationResult.length > 0"
+    :validation-result="validationResult"
+    :validation-result-is-pending="validationResultIsPending"
+    @close="unselectAnnotation"
+    @select-annotation="selectAnnotation"
   >
   </annotation-validation>
 
   <background-annotation-switcher
-    v-if='task?.task_data && task.task_data.length !== 0'
-    :backgroundAnnotations='task?.task_data?.length'
-    @focus='focusAnnotation'
+    v-if="task?.task_data && task.task_data.length !== 0"
+    :backgroundAnnotations="task?.task_data?.length"
+    @focus="focusAnnotation"
   ></background-annotation-switcher>
 
-  <info-tooltip @hide-tooltip='unselectAnnotation'></info-tooltip>
+  <info-tooltip @hide-tooltip="unselectAnnotation"></info-tooltip>
 
   <confirm-dialog
-    :loading='isTaskSaving'
-    :show='showDeleteAnnotationDialog'
-    header='Soll die Annotation gelöscht werden?'
-    @confirmation='deleteAnnotation'
-    @reject='showDeleteAnnotationDialog = false'
+    :loading="isTaskSaving"
+    :show="showDeleteAnnotationDialog"
+    header="Soll die Annotation gelöscht werden?"
+    @confirmation="deleteAnnotation"
+    @reject="showDeleteAnnotationDialog = false"
   ></confirm-dialog>
 
-  <div id='viewerImage' ref='viewerRef' class='h-screen bg-gray-900' @keyup='handleKeyup'></div>
+  <div id="viewerImage" ref="viewerRef" class="h-screen bg-gray-900" @keyup="handleKeyup"></div>
 </template>

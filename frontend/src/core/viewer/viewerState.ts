@@ -27,10 +27,10 @@ export const viewerLoadingState = reactive<{
   solutionLoading: false
 });
 
-export const isTaskSaving = ref<Boolean>(false);
+export const isTaskSaving = ref<boolean>(false);
 
-export const userSolutionLocked = ref<Boolean>(false);
-export const showSolution = ref<Boolean>(false);
+export const userSolutionLocked = ref<boolean>(false);
+export const showSolution = ref<boolean>(false);
 
 export const viewerZoom = ref<number>();
 export const viewerScale = ref<number>();
