@@ -2,7 +2,10 @@ from pydantic import BaseModel
 
 from typing import Optional, List
 
-from app.schemas.questionnaire_question import QuestionnaireQuestion
+from app.schemas.questionnaire_question import (
+    QuestionnaireQuestion,
+    QuestionnaireQuestionCreate,
+)
 
 
 class QuestionnaireBase(BaseModel):
@@ -10,11 +13,10 @@ class QuestionnaireBase(BaseModel):
     description: Optional[str]
     is_mandatory: bool = False
     questions: Optional[List[QuestionnaireQuestion]]
-    is_before: Optional[bool]
 
 
 class QuestionnaireCreate(QuestionnaireBase):
-    pass
+    questions: Optional[List[QuestionnaireQuestionCreate]]
 
 
 class QuestionnaireUpdate(QuestionnaireBase):
@@ -26,12 +28,16 @@ class QuestionnaireInDBBase(QuestionnaireBase):
     id: int
 
     class Config:
-        orm_mode: True
+        orm_mode = True
 
 
 class QuestionnaireInDB(QuestionnaireInDBBase):
     pass
 
 
-class Questionnaire(QuestionnaireBase):
+class Questionnaire(QuestionnaireInDBBase):
     pass
+
+
+class QuestionnaireDetail(Questionnaire):
+    is_before: bool

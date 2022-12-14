@@ -1,10 +1,15 @@
 import { QuestionnaireQuestionOption } from './questionnaireQuestionOption';
 import { QuestionnaireAnswer } from './questionnaireAnswer';
 
-enum QuestionnaireQuestionType {
-  MULTIPLE_CHOICE = 0,
+export enum QuestionnaireQuestionType {
+  SINGLE_CHOICE = 0,
   FREE_TEXT = 1
 }
+
+export const QuestionnaireQuestionTypeNames: { [key in QuestionnaireQuestionType]: string } = {
+  [QuestionnaireQuestionType.SINGLE_CHOICE]: 'Single choice',
+  [QuestionnaireQuestionType.FREE_TEXT]: 'Freitext'
+};
 
 export interface QuestionnaireQuestion {
   id: number;

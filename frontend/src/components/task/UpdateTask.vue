@@ -1,53 +1,53 @@
 <template>
   <div>
-    <h1 class='text-2xl text-center'>
+    <h1 class="text-2xl text-center">
       Füge eine neue Aufgabe der
       {{ taskUpdateForm.layer }}. Ebene hinzu
     </h1>
-    <form class='w-full' @submit.prevent='updateTask'>
+    <form class="w-full" @submit.prevent="updateTask">
       <input-field
-        v-model='taskUpdateForm.task_question'
-        :required='true'
-        label='Fragestellung'
-        placeholder='Markiere...'
-        type='text'
+        v-model="taskUpdateForm.task_question"
+        :required="true"
+        label="Fragestellung"
+        placeholder="Markiere..."
+        type="text"
       >
       </input-field>
 
       <Accordion>
-        <AccordionItem
-          v-if='taskUpdateForm.task_type !== TaskType.IMAGE_SELECT'
-          :first='true'
-          title='Aufgabeneinstellungen'
-        >
-          <div v-if='taskUpdateForm.task_type === 0' class='my-8'>
+        <AccordionItem title="Umfrage vor Aufgabe" :first="true">
+          <CreateQuestionnaire :task="task" :is-before="true"></CreateQuestionnaire>
+        </AccordionItem>
+
+        <AccordionItem v-if="taskUpdateForm.task_type !== TaskType.IMAGE_SELECT" title="Aufgabeneinstellungen">
+          <div v-if="taskUpdateForm.task_type === 0" class="my-8">
             <div>Wie viele Annotationen müssen die Lernenden mindestens richtig treffen:</div>
             <CustomSlider
-              :initialPosition='taskUpdateForm.min_correct'
-              :max='50'
-              :min='0'
-              :tooltips='true'
-              class='pb-4 pt-11'
-              @isReleased='updateMinCorrect'
+              :initialPosition="taskUpdateForm.min_correct"
+              :max="50"
+              :min="0"
+              :tooltips="true"
+              class="pb-4 pt-11"
+              @isReleased="updateMinCorrect"
             >
             </CustomSlider>
           </div>
 
-          <div class='my-8'>
+          <div class="my-8">
             <div>Welches Vorwissen ist bei den Lernenden vorhanden:</div>
-            <div class='my-2 break-words text-sm text-gray-200 py-2'>
+            <div class="my-2 break-words text-sm text-gray-200 py-2">
               Die Vorwissensstufe bestimmt den Schwierigkeitsgrad der Aufgabe. Mit steigender Stufe wird das Feedback
               weniger unterstützend. Außerdem wird die Aufgabenüberprüfung strenger.
             </div>
-            <div class='flex w-full justify-evenly gap-2 my-2'>
+            <div class="flex w-full justify-evenly gap-2 my-2">
               <div
-                v-for='level in knowledgeLevel'
-                :key='level.index'
+                v-for="level in knowledgeLevel"
+                :key="level.index"
                 :class="taskUpdateForm.knowledge_level === level.index && 'bg-gray-500 ring-2 ring-highlight-900'"
-                class='transition flex justify-center items-center bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg p-2'
-                @click='taskUpdateForm.knowledge_level = level.index'
+                class="transition flex justify-center items-center bg-gray-400 hover:bg-gray-300 hover:ring-2 ring-highlight-900 cursor-pointer rounded-lg p-2"
+                @click="taskUpdateForm.knowledge_level = level.index"
               >
-                <div class='flex flex-col gap-3 justify-center items-center text-center'>
+                <div class="flex flex-col gap-3 justify-center items-center text-center">
                   <div>
                     {{ level.name }}
                   </div>
@@ -56,14 +56,18 @@
             </div>
           </div>
 
-          <div class='my-8'>
+          <div class="my-8">
             <div>Soll die Aufgabe von Nutzern lösbar sein?</div>
             <toggle-button
-              :enabled='taskUpdateForm.can_be_solved'
-              class='my-2'
-              @changed='changeCanBeSolved'
+              :enabled="taskUpdateForm.can_be_solved"
+              class="my-2"
+              @changed="changeCanBeSolved"
             ></toggle-button>
           </div>
+        </AccordionItem>
+
+        <AccordionItem title="Umfrage nach der Aufgabe">
+          <CreateQuestionnaire :task="task" :is-before="false"></CreateQuestionnaire>
         </AccordionItem>
         <!-- <AccordionItem title="Tipps (optional)">
           <HintList :task="task" :isUpdate="true" />
@@ -71,16 +75,16 @@
       </Accordion>
 
       <confirm-buttons
-        :loading='taskUpdateLoading'
-        class='mt-4'
-        confirm-text='Speichern'
-        reject-text='Abbrechen'
+        :loading="taskUpdateLoading"
+        class="mt-4"
+        confirm-text="Speichern"
+        reject-text="Abbrechen"
         @reject="$emit('close')"
       ></confirm-buttons>
     </form>
   </div>
 </template>
-<script lang='ts'>
+<script lang="ts">
 import { defineComponent, PropType, reactive, ref, watch } from 'vue';
 import { Task } from '../../model/task/task';
 import { TaskService } from '../../services/task.service';
@@ -94,7 +98,7 @@ import PrimaryButton from '../general/PrimaryButton.vue';
 import SaveButton from '../general/SaveButton.vue';
 import { TaskType } from '../../core/types/taskType';
 import ConfirmButtons from '../general/ConfirmButtons.vue';
-
+import CreateQuestionnaire from './CreateQuestionnaire.vue';
 export default defineComponent({
   components: {
     ConfirmButtons,
@@ -104,7 +108,8 @@ export default defineComponent({
     CustomSlider,
     AccordionItem,
     Accordion,
-    InputField
+    InputField,
+    CreateQuestionnaire
   },
   props: {
     task: {

@@ -3,11 +3,14 @@ from pydantic import BaseModel
 from typing import List, Optional
 
 from app.schemas.questionnaire_answer import QuestionnaireAnswer
-from app.schemas.questionnaire_question_option import QuestionnaireQuestionOption
+from app.schemas.questionnaire_question_option import (
+    QuestionnaireQuestionOption,
+    QuestionnaireQuestionOptionCreate,
+)
 
 
 class QuestionnaireQuestionType(IntEnum):
-    MULTIPLE_CHOICE = 0
+    SINGLE_CHOICE = 0
     FREE_TEXT = 1
 
 
@@ -21,7 +24,8 @@ class QuestionnaireQuestionBase(BaseModel):
 
 
 class QuestionnaireQuestionCreate(QuestionnaireQuestionBase):
-    questionnaire_id: int
+    questionnaire_id: Optional[int]
+    options: Optional[List[QuestionnaireQuestionOptionCreate]]
 
 
 class QuestionnaireQuestionUpdate(QuestionnaireQuestionBase):

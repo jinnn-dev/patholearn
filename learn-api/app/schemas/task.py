@@ -71,7 +71,6 @@ class TaskBase(BaseModel):
     annotation_type: TaskAnnotationType
     annotation_groups: Optional[List[AnnotationGroup]]
     hints: Optional[List[TaskHint]]
-    questionnaires: Optional[List[Questionnaire]]
     can_be_solved: bool = True
 
 

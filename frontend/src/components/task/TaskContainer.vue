@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, PropType, ref } from 'vue';
+import { onMounted, PropType, ref, nextTick } from 'vue';
 
 import { Task } from '../../model/task/task';
 import { BaseTask } from '../../model/task/baseTask';
@@ -13,6 +13,9 @@ import { TaskStatus } from '../../core/types/taskStatus';
 import ConfirmButtons from '../general/ConfirmButtons.vue';
 import SelectUserSolution from './SelectUserSolution.vue';
 import Spinner from '../general/Spinner.vue';
+import { QuestionnaireService } from '../../services/questionnaire.service';
+import { Questionnaire } from '../../model/questionnaires/questionnaire';
+import AnswerQuestionnaire from './AnswerQuestionnaire.vue';
 
 interface LayeredTasks {
   [key: number]: Task[];
@@ -51,7 +54,7 @@ const activatedUsers = ref<number[]>();
 const userSolutionsLoading = ref<boolean>(false);
 
 onMounted(async () => {
-  props.baseTask?.tasks.forEach((task) => {
+  props.baseTask?.tasks.forEach(async (task) => {
     if (!taskMap.value[task.layer]) taskMap.value[task.layer] = [];
     taskMap.value[task.layer].push(task);
   });
@@ -96,7 +99,7 @@ const updateTask = (task: Task) => {
   taskMap.value[task.layer][index] = task;
 };
 
-const changeTask = (task: Task) => {
+const changeTask = async (task: Task) => {
   selectedTask.value = task;
   emit('taskSelected', task);
 };

@@ -3,13 +3,19 @@ export interface QuestionnaireQuestionOption {
   question_id: number;
   order: number;
   value: string;
+  with_input: boolean;
 }
 
-export interface QuestionnaireQuestionOptionCreate extends QuestionnaireQuestionOption {}
+export interface QuestionnaireQuestionOptionCreate {
+  order: number;
+  value: string;
+  with_input: boolean;
+}
 
 export interface QuestionnaireQuestionOptionUpdate {
   id: number;
   question_id?: number;
   order?: number;
   value?: string;
+  with_input: boolean;
 }

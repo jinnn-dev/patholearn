@@ -8,13 +8,22 @@ export interface Questionnaire {
   is_mandatory: boolean;
   questions?: QuestionnaireQuestion[];
   tasks?: Task[];
+  is_before: boolean;
 }
 
-export interface QuestionnaireCreate extends Questionnaire {}
+export interface QuestionnaireCreate {
+  name?: string;
+  description?: string;
+  is_mandatory: boolean;
+  questions?: QuestionnaireQuestion[];
+  tasks?: Task[];
+  is_before: boolean;
+}
 
 export interface QuestionnaireUpdate {
   id: number;
   name?: string;
   description?: string;
   is_mandatory?: boolean;
+  is_before: boolean;
 }

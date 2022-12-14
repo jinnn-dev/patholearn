@@ -3,6 +3,7 @@ import { UserSolution } from '../userSolution';
 import { AnnotationData } from '../viewer/export/annotationData';
 import { AnnotationGroup } from './annotationGroup';
 import { TaskType } from '../../core/types/taskType';
+import { Questionnaire } from 'model/questionnaires/questionnaire';
 
 export interface Task {
   id: number;
@@ -19,6 +20,7 @@ export interface Task {
   annotation_groups: AnnotationGroup[];
   hints: TaskHint[];
   can_be_solved: boolean;
+  questionnaires: Questionnaire[];
 }
 
 export interface TaskCreate {
@@ -35,6 +37,7 @@ export interface TaskCreate {
   hints: TaskHint[];
   can_be_solved?: boolean;
   info_annotations?: any[];
+  questionnaires: Questionnaire[];
 }
 
 export interface TaskUpdate {

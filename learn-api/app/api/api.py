@@ -8,6 +8,7 @@ from app.api.endpoints import (
     base_task,
     task,
     annotations,
+    questionnaires,
 )
 
 """
@@ -21,6 +22,9 @@ api_router.include_router(courses.router, prefix="/courses", tags=["courses"])
 api_router.include_router(task_groups.router, prefix="/taskgroups", tags=["taskgroups"])
 api_router.include_router(base_task.router, prefix="/tasks", tags=["tasks"])
 api_router.include_router(task.router, prefix="/tasks/task", tags=["task"])
+api_router.include_router(
+    questionnaires.router, prefix="/questionnaires", tags=["questionnaires"]
+)
 api_router.include_router(
     annotations.router, prefix="/annotations", tags=["annotations"]
 )

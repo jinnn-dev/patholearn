@@ -6,10 +6,11 @@ from typing import Optional
 class QuestionnaireQuestionOptionBase(BaseModel):
     order: int
     value: str
+    with_input: bool
 
 
 class QuestionnaireQuestionOptionCreate(QuestionnaireQuestionOptionBase):
-    question_id: int
+    question_id: Optional[int]
 
 
 class QuestionnaireQuestionOptionUpdate(QuestionnaireQuestionOptionBase):
@@ -22,7 +23,7 @@ class QuestionnaireQuestionOptionInDBBase(QuestionnaireQuestionOptionBase):
     question_id: int
 
     class Config:
-        orm_mode: True
+        orm_mode = True
 
 
 class QuestionnaireQuestionOptionInDB(QuestionnaireQuestionOptionInDBBase):

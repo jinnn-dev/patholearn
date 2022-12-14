@@ -4,11 +4,15 @@ from typing import Optional
 
 class QuestionnaireAnswerBase(BaseModel):
     answer: Optional[str]
+    selected: Optional[str]
+    question_option_id: Optional[int]
+    questionnaire_id: Optional[int]
 
 
 class QuestionnaireAnswerCreate(QuestionnaireAnswerBase):
-    user_id: int
+    user_id: Optional[int]
     question_id: int
+    question_option_id: Optional[int]
 
 
 class QuestionnaireAnswerUpdate(QuestionnaireAnswerBase):
@@ -23,7 +27,7 @@ class QuestionnaireAnswerInDBBase(QuestionnaireAnswerBase):
     question_id: int
 
     class Config:
-        orm_mode: True
+        orm_mode = True
 
 
 class QuestionnaireAnswerInDB(QuestionnaireAnswerInDBBase):
