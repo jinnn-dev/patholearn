@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from app.crud.base import CRUDBase
 from app.models.new_task import NewTask
 from app.models.task import Task
+from app.schemas.questionnaire import Questionnaire
 from app.schemas.task import TaskCreate, TaskUpdate
 
 
