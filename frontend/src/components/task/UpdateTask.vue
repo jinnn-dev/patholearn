@@ -14,6 +14,15 @@
       >
       </input-field>
 
+      <div v-if="task?.questionnaires" class="my-4">
+        <div class="text-xl">Umfragen Löschen</div>
+        <div v-for="(questionaire, index) of task.questionnaires" class="flex gap-2">
+          <div>{{ index + 1 }}.</div>
+          <div>{{ questionaire.name }}</div>
+          <Icon name="trash" class="text-red-500 cursor-pointer" @click="deleteQuestionnaire(questionaire.id)"></Icon>
+        </div>
+      </div>
+
       <Accordion>
         <AccordionItem title="Umfrage vor Aufgabe" :first="true">
           <CreateQuestionnaire :task="task" :is-before="true"></CreateQuestionnaire>
@@ -85,7 +94,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, PropType, reactive, ref, watch } from 'vue';
+import { defineComponent, PropType, reactive, ref, watch, computed } from 'vue';
 import { Task } from '../../model/task/task';
 import { TaskService } from '../../services/task.service';
 import { knowledgeLevel, taskTypes } from './task-config';
@@ -99,6 +108,9 @@ import SaveButton from '../general/SaveButton.vue';
 import { TaskType } from '../../core/types/taskType';
 import ConfirmButtons from '../general/ConfirmButtons.vue';
 import CreateQuestionnaire from './CreateQuestionnaire.vue';
+import Icon from '../general/Icon.vue';
+import { QuestionnaireService } from '../../services/questionnaire.service';
+
 export default defineComponent({
   components: {
     ConfirmButtons,
@@ -109,7 +121,8 @@ export default defineComponent({
     AccordionItem,
     Accordion,
     InputField,
-    CreateQuestionnaire
+    CreateQuestionnaire,
+    Icon
   },
   props: {
     task: {
@@ -151,6 +164,10 @@ export default defineComponent({
       }
     );
 
+    const hasBeforeQuestionnaire = computed(
+      () => props.task?.questionnaires.find((questionnaire) => questionnaire?.is_before === true) !== undefined
+    );
+
     const updateTask = async () => {
       taskUpdateLoading.value = true;
 
@@ -175,7 +192,13 @@ export default defineComponent({
       taskUpdateForm.min_correct = value;
     };
 
+    const deleteQuestionnaire = async (questionaireId: number) => {
+      await QuestionnaireService.deleteQuestionnaire(questionaireId);
+    };
+
     return {
+      deleteQuestionnaire,
+      hasBeforeQuestionnaire,
       taskUpdateForm,
       taskUpdateLoading,
       knowledgeLevel,

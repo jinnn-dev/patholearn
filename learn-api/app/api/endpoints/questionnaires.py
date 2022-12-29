@@ -9,6 +9,7 @@ from app.crud.crud_questionnaire_question_option import (
     crud_questionnaire_question_option,
 )
 from app.crud.crud_task import crud_task
+from app.models.task_questionnaires import TaskQuestionnaires
 from app.schemas.questionnaire import (
     Questionnaire,
     QuestionnaireCreate,
@@ -48,6 +49,29 @@ def save_questionnaires_answers(
         answer_db = crud_questionnaire_answer.create(db, obj_in=answer)
         answers_db.append(answer_db)
     return answers_db
+
+
+@router.delete("/{questionnaire_id}")
+def delete_questionnaire(
+    *,
+    db: Session = Depends(get_db),
+    questionnaire_id: int,
+    current_user: User = Depends(get_current_active_superuser),
+):
+    crud_questionnaire_answer.remove_to_questionnaire(
+        db, questionnaire_id=questionnaire_id
+    )
+
+    questionnaire = crud_questionnaire.get(db, id=questionnaire_id)
+
+    for question in questionnaire.questions:
+        for question_option in question.options:
+            crud_questionnaire_question_option.remove(db, model_id=question_option.id)
+        crud_questionnaire_question.remove(db, model_id=question.id)
+    try:
+        crud_questionnaire.remove(db, model_id=questionnaire.id)
+    except Exception as e:
+        print(e)
 
 
 @router.post("/{task_id}")

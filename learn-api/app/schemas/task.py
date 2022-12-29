@@ -70,6 +70,7 @@ class TaskBase(BaseModel):
     min_correct: int
     annotation_type: TaskAnnotationType
     annotation_groups: Optional[List[AnnotationGroup]]
+    questionnaires: Optional[List[Questionnaire]]
     hints: Optional[List[TaskHint]]
     can_be_solved: bool = True
 

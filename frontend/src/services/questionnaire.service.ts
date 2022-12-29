@@ -36,5 +36,14 @@ export class QuestionnaireService {
     return response!.data;
   }
 
+  public static async deleteQuestionnaire(questionnaireId: number) {
+    const [_, response] = await handleError(
+      ApiService.delete({
+        resource: this.apiURL(`/${questionnaireId}`)
+      })
+    );
+    return response!.data;
+  }
+
   private static apiURL = (path: string = '') => '/questionnaires' + path;
 }

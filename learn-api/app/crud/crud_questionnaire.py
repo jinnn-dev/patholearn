@@ -41,6 +41,7 @@ class CRUDQuestionnaire(
                     QuestionnaireAnswer.questionnaire_id
                     == questionnaire.questionnaire_id
                 )
+                .filter(QuestionnaireAnswer.user_id == user_id)
                 .first()
             )
 

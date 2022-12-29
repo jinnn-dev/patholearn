@@ -7,7 +7,7 @@ import FormField from '../form/FormField.vue';
 import PrimaryButton from '../general/PrimaryButton.vue';
 import SaveButton from '../general/SaveButton.vue';
 import CreateQuestionnaireQuestion from './CreateQuestionnaireQuestion.vue';
-import { ref, reactive, PropType, watch } from 'vue';
+import { ref, reactive, PropType } from 'vue';
 import Icon from '../general/Icon.vue';
 import QuestionnaireQuestionItem from './QuestionnaireQuestionItem.vue';
 import { Task } from '../../model/task/task';
