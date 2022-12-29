@@ -33,3 +33,19 @@ from app.models.hint_image import HintImage
 
 # noinspection PyUnresolvedReferences
 from app.models.task_statistic import TaskStatistic
+
+# noinspection PyUnresolvedReferences
+from app.models.questionnaire import Questionnaire
+
+# noinspection PyUnresolvedReferences
+from app.models.questionnaire_question import QuestionnaireQuestion
+
+
+# noinspection PyUnresolvedReferences
+from app.models.questionnaire_answer import QuestionnaireAnswer
+
+# noinspection PyUnresolvedReferences
+from app.models.questionnaire_question_option import QuestionnaireQuestionOption
+
+# noinspection PyUnresolvedReferences
+from app.models.task_questionnaires import TaskQuestionnaires

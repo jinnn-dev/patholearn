@@ -4,6 +4,7 @@ from typing import Any, List, Optional, Union
 from pydantic import BaseModel
 
 from app.schemas.polygon_data import AnnotationData, OffsetPolygonData, RectangleData
+from app.schemas.questionnaire import Questionnaire
 from app.schemas.task_hint import TaskHint
 
 
@@ -69,6 +70,7 @@ class TaskBase(BaseModel):
     min_correct: int
     annotation_type: TaskAnnotationType
     annotation_groups: Optional[List[AnnotationGroup]]
+    questionnaires: Optional[List[Questionnaire]]
     hints: Optional[List[TaskHint]]
     can_be_solved: bool = True
 

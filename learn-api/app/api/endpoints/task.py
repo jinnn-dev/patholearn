@@ -18,6 +18,7 @@ from app.core.export.task_exporter import TaskExporter
 from app.crud.crud_base_task import crud_base_task
 from app.crud.crud_course import crud_course
 from app.crud.crud_hint_image import crud_hint_image
+from app.crud.crud_questionnaire import crud_questionnaire
 from app.crud.crud_task import crud_task
 from app.crud.crud_task_hint import crud_task_hint
 from app.crud.crud_task_statistic import crud_task_statistic
@@ -34,6 +35,7 @@ from app.schemas.polygon_data import (
     OffsetRectangleData,
     RectangleData,
 )
+from app.schemas.questionnaire import Questionnaire, QuestionnaireCreate
 from app.schemas.task import (
     AnnotationGroup,
     AnnotationGroupUpdate,
@@ -767,6 +769,37 @@ def upload_task_image(
             os.remove(final_name)
             raise HTTPException(status_code=500, detail="Image could not be saved")
     return results
+
+
+@router.get("/questionnaires/{task_id}", response_model=List[Questionnaire])
+def get_questionnaires_to_task(
+    *,
+    db: Session = Depends(get_db),
+    task_id: int,
+    current_user: User = Depends(get_current_active_superuser),
+):
+    task = crud_task.get(db, id=task_id)
+    check_if_user_can_access_task(
+        db=db, user_id=current_user.id, base_task_id=task.base_task_id
+    )
+
+    return task.questionnaires
+
+
+@router.post("questionnaires/{task_id}", response_model=List[Questionnaire])
+def create_questionnaires_to_task(
+    *,
+    db: Session = Depends(get_db),
+    task_id: int,
+    questionnaire_create: QuestionnaireCreate,
+    current_user: User = Depends(get_current_active_superuser),
+):
+    questionnaire = crud_questionnaire.create(db, questionnaire_create)
+    questionnaire_task = crud_questionnaire.add_questionnaire_to_task(
+        db=db, task_id=task_id, questionnaire_id=questionnaire.id
+    )
+
+    return questionnaire
 
 
 # @router.post('/image', response_model=Dict)

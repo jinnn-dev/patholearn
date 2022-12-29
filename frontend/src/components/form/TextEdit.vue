@@ -1,4 +1,4 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import { ref } from 'vue';
 import RoleOnly from '../containers/RoleOnly.vue';
 import InputField from './InputField.vue';
@@ -7,12 +7,16 @@ import Icon from '../general/Icon.vue';
 const emit = defineEmits(['valueChanged']);
 
 const props = defineProps({
-  value: String
+  value: String,
+  active: {
+    type: Boolean,
+    default: false
+  }
 });
 
-const activeEdit = ref<Boolean>(false);
+const activeEdit = ref<Boolean>(props.active);
 
-const newValue = ref<String>(props.value!);
+const newValue = ref<string>(props.value!);
 
 const saveValue = () => {
   emit('valueChanged', newValue.value);
@@ -20,30 +24,30 @@ const saveValue = () => {
 };
 </script>
 <template>
-  <div class='flex flex-center items-center group'>
-    <div class='w-full'>
-      <div v-if='!activeEdit'>
+  <div class="flex flex-center items-center group">
+    <div class="w-full">
+      <div v-if="!activeEdit">
         {{ newValue }}
       </div>
       <role-only>
-        <input-field v-if='activeEdit' v-model='newValue' marginHor='my-0' />
+        <input-field v-if="activeEdit" v-model="newValue" marginHor="my-0" />
       </role-only>
     </div>
     <role-only>
       <Icon
-        v-if='!activeEdit'
-        :size='20'
-        class='group-hover:block ml-2 cursor-pointer'
-        name='pencil-simple'
-        @click='activeEdit = true'
+        v-if="!activeEdit"
+        :size="20"
+        class="group-hover:block ml-2 cursor-pointer"
+        name="pencil-simple"
+        @click="activeEdit = true"
       />
       <Icon
-        v-if='activeEdit'
-        :size='20'
-        class='cursor-pointer ml-2'
-        name='floppy-disk'
-        weight='bold'
-        @click.stop='saveValue'
+        v-if="activeEdit"
+        :size="20"
+        class="cursor-pointer ml-2"
+        name="floppy-disk"
+        weight="bold"
+        @click.stop="saveValue"
       />
     </role-only>
   </div>
