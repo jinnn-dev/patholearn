@@ -1,4 +1,4 @@
-import { QuestionnaireQuestionOption } from './questionnaireQuestionOption';
+import { QuestionnaireQuestionOption, QuestionnaireQuestionOptionCreate } from './questionnaireQuestionOption';
 import { QuestionnaireAnswer } from './questionnaireAnswer';
 
 export enum QuestionnaireQuestionType {
@@ -22,7 +22,12 @@ export interface QuestionnaireQuestion {
   options?: QuestionnaireQuestionOption[];
 }
 
-export interface QuestionnaireQuestionCreate extends QuestionnaireQuestion {}
+export interface QuestionnaireQuestionCreate {
+  question_text: string;
+  is_mandatory: boolean;
+  question_type: QuestionnaireQuestionType;
+  options?: QuestionnaireQuestionOptionCreate[];
+}
 
 export interface QuestionnaireQuestionUpdate {
   id: number;
