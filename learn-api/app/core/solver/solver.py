@@ -22,12 +22,15 @@ from app.utils.timer import Timer
 
 class Solver:
     @staticmethod
-    def solve(*, user_solution: UserSolution, task: Task) -> TaskFeedback:
+    def solve(
+        *, user_solution: UserSolution, task: Task, force_solve=False
+    ) -> TaskFeedback:
         """
         Solves the given user solution to the task and generates feedback for it
 
         :param user_solution: The solution that should be solved
         :param task: The task with the solution
+        :param force_solve: If the user solution should definitely be solved
         :return: The resulting feedback for the
         """
         current_timer = Timer()
@@ -37,7 +40,7 @@ class Solver:
         task_result.result_detail = []
         task_annotation_type = task.annotation_type
         task_solution = task.solution
-        if not task.can_be_solved:
+        if not task.can_be_solved and not force_solve:
             return TaskFeedback(
                 task_id=task.id,
                 task_status=TaskStatus.CORRECT,

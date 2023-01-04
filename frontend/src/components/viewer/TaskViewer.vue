@@ -124,7 +124,7 @@ watch(
 
       drawingViewer.value?.updateColor(TOOL_COLORS[currentTool.value!]!);
 
-      if (props.solve_result && props.show_result && props.task?.can_be_solved) {
+      if (props.solve_result && props.show_result) {
         userSolutionLocked.value = true;
         setColors(props.solve_result);
       }
@@ -158,7 +158,7 @@ watch(
       return;
     }
 
-    if (props.show_result && props.task?.can_be_solved) {
+    if (props.show_result) {
       nextTick(() => {
         TooltipGenerator.addAll(props.solve_result!.result_detail!);
         setColors(newVal);
@@ -185,7 +185,7 @@ watch(
       TooltipGenerator.destroyAll();
       drawingViewer.value?.clearSolutionAnnotations();
     } else {
-      if (props.solve_result && props.task?.can_be_solved) {
+      if (props.solve_result) {
         setColors(props.solve_result);
       }
     }
@@ -202,7 +202,7 @@ watch(
       if (props.show_result) {
         userSolutionLocked.value = true;
 
-        if (props.task && props.task?.user_solution?.task_result?.result_detail && props.task.can_be_solved) {
+        if (props.task && props.task?.user_solution?.task_result?.result_detail) {
           TooltipGenerator.addAll(props.solve_result!.result_detail!);
           setColors(props.task?.user_solution?.task_result);
         }
@@ -416,6 +416,7 @@ const moveHandler = (event: any) => {
 };
 
 const setColors = (taskResult: TaskResult) => {
+  if (taskResult.result_detail === undefined || taskResult.result_detail.length === 0) return;
   if (taskResult.task_status === TaskStatus.CORRECT) {
     drawingViewer.value?.changeAllUserAnnotationColor(RESULT_POLYGON_COLOR[taskResult.task_status]!);
   }

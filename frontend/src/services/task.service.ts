@@ -295,6 +295,16 @@ export class TaskService {
     return response!.data;
   }
 
+  public static async solveTaskToUser(task_id: number, user_id: number): Promise<TaskResult> {
+    const [_, response] = await handleError(
+      ApiService.get<TaskResult>({
+        resource: this._apiUrl('/' + task_id + '/solve/' + user_id)
+      }),
+      'Task could not be solved'
+    );
+    return response!.data;
+  }
+
   /**
    * Updates the given annotation
    *
