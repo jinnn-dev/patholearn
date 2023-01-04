@@ -26,7 +26,7 @@ import { TaskService } from '../../services/task.service';
 import { AnnotationParser, ParseResult } from '../../utils/annotation-parser';
 import { adminMouseClickHandler } from '../../core/viewer/helper/adminMouseClickHandler';
 import { AnnotationViewer } from '../../core/viewer/annotationViewer';
-import { generateViewerOptions } from '../../core/viewer/config/generateViewerOptions';
+import { generateViewerOptions, SVG_ID } from '../../core/viewer/config/generateViewerOptions';
 import {
   isTaskSaving,
   polygonChanged,
@@ -66,6 +66,7 @@ import { ValidationResult } from '../../model/viewer/validation/validationResult
 import { validateTaskAnnotations } from '../../core/viewer/helper/validateAnnotations';
 import SelectUserSolution from '../task/SelectUserSolution.vue';
 import { user } from '../../../icons';
+import { SOLUTION_NODE_ID } from '../../core/viewer/svg/svg-overlay';
 
 const props = defineProps({
   slide_name: String,
@@ -774,6 +775,14 @@ const closeSampleSolutionEditor = () => {
   showUploadDialog.value = false;
   changeToolTo.value = Tool.MOVE;
 };
+
+const hideAllSolutionAnnotations = () => {
+  selectAll(`#${SVG_ID} > #${SOLUTION_NODE_ID} > *`).style('visibility', 'hidden');
+};
+
+const showAllSolutionAnnotations = () => {
+  selectAll(`#${SVG_ID} > #${SOLUTION_NODE_ID} > *`).style('visibility', 'visible');
+};
 </script>
 <template>
   <annotation-group
@@ -901,8 +910,8 @@ const closeSampleSolutionEditor = () => {
     :changeToolTo="changeToolTo"
     :setMoving="setMoving"
     :tools="toolbarTools"
-    @hideAnnotations="hideAllAnnotations"
-    @showAnnotations="showAllAnnotations"
+    @hideAnnotations="hideAllSolutionAnnotations"
+    @showAnnotations="showAllSolutionAnnotations"
     @toolUpdate="setTool"
   ></tool-bar>
 

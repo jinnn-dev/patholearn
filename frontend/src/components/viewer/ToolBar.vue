@@ -68,7 +68,7 @@ const createTooltip = () => {
 };
 
 const changeTool = (tool: Tool, event: any) => {
-  if (annotationVisible.value) {
+  if (annotationVisible.value || tool === Tool.SELECT || tool === Tool.MOVE) {
     currentTool.value = tool;
     emit('toolUpdate', { tool, event });
   }
@@ -92,15 +92,23 @@ const toggleAnnotationVisibility = () => {
     </div>
     <div
       v-if="!userSolutionLocked && !viewerLoadingState.solveResultLoading"
-      :class="annotationVisible ? 'opacity-100' : 'opacity-20'"
+      :class="annotationVisible ? 'opacity-100' : 'opacity-100'"
       class="bg-gray-600/70 backdrop-blur-md text-white rounded-lg overflow-hidden flex"
     >
       <tool-item
         v-for="tool in defaultTools"
         :key="tool"
-        :class="currentTool === tool ? 'bg-gray-300' : ''"
+        :class="
+          currentTool === tool
+            ? 'bg-gray-300'
+            : annotationVisible
+            ? 'opacity-100'
+            : tool === Tool.SELECT || tool === Tool.MOVE
+            ? 'opacity-100'
+            : 'opacity-10'
+        "
         :comp="TOOL_COMPONENTS[tool]"
-        :hide-tooltip="!annotationVisible"
+        :hide-tooltip="!annotationVisible && (tool !== Tool.MOVE || tool !== Tool.SELECT)"
         :hint="TOOL_HINTS[tool]"
         @click="changeTool(tool, $event)"
       ></tool-item>
