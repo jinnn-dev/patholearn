@@ -51,6 +51,7 @@ const showAfterQuestionnaireModel = ref<boolean>(true);
 const questionnaireToShow = ref<Questionnaire>();
 
 onMounted(async () => {
+  if (!props.selectedTaskId) return;
   await getQuestionnaires(props.selectedTaskId!);
   const questionnaire = questionnairesBeforeMap.value.get(props.selectedTaskId!);
   if (questionnaire) {
