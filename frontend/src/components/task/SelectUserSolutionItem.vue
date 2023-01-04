@@ -29,7 +29,6 @@ const userSolutionClicked = (userId: number) => {
 
 const solveUserSolution = async () => {
   if (!props.task) return;
-  console.log(solveUserSolutionLoading.value);
 
   solveUserSolutionLoading.value = true;
   await TaskService.solveTaskToUser(props.task.id, props.user.id);

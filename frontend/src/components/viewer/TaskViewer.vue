@@ -33,7 +33,8 @@ import {
   hideGroup,
   showAllAnnotations,
   showGroup,
-  updateAnnotation
+  updateAnnotation,
+  setColors
 } from '../../core/viewer/helper/taskViewerHelper';
 import { TaskResult } from '../../model/task/result/taskResult';
 import AnnotationSettings from './annotation-settings/AnnotationSettings.vue';
@@ -126,7 +127,7 @@ watch(
 
       if (props.solve_result && props.show_result) {
         userSolutionLocked.value = true;
-        setColors(props.solve_result);
+        setColors(props.solve_result, drawingViewer);
       }
 
       await validateAnnotations();
@@ -161,7 +162,7 @@ watch(
     if (props.show_result) {
       nextTick(() => {
         TooltipGenerator.addAll(props.solve_result!.result_detail!);
-        setColors(newVal);
+        setColors(newVal, drawingViewer);
       });
     }
   }
@@ -186,7 +187,7 @@ watch(
       drawingViewer.value?.clearSolutionAnnotations();
     } else {
       if (props.solve_result) {
-        setColors(props.solve_result);
+        setColors(props.solve_result, drawingViewer);
       }
     }
   }
@@ -204,7 +205,7 @@ watch(
 
         if (props.task && props.task?.user_solution?.task_result?.result_detail) {
           TooltipGenerator.addAll(props.solve_result!.result_detail!);
-          setColors(props.task?.user_solution?.task_result);
+          setColors(props.task?.user_solution?.task_result, drawingViewer);
         }
       }
 
@@ -415,29 +416,29 @@ const moveHandler = (event: any) => {
   );
 };
 
-const setColors = (taskResult: TaskResult) => {
-  if (taskResult.result_detail === undefined || taskResult.result_detail.length === 0) return;
-  if (taskResult.task_status === TaskStatus.CORRECT) {
-    drawingViewer.value?.changeAllUserAnnotationColor(RESULT_POLYGON_COLOR[taskResult.task_status]!);
-  }
+// const setColors = (taskResult: TaskResult) => {
+//   if (taskResult.result_detail === undefined || taskResult.result_detail.length === 0) return;
+//   if (taskResult.task_status === TaskStatus.CORRECT) {
+//     drawingViewer.value?.changeAllUserAnnotationColor(RESULT_POLYGON_COLOR[taskResult.task_status]!);
+//   }
 
-  if (taskResult.task_status === TaskStatus.WRONG && taskResult.result_detail?.length === 0) {
-    drawingViewer.value?.changeAllUserAnnotationColor(RESULT_POLYGON_COLOR[taskResult.task_status]!);
-  }
+//   if (taskResult.task_status === TaskStatus.WRONG && taskResult.result_detail?.length === 0) {
+//     drawingViewer.value?.changeAllUserAnnotationColor(RESULT_POLYGON_COLOR[taskResult.task_status]!);
+//   }
 
-  if (taskResult.result_detail) {
-    for (const result of taskResult.result_detail) {
-      var taskResultDetail = result as TaskResultDetail;
-      if (!taskResultDetail.id) {
-        continue;
-      }
-      drawingViewer.value?.changeAnnotationColor(taskResultDetail.id, RESULT_POLYGON_COLOR[taskResultDetail.status!]!);
-      if (taskResultDetail.lines_outside) {
-        drawingViewer.value?.addPolyline(taskResultDetail.id!, taskResultDetail.lines_outside);
-      }
-    }
-  }
-};
+//   if (taskResult.result_detail) {
+//     for (const result of taskResult.result_detail) {
+//       var taskResultDetail = result as TaskResultDetail;
+//       if (!taskResultDetail.id) {
+//         continue;
+//       }
+//       drawingViewer.value?.changeAnnotationColor(taskResultDetail.id, RESULT_POLYGON_COLOR[taskResultDetail.status!]!);
+//       if (taskResultDetail.lines_outside) {
+//         drawingViewer.value?.addPolyline(taskResultDetail.id!, taskResultDetail.lines_outside);
+//       }
+//     }
+//   }
+// };
 
 const groupCreated = (group: AnnotationGroupModel) => {
   props.task?.annotation_groups.push(group);

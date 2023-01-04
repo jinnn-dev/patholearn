@@ -43,6 +43,7 @@ from app.schemas.task import (
     TaskCreate,
     TaskType,
     TaskUpdate,
+    AnnotationFeedback,
 )
 from app.schemas.task_hint import TaskHint, TaskHintCreate, TaskHintUpdate
 from app.schemas.user import UserInDBBase
@@ -622,11 +623,15 @@ def get_user_solution_to_user(
 
     if result is None:
         return None
-
     user_solution = parse_obj_as(UserSolution, result[0])
+    result_details = parse_obj_as(
+        List[AnnotationFeedback], result[0].task_result["result_detail"]
+    )
+    user_solution.task_result.result_detail = result_details
     user_solution_with_suer = UserSolutionWithUser(
         user_solution=user_solution, user=parse_obj_as(UserInDBBase, result[1])
     )
+
     return user_solution_with_suer
 
 

@@ -17,7 +17,7 @@ from app.utils.logger import logger
 class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUpdate]):
     def get_solution_and_user_to_task(
         self, db: Session, *, user_id: int, task_id: int
-    ) -> UserSolution:
+    ) -> Tuple[UserSolution, User]:
         """
         Returns the UserSolution and User to the given user and task.
 
