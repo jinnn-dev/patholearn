@@ -4,6 +4,8 @@ import { ref, PropType } from 'vue';
 import Icon from '../general/Icon.vue';
 import SaveButton from '../general/SaveButton.vue';
 import { TaskService } from '../../services/task.service';
+import { taskResultLoaded } from '../../core/viewer/viewerState';
+
 const props = defineProps({
   user: {
     type: Object,
@@ -31,7 +33,8 @@ const solveUserSolution = async () => {
   if (!props.task) return;
 
   solveUserSolutionLoading.value = true;
-  await TaskService.solveTaskToUser(props.task.id, props.user.id);
+  const taskResult = await TaskService.solveTaskToUser(props.task.id, props.user.id);
+  taskResultLoaded.value = { taskResult: taskResult, userId: props.user.id };
   solveUserSolutionLoading.value = false;
 };
 </script>
@@ -51,6 +54,9 @@ const solveUserSolution = async () => {
         padding-horizontal="py-1"
         padding-vertical="px-1"
         font-weight="font-normal"
+        :disabled="!isEnabled"
+        :class="isEnabled ? 'opacity-100' : 'opacity-50'"
+        :loading="solveUserSolutionLoading"
         @click="solveUserSolution"
       ></SaveButton>
     </div>

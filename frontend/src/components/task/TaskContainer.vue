@@ -90,6 +90,7 @@ const showUserSolution = (userId: number) => {
 const hideUserSolution = (userId: number) => {
   emit('hide-user-solution', userId);
 };
+
 // const userSolutionClicked = (userId: number) => {
 //   emit('toggleUserSolution', userId);
 // };

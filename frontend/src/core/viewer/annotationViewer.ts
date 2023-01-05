@@ -864,6 +864,15 @@ export class AnnotationViewer {
     }
   }
 
+  resetUserAnnotations(annotations: Annotation[]) {
+    for (const annotation of annotations) {
+      if (annotation instanceof AnnotationLine || annotation instanceof AnnotationRectangle) {
+        (annotation as AnnotationLine).removeResultPolylines();
+      }
+      annotation.resetColors();
+    }
+  }
+
   /**
    * Changes the annotation color
    *

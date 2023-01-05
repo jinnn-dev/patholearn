@@ -34,7 +34,9 @@ import {
   viewerLoadingState,
   loadedUserSolutions,
   annotationsToUser,
-  userSolutionAnnotationsLoading
+  userSolutionAnnotationsLoading,
+  taskResultLoaded,
+  TaskResultLoaded
 } from '../../core/viewer/viewerState';
 import {
   focusBackgroundAnnotation,
@@ -68,6 +70,7 @@ import { validateTaskAnnotations } from '../../core/viewer/helper/validateAnnota
 import SelectUserSolution from '../task/SelectUserSolution.vue';
 import { user } from '../../../icons';
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
+import { TaskResult } from 'model/task/result/taskResult';
 
 const props = defineProps({
   slide_name: String,
@@ -222,6 +225,16 @@ watch(
     }
 
     hideUserSolutionAnnotations(newVal);
+  }
+);
+
+watch(
+  () => taskResultLoaded.value,
+  () => {
+    if (taskResultLoaded.value) {
+      setTaskResult(taskResultLoaded.value);
+      setTaskResultStyles(taskResultLoaded.value.taskResult);
+    }
   }
 );
 
@@ -766,11 +779,21 @@ const showUserSolutionAnnotations = async (userId: number) => {
   } else {
     drawingViewer.value?.addUserSolutionAnnotations(loadedUserSolutions.get(userId)?.annotations || []);
   }
-  const taskResult = loadedUserSolutions.get(userId)?.task_result;
+  let taskResult = loadedUserSolutions.get(userId)?.task_result;
   if (taskResult) {
-    TooltipGenerator.addAll(taskResult.result_detail!);
-    setColors(taskResult, drawingViewer);
+    setTaskResultStyles(taskResult);
   }
+};
+
+const setTaskResult = (result: TaskResultLoaded) => {
+  if (loadedUserSolutions.has(result.userId) && loadedUserSolutions.get(result.userId)) {
+    loadedUserSolutions.get(result.userId)!.task_result = result.taskResult;
+  }
+};
+
+const setTaskResultStyles = (taskResult: TaskResult) => {
+  TooltipGenerator.addAll(taskResult.result_detail!);
+  setColors(taskResult, drawingViewer);
 };
 
 const hideUserSolutionAnnotations = (userId: number) => {
@@ -778,9 +801,9 @@ const hideUserSolutionAnnotations = (userId: number) => {
   unselectAnnotation();
   if (annotations) {
     drawingViewer.value?.removeUserAnnotations(annotations);
+    TooltipGenerator.destroyAll();
+    drawingViewer.value?.resetUserAnnotations(annotations);
   }
-  TooltipGenerator.destroyAll();
-  drawingViewer.value?.resetAnnotations();
 };
 
 const closeSampleSolutionEditor = () => {

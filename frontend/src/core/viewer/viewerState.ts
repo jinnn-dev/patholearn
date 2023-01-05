@@ -47,3 +47,10 @@ export const loadedUserSolutions = new Map<number, LoadedUserSolution>();
 export const annotationsToUser = new Map<string, User>();
 export const updateUserSolutions = ref<boolean>(false);
 export const userSolutionAnnotationsLoading = ref<boolean>(false);
+
+export interface TaskResultLoaded {
+  taskResult: TaskResult;
+  userId: number;
+}
+
+export const taskResultLoaded = ref<TaskResultLoaded>();
