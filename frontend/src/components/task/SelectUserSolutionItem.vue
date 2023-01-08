@@ -4,7 +4,7 @@ import { ref, PropType } from 'vue';
 import Icon from '../general/Icon.vue';
 import SaveButton from '../general/SaveButton.vue';
 import { TaskService } from '../../services/task.service';
-import { taskResultLoaded } from '../../core/viewer/viewerState';
+import { selectedTaskResult, selectedTaskResultDetail, taskResultLoaded } from '../../core/viewer/viewerState';
 
 const props = defineProps({
   user: {
@@ -35,6 +35,7 @@ const solveUserSolution = async () => {
   solveUserSolutionLoading.value = true;
   const taskResult = await TaskService.solveTaskToUser(props.task.id, props.user.id);
   taskResultLoaded.value = { taskResult: taskResult, userId: props.user.id };
+  selectedTaskResult.value = taskResultLoaded.value.taskResult;
   solveUserSolutionLoading.value = false;
 };
 </script>
