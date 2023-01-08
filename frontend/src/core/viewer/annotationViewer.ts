@@ -879,7 +879,7 @@ export class AnnotationViewer {
    * @param annotationID ID of the annotation
    * @param color Color to update to
    */
-  changeAnnotationColor(annotationID: string, color: string): void {
+  changeAnnotationColorById(annotationID: string, color: string): void {
     this._annotationManager
       .getAnnotationById(annotationID)
       ?.changeRenderColor(color + ANNOTATION_COLOR.FILL_OPACITY, color);
@@ -891,8 +891,18 @@ export class AnnotationViewer {
    */
   changeAllUserAnnotationColor(color: string): void {
     for (const annotation of this._annotationManager.userSolutionAnnotations) {
-      annotation.changeRenderColor(color + ANNOTATION_COLOR.FILL_OPACITY, color);
+      this.changeAnnotationColor(color, annotation);
     }
+  }
+
+  changeUserAnnotationColor(color: string, annotations: Annotation[]) {
+    for (const annotation of annotations) {
+      this.changeAnnotationColor(color, annotation);
+    }
+  }
+
+  private changeAnnotationColor(color: string, annotation: Annotation) {
+    annotation.changeRenderColor(color + ANNOTATION_COLOR.FILL_OPACITY, color);
   }
 
   /**

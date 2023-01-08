@@ -70,7 +70,9 @@ import { validateTaskAnnotations } from '../../core/viewer/helper/validateAnnota
 import SelectUserSolution from '../task/SelectUserSolution.vue';
 import { user } from '../../../icons';
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
-import { TaskResult } from 'model/task/result/taskResult';
+import { TaskResult } from '../../model/task/result/taskResult';
+import { Annotation } from 'core/viewer/svg/annotation/annotation';
+import { TaskResultDetail } from 'model/task/result/taskResultDetail';
 
 const props = defineProps({
   slide_name: String,
@@ -233,7 +235,8 @@ watch(
   () => {
     if (taskResultLoaded.value) {
       setTaskResult(taskResultLoaded.value);
-      setTaskResultStyles(taskResultLoaded.value.taskResult);
+      const annotations = loadedUserSolutions.get(taskResultLoaded.value.userId)?.annotations;
+      setTaskResultStyles(taskResultLoaded.value.taskResult, annotations);
     }
   }
 );
@@ -781,7 +784,7 @@ const showUserSolutionAnnotations = async (userId: number) => {
   }
   let taskResult = loadedUserSolutions.get(userId)?.task_result;
   if (taskResult) {
-    setTaskResultStyles(taskResult);
+    setTaskResultStyles(taskResult, loadedUserSolutions.get(userId)?.annotations);
   }
 };
 
@@ -791,9 +794,9 @@ const setTaskResult = (result: TaskResultLoaded) => {
   }
 };
 
-const setTaskResultStyles = (taskResult: TaskResult) => {
+const setTaskResultStyles = (taskResult: TaskResult, annotations?: Annotation[]) => {
   TooltipGenerator.addAll(taskResult.result_detail!);
-  setColors(taskResult, drawingViewer);
+  setColors(taskResult, drawingViewer, annotations);
 };
 
 const hideUserSolutionAnnotations = (userId: number) => {
@@ -801,7 +804,12 @@ const hideUserSolutionAnnotations = (userId: number) => {
   unselectAnnotation();
   if (annotations) {
     drawingViewer.value?.removeUserAnnotations(annotations);
-    TooltipGenerator.destroyAll();
+    const taskResult = loadedUserSolutions.get(userId)?.task_result;
+    if (taskResult && taskResult.result_detail) {
+      for (const detail of taskResult.result_detail) {
+        TooltipGenerator.removeTooltipByElementId((detail as TaskResultDetail).id ?? '');
+      }
+    }
     drawingViewer.value?.resetUserAnnotations(annotations);
   }
 };

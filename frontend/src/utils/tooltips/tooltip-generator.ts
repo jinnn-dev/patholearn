@@ -79,6 +79,14 @@ export class TooltipGenerator {
     this.instances = [];
   }
 
+  public static removeTooltipByElementId(elementId: string) {
+    const tooltip = TooltipGenerator.getTooltipByElementId(elementId);
+    if (tooltip) {
+      tooltip.hide();
+      tooltip.destroy();
+    }
+  }
+
   public static disableTooltip(elementId: string) {
     const tooltip = TooltipGenerator.getTooltipByElementId(elementId);
     if (tooltip) {
