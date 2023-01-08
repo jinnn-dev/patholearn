@@ -40,6 +40,7 @@ export const viewerScale = ref<number>();
 export const selectedPolygon = ref<Annotation | null>();
 export const selectedTaskResultDetail = ref<TaskResultDetail | undefined>();
 export const selectedUser = ref<User | undefined>();
+export const selectedTaskResult = ref<TaskResult | null>();
 
 interface LoadedUserSolution {
   task_result: TaskResult | undefined;

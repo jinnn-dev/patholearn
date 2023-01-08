@@ -38,7 +38,8 @@ import {
   taskResultLoaded,
   TaskResultLoaded,
   selectedUser,
-  selectedTaskResultDetail
+  selectedTaskResultDetail,
+  selectedTaskResult
 } from '../../core/viewer/viewerState';
 import {
   focusBackgroundAnnotation,
@@ -814,6 +815,7 @@ const showUserSolutionAnnotations = async (userId: number) => {
   }
   let taskResult = loadedUserSolutions.get(userId)?.task_result;
   if (taskResult) {
+    selectedTaskResult.value = taskResult;
     setTaskResultStyles(taskResult, loadedUserSolutions.get(userId)?.annotations);
   }
 };
@@ -842,6 +844,7 @@ const hideUserSolutionAnnotations = (userId: number) => {
     }
     drawingViewer.value?.resetUserAnnotations(annotations);
   }
+  selectedTaskResult.value = undefined;
 };
 
 const closeSampleSolutionEditor = () => {
