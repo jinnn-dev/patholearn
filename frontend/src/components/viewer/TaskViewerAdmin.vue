@@ -480,15 +480,18 @@ const setTool = (data: { tool: Tool; event: any }) => {
   } else if (currentTool.value === Tool.MOVE) {
     viewerRef.value.style.cursor = 'grab';
     drawingViewer.value?.removeListener();
+    unselectAnnotation();
     selectedPolygon.value = undefined;
   } else if (currentTool.value === Tool.UPLOAD) {
     showUploadDialog.value = true;
+    unselectAnnotation();
     selectedPolygon.value = undefined;
   } else {
     viewerRef.value.style.cursor = 'pointer';
   }
 
   if (currentTool.value !== Tool.SELECT) {
+    unselectAnnotation();
     polygonChanged.polygon?.unselect();
   }
 };
@@ -604,7 +607,7 @@ const selectAnnotation = (annotationId: string) => {
   if (annotationId === selectedPolygon.value?.id) {
     return;
   }
-
+  unselectAnnotation();
   selectedPolygon.value = drawingViewer.value?.selectAnnotation(annotationId, true);
 
   selectedPolygonData.color = selectedPolygon.value!.color;
@@ -634,7 +637,20 @@ const selectAnnotation = (annotationId: string) => {
 };
 
 const unselectAnnotation = () => {
+  if (!selectedPolygon.value) return;
+
   selectedPolygon.value?.unselect();
+
+  if (isUserSolution(selectedPolygon.value.type)) {
+    const user = annotationsToUser.get(selectedPolygon.value.id);
+    if (user) {
+      const userSolution = loadedUserSolutions.get(user.id);
+      if (userSolution && userSolution.task_result) {
+        setColors(userSolution.task_result, drawingViewer, [selectedPolygon.value]);
+      }
+    }
+  }
+
   selectedPolygon.value = undefined;
 };
 
