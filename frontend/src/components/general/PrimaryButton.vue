@@ -12,6 +12,14 @@ const props = defineProps({
   bgHoverColor: {
     type: String
   },
+  paddingHorizontal: {
+    type: String,
+    default: 'py-2'
+  },
+  paddingVertical: {
+    type: String,
+    default: 'px-2'
+  },
   fontWeight: {
     type: String,
     default: 'font-medium'
@@ -38,12 +46,12 @@ const generatedBgColor = computed(() => {
 </script>
 <template>
   <button
-    :class="`${bgColor} ${fontWeight} ${textColor} ${
+    :class="`${bgColor} ${fontWeight} ${textColor} ${paddingHorizontal} ${paddingVertical} ${
       disabled ? 'cursor-not-allowed' : `cursor-pointer hover:${bgHoverColor || generatedBgColor}  hover:ring-2`
     }`"
     :disabled="disabled"
     :type="type"
-    class="flex justify-center items-center transition rounded-lg py-2 text-md px-2 ring-gray-100 w-full min-w-[4rem]"
+    class="flex justify-center items-center transition rounded-lg text-md ring-gray-100 w-full min-w-[4rem]"
   >
     <slot></slot>
     {{ name }}

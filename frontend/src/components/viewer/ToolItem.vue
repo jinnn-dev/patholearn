@@ -55,7 +55,7 @@ onMounted(() => {
 <template>
   <div
     :id="comp + tooltipId"
-    :class="!hideTooltip && 'hover:bg-gray-300 cursor-pointer'"
+    :class="hideTooltip ? 'opacity-10' : 'hover:bg-gray-300 cursor-pointer'"
     class="transition flex justify-center items-center p-2 select-none"
   >
     <Icon :name="comp" class="fill-white" />

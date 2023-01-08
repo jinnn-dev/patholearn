@@ -38,3 +38,15 @@ export const RESULT_RESPONSE_DETAIL: TaskStatusStringType = {
   [TaskStatus.DUPLICATE_HIT]: 'Annotationen treffen die gleiche Musterannotation. Entscheide dich für eine',
   [TaskStatus.INVALID]: 'Deine Annotation ist eine ungültige Form'
 };
+
+export const generateDetailFeedbackFromTaskStatus = (taskStatus: TaskStatus, annotationName?: string) => {
+  let detailContent = RESULT_RESPONSE_DETAIL[taskStatus];
+  if (taskStatus === TaskStatus.WRONG_NAME) {
+    if (!annotationName) {
+      detailContent = 'Du hast vergessen der Annotation eine Klasse zu geben';
+    } else {
+      detailContent = annotationName + ' ' + detailContent;
+    }
+  }
+  return detailContent;
+};

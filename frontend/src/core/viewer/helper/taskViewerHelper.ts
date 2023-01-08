@@ -6,6 +6,11 @@ import { AnnotationViewer } from '../annotationViewer';
 import { isTaskSaving, polygonChanged } from '../viewerState';
 import { selectAll } from 'd3-selection';
 import { SVG_ID } from '../config/generateViewerOptions';
+import { TaskResult } from '../../../model/task/result/taskResult';
+import { Ref } from 'vue';
+import { RESULT_POLYGON_COLOR, TaskStatus } from '../../../core/types/taskStatus';
+import { TaskResultDetail } from '../../../model/task/result/taskResultDetail';
+import { SOLUTION_NODE_ID } from '../svg/svg-overlay';
 
 export const updateAnnotation = async ({
   annotation,
@@ -28,6 +33,41 @@ export const updateAnnotation = async ({
   }
 };
 
+export const setColors = (
+  taskResult: TaskResult,
+  drawingViewer: Ref<AnnotationViewer | undefined>,
+  annotations?: Annotation[]
+) => {
+  if (taskResult.result_detail === undefined || taskResult.result_detail.length === 0) return;
+
+  if (
+    taskResult.task_status === TaskStatus.CORRECT ||
+    (taskResult.task_status === TaskStatus.WRONG && taskResult.result_detail.length === 0)
+  ) {
+    if (annotations) {
+      drawingViewer.value?.changeUserAnnotationColor(RESULT_POLYGON_COLOR[taskResult.task_status]!, annotations);
+    } else {
+      drawingViewer.value?.changeAllUserAnnotationColor(RESULT_POLYGON_COLOR[taskResult.task_status]!);
+    }
+  }
+
+  if (taskResult.result_detail) {
+    for (const result of taskResult.result_detail) {
+      var taskResultDetail = result as TaskResultDetail;
+      if (!taskResultDetail.id) {
+        continue;
+      }
+      drawingViewer.value?.changeAnnotationColorById(
+        taskResultDetail.id,
+        RESULT_POLYGON_COLOR[taskResultDetail.status!]!
+      );
+      if (taskResultDetail.lines_outside) {
+        drawingViewer.value?.addPolyline(taskResultDetail.id!, taskResultDetail.lines_outside);
+      }
+    }
+  }
+};
+
 export const focusBackgroundAnnotation = (index: number, annotationViewer: AnnotationViewer) => {
   annotationViewer.focusBackgroundAnnotation(index);
 };
@@ -46,4 +86,12 @@ export const hideAllAnnotations = () => {
 
 export const showAllAnnotations = () => {
   selectAll(`#${SVG_ID} > *`).style('visibility', 'visible');
+};
+
+export const showAllSolutionAnnotations = () => {
+  selectAll(`#${SOLUTION_NODE_ID}`).style('visibility', 'visible');
+};
+
+export const hideAllSolutionAnnotations = () => {
+  selectAll(`#${SOLUTION_NODE_ID}`).style('visibility', 'hidden');
 };

@@ -517,6 +517,64 @@ def solve_task(
     return task_result
 
 
+@router.get("/{task_id}/solve/{user_id}", response_model=Any)
+def solve_task_to_user(
+    *,
+    db: Session = Depends(get_db),
+    task_id: int,
+    user_id: int,
+    current_user: User = Depends(get_current_active_superuser),
+):
+    timer = Timer()
+    timer.start()
+    task = crud_task.get(db, id=task_id)
+    user_solution = crud_user_solution.get_solution_to_task_and_user(
+        db, task_id=task_id, user_id=user_id
+    )
+    if user_solution is None:
+        base_task = crud_base_task.get(db=db, id=task.base_task_id)
+        user_solution = crud_user_solution.create(
+            db=db,
+            obj_in=UserSolutionCreate(
+                task_id=task.id,
+                user_id=user_id,
+                base_task_id=task.base_task_id,
+                task_group_id=base_task.task_group_id,
+                course_id=base_task.course_id,
+                solution_data=[],
+                percentage_solved=0.0,
+            ),
+        )
+    task_result = Solver.solve(user_solution=user_solution, task=task, force_solve=True)
+
+    solution_update = UserSolutionUpdate(task_result=task_result)
+    if task_result.task_status == TaskStatus.CORRECT:
+        solution_update.percentage_solved = 1.0
+    else:
+        crud_user_solution.increment_failed_attempts(
+            db, user_id=user_id, task_id=task_id
+        )
+        solution_update.percentage_solved = 0.0
+    crud_user_solution.update(db, db_obj=user_solution, obj_in=solution_update)
+
+    crud_task_statistic.create(
+        db,
+        obj_in=TaskStatisticCreate(
+            user_id=user_id,
+            task_id=task.id,
+            base_task_id=user_solution.base_task_id,
+            solved_date=datetime.datetime.now(),
+            percentage_solved=solution_update.percentage_solved,
+            solution_data=user_solution.solution_data,
+            task_result=task_result,
+        ),
+    )
+
+    timer.stop()
+    logger.debug(f"Solving task completed in {timer.total_run_time * 1000}ms")
+    return task_result
+
+
 @router.post("/hint/{hint_id}/image", response_model=Dict)
 def upload_task_hint_image(
     *,
