@@ -3,6 +3,7 @@ import { UserSolution } from '../../model/userSolution';
 import { reactive, ref } from 'vue';
 import { Annotation } from './svg/annotation/annotation';
 import { TaskResult } from '../../model/task/result/taskResult';
+import { TaskResultDetail } from 'model/task/result/taskResultDetail';
 
 export const polygonChanged = reactive<{
   changed: boolean;
@@ -37,6 +38,8 @@ export const viewerZoom = ref<number>();
 export const viewerScale = ref<number>();
 
 export const selectedPolygon = ref<Annotation | null>();
+export const selectedTaskResultDetail = ref<TaskResultDetail | undefined>();
+export const selectedUser = ref<User | undefined>();
 
 interface LoadedUserSolution {
   task_result: TaskResult | undefined;

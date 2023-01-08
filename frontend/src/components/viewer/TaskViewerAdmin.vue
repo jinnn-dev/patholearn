@@ -36,7 +36,9 @@ import {
   annotationsToUser,
   userSolutionAnnotationsLoading,
   taskResultLoaded,
-  TaskResultLoaded
+  TaskResultLoaded,
+  selectedUser,
+  selectedTaskResultDetail
 } from '../../core/viewer/viewerState';
 import {
   focusBackgroundAnnotation,
@@ -67,12 +69,11 @@ import { TaskType } from '../../core/types/taskType';
 import AnnotationValidation from './AnnotationValidation.vue';
 import { ValidationResult } from '../../model/viewer/validation/validationResult';
 import { validateTaskAnnotations } from '../../core/viewer/helper/validateAnnotations';
-import SelectUserSolution from '../task/SelectUserSolution.vue';
-import { user } from '../../../icons';
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
 import { TaskResult } from '../../model/task/result/taskResult';
 import { Annotation } from 'core/viewer/svg/annotation/annotation';
 import { TaskResultDetail } from 'model/task/result/taskResultDetail';
+import { RESULT_RESPONSE_NAME, generateDetailFeedbackFromTaskStatus } from '../../core/types/taskStatus';
 
 const props = defineProps({
   slide_name: String,
@@ -611,6 +612,17 @@ const selectAnnotation = (annotationId: string) => {
   selectedPolygon.value = drawingViewer.value?.selectAnnotation(annotationId, true);
 
   selectedPolygonData.color = selectedPolygon.value!.color;
+  selectedUser.value = annotationsToUser.get(selectedPolygon.value!.id);
+
+  if (selectedUser.value) {
+    const taskResult = loadedUserSolutions.get(selectedUser.value!.id)?.task_result;
+    if (taskResult && taskResult.result_detail) {
+      const taskResultDetail = (taskResult.result_detail as TaskResultDetail[]).find(
+        (result) => result.id === selectedPolygon.value?.id
+      );
+      selectedTaskResultDetail.value = taskResultDetail;
+    }
+  }
 
   if (selectedPolygon.value?.type !== ANNOTATION_TYPE.BASE && !isInfoAnnotation(selectedPolygon.value!.type)) {
     selectedPolygonData.name = selectedPolygon.value!.name;
@@ -871,19 +883,36 @@ const closeSampleSolutionEditor = () => {
       </form-field>
     </div>
 
-    <form-field
-      v-if="isUserSolution(selectedPolygon.type) && annotationsToUser.get(selectedPolygon.id) !== undefined"
-      label="Nutzer"
-      margin-hor="my-0"
-    >
-      <div class="flex gap-2">
-        <div>{{ annotationsToUser.get(selectedPolygon.id)!.firstname }}</div>
-        <div v-if="annotationsToUser.get(selectedPolygon.id)!.middlename">
-          {{ annotationsToUser.get(selectedPolygon.id)!.middlename }}
+    <div v-if="isUserSolution(selectedPolygon.type) && annotationsToUser.get(selectedPolygon.id) !== undefined">
+      <form-field label="Nutzer" margin-hor="my-0">
+        <div class="flex gap-2">
+          <div>{{ annotationsToUser.get(selectedPolygon.id)!.firstname }}</div>
+          <div v-if="annotationsToUser.get(selectedPolygon.id)!.middlename">
+            {{ annotationsToUser.get(selectedPolygon.id)!.middlename }}
+          </div>
+          <div>{{ annotationsToUser.get(selectedPolygon.id)!.lastname }}</div>
         </div>
-        <div>{{ annotationsToUser.get(selectedPolygon.id)!.lastname }}</div>
-      </div>
-    </form-field>
+      </form-field>
+
+      <form-field label="Bewertung" margin-hor="my-0" v-if="selectedTaskResultDetail">
+        <div class="flex flex-col gap-2 w-full">
+          <div class="w-full justify-between">
+            <div class="text-sm font-semibold text-gray-200">Prozent</div>
+            <div>{{ (selectedTaskResultDetail.percentage || 0) * 100 }}%</div>
+          </div>
+          <div class="w-full justify-between">
+            <div class="text-sm font-semibold text-gray-200">Status</div>
+            <div>{{ RESULT_RESPONSE_NAME[selectedTaskResultDetail.status!] }}</div>
+          </div>
+          <div class="w-full justify-between">
+            <div class="text-sm font-semibold text-gray-200">Feedback</div>
+            <div>
+              {{ generateDetailFeedbackFromTaskStatus(selectedTaskResultDetail.status!, selectedPolygon.name) || '-' }}
+            </div>
+          </div>
+        </div>
+      </form-field>
+    </div>
 
     <custom-slider
       v-if="isOffsetAnnotationPoint"
