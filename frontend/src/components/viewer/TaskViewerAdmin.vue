@@ -46,6 +46,8 @@ import {
   hideGroup,
   setColors,
   showAllAnnotations,
+  showAllSolutionAnnotations,
+  hideAllSolutionAnnotations,
   showGroup,
   updateAnnotation
 } from '../../core/viewer/helper/taskViewerHelper';
@@ -992,6 +994,8 @@ const closeSampleSolutionEditor = () => {
     :tools="toolbarTools"
     @hideAnnotations="hideAllAnnotations"
     @showAnnotations="showAllAnnotations"
+    @show-solution-annotations="showAllSolutionAnnotations"
+    @hide-solution-annotations="hideAllSolutionAnnotations"
     @toolUpdate="setTool"
   ></tool-bar>
 

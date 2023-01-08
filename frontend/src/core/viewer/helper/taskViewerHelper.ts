@@ -10,6 +10,7 @@ import { TaskResult } from '../../../model/task/result/taskResult';
 import { Ref } from 'vue';
 import { RESULT_POLYGON_COLOR, TaskStatus } from '../../../core/types/taskStatus';
 import { TaskResultDetail } from '../../../model/task/result/taskResultDetail';
+import { SOLUTION_NODE_ID } from '../svg/svg-overlay';
 
 export const updateAnnotation = async ({
   annotation,
@@ -85,4 +86,12 @@ export const hideAllAnnotations = () => {
 
 export const showAllAnnotations = () => {
   selectAll(`#${SVG_ID} > *`).style('visibility', 'visible');
+};
+
+export const showAllSolutionAnnotations = () => {
+  selectAll(`#${SOLUTION_NODE_ID}`).style('visibility', 'visible');
+};
+
+export const hideAllSolutionAnnotations = () => {
+  selectAll(`#${SOLUTION_NODE_ID}`).style('visibility', 'hidden');
 };
