@@ -1,10 +1,13 @@
 from typing import List, Optional
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.crud.base import CRUDBase
+from app.models.base_task import BaseTask
 from app.models.course import Course
 from app.models.course_members import CourseMembers
+from app.models.task import Task
 from app.schemas.course import CourseAdmin, CourseCreate, CourseDetail, CourseUpdate
 
 
@@ -172,6 +175,17 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
 
     def get_members(self, db: Session, *, course_id: int) -> List:
         return self.get(db, id=course_id).members
+
+    def get_task_count(self, db: Session, *, course_id: int) -> int:
+        result = (
+            db.query(Task.id)
+            .select_from(Course)
+            .join(BaseTask, Course.id == BaseTask.course_id)
+            .join(Task, Task.base_task_id == BaseTask.id)
+            .filter(Course.id == course_id)
+            .count()
+        )
+        return result
 
 
 crud_course = CRUDCourse(Course)

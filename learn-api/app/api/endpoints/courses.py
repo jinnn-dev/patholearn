@@ -10,6 +10,7 @@ from app.api.deps import (
 from app.crud.crud_base_task import crud_base_task
 from app.crud.crud_course import crud_course
 from app.crud.crud_task import crud_task
+from app.crud.crud_task_group import crud_task_group
 from app.crud.crud_user_solution import crud_user_solution
 from app.models.user import User
 from app.schemas.course import Course as CourseSchema
@@ -39,22 +40,25 @@ def get_all_courses(
 def get_courses_of_user(
     db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)
 ) -> Any:
-    courses = crud_course.get_multi_by_user(db, user_id=current_user.id)
 
+    courses = crud_course.get_multi_by_user(db, user_id=current_user.id)
     for course in courses:
+
         course_percentage_solved = crud_user_solution.get_solved_percentage_to_course(
             db, user_id=current_user.id, course_id=course.id
         )
-        has_new_task = False
-        task_count = 0
-        for task_group in course.task_groups:
-            ids = [group.id for group in task_group.tasks if group.enabled == True]
-            if crud_task.has_new_task_multiple_base_tasks(
-                db=db, user_id=current_user.id, base_task_ids=ids
-            ):
-                has_new_task = True
-            for task in task_group.tasks:
-                task_count += len(task.tasks)
+
+        number_of_new_tasks = crud_task_group.has_new_task_multiple_task_groups(
+            db, current_user.id, [task_group.id for task_group in course.task_groups]
+        )
+
+        # DB query is faster than loop over pydantic model??
+        task_count = crud_course.get_task_count(db, course_id=course.id)
+        # for task_group in course.task_groups:
+        #     for base_task in task_group.tasks:
+        #         task_count += len(base_task.tasks)
+
+        has_new_task = True if len(number_of_new_tasks) > 0 else False
 
         if task_count:
             course.percentage_solved = float(course_percentage_solved) / task_count
@@ -65,6 +69,7 @@ def get_courses_of_user(
         wrong_count = crud_user_solution.get_amount_of_wrong_solutions_to_course(
             db=db, user_id=current_user.id, course_id=course.id
         )
+
         course.correct_tasks = correct_count
         course.wrong_tasks = wrong_count
         course.task_count = task_count
