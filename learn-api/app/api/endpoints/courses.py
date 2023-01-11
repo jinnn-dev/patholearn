@@ -1,3 +1,4 @@
+import time
 from typing import Any, List, Union
 
 from app.api.deps import (
@@ -17,6 +18,8 @@ from app.schemas.course import CourseUpdate
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.functions import user
+from app.utils.logger import logger
+from app.utils.timer import Timer
 
 router = APIRouter()
 
@@ -104,8 +107,12 @@ def get_specific_course(
     *,
     db: Session = Depends(get_db),
     short_name: str,
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_active_user),
 ) -> Any:
+
+    timer = Timer()
+    timer.start()
+
     course = crud_course.get_by_short_name(db, short_name=short_name)
 
     if course is None:
@@ -133,59 +140,67 @@ def get_specific_course(
             },
         )
 
-    course = CourseAll(
-        id=course.id,
-        short_name=course.short_name,
-        name=course.name,
-        created=course.created,
-        members=course.members,
-        is_member=is_member,
-        task_groups=course.task_groups,
-        owner=course.owner,
-        task_count=0,
-    )
+    # Seems to be very slow and is not needed
+    # course = CourseAll(
+    #     id=course.id,
+    #     short_name=course.short_name,
+    #     name=course.name,
+    #     created=course.created,
+    #     members=course.members,
+    #     is_member=is_member,
+    #     task_groups=course.task_groups,
+    #     owner=course.owner,
+    #     task_count=0,
+    # )
 
     course_percentage_solved = 0.0
     task_count = 0
     has_new_tasks = False
+
     for task_group in course.task_groups:
-        percentage = (
-            crud_user_solution.get_solved_percentage_to_task_group(
-                db, user_id=current_user.id, task_group_id=task_group.id
-            )[0]
-            or 0.0
-        )
+        if current_user.id != course.owner.id:
+            percentage = (
+                crud_user_solution.get_solved_percentage_to_task_group(
+                    db, user_id=current_user.id, task_group_id=task_group.id
+                )[0]
+                or 0.0
+            )
+        else:
+            percentage = 0.0
 
         base_task_count = 0
-
-        ids = [group.id for group in task_group.tasks if group.enabled == True]
-        if crud_task.has_new_task_multiple_base_tasks(
-            db, user_id=current_user.id, base_task_ids=ids
-        ):
-            task_group.new_tasks += 1
-            has_new_tasks = True
+        task_group.new_tasks = 0
+        if current_user.id != course.owner.id:
+            ids = [group.id for group in task_group.tasks if group.enabled == True]
+            if crud_task.has_new_task_multiple_base_tasks(
+                db, user_id=current_user.id, base_task_ids=ids
+            ):
+                task_group.new_tasks += 1
+                has_new_tasks = True
 
         for base_task in task_group.tasks:
             if not base_task.enabled and not current_user.is_superuser:
                 continue
             base_task_count += len(base_task.tasks)
-            task_count += base_task_count
             course_percentage_solved += float(percentage)
             if base_task_count:
                 task_group.percentage_solved = percentage / base_task_count
             else:
                 task_group.percentage_solved = 0.0
+
         task_group.task_count = base_task_count
-        task_group.correct_tasks = (
-            crud_user_solution.get_amount_of_correct_solutions_to_task_group(
-                db, user_id=current_user.id, task_group_id=task_group.id
+
+        if current_user.id != course.owner.id:
+            task_group.correct_tasks = (
+                crud_user_solution.get_amount_of_correct_solutions_to_task_group(
+                    db, user_id=current_user.id, task_group_id=task_group.id
+                )
             )
-        )
-        task_group.wrong_tasks = (
-            crud_user_solution.get_amount_of_wrong_solutions_to_task_group(
-                db, user_id=current_user.id, task_group_id=task_group.id
+            task_group.wrong_tasks = (
+                crud_user_solution.get_amount_of_wrong_solutions_to_task_group(
+                    db, user_id=current_user.id, task_group_id=task_group.id
+                )
             )
-        )
 
         if task_group.task_count is None:
             task_group.task_count = 0
@@ -206,7 +221,7 @@ def join_course(
     *,
     db: Session = Depends(get_db),
     short_name: str,
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_active_user),
 ) -> Any:
     joined_course = crud_course.join_course(
         db, short_name=short_name, user_id=current_user.id
@@ -227,7 +242,7 @@ def leave_course(
     *,
     db: Session = Depends(get_db),
     short_name: str,
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_active_user),
 ) -> Any:
     course = crud_course.get_by_short_name(db, short_name=short_name)
     crud_course.leave_course(db, course_id=course.id, user_id=current_user.id)
@@ -241,7 +256,7 @@ def delete_course(
     *,
     db: Session = Depends(get_db),
     short_name: str,
-    current_user: User = Depends(get_current_active_superuser)
+    current_user: User = Depends(get_current_active_superuser),
 ) -> Any:
 
     course = crud_course.get_by_short_name(db, short_name=short_name)
@@ -263,7 +278,7 @@ def create_course(
     *,
     db: Session = Depends(get_db),
     course_in: CourseCreate,
-    current_user: User = Depends(get_current_active_superuser)
+    current_user: User = Depends(get_current_active_superuser),
 ) -> Any:
     duplicate_course = crud_course.get_by_name(db, name=course_in.name)
     if duplicate_course:
@@ -281,7 +296,7 @@ def update_course(
     *,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_superuser),
-    obj_in: CourseUpdate
+    obj_in: CourseUpdate,
 ) -> CourseSchema:
     course = crud_course.get(db, id=obj_in.course_id)
 
