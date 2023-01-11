@@ -92,17 +92,7 @@ def get_owned_courses(
     courses = crud_course.get_multi_by_owner(db=db, owner_id=current_user.id)
 
     for course in courses:
-        course_percentage_solved = crud_user_solution.get_solved_percentage_to_course(
-            db, user_id=current_user.id, course_id=course.id
-        )
-
-        task_count = 0
-        for task_group in course.task_groups:
-            for task in task_group.tasks:
-                task_count += len(task.tasks)
-
-        if task_count:
-            course.percentage_solved = float(course_percentage_solved) / task_count
+        task_count = crud_course.get_task_count(db, course_id=course.id)
         course.task_count = task_count
     return courses
 
