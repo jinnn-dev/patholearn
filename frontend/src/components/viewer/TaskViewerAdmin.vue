@@ -26,7 +26,7 @@ import { TaskService } from '../../services/task.service';
 import { AnnotationParser, ParseResult } from '../../utils/annotation-parser';
 import { adminMouseClickHandler } from '../../core/viewer/helper/adminMouseClickHandler';
 import { AnnotationViewer } from '../../core/viewer/annotationViewer';
-import { generateViewerOptions } from '../../core/viewer/config/generateViewerOptions';
+import { generateViewerOptions, SVG_ID } from '../../core/viewer/config/generateViewerOptions';
 import {
   isTaskSaving,
   polygonChanged,
@@ -74,9 +74,10 @@ import { ValidationResult } from '../../model/viewer/validation/validationResult
 import { validateTaskAnnotations } from '../../core/viewer/helper/validateAnnotations';
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
 import { TaskResult } from '../../model/task/result/taskResult';
-import { Annotation } from 'core/viewer/svg/annotation/annotation';
+import { Annotation } from '../../core/viewer/svg/annotation/annotation';
 import { TaskResultDetail } from 'model/task/result/taskResultDetail';
 import { RESULT_RESPONSE_NAME, generateDetailFeedbackFromTaskStatus } from '../../core/types/taskStatus';
+import { SOLUTION_NODE_ID } from '../../core/viewer/svg/svg-overlay';
 
 const props = defineProps({
   slide_name: String,
@@ -850,6 +851,14 @@ const hideUserSolutionAnnotations = (userId: number) => {
 const closeSampleSolutionEditor = () => {
   showUploadDialog.value = false;
   changeToolTo.value = Tool.MOVE;
+};
+
+const hideAllSolutionAnnotations = () => {
+  selectAll(`#${SVG_ID} > #${SOLUTION_NODE_ID} > *`).style('visibility', 'hidden');
+};
+
+const showAllSolutionAnnotations = () => {
+  selectAll(`#${SVG_ID} > #${SOLUTION_NODE_ID} > *`).style('visibility', 'visible');
 };
 </script>
 <template>
