@@ -4,7 +4,12 @@ import 'tippy.js/animations/shift-away.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/dist/svg-arrow.css';
 import 'tippy.js/dist/tippy.css';
-import { RESULT_RESPONSE_DETAIL, RESULT_RESPONSE_NAME, TaskStatus } from '../../core/types/taskStatus';
+import {
+  generateDetailFeedbackFromTaskStatus,
+  RESULT_RESPONSE_DETAIL,
+  RESULT_RESPONSE_NAME,
+  TaskStatus
+} from '../../core/types/taskStatus';
 import { TaskResultDetail } from '../../model/task/result/taskResultDetail';
 
 export class TooltipGenerator {
@@ -21,16 +26,9 @@ export class TooltipGenerator {
         ? resultDetail.percentage! * 100
         : Number((resultDetail.percentage! * 100).toFixed(2));
 
-    let detailContent = RESULT_RESPONSE_DETAIL[resultDetail.status!];
-    if (resultDetail.status === TaskStatus.WRONG_NAME) {
-      const name = select('[id="' + resultDetail.id + '"]').attr('name');
+    const name = select('[id="' + resultDetail.id + '"]').attr('name');
 
-      if (!name) {
-        detailContent = 'Du hast vergessen der Annotation eine Klasse zu geben';
-      } else {
-        detailContent = name + ' ' + detailContent;
-      }
-    }
+    let detailContent = generateDetailFeedbackFromTaskStatus(resultDetail.status!, name);
 
     this.instances.push(
       ...tippy('[id="' + resultDetail.id + '"]', {
@@ -77,6 +75,14 @@ export class TooltipGenerator {
       tooltip.destroy();
     }
     this.instances = [];
+  }
+
+  public static removeTooltipByElementId(elementId: string) {
+    const tooltip = TooltipGenerator.getTooltipByElementId(elementId);
+    if (tooltip) {
+      tooltip.hide();
+      tooltip.destroy();
+    }
   }
 
   public static disableTooltip(elementId: string) {

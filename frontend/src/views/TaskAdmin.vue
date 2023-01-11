@@ -3,7 +3,7 @@ import { defineAsyncComponent, onMounted, onUnmounted, ref, nextTick } from 'vue
 import { BaseTask } from '../model/task/baseTask';
 import { useRoute } from 'vue-router';
 import { Task } from '../model/task/task';
-import { viewerLoadingState } from '../core/viewer/viewerState';
+import { viewerLoadingState, selectedTaskResult } from '../core/viewer/viewerState';
 import { TaskService } from '../services/task.service';
 import SelectImagesTask from '../components/tasks/image-select/SelectImagesTask.vue';
 import TaskContainer from '../components/task/TaskContainer.vue';
@@ -78,7 +78,7 @@ onUnmounted(() => {
   <div v-if="viewerLoadingState.dataLoaded">
     <viewer-back-button :routeName="`/group/${baseTask?.task_group_short_name}/admin`"></viewer-back-button>
 
-    <task-header :selectedTask="selectedTask"></task-header>
+    <task-header :selectedTask="selectedTask" :solve-result="selectedTaskResult"></task-header>
 
     <task-container
       :baseTask="baseTask"

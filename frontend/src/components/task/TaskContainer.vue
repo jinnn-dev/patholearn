@@ -90,6 +90,7 @@ const showUserSolution = (userId: number) => {
 const hideUserSolution = (userId: number) => {
   emit('hide-user-solution', userId);
 };
+
 // const userSolutionClicked = (userId: number) => {
 //   emit('toggleUserSolution', userId);
 // };
@@ -231,6 +232,7 @@ const deleteBaseTask = () => {
       <select-user-solution
         v-else-if="!userSolutionsLoading && users"
         :users="users"
+        :task="selectedTask"
         @show-user-solution="showUserSolution($event)"
         @hide-user-solution="hideUserSolution($event)"
       ></select-user-solution>

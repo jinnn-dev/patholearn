@@ -34,13 +34,21 @@ import {
   viewerLoadingState,
   loadedUserSolutions,
   annotationsToUser,
-  userSolutionAnnotationsLoading
+  userSolutionAnnotationsLoading,
+  taskResultLoaded,
+  TaskResultLoaded,
+  selectedUser,
+  selectedTaskResultDetail,
+  selectedTaskResult
 } from '../../core/viewer/viewerState';
 import {
   focusBackgroundAnnotation,
   hideAllAnnotations,
   hideGroup,
+  setColors,
   showAllAnnotations,
+  showAllSolutionAnnotations,
+  hideAllSolutionAnnotations,
   showGroup,
   updateAnnotation
 } from '../../core/viewer/helper/taskViewerHelper';
@@ -64,8 +72,11 @@ import { TaskType } from '../../core/types/taskType';
 import AnnotationValidation from './AnnotationValidation.vue';
 import { ValidationResult } from '../../model/viewer/validation/validationResult';
 import { validateTaskAnnotations } from '../../core/viewer/helper/validateAnnotations';
-import SelectUserSolution from '../task/SelectUserSolution.vue';
-import { user } from '../../../icons';
+import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
+import { TaskResult } from '../../model/task/result/taskResult';
+import { Annotation } from '../../core/viewer/svg/annotation/annotation';
+import { TaskResultDetail } from 'model/task/result/taskResultDetail';
+import { RESULT_RESPONSE_NAME, generateDetailFeedbackFromTaskStatus } from '../../core/types/taskStatus';
 import { SOLUTION_NODE_ID } from '../../core/viewer/svg/svg-overlay';
 
 const props = defineProps({
@@ -221,6 +232,17 @@ watch(
     }
 
     hideUserSolutionAnnotations(newVal);
+  }
+);
+
+watch(
+  () => taskResultLoaded.value,
+  () => {
+    if (taskResultLoaded.value) {
+      setTaskResult(taskResultLoaded.value);
+      const annotations = loadedUserSolutions.get(taskResultLoaded.value.userId)?.annotations;
+      setTaskResultStyles(taskResultLoaded.value.taskResult, annotations);
+    }
   }
 );
 
@@ -463,15 +485,18 @@ const setTool = (data: { tool: Tool; event: any }) => {
   } else if (currentTool.value === Tool.MOVE) {
     viewerRef.value.style.cursor = 'grab';
     drawingViewer.value?.removeListener();
+    unselectAnnotation();
     selectedPolygon.value = undefined;
   } else if (currentTool.value === Tool.UPLOAD) {
     showUploadDialog.value = true;
+    unselectAnnotation();
     selectedPolygon.value = undefined;
   } else {
     viewerRef.value.style.cursor = 'pointer';
   }
 
   if (currentTool.value !== Tool.SELECT) {
+    unselectAnnotation();
     polygonChanged.polygon?.unselect();
   }
 };
@@ -587,10 +612,21 @@ const selectAnnotation = (annotationId: string) => {
   if (annotationId === selectedPolygon.value?.id) {
     return;
   }
-
+  unselectAnnotation();
   selectedPolygon.value = drawingViewer.value?.selectAnnotation(annotationId, true);
 
   selectedPolygonData.color = selectedPolygon.value!.color;
+  selectedUser.value = annotationsToUser.get(selectedPolygon.value!.id);
+
+  if (selectedUser.value) {
+    const taskResult = loadedUserSolutions.get(selectedUser.value!.id)?.task_result;
+    if (taskResult && taskResult.result_detail) {
+      const taskResultDetail = (taskResult.result_detail as TaskResultDetail[]).find(
+        (result) => result.id === selectedPolygon.value?.id
+      );
+      selectedTaskResultDetail.value = taskResultDetail;
+    }
+  }
 
   if (selectedPolygon.value?.type !== ANNOTATION_TYPE.BASE && !isInfoAnnotation(selectedPolygon.value!.type)) {
     selectedPolygonData.name = selectedPolygon.value!.name;
@@ -617,7 +653,20 @@ const selectAnnotation = (annotationId: string) => {
 };
 
 const unselectAnnotation = () => {
+  if (!selectedPolygon.value) return;
+
   selectedPolygon.value?.unselect();
+
+  if (isUserSolution(selectedPolygon.value.type)) {
+    const user = annotationsToUser.get(selectedPolygon.value.id);
+    if (user) {
+      const userSolution = loadedUserSolutions.get(user.id);
+      if (userSolution && userSolution.task_result) {
+        setColors(userSolution.task_result, drawingViewer, [selectedPolygon.value]);
+      }
+    }
+  }
+
   selectedPolygon.value = undefined;
 };
 
@@ -743,6 +792,7 @@ const showUserSolutionAnnotations = async (userId: number) => {
   if (!loadedUserSolutions.has(userId)) {
     userSolutionAnnotationsLoading.value = true;
     const userSolution = await TaskService.getUserSolutionToUser(props.task!.id, userId);
+
     userSolutionAnnotationsLoading.value = false;
 
     if (userSolution !== null) {
@@ -755,20 +805,47 @@ const showUserSolutionAnnotations = async (userId: number) => {
         for (const annotation of annotations) {
           annotationsToUser.set(annotation.id, userSolution.user);
         }
-        loadedUserSolutions.set(userId, annotations);
+        loadedUserSolutions.set(userId, {
+          task_result: userSolution.user_solution.task_result,
+          annotations: annotations
+        });
       }
     }
   } else {
-    drawingViewer.value?.addUserSolutionAnnotations(loadedUserSolutions.get(userId));
+    drawingViewer.value?.addUserSolutionAnnotations(loadedUserSolutions.get(userId)?.annotations || []);
+  }
+  let taskResult = loadedUserSolutions.get(userId)?.task_result;
+  if (taskResult) {
+    selectedTaskResult.value = taskResult;
+    setTaskResultStyles(taskResult, loadedUserSolutions.get(userId)?.annotations);
   }
 };
 
+const setTaskResult = (result: TaskResultLoaded) => {
+  if (loadedUserSolutions.has(result.userId) && loadedUserSolutions.get(result.userId)) {
+    loadedUserSolutions.get(result.userId)!.task_result = result.taskResult;
+  }
+};
+
+const setTaskResultStyles = (taskResult: TaskResult, annotations?: Annotation[]) => {
+  TooltipGenerator.addAll(taskResult.result_detail!);
+  setColors(taskResult, drawingViewer, annotations);
+};
+
 const hideUserSolutionAnnotations = (userId: number) => {
-  const annotations = loadedUserSolutions.get(userId);
+  const annotations = loadedUserSolutions.get(userId)?.annotations;
   unselectAnnotation();
   if (annotations) {
     drawingViewer.value?.removeUserAnnotations(annotations);
+    const taskResult = loadedUserSolutions.get(userId)?.task_result;
+    if (taskResult && taskResult.result_detail) {
+      for (const detail of taskResult.result_detail) {
+        TooltipGenerator.removeTooltipByElementId((detail as TaskResultDetail).id ?? '');
+      }
+    }
+    drawingViewer.value?.resetUserAnnotations(annotations);
   }
+  selectedTaskResult.value = undefined;
 };
 
 const closeSampleSolutionEditor = () => {
@@ -820,19 +897,36 @@ const showAllSolutionAnnotations = () => {
       </form-field>
     </div>
 
-    <form-field
-      v-if="isUserSolution(selectedPolygon.type) && annotationsToUser.get(selectedPolygon.id) !== undefined"
-      label="Nutzer"
-      margin-hor="my-0"
-    >
-      <div class="flex gap-2">
-        <div>{{ annotationsToUser.get(selectedPolygon.id)!.firstname }}</div>
-        <div v-if="annotationsToUser.get(selectedPolygon.id)!.middlename">
-          {{ annotationsToUser.get(selectedPolygon.id)!.middlename }}
+    <div v-if="isUserSolution(selectedPolygon.type) && annotationsToUser.get(selectedPolygon.id) !== undefined">
+      <form-field label="Nutzer" margin-hor="my-0">
+        <div class="flex gap-2">
+          <div>{{ annotationsToUser.get(selectedPolygon.id)!.firstname }}</div>
+          <div v-if="annotationsToUser.get(selectedPolygon.id)!.middlename">
+            {{ annotationsToUser.get(selectedPolygon.id)!.middlename }}
+          </div>
+          <div>{{ annotationsToUser.get(selectedPolygon.id)!.lastname }}</div>
         </div>
-        <div>{{ annotationsToUser.get(selectedPolygon.id)!.lastname }}</div>
-      </div>
-    </form-field>
+      </form-field>
+
+      <form-field label="Bewertung" margin-hor="my-0" v-if="selectedTaskResultDetail">
+        <div class="flex flex-col gap-2 w-full">
+          <div class="w-full justify-between">
+            <div class="text-sm font-semibold text-gray-200">Prozent</div>
+            <div>{{ (selectedTaskResultDetail.percentage || 0) * 100 }}%</div>
+          </div>
+          <div class="w-full justify-between">
+            <div class="text-sm font-semibold text-gray-200">Status</div>
+            <div>{{ RESULT_RESPONSE_NAME[selectedTaskResultDetail.status!] }}</div>
+          </div>
+          <div class="w-full justify-between">
+            <div class="text-sm font-semibold text-gray-200">Feedback</div>
+            <div>
+              {{ generateDetailFeedbackFromTaskStatus(selectedTaskResultDetail.status!, selectedPolygon.name) || '-' }}
+            </div>
+          </div>
+        </div>
+      </form-field>
+    </div>
 
     <custom-slider
       v-if="isOffsetAnnotationPoint"
@@ -910,8 +1004,10 @@ const showAllSolutionAnnotations = () => {
     :changeToolTo="changeToolTo"
     :setMoving="setMoving"
     :tools="toolbarTools"
-    @hideAnnotations="hideAllSolutionAnnotations"
-    @showAnnotations="showAllSolutionAnnotations"
+    @hideAnnotations="hideAllAnnotations"
+    @showAnnotations="showAllAnnotations"
+    @show-solution-annotations="showAllSolutionAnnotations"
+    @hide-solution-annotations="hideAllSolutionAnnotations"
     @toolUpdate="setTool"
   ></tool-bar>
 

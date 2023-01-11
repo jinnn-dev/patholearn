@@ -1,67 +1,67 @@
 <template>
   <div
-    v-if='solveResult'
-    :style='{ borderColor: color }'
-    class='bg-gray-700/70 backdrop-blur-md z-[99] rounded-xl p-4 flex flex-col items-center border-3'
+    v-if="solveResult"
+    :style="{ borderColor: color }"
+    class="bg-gray-700/70 backdrop-blur-md z-[99] rounded-xl p-4 flex flex-col items-center border-3"
   >
-    <div class='flex justify-center items-center gap-4'>
+    <div class="flex justify-center items-center gap-4">
       <!-- <img src="../../assets/well_done.svg" class="w-42" v-if="solveResult?.task_status === TaskStatus.CORRECT" /> -->
-      <div v-if='solveResult?.task_status === TaskStatus.CORRECT' class='svg-container'>
+      <div v-if="solveResult?.task_status === TaskStatus.CORRECT" class="svg-container">
         <svg
-          aria-hidden='true'
-          class='ft-green-tick'
-          height='49'
-          viewBox='0 0 48 48'
-          width='40'
-          xmlns='http://www.w3.org/2000/svg'
+          aria-hidden="true"
+          class="ft-green-tick"
+          height="49"
+          viewBox="0 0 48 48"
+          width="40"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <circle class='circle circle-correct' cx='24' cy='24' fill='transparent' r='22' />
+          <circle class="circle circle-correct" cx="24" cy="24" fill="transparent" r="22" />
           <path
-            class='tick'
-            d='M14 27l5.917 4.917L34 17'
-            fill='none'
-            stroke='#2ecc71'
-            stroke-linecap='round'
-            stroke-linejoin='round'
-            stroke-miterlimit='10'
-            stroke-width='4'
+            class="tick"
+            d="M14 27l5.917 4.917L34 17"
+            fill="none"
+            stroke="#2ecc71"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-miterlimit="10"
+            stroke-width="4"
           />
         </svg>
       </div>
 
-      <div v-if='solveResult?.task_status !== TaskStatus.CORRECT' class='svg-container'>
+      <div v-if="solveResult?.task_status !== TaskStatus.CORRECT" class="svg-container">
         <svg
-          aria-hidden='true'
-          class='ft-green-tick'
-          height='49'
-          viewBox='0 0 48 48'
-          width='40'
-          xmlns='http://www.w3.org/2000/svg'
+          aria-hidden="true"
+          class="ft-green-tick"
+          height="49"
+          viewBox="0 0 48 48"
+          width="40"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <circle class='circle circle-wrong' cx='24' cy='24' fill='transparent' r='22' />
+          <circle class="circle circle-wrong" cx="24" cy="24" fill="transparent" r="22" />
           <line
-            id='path2'
-            class='cross'
-            fill='none'
-            stroke='#e74c3c'
-            stroke-miterlimit='10'
-            stroke-width='3'
-            x1='15'
-            x2='33'
-            y1='33'
-            y2='15'
+            id="path2"
+            class="cross"
+            fill="none"
+            stroke="#e74c3c"
+            stroke-miterlimit="10"
+            stroke-width="3"
+            x1="15"
+            x2="33"
+            y1="33"
+            y2="15"
           />
           <line
-            id='path3'
-            class='cross'
-            fill='none'
-            stroke='#e74c3c'
-            stroke-miterlimit='10'
-            stroke-width='3'
-            x1='33'
-            x2='15'
-            y1='33'
-            y2='15'
+            id="path3"
+            class="cross"
+            fill="none"
+            stroke="#e74c3c"
+            stroke-miterlimit="10"
+            stroke-width="3"
+            x1="33"
+            x2="15"
+            y1="33"
+            y2="15"
           />
           <!-- <path
             class="tick"
@@ -75,19 +75,19 @@
           /> -->
         </svg>
       </div>
-      <h2 class='text-xl text-center'>
+      <h2 class="text-xl text-center">
         {{ solveResult?.response_text }}
       </h2>
     </div>
 
-    <div v-if='groupedDetail' class='w-full flex flex-col items-center'>
-      <div class='mt-1'>
-        <div v-for='(item, index) in groupedDetail' :key='index' class='flex gap-4 my-2 items-center'>
+    <div v-if="groupedDetail" class="w-full flex flex-col items-center">
+      <div class="mt-1">
+        <div v-for="(item, index) in groupedDetail" :key="index" class="flex gap-4 my-2 items-center">
           <div
-            :style='{
+            :style="{
               backgroundColor: RESULT_POLYGON_COLOR[item[0]]
-            }'
-            class='w-4 h-4 rounded-full'
+            }"
+            class="w-4 h-4 rounded-full"
           ></div>
           <div>
             {{ item[1] }} /
@@ -100,36 +100,37 @@
       </div>
     </div>
 
-    <div class='flex gap-4 mt-2'>
+    <div class="flex gap-4 mt-2" v-if="!route.fullPath.includes('/admin')">
       <save-button
-        :loading='viewerLoadingState.solveResultLoading'
-        bgColor='bg-gray-500'
-        class='w-52'
-        fontWeight='font-medium'
-        name='Lösung bearbeiten'
-        @click='userSolutionLocked = false'
+        :loading="viewerLoadingState.solveResultLoading"
+        bgColor="bg-gray-500"
+        class="w-52"
+        fontWeight="font-medium"
+        name="Lösung bearbeiten"
+        @click="userSolutionLocked = false"
       >
       </save-button>
       <save-button
-        v-if='solveResult.task_status === TaskStatus.CORRECT && showSolution'
-        :loading='viewerLoadingState.solutionLoading'
+        v-if="solveResult.task_status === TaskStatus.CORRECT && showSolution"
+        :loading="viewerLoadingState.solutionLoading"
         :name="showSolution ? 'Musterlösung ausblenden' : 'Musterlösung anzeigen'"
-        bgColor='bg-gray-500'
-        class='w-70'
-        fontWeight='font-medium'
-        @click='showSolution = !showSolution'
+        bgColor="bg-gray-500"
+        class="w-70"
+        fontWeight="font-medium"
+        @click="showSolution = !showSolution"
       >
       </save-button>
     </div>
   </div>
 </template>
-<script lang='ts'>
+<script lang="ts">
 import { computed, defineComponent, PropType } from 'vue';
 
 import { showSolution, userSolutionLocked, viewerLoadingState } from '../../core/viewer/viewerState';
 import SaveButton from '../general/SaveButton.vue';
 import { TaskResult } from '../../model/task/result/taskResult';
 import { RESULT_POLYGON_COLOR, RESULT_RESPONSE_NAME, TaskStatus } from '../../core/types/taskStatus';
+import { useRoute } from 'vue-router';
 
 export default defineComponent({
   components: { SaveButton },
@@ -139,7 +140,7 @@ export default defineComponent({
   },
   setup(props) {
     const color = computed(() => RESULT_POLYGON_COLOR[props.solveResult!.task_status!]);
-
+    const route = useRoute();
     const groupedDetail = computed(() => {
       const result = new Map<TaskStatus, number>();
       if (props.solveResult?.result_detail) {
@@ -168,7 +169,8 @@ export default defineComponent({
       RESULT_RESPONSE_NAME,
       userSolutionLocked,
       viewerLoadingState,
-      showSolution
+      showSolution,
+      route
     };
   }
 });
