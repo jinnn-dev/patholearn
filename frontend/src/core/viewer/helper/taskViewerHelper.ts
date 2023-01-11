@@ -81,11 +81,11 @@ export const showGroup = (group: AnnotationGroup) => {
 };
 
 export const hideAllAnnotations = () => {
-  selectAll(`#${SVG_ID} > *`).style('visibility', 'hidden');
+  selectAll(`#${SVG_ID}`).style('display', 'none');
 };
 
 export const showAllAnnotations = () => {
-  selectAll(`#${SVG_ID} > *`).style('visibility', 'visible');
+  selectAll(`#${SVG_ID}`).style('display', 'block');
 };
 
 export const showAllSolutionAnnotations = () => {

@@ -1,9 +1,9 @@
 #!/bin/sh
 
-while ! mysql --host="$MYSQL_HOST" --port=3306 -u root -p"$MYSQL_ROOT_PASSWORD" -e "show databases;" > /dev/null 2>&1; do
-    echo "Waiting for MySQL..."
-    sleep 1
-done
+# while ! mysql --host="$MYSQL_HOST" --port=3306 -u root -p"$MYSQL_ROOT_PASSWORD" -e "show databases;" > /dev/null 2>&1; do
+#     echo "Waiting for MySQL..."
+#     sleep 1
+# done
 
 echo "Initializing databases..."
 mysql --host="$MYSQL_HOST" --port=3306 -u root -p"$MYSQL_ROOT_PASSWORD" -e "create database if not exists ${MYSQL_DATABASE};"
