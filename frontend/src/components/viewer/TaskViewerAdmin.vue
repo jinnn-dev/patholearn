@@ -75,7 +75,7 @@ import { validateTaskAnnotations } from '../../core/viewer/helper/validateAnnota
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
 import { TaskResult } from '../../model/task/result/taskResult';
 import { Annotation } from '../../core/viewer/svg/annotation/annotation';
-import { TaskResultDetail } from 'model/task/result/taskResultDetail';
+import { TaskResultDetail } from '../../model/task/result/taskResultDetail';
 import { RESULT_RESPONSE_NAME, generateDetailFeedbackFromTaskStatus } from '../../core/types/taskStatus';
 import { SOLUTION_NODE_ID } from '../../core/viewer/svg/svg-overlay';
 
