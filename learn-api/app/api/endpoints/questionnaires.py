@@ -14,6 +14,7 @@ from app.schemas.questionnaire import (
     Questionnaire,
     QuestionnaireCreate,
     QuestionnaireUpdate,
+    QuestionnaireInDB,
 )
 from app.schemas.questionnaire_answer import QuestionnaireAnswerCreate
 from app.api.deps import (
@@ -28,6 +29,7 @@ from sqlalchemy.orm import Session
 from app.schemas.questionnaire_question import QuestionnaireQuestionCreate
 from app.schemas.questionnaire_question_option import QuestionnaireQuestionOptionCreate
 from app.schemas.user import User
+from app.utils.logger import logger
 
 router = APIRouter()
 
@@ -58,23 +60,10 @@ def delete_questionnaire(
     questionnaire_id: int,
     current_user: User = Depends(get_current_active_superuser),
 ):
-    crud_questionnaire_answer.remove_to_questionnaire(
-        db, questionnaire_id=questionnaire_id
-    )
-
-    questionnaire = crud_questionnaire.get(db, id=questionnaire_id)
-
-    for question in questionnaire.questions:
-        for question_option in question.options:
-            crud_questionnaire_question_option.remove(db, model_id=question_option.id)
-        crud_questionnaire_question.remove(db, model_id=question.id)
-    try:
-        crud_questionnaire.remove(db, model_id=questionnaire.id)
-    except Exception as e:
-        print(e)
+    crud_questionnaire.remove(db, model_id=questionnaire_id)
 
 
-@router.post("/{task_id}")
+@router.post("/{task_id}", response_model=QuestionnaireInDB)
 def create_questionnaire_to_task(
     *,
     db: Session = Depends(get_db),
@@ -100,10 +89,6 @@ def create_questionnaire_to_task(
         )
         question_create.answers = []
         question_create.options = []
-        # question_create.questionnaire_id = questionnaire_db.id
-        # question_create.question_text = question.question_text
-        # question_create.question_type = question.question_type
-        # question_create.order = question.order
         question_create.is_mandatory = question.is_mandatory
         question_db = crud_questionnaire_question.create(db, obj_in=question_create)
 
@@ -114,11 +99,6 @@ def create_questionnaire_to_task(
                 value=option.value,
                 with_input=option.with_input,
             )
-            print(type(bool(option.with_input)))
-            # option_create.question_id = question_db
-            # option_create.order = option.order
-            # option_create.value = option.value
-            # option_create.with_input = option.with_input
             crud_questionnaire_question_option.create(db, obj_in=option_create)
 
     crud_questionnaire.add_questionnaire_to_task(
@@ -127,7 +107,7 @@ def create_questionnaire_to_task(
         questionnaire_id=questionnaire_db.id,
         is_before=questionnaire.is_before,
     )
-
+    logger.debug(questionnaire_db)
     return questionnaire_db
 
 

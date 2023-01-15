@@ -19,7 +19,11 @@
         <div v-for="(questionaire, index) of task.questionnaires" class="flex gap-2">
           <div>{{ index + 1 }}.</div>
           <div>{{ questionaire.name }}</div>
-          <Icon name="trash" class="text-red-500 cursor-pointer" @click="deleteQuestionnaire(questionaire.id)"></Icon>
+          <Icon
+            name="trash"
+            class="text-red-500 cursor-pointer"
+            @click.stop="deleteQuestionnaire(questionaire.id)"
+          ></Icon>
         </div>
       </div>
 

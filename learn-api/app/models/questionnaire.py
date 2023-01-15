@@ -17,5 +17,4 @@ class Questionnaire(Base):
     tasks = relationship(
         "Task",
         secondary="taskquestionnaires",
-        back_populates="questionnaires",
     )
