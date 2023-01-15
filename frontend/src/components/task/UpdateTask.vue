@@ -111,7 +111,7 @@ import PrimaryButton from '../general/PrimaryButton.vue';
 import SaveButton from '../general/SaveButton.vue';
 import { TaskType } from '../../core/types/taskType';
 import ConfirmButtons from '../general/ConfirmButtons.vue';
-import CreateQuestionnaire from './CreateQuestionnaire.vue';
+import CreateQuestionnaire from './questionnaire/CreateQuestionnaire.vue';
 import Icon from '../general/Icon.vue';
 import { QuestionnaireService } from '../../services/questionnaire.service';
 

@@ -13,7 +13,7 @@ import Icon from '../general/Icon.vue';
 import { TaskType } from '../../core/types/taskType';
 import { Questionnaire } from '../../model/questionnaires/questionnaire';
 import { QuestionnaireService } from '../../services/questionnaire.service';
-import AnswerQuestionnaire from './AnswerQuestionnaire.vue';
+import AnswerQuestionnaire from './questionnaire/AnswerQuestionnaire.vue';
 import { TaskStatus } from '../../core/types/taskStatus';
 
 const props = defineProps({

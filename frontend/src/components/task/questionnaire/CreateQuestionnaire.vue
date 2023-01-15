@@ -1,17 +1,20 @@
 <script setup lang="ts">
-import { QuestionnaireCreate, QuestionnaireUpdate } from '../../model/questionnaires/questionnaire';
-import { QuestionnaireQuestion, QuestionnaireQuestionCreate } from '../../model/questionnaires/questionnaireQuestion';
-import InputField from '../form/InputField.vue';
-import ToggleButton from '../form/ToggleButton.vue';
-import FormField from '../form/FormField.vue';
-import PrimaryButton from '../general/PrimaryButton.vue';
-import SaveButton from '../general/SaveButton.vue';
+import { QuestionnaireCreate, QuestionnaireUpdate } from '../../../model/questionnaires/questionnaire';
+import {
+  QuestionnaireQuestion,
+  QuestionnaireQuestionCreate
+} from '../../../model/questionnaires/questionnaireQuestion';
+import InputField from '../../form/InputField.vue';
+import ToggleButton from '../../form/ToggleButton.vue';
+import FormField from '../../form/FormField.vue';
+import PrimaryButton from '../../general/PrimaryButton.vue';
+import SaveButton from '../../general/SaveButton.vue';
 import CreateQuestionnaireQuestion from './CreateQuestionnaireQuestion.vue';
 import { ref, reactive, PropType } from 'vue';
-import Icon from '../general/Icon.vue';
+import Icon from '../../general/Icon.vue';
 import QuestionnaireQuestionItem from './QuestionnaireQuestionItem.vue';
-import { Task } from '../../model/task/task';
-import { QuestionnaireService } from '../../services/questionnaire.service';
+import { Task } from '../../../model/task/task';
+import { QuestionnaireService } from '../../../services/questionnaire.service';
 const props = defineProps({
   task: Object as PropType<Task>,
   isBefore: {

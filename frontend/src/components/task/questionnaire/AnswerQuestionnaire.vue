@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { Questionnaire } from '../../model/questionnaires/questionnaire';
+import { Questionnaire } from '../../../model/questionnaires/questionnaire';
 import { PropType, reactive } from 'vue';
-import { QuestionnaireAnswerCreate } from '../../model/questionnaires/questionnaireAnswer';
-import InputArea from '../form/InputArea.vue';
-import SaveButton from '../general/SaveButton.vue';
-import PrimaryButton from '../general/PrimaryButton.vue';
+import { QuestionnaireAnswerCreate } from '../../../model/questionnaires/questionnaireAnswer';
+import InputArea from '../../form/InputArea.vue';
+import SaveButton from '../../general/SaveButton.vue';
+import PrimaryButton from '../../general/PrimaryButton.vue';
 import AnswerQuestionnaireItem from './AnswerQuestionnaireItem.vue';
 
-import { QuestionnaireQuestionOption } from '../../model/questionnaires/questionnaireQuestionOption';
+import { QuestionnaireQuestionOption } from '../../../model/questionnaires/questionnaireQuestionOption';
 import {
   QuestionnaireQuestion,
   QuestionnaireQuestionTypeNames
-} from '../../model/questionnaires/questionnaireQuestion';
-import { QuestionnaireService } from '../../services/questionnaire.service';
+} from '../../../model/questionnaires/questionnaireQuestion';
+import { QuestionnaireService } from '../../../services/questionnaire.service';
 
 const props = defineProps({
   questionnaire: {

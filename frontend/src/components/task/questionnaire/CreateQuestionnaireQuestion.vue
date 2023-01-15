@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import InputField from '../form/InputField.vue';
-import FormField from '../form/FormField.vue';
-import ToggleButton from '../form/ToggleButton.vue';
+import InputField from '../../form/InputField.vue';
+import FormField from '../../form/FormField.vue';
+import ToggleButton from '../../form/ToggleButton.vue';
 import {
   QuestionnaireQuestionType,
   QuestionnaireQuestionTypeNames,
   QuestionnaireQuestionCreate
-} from '../../model/questionnaires/questionnaireQuestion';
-import { QuestionnaireQuestionOptionCreate } from '../../model/questionnaires/questionnaireQuestionOption';
-import CustomSelect from '../form/CustomSelect.vue';
-import InputArea from '../form/InputArea.vue';
-import PrimaryButton from '../general/PrimaryButton.vue';
-import TextEdit from '../form/TextEdit.vue';
-import Icon from '../general/Icon.vue';
+} from '../../../model/questionnaires/questionnaireQuestion';
+import { QuestionnaireQuestionOptionCreate } from '../../../model/questionnaires/questionnaireQuestionOption';
+import CustomSelect from '../../form/CustomSelect.vue';
+import InputArea from '../../form/InputArea.vue';
+import PrimaryButton from '../../general/PrimaryButton.vue';
+import TextEdit from '../../form/TextEdit.vue';
+import Icon from '../../general/Icon.vue';
 import { reactive, ref, nextTick, PropType, watch } from 'vue';
 import { create } from 'domain';
 

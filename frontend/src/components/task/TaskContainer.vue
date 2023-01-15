@@ -15,7 +15,7 @@ import SelectUserSolution from './SelectUserSolution.vue';
 import Spinner from '../general/Spinner.vue';
 import { QuestionnaireService } from '../../services/questionnaire.service';
 import { Questionnaire } from '../../model/questionnaires/questionnaire';
-import AnswerQuestionnaire from './AnswerQuestionnaire.vue';
+import AnswerQuestionnaire from './questionnaire/AnswerQuestionnaire.vue';
 
 interface LayeredTasks {
   [key: number]: Task[];

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { Questionnaire } from '../../model/questionnaires/questionnaire';
-import { QuestionnaireQuestionOption } from '../../model/questionnaires/questionnaireQuestionOption';
-import { QuestionnaireQuestion } from '../../model/questionnaires/questionnaireQuestion';
-import { QuestionnaireAnswerCreate } from '../../model/questionnaires/questionnaireAnswer';
+import { Questionnaire } from '../../../model/questionnaires/questionnaire';
+import { QuestionnaireQuestionOption } from '../../../model/questionnaires/questionnaireQuestionOption';
+import { QuestionnaireQuestion } from '../../../model/questionnaires/questionnaireQuestion';
+import { QuestionnaireAnswerCreate } from '../../../model/questionnaires/questionnaireAnswer';
 import { PropType, ref, reactive } from 'vue';
-import InputArea from '../form/InputArea.vue';
+import InputArea from '../../form/InputArea.vue';
 import { emit } from 'process';
 
 const props = defineProps({

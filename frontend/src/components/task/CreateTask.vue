@@ -16,7 +16,7 @@ import { TaskType } from '../../core/types/taskType';
 import ConfirmButtons from '../general/ConfirmButtons.vue';
 import { IconNames } from '../../../icons';
 import ToggleButton from '../form/ToggleButton.vue';
-import CreateQuestionnaire from './CreateQuestionnaire.vue';
+import CreateQuestionnaire from './questionnaire/CreateQuestionnaire.vue';
 
 const emit = defineEmits(['close', 'taskCreated']);
 
