@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { QuestionnaireCreate, QuestionnaireUpdate } from '../../../model/questionnaires/questionnaire';
+import { Questionnaire, QuestionnaireCreate, QuestionnaireUpdate } from '../../../model/questionnaires/questionnaire';
 import {
   QuestionnaireQuestion,
   QuestionnaireQuestionCreate
@@ -10,12 +10,14 @@ import FormField from '../../form/FormField.vue';
 import PrimaryButton from '../../general/PrimaryButton.vue';
 import SaveButton from '../../general/SaveButton.vue';
 import CreateQuestionnaireQuestion from './CreateQuestionnaireQuestion.vue';
-import { ref, reactive, PropType } from 'vue';
+import { ref, reactive, PropType, onMounted, watch } from 'vue';
 import Icon from '../../general/Icon.vue';
 import QuestionnaireQuestionItem from './QuestionnaireQuestionItem.vue';
 import { Task } from '../../../model/task/task';
 import { QuestionnaireService } from '../../../services/questionnaire.service';
+
 const props = defineProps({
+  questionnaire: Object as PropType<Questionnaire>,
   task: Object as PropType<Task>,
   isBefore: {
     type: Boolean,
@@ -30,12 +32,40 @@ const createQuestionnaire = reactive<QuestionnaireCreate>({
   is_before: props.isBefore
 });
 
+const answersExists = ref<boolean>(false);
+
+watch(
+  () => props.questionnaire,
+  async () => {
+    if (props.questionnaire) {
+      createQuestionnaire.name = props.questionnaire.name;
+      createQuestionnaire.description = props.questionnaire.description;
+      createQuestionnaire.is_before = props.questionnaire.is_before;
+      createQuestionnaire.questions = props.questionnaire.questions;
+      questionnairQuestions.value = props.questionnaire.questions || [];
+      answersExists.value = await QuestionnaireService.checkIfAnswersExist(props.questionnaire.id);
+    }
+  }
+);
+
+onMounted(async () => {
+  if (props.questionnaire) {
+    createQuestionnaire.name = props.questionnaire.name;
+    createQuestionnaire.description = props.questionnaire.description;
+    createQuestionnaire.is_before = props.questionnaire.is_before;
+    createQuestionnaire.questions = props.questionnaire.questions;
+    answersExists.value = await QuestionnaireService.checkIfAnswersExist(props.questionnaire.id);
+  }
+});
+
 const questionnairQuestions = ref<QuestionnaireQuestion[]>([]);
 
 const showCreateQuestion = ref<boolean>(false);
 
-const selectedQuestion = ref<QuestionnaireQuestionCreate>();
+const selectedQuestion = ref<QuestionnaireQuestion>();
 const selectedIndex = ref<number>();
+
+const questionnaireLoading = ref<boolean>();
 
 const questionCreated = (question: QuestionnaireQuestion) => {
   question.order = questionnairQuestions.value.length + 1;
@@ -55,8 +85,21 @@ const questionUpdated = (question: QuestionnaireQuestion) => {
 
 const saveQuestionnaire = async () => {
   createQuestionnaire.questions = questionnairQuestions.value;
-
+  questionnaireLoading.value = true;
   await QuestionnaireService.createQuestionnaire(createQuestionnaire, props.task!.id!);
+  questionnaireLoading.value = false;
+};
+
+const updateQuestionnaire = async () => {
+  if (!props.questionnaire) {
+    return;
+  }
+  const updateQuestionnaire = createQuestionnaire as QuestionnaireUpdate;
+  updateQuestionnaire.id = props.questionnaire!.id;
+  updateQuestionnaire.questions?.forEach((question) => (question.questionnaire_id = updateQuestionnaire.id));
+  questionnaireLoading.value = true;
+  await QuestionnaireService.updateQuestionnaire(updateQuestionnaire);
+  questionnaireLoading.value = false;
 };
 
 const deleteQuestion = (index: number) => {
@@ -66,8 +109,10 @@ const deleteQuestion = (index: number) => {
   }
 };
 
-const updateQuestion = (index: number, question: QuestionnaireQuestionCreate) => {
+const updateQuestion = (index: number, question: QuestionnaireQuestion) => {
   selectedQuestion.value = question;
+  selectedQuestion.value.id = question.id;
+
   selectedIndex.value = index;
   showCreateQuestion.value = true;
 };
@@ -118,7 +163,7 @@ const closeQuestionCreation = () => {
             </div>
           </div>
         </FormField>
-        <div>
+        <div v-if="!answersExists">
           <PrimaryButton
             @click="closeQuestionCreation"
             name="Neue Frage"
@@ -127,7 +172,18 @@ const closeQuestionCreation = () => {
           ></PrimaryButton>
         </div>
         <div class="mt-2">
-          <SaveButton name="Umfrage speichern" @click="saveQuestionnaire"></SaveButton>
+          <SaveButton
+            v-if="questionnaire"
+            :loading="questionnaireLoading"
+            name="Umfrage aktualisieren"
+            @click="updateQuestionnaire"
+          ></SaveButton>
+          <SaveButton
+            v-else
+            :loading="questionnaireLoading"
+            name="Umfrage aktualisieren"
+            @click="saveQuestionnaire"
+          ></SaveButton>
         </div>
       </div>
     </div>
@@ -146,6 +202,7 @@ const closeQuestionCreation = () => {
       @question-updated="questionUpdated"
       @question-created="questionCreated"
       :question="selectedQuestion"
+      :answers-exists="answersExists"
     ></CreateQuestionnaireQuestion>
   </div>
 </template>

@@ -1,6 +1,6 @@
 import { handleError } from './error-handler';
 import { ApiService } from './api.service';
-import { Questionnaire, QuestionnaireCreate } from '../model/questionnaires/questionnaire';
+import { Questionnaire, QuestionnaireCreate, QuestionnaireUpdate } from '../model/questionnaires/questionnaire';
 import { QuestionnaireQuestionCreate } from '../model/questionnaires/questionnaireQuestion';
 import { QuestionnaireAnswerCreate } from '../model/questionnaires/questionnaireAnswer';
 
@@ -14,11 +14,27 @@ export class QuestionnaireService {
         }
       })
     );
+    return response!.data;
   }
 
-  public static async getQuestionnairesToTask(task_id: number) {
+  public static async updateQuestionnaire(questionnaireUpdate: QuestionnaireUpdate) {
+    const [_, response] = await handleError(
+      ApiService.put<Questionnaire>({
+        resource: this.apiURL(''),
+        data: {
+          ...questionnaireUpdate
+        }
+      })
+    );
+    return response!.data;
+  }
+
+  public static async getQuestionnairesToTask(task_id: number, isBefore?: boolean) {
     const [_, response] = await handleError(
       ApiService.get<Questionnaire[]>({
+        data: {
+          is_before: isBefore
+        },
         resource: this.apiURL(`/${task_id}`)
       })
     );
@@ -40,6 +56,15 @@ export class QuestionnaireService {
     const [_, response] = await handleError(
       ApiService.delete({
         resource: this.apiURL(`/${questionnaireId}`)
+      })
+    );
+    return response!.data;
+  }
+
+  public static async checkIfAnswersExist(questionnaireId: number) {
+    const [_, response] = await handleError(
+      ApiService.get<boolean>({
+        resource: this.apiURL(`/${questionnaireId}/answers/exists`)
       })
     );
     return response!.data;

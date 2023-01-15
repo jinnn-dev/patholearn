@@ -10,6 +10,8 @@ from app.schemas.questionnaire import (
 )
 from sqlalchemy.orm import Session
 
+from app.utils.logger import logger
+
 
 class CRUDQuestionnaire(
     CRUDBase[Questionnaire, QuestionnaireCreate, QuestionnaireUpdate]
@@ -26,41 +28,38 @@ class CRUDQuestionnaire(
         db.refresh(db_obj)
         return db_obj
 
-    def get_questionnaires_to_task(self, db: Session, *, task_id: int, user_id: int):
-        task_questionnaires = (
-            db.query(TaskQuestionnaires)
-            .filter(TaskQuestionnaires.task_id == task_id)
-            .all()
-        )
+    def get_questionnaires_to_task(
+        self, db: Session, *, task_id: int, user_id: int, is_before: bool = None
+    ):
+        if is_before is None:
+            task_questionnaires = (
+                db.query(TaskQuestionnaires)
+                .filter(TaskQuestionnaires.task_id == task_id)
+                .all()
+            )
+        else:
+            task_questionnaires = (
+                db.query(TaskQuestionnaires)
+                .filter(TaskQuestionnaires.task_id == task_id)
+                .filter(TaskQuestionnaires.is_before == is_before)
+                .all()
+            )
         questionnaires = []
         questions = []
         for questionnaire in task_questionnaires:
-            solution_exists = (
-                db.query(QuestionnaireAnswer)
-                .filter(
-                    QuestionnaireAnswer.questionnaire_id
-                    == questionnaire.questionnaire_id
-                )
-                .filter(QuestionnaireAnswer.user_id == user_id)
-                .first()
+            questionnaire_db = crud_questionnaire.get(
+                db, id=questionnaire.questionnaire_id
+            )
+            schema = QuestionnaireDetail(
+                id=questionnaire_db.id,
+                name=questionnaire_db.name,
+                description=questionnaire_db.description,
+                is_mandatory=questionnaire_db.is_mandatory,
+                questions=questionnaire_db.questions,
+                is_before=questionnaire.is_before,
             )
 
-            print(solution_exists)
-
-            if solution_exists is None:
-                questionnaire_db = crud_questionnaire.get(
-                    db, id=questionnaire.questionnaire_id
-                )
-                schema = QuestionnaireDetail(
-                    id=questionnaire_db.id,
-                    name=questionnaire_db.name,
-                    description=questionnaire_db.description,
-                    is_mandatory=questionnaire_db.is_mandatory,
-                    questions=questionnaire_db.questions,
-                    is_before=questionnaire.is_before,
-                )
-
-                questionnaires.append(schema)
+            questionnaires.append(schema)
         return questionnaires
 
 

@@ -26,4 +26,5 @@ export interface QuestionnaireUpdate {
   description?: string;
   is_mandatory?: boolean;
   is_before: boolean;
+  questions?: QuestionnaireQuestion[];
 }

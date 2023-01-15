@@ -215,7 +215,12 @@ const downloadUserSolutions = async (task: Task) => {
       />
     </modal-dialog>
     <modal-dialog :show="taskUpdateModal" customClasses="w-2/5">
-      <UpdateTask :task="selectedTask" @close="taskUpdateModal = false" @taskUpdated="$emit('taskUpdated', $event)" />
+      <UpdateTask
+        v-if="taskUpdateModal"
+        :task="selectedTask"
+        @close="taskUpdateModal = false"
+        @taskUpdated="$emit('taskUpdated', $event)"
+      />
     </modal-dialog>
   </role-only>
 </template>

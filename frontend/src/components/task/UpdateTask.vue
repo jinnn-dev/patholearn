@@ -29,7 +29,8 @@
 
       <Accordion>
         <AccordionItem title="Umfrage vor Aufgabe" :first="true">
-          <CreateQuestionnaire :task="task" :is-before="true"></CreateQuestionnaire>
+          <QuestionnaireContainer :task="task" :isBefore="true"></QuestionnaireContainer>
+          <!-- <CreateQuestionnaire :task="task" :is-before="true"></CreateQuestionnaire> -->
         </AccordionItem>
 
         <AccordionItem v-if="taskUpdateForm.task_type !== TaskType.IMAGE_SELECT" title="Aufgabeneinstellungen">
@@ -98,7 +99,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, PropType, reactive, ref, watch, computed } from 'vue';
+import { defineComponent, PropType, reactive, ref, watch, computed, onMounted } from 'vue';
 import { Task } from '../../model/task/task';
 import { TaskService } from '../../services/task.service';
 import { knowledgeLevel, taskTypes } from './task-config';
@@ -114,6 +115,7 @@ import ConfirmButtons from '../general/ConfirmButtons.vue';
 import CreateQuestionnaire from './questionnaire/CreateQuestionnaire.vue';
 import Icon from '../general/Icon.vue';
 import { QuestionnaireService } from '../../services/questionnaire.service';
+import QuestionnaireContainer from './questionnaire/QuestionnaireContainer.vue';
 
 export default defineComponent({
   components: {
@@ -126,7 +128,8 @@ export default defineComponent({
     Accordion,
     InputField,
     CreateQuestionnaire,
-    Icon
+    Icon,
+    QuestionnaireContainer
   },
   props: {
     task: {
@@ -153,6 +156,18 @@ export default defineComponent({
       task_id: 0,
       task_type: 0,
       can_be_solved: true
+    });
+
+    onMounted(() => {
+      if (props.task) {
+        taskUpdateForm.layer = props.task!.layer;
+        taskUpdateForm.task_question = props.task!.task_question;
+        taskUpdateForm.knowledge_level = props.task!.knowledge_level;
+        taskUpdateForm.min_correct = props.task!.min_correct;
+        taskUpdateForm.task_id = props.task!.id;
+        taskUpdateForm.task_type = props.task!.task_type;
+        taskUpdateForm.can_be_solved = props.task!.can_be_solved;
+      }
     });
 
     watch(

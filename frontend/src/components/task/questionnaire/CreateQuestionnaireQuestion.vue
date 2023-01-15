@@ -5,7 +5,9 @@ import ToggleButton from '../../form/ToggleButton.vue';
 import {
   QuestionnaireQuestionType,
   QuestionnaireQuestionTypeNames,
-  QuestionnaireQuestionCreate
+  QuestionnaireQuestionCreate,
+  QuestionnaireQuestionUpdate,
+  QuestionnaireQuestion
 } from '../../../model/questionnaires/questionnaireQuestion';
 import { QuestionnaireQuestionOptionCreate } from '../../../model/questionnaires/questionnaireQuestionOption';
 import CustomSelect from '../../form/CustomSelect.vue';
@@ -17,15 +19,20 @@ import { reactive, ref, nextTick, PropType, watch } from 'vue';
 import { create } from 'domain';
 
 const props = defineProps({
-  question: Object as PropType<QuestionnaireQuestionCreate>
+  question: Object as PropType<QuestionnaireQuestion>,
+  answersExists: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const emit = defineEmits(['question-created', 'question-updated']);
 
-let createQuestionForm = reactive<QuestionnaireQuestionCreate>({
+let createQuestionForm = reactive<QuestionnaireQuestionCreate | QuestionnaireQuestionUpdate>({
   question_text: props.question?.question_text || '',
   is_mandatory: props.question?.is_mandatory || false,
-  question_type: props.question?.question_type || QuestionnaireQuestionType.SINGLE_CHOICE
+  question_type: props.question?.question_type || QuestionnaireQuestionType.SINGLE_CHOICE,
+  id: props.question?.id
 });
 
 const questionOptions = ref<QuestionnaireQuestionOptionCreate[]>([]);
@@ -37,6 +44,9 @@ watch(
       createQuestionForm.question_text = props.question.question_text;
       createQuestionForm.is_mandatory = props.question.is_mandatory;
       createQuestionForm.question_type = props.question.question_type;
+      if (props.question.id) {
+        (createQuestionForm as QuestionnaireQuestionUpdate).id = props.question.id;
+      }
       questionOptions.value = props.question.options || [];
     } else {
       createQuestionForm.question_text = '';
@@ -44,7 +54,6 @@ watch(
       createQuestionForm.question_type = QuestionnaireQuestionType.SINGLE_CHOICE;
       questionOptions.value = [];
     }
-    console.log(createQuestionForm);
   }
 );
 
@@ -80,7 +89,13 @@ const saveQuestion = () => {
 
 const updateQuestion = () => {
   createQuestionForm.options = questionOptions.value;
-  emit('question-updated', { ...createQuestionForm });
+  if ((createQuestionForm as QuestionnaireQuestionUpdate).id) {
+    var data = createQuestionForm as QuestionnaireQuestionUpdate;
+    data.id = (createQuestionForm as QuestionnaireQuestionUpdate).id;
+    emit('question-updated', { ...data });
+  } else {
+    emit('question-updated', { ...createQuestionForm });
+  }
   createQuestionForm.question_text = '';
   createQuestionForm.is_mandatory = false;
   createQuestionForm.question_type = QuestionnaireQuestionType.SINGLE_CHOICE;
@@ -91,7 +106,7 @@ const updateQuestion = () => {
 <template>
   <InputField label="Frage" v-model="createQuestionForm.question_text" :required="true"></InputField>
 
-  <div class="relative">
+  <div class="relative" v-if="!answersExists">
     <CustomSelect
       :values="Object.values(QuestionnaireQuestionTypeNames)"
       display-type="small"
@@ -103,6 +118,10 @@ const updateQuestion = () => {
     ></CustomSelect>
   </div>
 
+  <div v-else>
+    Die Umfrage wurde schon von Nutzern beantwortet. Daher können die Frageoptionen nicht bearbeitet werden.
+  </div>
+
   <div>
     <div v-if="createQuestionForm.question_type !== QuestionnaireQuestionType.FREE_TEXT">
       <div class="my-2">
@@ -110,6 +129,7 @@ const updateQuestion = () => {
           <div class="flex items-center gap-2 my-2">
             <div>{{ index + 1 }}.</div>
             <TextEdit
+              v-if="!answersExists"
               class="w-full"
               :active="questionOptions[index].value !== '' ? false : true"
               :value="questionOptions[index].value"
@@ -117,12 +137,19 @@ const updateQuestion = () => {
               @value-changed="questionOptions[index].value = $event"
               margin-hor="my-2"
             ></TextEdit>
-            <Icon name="trash" class="text-red-500 cursor-pointer" @click="deleteQuestionoption(index)"> </Icon>
+            <Icon
+              v-if="!answersExists"
+              name="trash"
+              class="text-red-500 cursor-pointer"
+              @click="deleteQuestionoption(index)"
+            >
+            </Icon>
+            <div>{{ questionOptions[index].value }}</div>
           </div>
         </div>
       </div>
 
-      <div class="flex gap-2 mt-2">
+      <div class="flex gap-2 mt-2" v-if="!answersExists">
         <PrimaryButton bg-color="bg-gray-500" type="button" @click="addQuestionOption(false)">
           Single Choice
         </PrimaryButton>

@@ -13,7 +13,7 @@ export const QuestionnaireQuestionTypeNames: { [key in QuestionnaireQuestionType
 
 export interface QuestionnaireQuestion {
   id: number;
-  questionnaire_id: string;
+  questionnaire_id: number;
   order: number;
   question_text: string;
   is_mandatory: boolean;
