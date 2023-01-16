@@ -14,19 +14,6 @@
       >
       </input-field>
 
-      <div v-if="task?.questionnaires" class="my-4">
-        <div class="text-xl">Umfragen Löschen</div>
-        <div v-for="(questionaire, index) of task.questionnaires" class="flex gap-2">
-          <div>{{ index + 1 }}.</div>
-          <div>{{ questionaire.name }}</div>
-          <Icon
-            name="trash"
-            class="text-red-500 cursor-pointer"
-            @click.stop="deleteQuestionnaire(questionaire.id)"
-          ></Icon>
-        </div>
-      </div>
-
       <Accordion>
         <AccordionItem title="Umfrage vor Aufgabe" :first="true">
           <QuestionnaireContainer :task="task" :isBefore="true"></QuestionnaireContainer>
@@ -81,7 +68,7 @@
         </AccordionItem>
 
         <AccordionItem title="Umfrage nach der Aufgabe">
-          <CreateQuestionnaire :task="task" :is-before="false"></CreateQuestionnaire>
+          <QuestionnaireContainer :task="task" :isBefore="false"></QuestionnaireContainer>
         </AccordionItem>
         <!-- <AccordionItem title="Tipps (optional)">
           <HintList :task="task" :isUpdate="true" />

@@ -114,13 +114,34 @@ def update_questionnaire(
     crud_questionnaire.update(db, db_obj=questionnaire, obj_in=questionnaire_update)
 
     for question in questionnaire_update.questions:
-        db_question = crud_questionnaire_question.get(db, id=question.id)
-        question_update = QuestionnaireQuestionUpdate(id=question.id)
-        question_update.question_text = question.question_text
-        question_update.is_mandatory = question.is_mandatory
-        crud_questionnaire_question.update(
-            db, db_obj=db_question, obj_in=question_update
-        )
+        if question.id is None:
+            logger.debug("ID is none")
+            question_create = QuestionnaireQuestionCreate(
+                order=question.order,
+                question_type=question.question_type,
+                question_text=question.question_text,
+                questionnaire_id=questionnaire.id,
+            )
+            question_create.answers = []
+            question_create.options = []
+            question_create.is_mandatory = question.is_mandatory
+            question_db = crud_questionnaire_question.create(db, obj_in=question_create)
+            for option in question.options:
+                option_create = QuestionnaireQuestionOptionCreate(
+                    question_id=question_db.id,
+                    order=option.order,
+                    value=option.value,
+                    with_input=option.with_input,
+                )
+                crud_questionnaire_question_option.create(db, obj_in=option_create)
+        else:
+            db_question = crud_questionnaire_question.get(db, id=question.id)
+            question_update = QuestionnaireQuestionUpdate(id=question.id)
+            question_update.question_text = question.question_text
+            question_update.is_mandatory = question.is_mandatory
+            crud_questionnaire_question.update(
+                db, db_obj=db_question, obj_in=question_update
+            )
 
     updated_questionnaire = crud_questionnaire.get(db, id=questionnaire_update.id)
 

@@ -6,6 +6,7 @@ import { QuestionnaireService } from '../../../services/questionnaire.service';
 import { Questionnaire } from '../../../model/questionnaires/questionnaire';
 import Spinner from '../../general/Spinner.vue';
 import CreateQuestionnaire from './CreateQuestionnaire.vue';
+import { create } from 'domain';
 
 const props = defineProps({
   task: Object as PropType<Task>,
@@ -25,6 +26,18 @@ onMounted(async () => {
     }
   }
 });
+
+const questionnaireDeleted = () => {
+  questionnaire.value = undefined;
+};
+
+const questionnaireCreated = (createdQuestionnaire: Questionnaire) => {
+  questionnaire.value = createdQuestionnaire;
+};
+
+const questionnaireUpdated = (updatedQuestionnaire: Questionnaire) => {
+  questionnaire.value = updatedQuestionnaire;
+};
 </script>
 
 <template>
@@ -33,6 +46,14 @@ onMounted(async () => {
       <Spinner></Spinner>
       <div>Umfrage wird geladen...</div>
     </div>
-    <CreateQuestionnaire v-else :questionnaire="questionnaire" :is-before="isBefore" :task="task"></CreateQuestionnaire>
+    <CreateQuestionnaire
+      v-else
+      :questionnaire="questionnaire"
+      :is-before="isBefore"
+      :task="task"
+      @questionnaire-deleted="questionnaireDeleted"
+      @questionnaire-created="questionnaireCreated"
+      @questionnaire-updated="questionnaireUpdated"
+    ></CreateQuestionnaire>
   </div>
 </template>

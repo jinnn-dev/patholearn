@@ -172,6 +172,7 @@ const updateQuestion = () => {
   </FormField>
 
   <PrimaryButton
+    class="mb-2"
     @click="question ? updateQuestion() : saveQuestion()"
     :name="question ? 'Aktualisieren' : 'Speichern'"
     type="button"

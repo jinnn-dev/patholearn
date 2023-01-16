@@ -10,7 +10,7 @@ import FormField from '../../form/FormField.vue';
 import PrimaryButton from '../../general/PrimaryButton.vue';
 import SaveButton from '../../general/SaveButton.vue';
 import CreateQuestionnaireQuestion from './CreateQuestionnaireQuestion.vue';
-import { ref, reactive, PropType, onMounted, watch } from 'vue';
+import { ref, reactive, PropType, onMounted, watch, defineEmits } from 'vue';
 import Icon from '../../general/Icon.vue';
 import QuestionnaireQuestionItem from './QuestionnaireQuestionItem.vue';
 import { Task } from '../../../model/task/task';
@@ -34,28 +34,17 @@ const createQuestionnaire = reactive<QuestionnaireCreate>({
 
 const answersExists = ref<boolean>(false);
 
+const emit = defineEmits(['questionnaire-created', 'questionnaire-updated', 'questionnaire-deleted']);
+
 watch(
   () => props.questionnaire,
   async () => {
-    if (props.questionnaire) {
-      createQuestionnaire.name = props.questionnaire.name;
-      createQuestionnaire.description = props.questionnaire.description;
-      createQuestionnaire.is_before = props.questionnaire.is_before;
-      createQuestionnaire.questions = props.questionnaire.questions;
-      questionnairQuestions.value = props.questionnaire.questions || [];
-      answersExists.value = await QuestionnaireService.checkIfAnswersExist(props.questionnaire.id);
-    }
+    await setQuestionnaire();
   }
 );
 
 onMounted(async () => {
-  if (props.questionnaire) {
-    createQuestionnaire.name = props.questionnaire.name;
-    createQuestionnaire.description = props.questionnaire.description;
-    createQuestionnaire.is_before = props.questionnaire.is_before;
-    createQuestionnaire.questions = props.questionnaire.questions;
-    answersExists.value = await QuestionnaireService.checkIfAnswersExist(props.questionnaire.id);
-  }
+  await setQuestionnaire();
 });
 
 const questionnairQuestions = ref<QuestionnaireQuestion[]>([]);
@@ -66,6 +55,29 @@ const selectedQuestion = ref<QuestionnaireQuestion>();
 const selectedIndex = ref<number>();
 
 const questionnaireLoading = ref<boolean>();
+
+const questionniareDeleting = ref<boolean>();
+
+const setQuestionnaire = async () => {
+  if (props.questionnaire) {
+    createQuestionnaire.name = props.questionnaire.name;
+    createQuestionnaire.description = props.questionnaire.description;
+    createQuestionnaire.is_before = props.questionnaire.is_before;
+    createQuestionnaire.questions = props.questionnaire.questions;
+    createQuestionnaire.is_mandatory = props.questionnaire.is_mandatory;
+    questionnairQuestions.value = props.questionnaire.questions || [];
+    answersExists.value = await QuestionnaireService.checkIfAnswersExist(props.questionnaire.id);
+  }
+};
+
+const resetCreateQuestionnaire = () => {
+  createQuestionnaire.name = '';
+  createQuestionnaire.description = '';
+  createQuestionnaire.is_before = props.isBefore;
+  createQuestionnaire.questions = [];
+  questionnairQuestions.value = [];
+  answersExists.value = false;
+};
 
 const questionCreated = (question: QuestionnaireQuestion) => {
   question.order = questionnairQuestions.value.length + 1;
@@ -84,9 +96,11 @@ const questionUpdated = (question: QuestionnaireQuestion) => {
 };
 
 const saveQuestionnaire = async () => {
+  if (!createQuestionnaire.name || createQuestionnaire.name === '') return;
   createQuestionnaire.questions = questionnairQuestions.value;
   questionnaireLoading.value = true;
-  await QuestionnaireService.createQuestionnaire(createQuestionnaire, props.task!.id!);
+  const questionnaire = await QuestionnaireService.createQuestionnaire(createQuestionnaire, props.task!.id!);
+  emit('questionnaire-created', questionnaire);
   questionnaireLoading.value = false;
 };
 
@@ -98,8 +112,19 @@ const updateQuestionnaire = async () => {
   updateQuestionnaire.id = props.questionnaire!.id;
   updateQuestionnaire.questions?.forEach((question) => (question.questionnaire_id = updateQuestionnaire.id));
   questionnaireLoading.value = true;
-  await QuestionnaireService.updateQuestionnaire(updateQuestionnaire);
+  const questionnaire = await QuestionnaireService.updateQuestionnaire(updateQuestionnaire);
+  emit('questionnaire-created', questionnaire);
   questionnaireLoading.value = false;
+};
+
+const deleteQuestionnaire = async () => {
+  if (props.questionnaire) {
+    questionniareDeleting.value = true;
+    await QuestionnaireService.deleteQuestionnaire(props.questionnaire.id);
+    emit('questionnaire-deleted', props.questionnaire);
+    resetCreateQuestionnaire();
+    questionniareDeleting.value = false;
+  }
 };
 
 const deleteQuestion = (index: number) => {
@@ -163,7 +188,7 @@ const closeQuestionCreation = () => {
             </div>
           </div>
         </FormField>
-        <div v-if="!answersExists">
+        <div v-if="!answersExists" class="mb-6">
           <PrimaryButton
             @click="closeQuestionCreation"
             name="Neue Frage"
@@ -171,19 +196,48 @@ const closeQuestionCreation = () => {
             type="button"
           ></PrimaryButton>
         </div>
-        <div class="mt-2">
-          <SaveButton
-            v-if="questionnaire"
-            :loading="questionnaireLoading"
-            name="Umfrage aktualisieren"
-            @click="updateQuestionnaire"
-          ></SaveButton>
-          <SaveButton
-            v-else
-            :loading="questionnaireLoading"
-            name="Umfrage aktualisieren"
-            @click="saveQuestionnaire"
-          ></SaveButton>
+        <div class="mt-2 flex justify-end gap-4">
+          <div v-if="questionnaire" class="flex justify-end">
+            <PrimaryButton
+              name="Umfrage löschen"
+              type="button"
+              bg-color="bg-red-800"
+              class="w-auto"
+              @click="deleteQuestionnaire"
+            >
+              <svg
+                v-if="questionniareDeleting"
+                class="animate-spin h-5 w-5 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path
+                  class="opacity-75"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  fill="currentColor"
+                ></path>
+              </svg>
+              <Icon v-else name="trash"></Icon>
+            </PrimaryButton>
+          </div>
+          <div>
+            <SaveButton
+              v-if="questionnaire"
+              :loading="questionnaireLoading"
+              name="Umfrage aktualisieren"
+              @click="updateQuestionnaire"
+              type="button"
+            ></SaveButton>
+            <SaveButton
+              v-else
+              :loading="questionnaireLoading"
+              name="Umfrage erstellen"
+              @click="saveQuestionnaire"
+              type="button"
+            ></SaveButton>
+          </div>
         </div>
       </div>
     </div>
