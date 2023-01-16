@@ -123,7 +123,7 @@ const closeQuestionCreation = () => {
 };
 </script>
 <template>
-  <div v-show="!showCreateQuestion" class="min-h-full overflow-auto px-2">
+  <div v-show="!showCreateQuestion" class="min-h-full overflow-auto p-2">
     <InputField label="Name" v-model="createQuestionnaire.name"></InputField>
     <InputField label="Beschreibung" v-model="createQuestionnaire.description"></InputField>
     <div>

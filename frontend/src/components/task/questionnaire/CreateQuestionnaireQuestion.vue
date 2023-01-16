@@ -144,7 +144,7 @@ const updateQuestion = () => {
               @click="deleteQuestionoption(index)"
             >
             </Icon>
-            <div>{{ questionOptions[index].value }}</div>
+            <div v-else>{{ questionOptions[index].value }}</div>
           </div>
         </div>
       </div>

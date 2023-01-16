@@ -5,7 +5,7 @@
       :class="expand ? 'rounded-t-lg' : 'rounded-lg'"
       class="flex items-center bg-gray-700/60 p-2 hover:underline cursor-pointer"
       @click="
-        $parent.select(index);
+        ($parent as any).select(index);
         toggleDisplay();
       "
     >
@@ -20,7 +20,7 @@
       <span class="font-semibold">{{ title }}</span>
     </div>
     <collapse-transition>
-      <div v-show="expand" class="bg-gray-700 p-2 rounded-b-lg">
+      <div v-show="expand" class="bg-gray-700 min-h-full p-2 overflow-auto rounded-b-lg">
         <slot></slot>
       </div>
     </collapse-transition>
