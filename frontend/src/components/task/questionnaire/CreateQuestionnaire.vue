@@ -123,7 +123,7 @@ const closeQuestionCreation = () => {
 };
 </script>
 <template>
-  <div v-show="!showCreateQuestion" class="min-h-[700px] h-[100%] overflow-auto px-2">
+  <div v-show="!showCreateQuestion" class="min-h-full overflow-auto px-2">
     <InputField label="Name" v-model="createQuestionnaire.name"></InputField>
     <InputField label="Beschreibung" v-model="createQuestionnaire.description"></InputField>
     <div>
@@ -188,11 +188,11 @@ const closeQuestionCreation = () => {
       </div>
     </div>
   </div>
-  <div v-show="showCreateQuestion" class="min-h-[700px] h-[100%] overflow-auto px-2">
+  <div v-show="showCreateQuestion" class="h-full overflow-auto px-2">
     <div class="flex items-center">
       <div
         @click="showCreateQuestion = false"
-        class="absolute bg-gray-500 p-1 rounded-lg cursor-pointer hover:bg-gray-400"
+        class="absolute z-10 bg-gray-500 p-1 rounded-lg cursor-pointer hover:bg-gray-400"
       >
         <Icon name="caret-left"></Icon>
       </div>
