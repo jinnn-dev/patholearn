@@ -16,7 +16,6 @@ watch(
   () => props.enabled,
   () => {
     enabled.value = props.enabled;
-    console.log(props.enabled);
   }
 );
 

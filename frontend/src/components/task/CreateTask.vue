@@ -184,10 +184,10 @@ const resetForm = () => {
       >
       </input-field>
       <Accordion>
-        <AccordionItem :first="true" title="Umfrage vor der Aufgabe">
+        <!-- <AccordionItem :first="true" title="Umfrage vor der Aufgabe">
           <CreateQuestionnaire></CreateQuestionnaire>
-        </AccordionItem>
-        <AccordionItem :first="false" title="Aufgabeneinstellungen">
+        </AccordionItem> -->
+        <AccordionItem :first="true" title="Aufgabeneinstellungen">
           <div>Wähle einen Aufgabentyp:</div>
 
           <div class="flex justify-evenly gap-4 mt-4">
@@ -319,7 +319,7 @@ const resetForm = () => {
             </div>
           </div>
         </AccordionItem>
-        <AccordionItem :first="false" title="Umfrage nach der Aufgabe"></AccordionItem>
+        <!-- <AccordionItem :first="false" title="Umfrage nach der Aufgabe"></AccordionItem> -->
       </Accordion>
 
       <confirm-buttons
