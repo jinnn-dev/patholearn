@@ -1,6 +1,7 @@
 from typing import List, Any, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
+from pip._internal.network.utils import response_chunks
 
 from app.crud.crud_questionnaire import crud_questionnaire
 from app.crud.crud_questionnaire_answer import crud_questionnaire_answer
@@ -16,7 +17,7 @@ from app.schemas.questionnaire import (
     QuestionnaireUpdate,
     QuestionnaireInDB,
 )
-from app.schemas.questionnaire_answer import QuestionnaireAnswerCreate
+from app.schemas.questionnaire_answer import QuestionnaireAnswerCreate, QuestionnaireAnswer
 from app.api.deps import (
     get_db,
     get_current_active_superuser,
@@ -41,7 +42,7 @@ class PostSchema(QuestionnaireCreate):
     is_before: Optional[bool]
 
 
-@router.post("/answers/multiple")
+@router.post("/answers/multiple", response_model=List[QuestionnaireAnswer])
 def save_questionnaires_answers(
     *,
     db: Session = Depends(get_db),

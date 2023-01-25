@@ -2,7 +2,7 @@ import { handleError } from './error-handler';
 import { ApiService } from './api.service';
 import { Questionnaire, QuestionnaireCreate, QuestionnaireUpdate } from '../model/questionnaires/questionnaire';
 import { QuestionnaireQuestionCreate } from '../model/questionnaires/questionnaireQuestion';
-import { QuestionnaireAnswerCreate } from '../model/questionnaires/questionnaireAnswer';
+import { QuestionnaireAnswer, QuestionnaireAnswerCreate } from '../model/questionnaires/questionnaireAnswer';
 
 export class QuestionnaireService {
   public static async createQuestionnaire(questionnaireCreate: QuestionnaireCreate, task_id: number) {
@@ -43,7 +43,7 @@ export class QuestionnaireService {
 
   public static async saveQuestionnaireAnswers(answers: QuestionnaireAnswerCreate[]) {
     const [_, response] = await handleError(
-      ApiService.post<Questionnaire[]>({
+      ApiService.post<QuestionnaireAnswer[]>({
         resource: this.apiURL(`/answers/multiple`),
         data: answers
       })

@@ -484,6 +484,7 @@ const setAnnotations = (task: Task) => {
 
 const validateAnnotations = async () => {
   validationResultIsPending.value = true;
+
   if (props.task) {
     validationResult.value = await validateUserSolutionAnnotations(props.task!.id);
   }

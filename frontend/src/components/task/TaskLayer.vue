@@ -11,18 +11,20 @@ import PrimaryButton from '../general/PrimaryButton.vue';
 import TaskItem from './TaskItem.vue';
 import Icon from '../general/Icon.vue';
 import { TaskType } from '../../core/types/taskType';
-import { Questionnaire } from '../../model/questionnaires/questionnaire';
+import { Questionnaire, questionnaireHasAnswer } from '../../model/questionnaires/questionnaire';
 import { QuestionnaireService } from '../../services/questionnaire.service';
 import AnswerQuestionnaire from './questionnaire/AnswerQuestionnaire.vue';
 import { TaskStatus } from '../../core/types/taskStatus';
+import QuestionnaireLayerItem from './questionnaire/QuestionnaireLayerItem.vue';
+import { TaskWithQuestionnaires } from './task-types';
 
 const props = defineProps({
   layerIndex: {
     type: Number,
     required: true
   },
-  tasks: {
-    type: Array as PropType<Task[]>,
+  taskWithQuestionnaires: {
+    type: Array as PropType<TaskWithQuestionnaires[]>,
     default: []
   },
   baseTaskId: {
@@ -30,71 +32,93 @@ const props = defineProps({
     required: true
   },
   selectedTaskId: Number,
+  selectedQuestionnaireId: Number,
   isOwner: {
     type: Boolean,
     default: false
   }
 });
 
-const emit = defineEmits(['taskCreated', 'taskUpdated', 'taskSelected', 'taskDeleted', 'layerDeleted']);
+const emit = defineEmits([
+  'taskCreated',
+  'taskUpdated',
+  'taskSelected',
+  'taskDeleted',
+  'layerDeleted',
+  'questionnaireSelected'
+]);
 
-const taskCreationModal = ref<Boolean>(false);
-const taskUpdateModal = ref<Boolean>(false);
+const taskCreationModal = ref<boolean>(false);
+const taskUpdateModal = ref<boolean>(false);
 
-const questionairesMap = new Map<number, Questionnaire[]>();
+// const questionairesMap = new Map<number, Questionnaire[]>();
 
-const questionnairesBeforeMap = ref<Map<number, Questionnaire>>(new Map());
-const questionnairesAfterMap = ref<Map<number, Questionnaire>>(new Map());
+// const questionnairesBeforeMap = ref<Map<number, Questionnaire>>(new Map());
+// const questionnairesAfterMap = ref<Map<number, Questionnaire>>(new Map());
 
-const showBeforeQuestionnaireModel = ref<boolean>(false);
-const showAfterQuestionnaireModel = ref<boolean>(true);
-const questionnaireToShow = ref<Questionnaire>();
+// const showBeforeQuestionnaireModel = ref<boolean>(false);
+// const showAfterQuestionnaireModel = ref<boolean>(true);
+// const questionnaireToShow = ref<Questionnaire>();
 
 onMounted(async () => {
   if (!props.selectedTaskId) return;
-  await getQuestionnaires(props.selectedTaskId!);
-  const questionnaire = questionnairesBeforeMap.value.get(props.selectedTaskId!);
-  if (questionnaire) {
-    questionnaireToShow.value = questionnaire;
-    showBeforeQuestionnaireModel.value = true;
-  }
+  // await getQuestionnaires(props.selectedTaskId!);
+  // const questionnaire = questionnairesBeforeMap.value.get(props.selectedTaskId!);
+  // if (
+  //   questionnaire &&
+  //   questionnaire.questions &&
+  //   questionnaire.questions[0].answers &&
+  //   questionnaire.questions[0].answers.length == 0
+  // ) {
+  //   questionnaireToShow.value = questionnaire;
+  //   showBeforeQuestionnaireModel.value = true;
+  // }
 
-  const task = props.tasks.find((task) => task.id === props.selectedTaskId);
-  if (task) {
-    selectedTask.value = task;
-  }
+  // const task = props.tasks.find((task) => task.id === props.selectedTaskId);
+  // if (task) {
+  //   selectedTask.value = task;
+  // }
 });
 
-const selectTask = async (task: Task) => {
-  await getQuestionnaires(task.id);
+const selectTask = async (task: TaskWithQuestionnaires, index: number) => {
+  // await getQuestionnaires(task.id);
 
-  const questionnaire = questionnairesBeforeMap.value.get(task.id);
-  if (questionnaire) {
-    questionnaireToShow.value = questionnaire;
-    showBeforeQuestionnaireModel.value = true;
-  }
+  // const questionnaire = questionnairesBeforeMap.value.get(task.id);
+  selectedTask.value = task.task;
 
-  selectedTask.value = task;
-
-  emit('taskSelected', task);
+  emit('taskSelected', {
+    ...task,
+    index: index,
+    layer: props.layerIndex
+  });
 };
 
-const getQuestionnaires = async (taskId: number) => {
-  if (!questionairesMap.has(taskId)) {
-    const questionaires = await QuestionnaireService.getQuestionnairesToTask(taskId);
-    questionairesMap.set(taskId, questionaires || []);
-  }
-
-  if (questionairesMap.has(taskId)) {
-    for (const questionnaire of questionairesMap.get(taskId)!) {
-      if (questionnaire.is_before) {
-        questionnairesBeforeMap.value.set(taskId, questionnaire);
-      } else {
-        questionnairesAfterMap.value.set(taskId, questionnaire);
-      }
-    }
-  }
+const selectQuestionnaire = (questionnaire: Questionnaire, task: Task, index: number) => {
+  if (questionnaireHasAnswer(questionnaire)) return;
+  if (!questionnaire.is_before && (task.user_solution === null || task.user_solution?.task_result === null)) return;
+  emit('questionnaireSelected', {
+    questionnaire,
+    index: index,
+    layer: props.layerIndex
+  });
 };
+
+// const getQuestionnaires = async (taskId: number) => {
+//   if (!questionairesMap.has(taskId)) {
+//     const questionaires = await QuestionnaireService.getQuestionnairesToTask(taskId);
+//     questionairesMap.set(taskId, questionaires || []);
+//   }
+
+//   if (questionairesMap.has(taskId)) {
+//     for (const questionnaire of questionairesMap.get(taskId)!) {
+//       if (questionnaire.is_before) {
+//         questionnairesBeforeMap.value.set(taskId, questionnaire);
+//       } else {
+//         questionnairesAfterMap.value.set(taskId, questionnaire);
+//       }
+//     }
+//   }
+// };
 
 const deleteTask = (taskId: number, taskIndex: number) => {
   TaskService.deleteTask(taskId).then((res: Task) => {
@@ -113,22 +137,22 @@ const editTask = (task: Task) => {
 };
 
 const removeLayer = async () => {
-  for (const task of props.tasks) {
-    await TaskService.deleteTask(task.id);
+  for (const task of props.taskWithQuestionnaires) {
+    await TaskService.deleteTask(task.task.id);
   }
   emit('layerDeleted', props.layerIndex);
 };
 
-const answerSaved = (queationnaireId: number) => {
-  if (questionnairesBeforeMap.value.has(selectedTask!.value!.id)) {
-    questionnairesBeforeMap.value.delete(selectedTask.value!.id);
-    showBeforeQuestionnaireModel.value = false;
-  }
-  if (questionnairesAfterMap.value.has(selectedTask!.value!.id)) {
-    questionnairesAfterMap.value.delete(selectedTask.value!.id);
-    showAfterQuestionnaireModel.value = false;
-  }
-};
+// const answerSaved = (queationnaireId: number) => {
+//   if (questionnairesBeforeMap.value.has(selectedTask!.value!.id)) {
+//     questionnairesBeforeMap.value.delete(selectedTask.value!.id);
+//     showBeforeQuestionnaireModel.value = false;
+//   }
+//   if (questionnairesAfterMap.value.has(selectedTask!.value!.id)) {
+//     questionnairesAfterMap.value.delete(selectedTask.value!.id);
+//     showAfterQuestionnaireModel.value = false;
+//   }
+// };
 
 const downloadUserSolutions = async (task: Task) => {
   const data = await TaskService.downloadUserSolutions(task.id);
@@ -159,22 +183,51 @@ const downloadUserSolutions = async (task: Task) => {
       ></Icon>
     </role-only>
   </div>
-  <div class="w-full cursor-pointer">
-    <task-item
-      v-for="(task, taskIndex) in tasks"
-      :key="task.id"
-      :class="selectedTaskId === task.id ? 'ring-2 ring-highlight-800' : ''"
-      :isOwner="isOwner"
-      :question="task.task_question"
-      :showDownload="
-        task.annotation_type === ANNOTATION_TYPE.SOLUTION_POINT && task.task_type !== TaskType.IMAGE_SELECT
-      "
-      :userSolution="task.user_solution"
-      @deleteTask="deleteTask(task.id, taskIndex)"
-      @downloadUserSolutions="downloadUserSolutions(task)"
-      @editTask="editTask(task)"
-      @click.stop="selectTask(task)"
-    ></task-item>
+
+  <div class="w-full py-2">
+    <div v-for="(taskWithQuestionnaire, taskIndex) in taskWithQuestionnaires" class="my-4">
+      <questionnaire-layer-item
+        v-if="taskWithQuestionnaire.questionnaireBefore && !isOwner"
+        class="mb-1"
+        :class="selectedQuestionnaireId === taskWithQuestionnaire.questionnaireBefore!.id ? 'ring-2 ring-highlight-800 ' : ''"
+        :questionnaire="taskWithQuestionnaire.questionnaireBefore!"
+        @click.stop="
+          selectQuestionnaire(taskWithQuestionnaire.questionnaireBefore!, taskWithQuestionnaire.task, taskIndex)
+        "
+      >
+      </questionnaire-layer-item>
+      <task-item
+        :key="taskWithQuestionnaire.task.id"
+        :class="selectedTaskId === taskWithQuestionnaire.task.id ? 'ring-2 ring-highlight-800 ' : ''"
+        :isOwner="isOwner"
+        :question="taskWithQuestionnaire.task.task_question"
+        :showDownload="
+          taskWithQuestionnaire.task.annotation_type === ANNOTATION_TYPE.SOLUTION_POINT &&
+          taskWithQuestionnaire.task.task_type !== TaskType.IMAGE_SELECT
+        "
+        :disabled="selectedQuestionnaireId !== undefined"
+        :userSolution="taskWithQuestionnaire.task.user_solution"
+        @deleteTask="deleteTask(taskWithQuestionnaire.task.id, taskIndex)"
+        @downloadUserSolutions="downloadUserSolutions(taskWithQuestionnaire.task)"
+        @editTask="editTask(taskWithQuestionnaire.task)"
+        @click.stop="selectTask(taskWithQuestionnaire, taskIndex)"
+      ></task-item>
+      <questionnaire-layer-item
+        v-if="taskWithQuestionnaire.questionnaireAfter && !isOwner"
+        class="m-1"
+        :class="selectedQuestionnaireId === taskWithQuestionnaire.questionnaireAfter!.id ? 'ring-2 ring-highlight-800 ' : ''"
+        :disabled="
+          taskWithQuestionnaire.task.user_solution === null ||
+          taskWithQuestionnaire.task.user_solution?.task_result === null
+        "
+        :questionnaire="taskWithQuestionnaire.questionnaireAfter!"
+        @click.stop="
+          selectQuestionnaire(taskWithQuestionnaire.questionnaireAfter!, taskWithQuestionnaire.task, taskIndex)
+        "
+      >
+      </questionnaire-layer-item>
+    </div>
+
     <role-only v-if="isOwner">
       <div class="p-2 px-18 my-2">
         <primary-button class="" @click="taskCreationModal = true">Neue Aufgabe</primary-button>
@@ -182,15 +235,16 @@ const downloadUserSolutions = async (task: Task) => {
     </role-only>
   </div>
 
-  <ModalDialog
+  <!-- <ModalDialog
     :show="
       selectedTask?.user_solution?.task_result?.task_status === TaskStatus.CORRECT &&
       !isOwner &&
-      questionnairesAfterMap.get(selectedTask.id) !== undefined
+      questionnairesAfterMap.get(selectedTask.id) !== undefined &&
+      showAfterQuestionnaireModel
     "
   >
     <AnswerQuestionnaire
-      v-if="selectedTask && questionnairesAfterMap.get(selectedTask.id) && showAfterQuestionnaireModel"
+      v-if="selectedTask && questionnairesAfterMap.get(selectedTask.id)"
       @answer-saved="answerSaved"
       :questionnaire="questionnairesAfterMap.get(selectedTask.id)!"
     >
@@ -203,7 +257,7 @@ const downloadUserSolutions = async (task: Task) => {
       @answer-saved="answerSaved"
       :questionnaire="questionnaireToShow"
     ></AnswerQuestionnaire>
-  </ModalDialog>
+  </ModalDialog> -->
 
   <role-only>
     <modal-dialog :show="taskCreationModal" customClasses="w-2/5">

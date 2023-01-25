@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, PropType, ref, nextTick } from 'vue';
+import { onMounted, PropType, ref, nextTick, watch } from 'vue';
 
 import { Task } from '../../model/task/task';
 import { BaseTask } from '../../model/task/baseTask';
@@ -14,12 +14,11 @@ import ConfirmButtons from '../general/ConfirmButtons.vue';
 import SelectUserSolution from './SelectUserSolution.vue';
 import Spinner from '../general/Spinner.vue';
 import { QuestionnaireService } from '../../services/questionnaire.service';
-import { Questionnaire } from '../../model/questionnaires/questionnaire';
+import { Questionnaire, questionnaireHasAnswer } from '../../model/questionnaires/questionnaire';
 import AnswerQuestionnaire from './questionnaire/AnswerQuestionnaire.vue';
-
-interface LayeredTasks {
-  [key: number]: Task[];
-}
+import { LayeredTasks, TaskWithQuestionnaires, TaskWithQuestionnairesLayer, LayerQuestionnaire } from './task-types';
+import QuestionnaireAnswerViewer from './questionnaire/QuestionnaireAnswerViewer.vue';
+import { userSolutionLocked } from '../../core/viewer/viewerState';
 
 type SliderPosition = 'tasks' | 'solutions';
 
@@ -31,7 +30,8 @@ const props = defineProps({
   isOwner: {
     type: Boolean,
     default: false
-  }
+  },
+  userSolutionSolving: Boolean
 });
 
 const emit = defineEmits(['baseTaskDeleted', 'taskSelected', 'show-user-solution', 'hide-user-solution']);
@@ -42,6 +42,8 @@ const deleteLoading = ref<boolean>(false);
 const taskMap = ref<LayeredTasks>({});
 
 const selectedTask = ref<Task>();
+const selectedQuestionnaire = ref<Questionnaire>();
+const selectedTaskWithQuestionnaires = ref<TaskWithQuestionnairesLayer>();
 
 const isCollapsed = ref<boolean>(false);
 
@@ -53,24 +55,82 @@ const activatedUsers = ref<number[]>();
 
 const userSolutionsLoading = ref<boolean>(false);
 
+const currentTaskIndex = ref<number>(0);
+
+watch(
+  () => props.userSolutionSolving,
+  (newVal, oldVal) => {
+    if (!newVal && oldVal) {
+      changeTask(selectedTaskWithQuestionnaires.value!);
+    }
+  }
+);
+
 onMounted(async () => {
   props.baseTask?.tasks.forEach(async (task) => {
     if (!taskMap.value[task.layer]) taskMap.value[task.layer] = [];
-    taskMap.value[task.layer].push(task);
+    var beforeQuestionnaire: Questionnaire | undefined = undefined;
+    var afterQuestionnaire: Questionnaire | undefined = undefined;
+    for (const questionnaire of task.questionnaires) {
+      if (questionnaire.is_before) {
+        beforeQuestionnaire = questionnaire;
+      }
+      if (!questionnaire.is_before) {
+        afterQuestionnaire = questionnaire;
+      }
+    }
+
+    taskMap.value[task.layer].push({
+      questionnaireBefore: beforeQuestionnaire
+        ? {
+            ...beforeQuestionnaire!,
+            isSkipped: false
+          }
+        : undefined,
+
+      task: task,
+      questionnaireAfter: afterQuestionnaire
+        ? {
+            ...afterQuestionnaire!,
+            isSkipped: false
+          }
+        : undefined,
+      layer: task.layer,
+      index: taskMap.value[task.layer].length
+    });
   });
 
   if (!taskMap.value[1]) taskMap.value[1] = [];
 
   changeTask(taskMap.value[1][0]);
   if (!props.isOwner) {
-    for (const [_, value] of Object.entries(taskMap.value)) {
-      for (const task of value) {
-        if (task.user_solution === null || task.user_solution?.task_result?.task_status !== TaskStatus.CORRECT) {
-          changeTask(task);
+    for (const layer of Object.keys(taskMap.value)) {
+      for (let j = 0; j < taskMap.value[+layer].length; j++) {
+        let taskWithQuestionnaire = taskMap.value[+layer][j];
+        if (
+          !questionnaireHasAnswer(taskWithQuestionnaire.questionnaireBefore) ||
+          !questionnaireHasAnswer(taskWithQuestionnaire.questionnaireAfter) ||
+          taskWithQuestionnaire.task.user_solution === null ||
+          taskWithQuestionnaire.task.user_solution?.task_result?.task_status !== TaskStatus.CORRECT
+        ) {
+          changeTask(taskWithQuestionnaire);
           return;
         }
       }
     }
+    // for (const [_, value] of Object.entries(taskMap.value)) {
+    //   for (const task of value as TaskWithQuestionnaires[]) {
+    //     if (
+    //       questionnaireHasAnswer(task.questionnaireBefore) ||
+    //       questionnaireHasAnswer(task.questionnaireAfter) ||
+    //       task.task.user_solution === null ||
+    //       task.task.user_solution?.task_result?.task_status !== TaskStatus.CORRECT
+    //     ) {
+    //       changeTask(task);
+    //       return;
+    //     }
+    //   }
+    // }
   }
 });
 
@@ -96,17 +156,153 @@ const hideUserSolution = (userId: number) => {
 // };
 
 const updateTask = (task: Task) => {
-  const index = taskMap.value[task.layer].findIndex((item) => item.id === task.id);
-  taskMap.value[task.layer][index] = task;
+  const index = taskMap.value[task.layer].findIndex((item) => item.task.id === task.id);
+  taskMap.value[task.layer][index].task = task;
 };
 
-const changeTask = async (task: Task) => {
-  selectedTask.value = task;
-  emit('taskSelected', task);
+const changeTask = async (taskWithQuestionnaires: TaskWithQuestionnairesLayer) => {
+  selectedTaskWithQuestionnaires.value = taskWithQuestionnaires;
+  if (
+    questionnaireHasAnswer(taskWithQuestionnaires.questionnaireBefore) &&
+    questionnaireHasAnswer(taskWithQuestionnaires.questionnaireAfter) &&
+    taskWithQuestionnaires.task.user_solution !== null &&
+    taskWithQuestionnaires.task.user_solution?.task_result !== null
+  ) {
+    let nextTaskIndex = selectedTaskWithQuestionnaires.value.index + 1;
+    let nextLayerIndex = selectedTaskWithQuestionnaires.value.layer;
+    if (nextTaskIndex > taskMap.value[nextLayerIndex].length) {
+      nextLayerIndex += 1;
+      nextTaskIndex = 0;
+    }
+
+    if (nextLayerIndex in taskMap.value && nextTaskIndex < taskMap.value[nextLayerIndex].length) {
+      changeTask(taskMap.value[nextLayerIndex][nextTaskIndex]);
+    }
+  }
+  if (
+    taskWithQuestionnaires.questionnaireBefore &&
+    !questionnaireHasAnswer(taskWithQuestionnaires.questionnaireBefore) &&
+    !taskWithQuestionnaires.questionnaireBefore.isSkipped
+  ) {
+    console.log('Selecting before quesitonnaire ');
+    selectedQuestionnaire.value = taskWithQuestionnaires.questionnaireBefore;
+    selectedTask.value = undefined;
+  } else if (
+    taskWithQuestionnaires.task.user_solution !== null &&
+    taskWithQuestionnaires.task.user_solution?.task_result !== null &&
+    taskWithQuestionnaires.questionnaireAfter &&
+    !questionnaireHasAnswer(taskWithQuestionnaires.questionnaireAfter) &&
+    !taskWithQuestionnaires.questionnaireAfter.isSkipped
+  ) {
+    console.log('Selecting after questionnaire');
+    selectedQuestionnaire.value = taskWithQuestionnaires.questionnaireAfter;
+    selectedTask.value = undefined;
+  } else {
+    console.log('Selecting task');
+    selectedQuestionnaire.value = undefined;
+    selectedTask.value = taskWithQuestionnaires.task;
+  }
+
+  // if (
+  //   selectedTask.value === taskWithQuestionnaires.task ||
+  //   ((selectedQuestionnaire.value === taskWithQuestionnaires.questionnaireBefore ||
+  //     selectedQuestionnaire.value === taskWithQuestionnaires.questionnaireAfter) &&
+  //     !questionnaireHasAnswer(selectedQuestionnaire.value!))
+  // )
+  //   return;
+  // if (
+  //   taskWithQuestionnaires.questionnaireBefore &&
+  //   !questionnaireHasAnswer(taskWithQuestionnaires.questionnaireBefore) &&
+  //   !taskWithQuestionnaires.questionnaireBefore.isSkipped
+  // ) {
+  //   console.log('Before');
+
+  //   selectedQuestionnaire.value = taskWithQuestionnaires.questionnaireBefore;
+  //   selectedTask.value = undefined;
+  // } else if (
+  //   (taskWithQuestionnaires.task.user_solution !== null ||
+  //     taskWithQuestionnaires.task.user_solution?.task_result?.task_status === TaskStatus.CORRECT) &&
+  //   taskWithQuestionnaires.questionnaireAfter &&
+  //   !questionnaireHasAnswer(taskWithQuestionnaires.questionnaireAfter) &&
+  //   !taskWithQuestionnaires.questionnaireAfter?.isSkipped
+  // ) {
+  //   console.log('After', taskWithQuestionnaires.questionnaireAfter?.isSkipped);
+  //   selectedQuestionnaire.value = taskWithQuestionnaires.questionnaireAfter;
+  //   selectedTask.value = undefined;
+  // } else {
+  //   console.log('SELECT TASK');
+
+  //   selectedQuestionnaire.value = undefined;
+  //   selectedTask.value = taskWithQuestionnaires.task;
+  // }
+
+  // if ((task as Questionnaire).name !== '') {
+  //   selectedQuestionnaire.value = task as Questionnaire;
+  // } else {
+  //   selectedTask.value = task as Task;
+  // }
+  emit('taskSelected', selectedTask.value || selectedQuestionnaire.value);
+};
+
+const selectQuestionnaire = (data: { questionnaire: Questionnaire; index: number; layer: number }) => {
+  if (selectedQuestionnaire.value?.id === data.questionnaire.id) {
+    return;
+  }
+  selectedQuestionnaire.value = data.questionnaire;
+  selectedTask.value = undefined;
+
+  selectedTaskWithQuestionnaires.value = taskMap.value[data.layer][data.index];
+  console.log(data.layer, data.index);
+
+  // if (data.questionnaire.id === selectedTaskWithQuestionnaires.value.questionnaireBefore?.id) {
+  //   selectedTaskWithQuestionnaires.value.questionnaireBefore.isSkipped === false;
+  // } else {
+  //   selectedTaskWithQuestionnaires.value.questionnaireAfter?.isSkipped === false;
+  // }
+};
+
+const answerSaved = (questionnaire: Questionnaire) => {
+  selectedQuestionnaire.value = questionnaire;
+  if (selectedTaskWithQuestionnaires.value) {
+    changeTask(selectedTaskWithQuestionnaires.value);
+  }
+};
+
+const answerSkipped = () => {
+  if (!selectedQuestionnaire.value || !selectedTaskWithQuestionnaires.value) {
+    return;
+  }
+  if (selectedQuestionnaire.value.is_before) {
+    selectedTaskWithQuestionnaires.value.questionnaireBefore!.isSkipped = true;
+    changeTask(selectedTaskWithQuestionnaires.value);
+    // if (
+    //   selectedTaskWithQuestionnaires.value?.task.user_solution !== null &&
+    //   selectedTaskWithQuestionnaires.value?.task.user_solution?.task_result !== null
+    // ) {
+    //   selectedTaskWithQuestionnaires.value.questionnaireBefore!.isSkipped = true;
+    //   selectedQuestionnaire.value = selectedTaskWithQuestionnaires.value?.questionnaireAfter;
+    // } else {
+    //   selectedQuestionnaire.value = undefined;
+    //   selectedTaskWithQuestionnaires.value.questionnaireAfter!.isSkipped = false;
+    //   selectedTask.value = selectedTaskWithQuestionnaires.value?.task;
+    // }
+    emit('taskSelected', selectedTask.value || selectedQuestionnaire.value);
+  } else {
+    selectedTaskWithQuestionnaires.value.questionnaireAfter!.isSkipped = true;
+    changeTask(
+      taskMap.value[selectedTaskWithQuestionnaires.value.layer][selectedTaskWithQuestionnaires.value.index + 1]
+    );
+
+    selectedQuestionnaire.value = undefined;
+  }
 };
 
 const createTask = (task: Task) => {
-  taskMap.value[task.layer].push(task);
+  taskMap.value[task.layer].push({
+    task: task,
+    index: taskMap.value[task.layer].length - 1,
+    layer: task.layer
+  });
   changeTask(taskMap.value[task.layer][taskMap.value[task.layer].length - 1]);
 };
 
@@ -121,13 +317,13 @@ const deleteTask = (
 
   if (taskMap.value[index].length === 0) {
     if (taskMap.value[index - 1]?.length > 0) {
-      selectedTask.value = taskMap.value[index - 1][taskMap.value[index - 1].length - 1];
+      selectedTask.value = taskMap.value[index - 1][taskMap.value[index - 1].length - 1].task;
     }
     if (index != 1) {
       delete taskMap.value[index];
     }
   } else {
-    selectedTask.value = taskMap.value[index][event.taskIndex - 1];
+    selectedTask.value = taskMap.value[index][event.taskIndex - 1].task;
   }
 
   if (taskMap.value[1].length === 0) {
@@ -209,12 +405,14 @@ const deleteBaseTask = () => {
             :isOwner="isOwner"
             :layerIndex="+index"
             :selectedTaskId="selectedTask?.id"
-            :tasks="layer"
+            :selected-questionnaire-id="selectedQuestionnaire?.id"
+            :task-with-questionnaires="layer"
             @layerDeleted="deleteLayer($event)"
             @taskCreated="createTask($event)"
             @taskDeleted="deleteTask(index, $event)"
             @taskSelected="changeTask($event)"
             @taskUpdated="updateTask($event)"
+            @questionnaire-selected="selectQuestionnaire($event)"
           ></task-layer>
         </div>
         <role-only v-if="isOwner" class="w-full">
@@ -239,6 +437,13 @@ const deleteBaseTask = () => {
       <div v-else class="text-center m-2">Keine Nutzerlösungen vorhanden</div>
     </div>
   </div>
+
+  <questionnaire-answer-viewer
+    v-if="!isOwner"
+    @answer-saved="answerSaved"
+    @skip="answerSkipped"
+    :questionnaire="selectedQuestionnaire"
+  ></questionnaire-answer-viewer>
 
   <role-only v-if="sliderPosition === 'tasks'">
     <modal-dialog :show="showDeleteBaseTask">
