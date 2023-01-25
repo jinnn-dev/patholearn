@@ -71,6 +71,7 @@ def create_questionnaire_to_task(
     questionnaire_create.questions = []
 
     questionnaire_create.description = questionnaire.description
+    delattr(questionnaire_create, "is_before")
     questionnaire_db = crud_questionnaire.create(db, obj_in=questionnaire_create)
     questions = questionnaire.questions
     for question in questions:

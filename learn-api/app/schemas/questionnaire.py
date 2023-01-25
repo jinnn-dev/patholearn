@@ -18,6 +18,10 @@ class QuestionnaireBase(BaseModel):
 
 
 class QuestionnaireCreate(QuestionnaireBase):
+    name: Optional[str]
+    description: Optional[str]
+    is_mandatory: bool = False
+    questions: Optional[List[QuestionnaireQuestion]]
     questions: Optional[List[QuestionnaireQuestionCreate]]
 
 

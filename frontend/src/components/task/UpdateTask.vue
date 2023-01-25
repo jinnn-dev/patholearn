@@ -81,6 +81,7 @@
         confirm-text="Speichern"
         reject-text="Abbrechen"
         @reject="$emit('close')"
+        @confirm="updateTask"
       ></confirm-buttons>
     </form>
   </div>
