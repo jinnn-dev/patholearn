@@ -14,18 +14,10 @@
       >
       </input-field>
 
-      <div v-if="task?.questionnaires" class="my-4">
-        <div class="text-xl">Umfragen Löschen</div>
-        <div v-for="(questionaire, index) of task.questionnaires" class="flex gap-2">
-          <div>{{ index + 1 }}.</div>
-          <div>{{ questionaire.name }}</div>
-          <Icon name="trash" class="text-red-500 cursor-pointer" @click="deleteQuestionnaire(questionaire.id)"></Icon>
-        </div>
-      </div>
-
       <Accordion>
         <AccordionItem title="Umfrage vor Aufgabe" :first="true">
-          <CreateQuestionnaire :task="task" :is-before="true"></CreateQuestionnaire>
+          <QuestionnaireContainer :task="task" :isBefore="true"></QuestionnaireContainer>
+          <!-- <CreateQuestionnaire :task="task" :is-before="true"></CreateQuestionnaire> -->
         </AccordionItem>
 
         <AccordionItem v-if="taskUpdateForm.task_type !== TaskType.IMAGE_SELECT" title="Aufgabeneinstellungen">
@@ -76,7 +68,7 @@
         </AccordionItem>
 
         <AccordionItem title="Umfrage nach der Aufgabe">
-          <CreateQuestionnaire :task="task" :is-before="false"></CreateQuestionnaire>
+          <QuestionnaireContainer :task="task" :isBefore="false"></QuestionnaireContainer>
         </AccordionItem>
         <!-- <AccordionItem title="Tipps (optional)">
           <HintList :task="task" :isUpdate="true" />
@@ -89,12 +81,13 @@
         confirm-text="Speichern"
         reject-text="Abbrechen"
         @reject="$emit('close')"
+        @confirm="updateTask"
       ></confirm-buttons>
     </form>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, PropType, reactive, ref, watch, computed } from 'vue';
+import { defineComponent, PropType, reactive, ref, watch, computed, onMounted } from 'vue';
 import { Task } from '../../model/task/task';
 import { TaskService } from '../../services/task.service';
 import { knowledgeLevel, taskTypes } from './task-config';
@@ -107,9 +100,10 @@ import PrimaryButton from '../general/PrimaryButton.vue';
 import SaveButton from '../general/SaveButton.vue';
 import { TaskType } from '../../core/types/taskType';
 import ConfirmButtons from '../general/ConfirmButtons.vue';
-import CreateQuestionnaire from './CreateQuestionnaire.vue';
+import CreateQuestionnaire from './questionnaire/CreateQuestionnaire.vue';
 import Icon from '../general/Icon.vue';
 import { QuestionnaireService } from '../../services/questionnaire.service';
+import QuestionnaireContainer from './questionnaire/QuestionnaireContainer.vue';
 
 export default defineComponent({
   components: {
@@ -122,7 +116,8 @@ export default defineComponent({
     Accordion,
     InputField,
     CreateQuestionnaire,
-    Icon
+    Icon,
+    QuestionnaireContainer
   },
   props: {
     task: {
@@ -149,6 +144,18 @@ export default defineComponent({
       task_id: 0,
       task_type: 0,
       can_be_solved: true
+    });
+
+    onMounted(() => {
+      if (props.task) {
+        taskUpdateForm.layer = props.task!.layer;
+        taskUpdateForm.task_question = props.task!.task_question;
+        taskUpdateForm.knowledge_level = props.task!.knowledge_level;
+        taskUpdateForm.min_correct = props.task!.min_correct;
+        taskUpdateForm.task_id = props.task!.id;
+        taskUpdateForm.task_type = props.task!.task_type;
+        taskUpdateForm.can_be_solved = props.task!.can_be_solved;
+      }
     });
 
     watch(

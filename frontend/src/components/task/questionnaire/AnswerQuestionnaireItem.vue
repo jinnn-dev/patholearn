@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { Questionnaire } from '../../model/questionnaires/questionnaire';
-import { QuestionnaireQuestionOption } from '../../model/questionnaires/questionnaireQuestionOption';
-import { QuestionnaireQuestion } from '../../model/questionnaires/questionnaireQuestion';
-import { QuestionnaireAnswerCreate } from '../../model/questionnaires/questionnaireAnswer';
-import { PropType, ref, reactive } from 'vue';
-import InputArea from '../form/InputArea.vue';
-import { emit } from 'process';
+import { Questionnaire } from '../../../model/questionnaires/questionnaire';
+import { QuestionnaireQuestionOption } from '../../../model/questionnaires/questionnaireQuestionOption';
+import { QuestionnaireQuestion } from '../../../model/questionnaires/questionnaireQuestion';
+import { QuestionnaireAnswerCreate } from '../../../model/questionnaires/questionnaireAnswer';
+import { PropType, ref, reactive, watch } from 'vue';
+import InputArea from '../../form/InputArea.vue';
 
 const props = defineProps({
   question: {
@@ -13,6 +12,19 @@ const props = defineProps({
     required: true
   }
 });
+
+watch(
+  () => props.question,
+  (newVal: QuestionnaireQuestion, oldVal: QuestionnaireQuestion) => {
+    console.log(newVal !== oldVal);
+
+    if (newVal !== oldVal) {
+      questionnaireAnswer.question_id = -1;
+      questionnaireAnswer.question_option_id = -1;
+      (questionnaireAnswer.selected = 'test'), (questionnaireAnswer.questionnaire_id = -1);
+    }
+  }
+);
 
 const emit = defineEmits(['answer-changed']);
 

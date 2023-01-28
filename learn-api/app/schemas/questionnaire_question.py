@@ -29,13 +29,13 @@ class QuestionnaireQuestionCreate(QuestionnaireQuestionBase):
 
 
 class QuestionnaireQuestionUpdate(QuestionnaireQuestionBase):
-    id: int
+    id: Optional[int]
     questionnaire_id: Optional[int]
     order: Optional[int]
     question_text: Optional[str]
     question_type: Optional[QuestionnaireQuestionType]
     answers: Optional[List[QuestionnaireAnswer]]
-    options: Optional[List[QuestionnaireQuestionOption]]
+    options: Optional[List[QuestionnaireQuestionOptionCreate]]
 
 
 class QuestionnaireQuestionInDBBase(QuestionnaireQuestionBase):

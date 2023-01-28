@@ -33,6 +33,13 @@ const props = defineProps({
 const onChanged = (e: { currentTarget: { value: any } }) => {
   emit('update:modelValue', e.currentTarget.value);
 };
+
+watch(
+  () => props.modelValue,
+  () => {
+    emit('update:modelValue', props.modelValue);
+  }
+);
 </script>
 <template>
   <form-field :errorMessage="errorMessage" :label="label" :marginHor="marginHor" :tip="tip" class="w-full">

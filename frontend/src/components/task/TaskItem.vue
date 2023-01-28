@@ -21,6 +21,11 @@ const props = defineProps({
     required: true
   },
 
+  disabled: {
+    type: Boolean,
+    default: false
+  },
+
   showDownload: {
     type: Boolean,
     default: false
@@ -46,7 +51,8 @@ const downloadUserSolutions = () => {
 <template>
   <div
     :title="question"
-    class="transition flex flex-col items-center my-2 mx-2 p-2 bg-gray-500 rounded-xl hover:bg-gray-400"
+    class="transition flex flex-col items-center mx-2 p-2 rounded-xl bg-gray-500"
+    :class="disabled ? 'opacity-50' : 'hover:bg-gray-400 cursor-pointer'"
   >
     <div class="flex w-full">
       <div v-if="!isOwner">

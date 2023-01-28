@@ -1,10 +1,11 @@
 from pydantic import BaseModel
 
-from typing import Optional, List
+from typing import Optional, List, Union
 
 from app.schemas.questionnaire_question import (
     QuestionnaireQuestion,
     QuestionnaireQuestionCreate,
+    QuestionnaireQuestionUpdate,
 )
 
 
@@ -13,15 +14,21 @@ class QuestionnaireBase(BaseModel):
     description: Optional[str]
     is_mandatory: bool = False
     questions: Optional[List[QuestionnaireQuestion]]
+    is_before: Optional[bool]
 
 
 class QuestionnaireCreate(QuestionnaireBase):
+    name: Optional[str]
+    description: Optional[str]
+    is_mandatory: bool = False
+    questions: Optional[List[QuestionnaireQuestion]]
     questions: Optional[List[QuestionnaireQuestionCreate]]
 
 
 class QuestionnaireUpdate(QuestionnaireBase):
     id: int
     is_mandatory: Optional[bool]
+    questions: Optional[List[QuestionnaireQuestionUpdate]]
 
 
 class QuestionnaireInDBBase(QuestionnaireBase):

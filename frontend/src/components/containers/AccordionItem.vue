@@ -1,32 +1,32 @@
 <template>
-  <div class='mb-4'>
+  <div class="mb-4">
     <div
-      id='accordion-item-header'
+      id="accordion-item-header"
       :class="expand ? 'rounded-t-lg' : 'rounded-lg'"
-      class='flex items-center bg-gray-700/60 p-2 hover:underline cursor-pointer'
-      @click='
-        $parent.select(index);
+      class="flex items-center bg-gray-700/60 p-2 hover:underline cursor-pointer"
+      @click="
+        ($parent as any).select(index);
         toggleDisplay();
-      '
+      "
     >
       <Icon
         :class="expand ? 'rotate-45' : 'rotate-0'"
-        class='mr-1 transform'
-        height='20'
-        name='caret-right'
-        strokeWidth='24'
-        width='20'
+        class="mr-1 transform"
+        height="20"
+        name="caret-right"
+        strokeWidth="24"
+        width="20"
       />
-      <span class='font-semibold'>{{ title }}</span>
+      <span class="font-semibold">{{ title }}</span>
     </div>
     <collapse-transition>
-      <div v-if='expand' class='bg-gray-700 p-2 rounded-b-lg'>
+      <div v-show="expand" class="bg-gray-700 min-h-full p-2 overflow-auto rounded-b-lg">
         <slot></slot>
       </div>
     </collapse-transition>
   </div>
 </template>
-<script lang='ts'>
+<script lang="ts">
 import { nanoid } from 'nanoid';
 import { defineComponent, inject, ref, Ref, watch } from 'vue';
 import CollapseTransition from './CollapseTransition.vue';

@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { Questionnaire } from '../../model/questionnaires/questionnaire';
-import { PropType, reactive } from 'vue';
-import { QuestionnaireAnswerCreate } from '../../model/questionnaires/questionnaireAnswer';
-import InputArea from '../form/InputArea.vue';
-import SaveButton from '../general/SaveButton.vue';
-import PrimaryButton from '../general/PrimaryButton.vue';
+import { Questionnaire } from '../../../model/questionnaires/questionnaire';
+import { PropType, reactive, ref } from 'vue';
+import { QuestionnaireAnswerCreate } from '../../../model/questionnaires/questionnaireAnswer';
+import InputArea from '../../form/InputArea.vue';
+import SaveButton from '../../general/SaveButton.vue';
+import PrimaryButton from '../../general/PrimaryButton.vue';
 import AnswerQuestionnaireItem from './AnswerQuestionnaireItem.vue';
 
-import { QuestionnaireQuestionOption } from '../../model/questionnaires/questionnaireQuestionOption';
+import { QuestionnaireQuestionOption } from '../../../model/questionnaires/questionnaireQuestionOption';
 import {
   QuestionnaireQuestion,
   QuestionnaireQuestionTypeNames
-} from '../../model/questionnaires/questionnaireQuestion';
-import { QuestionnaireService } from '../../services/questionnaire.service';
+} from '../../../model/questionnaires/questionnaireQuestion';
+import { QuestionnaireService } from '../../../services/questionnaire.service';
 
 const props = defineProps({
   questionnaire: {
@@ -21,9 +21,11 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['answer-saved']);
+const emit = defineEmits(['answer-saved', 'skip']);
 
 const questionnaireAnswers = new Map<number, QuestionnaireAnswerCreate>();
+
+const answersSaving = ref<boolean>();
 
 const saveQuestionnaireAnswer = async () => {
   let numAnswers = 0;
@@ -32,10 +34,15 @@ const saveQuestionnaireAnswer = async () => {
   }
 
   if (questionnaireAnswers.size === props.questionnaire.questions!.length) {
+    answersSaving.value = true;
     const items = Array.from(questionnaireAnswers.values());
-
-    await QuestionnaireService.saveQuestionnaireAnswers(items);
-
+    const answers = await QuestionnaireService.saveQuestionnaireAnswers(items);
+    answersSaving.value = false;
+    for (const question of props.questionnaire.questions || []) {
+      const questionAnswers = answers.filter((answer) => answer.question_id === question.id);
+      question.answers = questionAnswers;
+    }
+    questionnaireAnswers.clear();
     emit('answer-saved', props.questionnaire);
   }
 };
@@ -61,9 +68,10 @@ const answerChanged = (answer: QuestionnaireAnswerCreate, question: Questionnair
         <PrimaryButton
           name="Überspringen"
           v-if="!questionnaire.is_mandatory"
-          @click="$emit('answer-saved')"
+          @click="$emit('skip')"
+          bg-color="bg-gray-500"
         ></PrimaryButton>
-        <SaveButton label="Einreichen" @click.stop="saveQuestionnaireAnswer"></SaveButton>
+        <SaveButton label="Einreichen" @click.stop="saveQuestionnaireAnswer" :loading="answersSaving"></SaveButton>
       </div>
     </div>
   </div>

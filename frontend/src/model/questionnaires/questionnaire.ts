@@ -26,4 +26,10 @@ export interface QuestionnaireUpdate {
   description?: string;
   is_mandatory?: boolean;
   is_before: boolean;
+  questions?: QuestionnaireQuestion[];
 }
+
+export const questionnaireHasAnswer = (questionnaire?: Questionnaire) => {
+  if (!questionnaire) return true;
+  return questionnaire.questions?.find((question) => question.answers && question.answers.length > 0) !== undefined;
+};

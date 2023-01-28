@@ -1,6 +1,7 @@
 from typing import List, Any, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
+from pip._internal.network.utils import response_chunks
 
 from app.crud.crud_questionnaire import crud_questionnaire
 from app.crud.crud_questionnaire_answer import crud_questionnaire_answer
@@ -14,8 +15,12 @@ from app.schemas.questionnaire import (
     Questionnaire,
     QuestionnaireCreate,
     QuestionnaireUpdate,
+    QuestionnaireInDB,
 )
-from app.schemas.questionnaire_answer import QuestionnaireAnswerCreate
+from app.schemas.questionnaire_answer import (
+    QuestionnaireAnswerCreate,
+    QuestionnaireAnswer,
+)
 from app.api.deps import (
     get_db,
     get_current_active_superuser,
@@ -25,9 +30,13 @@ from app.api.deps import (
 from pydantic import BaseModel, parse_obj_as
 from sqlalchemy.orm import Session
 
-from app.schemas.questionnaire_question import QuestionnaireQuestionCreate
+from app.schemas.questionnaire_question import (
+    QuestionnaireQuestionCreate,
+    QuestionnaireQuestionUpdate,
+)
 from app.schemas.questionnaire_question_option import QuestionnaireQuestionOptionCreate
 from app.schemas.user import User
+from app.utils.logger import logger
 
 router = APIRouter()
 
@@ -36,7 +45,7 @@ class PostSchema(QuestionnaireCreate):
     is_before: Optional[bool]
 
 
-@router.post("/answers/multiple")
+@router.post("/answers/multiple", response_model=List[QuestionnaireAnswer])
 def save_questionnaires_answers(
     *,
     db: Session = Depends(get_db),
@@ -51,30 +60,7 @@ def save_questionnaires_answers(
     return answers_db
 
 
-@router.delete("/{questionnaire_id}")
-def delete_questionnaire(
-    *,
-    db: Session = Depends(get_db),
-    questionnaire_id: int,
-    current_user: User = Depends(get_current_active_superuser),
-):
-    crud_questionnaire_answer.remove_to_questionnaire(
-        db, questionnaire_id=questionnaire_id
-    )
-
-    questionnaire = crud_questionnaire.get(db, id=questionnaire_id)
-
-    for question in questionnaire.questions:
-        for question_option in question.options:
-            crud_questionnaire_question_option.remove(db, model_id=question_option.id)
-        crud_questionnaire_question.remove(db, model_id=question.id)
-    try:
-        crud_questionnaire.remove(db, model_id=questionnaire.id)
-    except Exception as e:
-        print(e)
-
-
-@router.post("/{task_id}")
+@router.post("/{task_id}", response_model=QuestionnaireInDB)
 def create_questionnaire_to_task(
     *,
     db: Session = Depends(get_db),
@@ -88,6 +74,7 @@ def create_questionnaire_to_task(
     questionnaire_create.questions = []
 
     questionnaire_create.description = questionnaire.description
+    delattr(questionnaire_create, "is_before")
     questionnaire_db = crud_questionnaire.create(db, obj_in=questionnaire_create)
     questions = questionnaire.questions
     for question in questions:
@@ -100,10 +87,6 @@ def create_questionnaire_to_task(
         )
         question_create.answers = []
         question_create.options = []
-        # question_create.questionnaire_id = questionnaire_db.id
-        # question_create.question_text = question.question_text
-        # question_create.question_type = question.question_type
-        # question_create.order = question.order
         question_create.is_mandatory = question.is_mandatory
         question_db = crud_questionnaire_question.create(db, obj_in=question_create)
 
@@ -114,11 +97,6 @@ def create_questionnaire_to_task(
                 value=option.value,
                 with_input=option.with_input,
             )
-            print(type(bool(option.with_input)))
-            # option_create.question_id = question_db
-            # option_create.order = option.order
-            # option_create.value = option.value
-            # option_create.with_input = option.with_input
             crud_questionnaire_question_option.create(db, obj_in=option_create)
 
     crud_questionnaire.add_questionnaire_to_task(
@@ -127,8 +105,65 @@ def create_questionnaire_to_task(
         questionnaire_id=questionnaire_db.id,
         is_before=questionnaire.is_before,
     )
-
     return questionnaire_db
+
+
+@router.put("", response_model=QuestionnaireInDB)
+def update_questionnaire(
+    *,
+    db: Session = Depends(get_db),
+    questionnaire_update: QuestionnaireUpdate,
+    current_user: User = Depends(get_current_active_superuser),
+):
+    questionnaire = crud_questionnaire.get(db, id=questionnaire_update.id)
+    crud_questionnaire.update(db, db_obj=questionnaire, obj_in=questionnaire_update)
+
+    for question in questionnaire_update.questions:
+        if question.id is None:
+            logger.debug("ID is none")
+            question_create = QuestionnaireQuestionCreate(
+                order=question.order,
+                question_type=question.question_type,
+                question_text=question.question_text,
+                questionnaire_id=questionnaire.id,
+            )
+            question_create.answers = []
+            question_create.options = []
+            question_create.is_mandatory = question.is_mandatory
+            question_db = crud_questionnaire_question.create(db, obj_in=question_create)
+            for option in question.options:
+                option_create = QuestionnaireQuestionOptionCreate(
+                    question_id=question_db.id,
+                    order=option.order,
+                    value=option.value,
+                    with_input=option.with_input,
+                )
+                crud_questionnaire_question_option.create(db, obj_in=option_create)
+        else:
+            db_question = crud_questionnaire_question.get(db, id=question.id)
+            question_update = QuestionnaireQuestionUpdate(id=question.id)
+            question_update.question_text = question.question_text
+            question_update.is_mandatory = question.is_mandatory
+            crud_questionnaire_question.update(
+                db, db_obj=db_question, obj_in=question_update
+            )
+
+    updated_questionnaire = crud_questionnaire.get(db, id=questionnaire_update.id)
+
+    return updated_questionnaire
+
+
+@router.get("/{questionnaire_id}/answers/exists", response_model=bool)
+def check_if_questionnaire_answers_exists(
+    *,
+    db: Session = Depends(get_db),
+    questionnaire_id: int,
+    current_user: User = Depends(get_current_active_superuser),
+):
+    exists = crud_questionnaire_answer.check_if_answers_exists(
+        db, questionnaire_id=questionnaire_id
+    )
+    return exists
 
 
 @router.post("", response_model=Questionnaire)
@@ -157,14 +192,25 @@ def update_questionnaire(
     return questionnaire
 
 
+@router.delete("/{questionnaire_id}")
+def delete_questionnaire(
+    *,
+    db: Session = Depends(get_db),
+    questionnaire_id: int,
+    current_user: User = Depends(get_current_active_superuser),
+):
+    crud_questionnaire.remove(db, model_id=questionnaire_id)
+
+
 @router.get("/{task_id}", response_model=Any)
 def get_questionnaires(
     *,
     db: Session = Depends(get_db),
     task_id: int,
+    is_before: bool = None,
     current_user=Depends(get_current_user),
 ):
     questionnaires = crud_questionnaire.get_questionnaires_to_task(
-        db, task_id=task_id, user_id=current_user.id
+        db, task_id=task_id, user_id=current_user.id, is_before=is_before
     )
     return questionnaires

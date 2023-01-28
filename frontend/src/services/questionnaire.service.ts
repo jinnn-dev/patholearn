@@ -1,8 +1,8 @@
 import { handleError } from './error-handler';
 import { ApiService } from './api.service';
-import { Questionnaire, QuestionnaireCreate } from '../model/questionnaires/questionnaire';
+import { Questionnaire, QuestionnaireCreate, QuestionnaireUpdate } from '../model/questionnaires/questionnaire';
 import { QuestionnaireQuestionCreate } from '../model/questionnaires/questionnaireQuestion';
-import { QuestionnaireAnswerCreate } from '../model/questionnaires/questionnaireAnswer';
+import { QuestionnaireAnswer, QuestionnaireAnswerCreate } from '../model/questionnaires/questionnaireAnswer';
 
 export class QuestionnaireService {
   public static async createQuestionnaire(questionnaireCreate: QuestionnaireCreate, task_id: number) {
@@ -14,11 +14,27 @@ export class QuestionnaireService {
         }
       })
     );
+    return response!.data;
   }
 
-  public static async getQuestionnairesToTask(task_id: number) {
+  public static async updateQuestionnaire(questionnaireUpdate: QuestionnaireUpdate) {
+    const [_, response] = await handleError(
+      ApiService.put<Questionnaire>({
+        resource: this.apiURL(''),
+        data: {
+          ...questionnaireUpdate
+        }
+      })
+    );
+    return response!.data;
+  }
+
+  public static async getQuestionnairesToTask(task_id: number, isBefore?: boolean) {
     const [_, response] = await handleError(
       ApiService.get<Questionnaire[]>({
+        data: {
+          is_before: isBefore
+        },
         resource: this.apiURL(`/${task_id}`)
       })
     );
@@ -27,7 +43,7 @@ export class QuestionnaireService {
 
   public static async saveQuestionnaireAnswers(answers: QuestionnaireAnswerCreate[]) {
     const [_, response] = await handleError(
-      ApiService.post<Questionnaire[]>({
+      ApiService.post<QuestionnaireAnswer[]>({
         resource: this.apiURL(`/answers/multiple`),
         data: answers
       })
@@ -40,6 +56,15 @@ export class QuestionnaireService {
     const [_, response] = await handleError(
       ApiService.delete({
         resource: this.apiURL(`/${questionnaireId}`)
+      })
+    );
+    return response!.data;
+  }
+
+  public static async checkIfAnswersExist(questionnaireId: number) {
+    const [_, response] = await handleError(
+      ApiService.get<boolean>({
+        resource: this.apiURL(`/${questionnaireId}/answers/exists`)
       })
     );
     return response!.data;

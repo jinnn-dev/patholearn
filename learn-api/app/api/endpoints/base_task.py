@@ -20,6 +20,7 @@ from app.core.export.task_exporter import TaskExporter
 from app.core.solver.solver import Solver
 from app.crud.crud_base_task import crud_base_task
 from app.crud.crud_course import crud_course
+from app.crud.crud_questionnaire import crud_questionnaire
 from app.crud.crud_task import crud_task
 from app.crud.crud_task_group import crud_task_group
 from app.crud.crud_task_hint import crud_task_hint
@@ -258,6 +259,17 @@ def read_task_details(
         task.user_solution = crud_user_solution.get_solution_to_task_and_user(
             db, task_id=task.id, user_id=current_user.id
         )
+        for questionnaire in task.questionnaires:
+            is_before = crud_questionnaire.is_before(
+                db, task_id=task.id, questionnaire_id=questionnaire.id
+            )
+            questionnaire.is_before = is_before
+            for question in questionnaire.questions:
+                answers = []
+                for answer in question.answers:
+                    if answer.user_id == current_user.id:
+                        answers.append(answer)
+                question.answers = answers
         delattr(task, "solution")
 
     task_group = crud_task_group.get(db=db, id=base_task.task_group_id)

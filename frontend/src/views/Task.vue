@@ -18,12 +18,16 @@ import ViewerLoading from '../components/viewer/ViewerLoading.vue';
 import { TaskResult } from '../model/task/result/taskResult';
 import { TaskType } from '../core/types/taskType';
 import { TaskStatus } from '../core/types/taskStatus';
+import { Questionnaire } from '../model/questionnaires/questionnaire';
+import QuestionnaireAnswerViewer from '../components/task/questionnaire/QuestionnaireAnswerViewer.vue';
 
 const baseTask = ref<BaseTask>();
 const route = useRoute();
 const loading = ref<Boolean>(true);
 
 const selectedTask = ref<Task>();
+
+const selectedQuestionnaire = ref<Questionnaire>();
 
 const solve_result = ref<TaskResult | undefined>();
 
@@ -68,10 +72,18 @@ onUnmounted(() => {
   document.body.style.overflow = 'auto';
 });
 
-const setSelectedTask = (task: Task) => {
+const setSelectedTask = (task: Task | Questionnaire) => {
+  if ((task as Questionnaire).name && selectedQuestionnaire.value !== (task as Questionnaire)) {
+    selectedQuestionnaire.value = task as Questionnaire;
+    selectedTask.value = undefined;
+    console.log('selected questionnaire');
+
+    return;
+  }
   if (task !== selectedTask.value) {
-    selectedTask.value = task;
-    if (task.task_type === TaskType.IMAGE_SELECT) {
+    selectedTask.value = task as Task;
+    selectedQuestionnaire.value = undefined;
+    if ((task as Task).task_type === TaskType.IMAGE_SELECT) {
       viewerLoadingState.tilesLoaded = false;
       viewerLoadingState.annotationsLoaded = false;
     }
@@ -165,7 +177,11 @@ const loadTaskSolution = async () => {
         <viewer-back-button :routeName="`/group/${baseTask?.task_group_short_name}`"></viewer-back-button>
         <task-header :selectedTask="selectedTask" :solveResult="solve_result"></task-header>
 
-        <task-container :baseTask="baseTask" @taskSelected="setSelectedTask($event)"></task-container>
+        <task-container
+          :baseTask="baseTask"
+          @taskSelected="setSelectedTask($event)"
+          :user-solution-solving="isSolving"
+        ></task-container>
 
         <!-- <hint-overlay :taskId="selectedTask?.id" /> -->
 
