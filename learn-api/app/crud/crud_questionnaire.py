@@ -63,7 +63,13 @@ class CRUDQuestionnaire(
         return questionnaires
 
     def is_before(self, db: Session, *, questionnaire_id: int, task_id: int) -> bool:
-        result =  db.query(TaskQuestionnaires.is_before).filter(TaskQuestionnaires.task_id == task_id).filter(TaskQuestionnaires.questionnaire_id == questionnaire_id).first()
+        result = (
+            db.query(TaskQuestionnaires.is_before)
+            .filter(TaskQuestionnaires.task_id == task_id)
+            .filter(TaskQuestionnaires.questionnaire_id == questionnaire_id)
+            .first()
+        )
         return result[0]
+
 
 crud_questionnaire = CRUDQuestionnaire(Questionnaire)

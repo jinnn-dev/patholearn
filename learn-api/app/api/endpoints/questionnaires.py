@@ -17,7 +17,10 @@ from app.schemas.questionnaire import (
     QuestionnaireUpdate,
     QuestionnaireInDB,
 )
-from app.schemas.questionnaire_answer import QuestionnaireAnswerCreate, QuestionnaireAnswer
+from app.schemas.questionnaire_answer import (
+    QuestionnaireAnswerCreate,
+    QuestionnaireAnswer,
+)
 from app.api.deps import (
     get_db,
     get_current_active_superuser,

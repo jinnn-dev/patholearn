@@ -260,7 +260,9 @@ def read_task_details(
             db, task_id=task.id, user_id=current_user.id
         )
         for questionnaire in task.questionnaires:
-            is_before = crud_questionnaire.is_before(db, task_id=task.id, questionnaire_id=questionnaire.id)
+            is_before = crud_questionnaire.is_before(
+                db, task_id=task.id, questionnaire_id=questionnaire.id
+            )
             questionnaire.is_before = is_before
             for question in questionnaire.questions:
                 answers = []
