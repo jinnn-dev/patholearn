@@ -170,7 +170,7 @@ const downloadUserSolutions = async (task: Task) => {
 };
 </script>
 <template>
-  <div class="w-full flex items-center justify-between p-2 bg-gray-600 sticky top-0">
+  <div class="w-full flex items-center justify-between p-2 bg-gray-600 sticky top-0 z-10">
     <div class="mr-2">{{ layerIndex }}. Ebene</div>
 
     <role-only v-if="isOwner" class="flex gap-2">
