@@ -65,7 +65,12 @@ const answerChanged = (answer: QuestionnaireAnswerCreate, question: Questionnair
     </div>
     <div class="flex justify-end">
       <div class="flex mt-4 w-[300px] gap-2 justify-end">
-        <PrimaryButton name="Überspringen" v-if="!questionnaire.is_mandatory" @click="$emit('skip')"></PrimaryButton>
+        <PrimaryButton
+          name="Überspringen"
+          v-if="!questionnaire.is_mandatory"
+          @click="$emit('skip')"
+          bg-color="bg-gray-500"
+        ></PrimaryButton>
         <SaveButton label="Einreichen" @click.stop="saveQuestionnaireAnswer" :loading="answersSaving"></SaveButton>
       </div>
     </div>
