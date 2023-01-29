@@ -200,7 +200,7 @@ const downloadUserSolutions = async (task: Task) => {
         :key="taskWithQuestionnaire.task.id"
         :class="selectedTaskId === taskWithQuestionnaire.task.id ? 'ring-2 ring-highlight-800 ' : ''"
         :isOwner="isOwner"
-        :question="taskWithQuestionnaire.task.task_question"
+        :task="taskWithQuestionnaire.task"
         :showDownload="
           taskWithQuestionnaire.task.annotation_type === ANNOTATION_TYPE.SOLUTION_POINT &&
           taskWithQuestionnaire.task.task_type !== TaskType.IMAGE_SELECT
