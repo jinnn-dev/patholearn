@@ -29,11 +29,10 @@ class QuestionnaireExporter:
             for col_index, item in enumerate(QuestionnaireRow.__fields__):
                 json_row = row.dict()
                 worksheet.write(
-                    chr(ord(char[0]) + col_index) + str(start_row),
-                    json_row[item]
+                    chr(ord(char[0]) + col_index) + str(start_row), json_row[item]
                 )
             start_row += 1
-            
+
         workbook.close()
         output.seek(0)
         return output

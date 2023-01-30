@@ -4,7 +4,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from pip._internal.network.utils import response_chunks
 from starlette.responses import StreamingResponse
 
-from app.core.export.questionnaire_exporter import QuestionnaireRow, QuestionnaireExporter
+from app.core.export.questionnaire_exporter import (
+    QuestionnaireRow,
+    QuestionnaireExporter,
+)
 from app.crud.crud_questionnaire import crud_questionnaire
 from app.crud.crud_questionnaire_answer import crud_questionnaire_answer
 from app.crud.crud_questionnaire_question import crud_questionnaire_question
@@ -87,7 +90,9 @@ def download_questionnaire_statistic(
     questionnaire_id: int,
     current_user=Depends(get_current_active_superuser),
 ):
-    export_data = crud_questionnaire.get_questionnaire_export(db, questionnaire_id=questionnaire_id)
+    export_data = crud_questionnaire.get_questionnaire_export(
+        db, questionnaire_id=questionnaire_id
+    )
     result = []
     for data in export_data:
         item = QuestionnaireRow(
@@ -96,7 +101,7 @@ def download_questionnaire_statistic(
             middlename=data[2],
             lastname=data[3],
             selection=data[4],
-            answer=data[5]
+            answer=data[5],
         )
         result.append(item)
 
@@ -107,7 +112,6 @@ def download_questionnaire_statistic(
     }
 
     return StreamingResponse(output, headers=headers)
-
 
 
 @router.post("/answers/multiple", response_model=List[QuestionnaireAnswer])
