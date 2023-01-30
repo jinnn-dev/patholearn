@@ -88,7 +88,6 @@ def download_questionnaire_statistic(
     current_user=Depends(get_current_active_superuser),
 ):
     export_data = crud_questionnaire.get_questionnaire_export(db, questionnaire_id=questionnaire_id)
-    logger.debug(export_data)
     result = []
     for data in export_data:
         item = QuestionnaireRow(

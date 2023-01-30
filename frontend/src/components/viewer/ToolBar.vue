@@ -55,20 +55,6 @@ watch(
   }
 );
 
-// watch(() => annotationVisible.value, () => {
-//   if (annotationVisible.value) {
-//     if (!infoHeaderTooltip.value) {
-//       createTooltip();
-//     }
-//   } else {
-//     console.log('REMOVE');
-//     if (infoHeaderTooltip.value) {
-//       TooltipGenerator.removeTooltip(infoHeaderTooltip.value);
-//       infoHeaderTooltip.value = undefined;
-//     }
-//   }
-// });
-
 const infoHeaderTooltip = ref<Instance>();
 
 const createTooltip = () => {

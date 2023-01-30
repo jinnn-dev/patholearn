@@ -16,8 +16,6 @@ const props = defineProps({
 watch(
   () => props.question,
   (newVal: QuestionnaireQuestion, oldVal: QuestionnaireQuestion) => {
-    console.log(newVal !== oldVal);
-
     if (newVal !== oldVal) {
       questionnaireAnswer.question_id = -1;
       questionnaireAnswer.question_option_id = -1;
