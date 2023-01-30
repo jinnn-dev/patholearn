@@ -36,10 +36,14 @@ class CRUDQuestionnaireAnswer(
 
     def get_answers_to_questionnaire(self, db: Session, *, questionnaire_id):
         answers = (
-            db.query(self.model, User, QuestionnaireQuestionOption).filter(self.model.questionnaire_id == questionnaire_id)
+            db.query(self.model, User, QuestionnaireQuestionOption)
+            .filter(self.model.questionnaire_id == questionnaire_id)
             .order_by(asc(self.model.selected))
             .join(User, self.model.user_id == User.id)
-            .join(QuestionnaireQuestionOption, self.model.question_option_id == QuestionnaireQuestionOption.id)
+            .join(
+                QuestionnaireQuestionOption,
+                self.model.question_option_id == QuestionnaireQuestionOption.id,
+            )
             .all()
         )
         return answers

@@ -2,7 +2,9 @@ from typing import List, Any, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from pip._internal.network.utils import response_chunks
+from starlette.responses import StreamingResponse
 
+from app.core.export.questionnaire_exporter import QuestionnaireRow, QuestionnaireExporter
 from app.crud.crud_questionnaire import crud_questionnaire
 from app.crud.crud_questionnaire_answer import crud_questionnaire_answer
 from app.crud.crud_questionnaire_question import crud_questionnaire_question
@@ -35,7 +37,10 @@ from app.schemas.questionnaire_question import (
     QuestionnaireQuestionCreate,
     QuestionnaireQuestionUpdate,
 )
-from app.schemas.questionnaire_question_option import QuestionnaireQuestionOptionCreate, QuestionnaireQuestionOption
+from app.schemas.questionnaire_question_option import (
+    QuestionnaireQuestionOptionCreate,
+    QuestionnaireQuestionOption,
+)
 from app.schemas.user import User
 from app.utils.logger import logger
 
@@ -46,10 +51,19 @@ class PostSchema(QuestionnaireCreate):
     is_before: Optional[bool]
 
 
-@router.get("/{questionnaire_id}/statistic", response_model=List[QuestionnaireAnswerStatistic])
-def get_questionnaire_statistic(*, db: Session = Depends(get_db), questionnaire_id, current_user=Depends(get_current_active_superuser)):
+@router.get(
+    "/{questionnaire_id}/statistic", response_model=List[QuestionnaireAnswerStatistic]
+)
+def get_questionnaire_statistic(
+    *,
+    db: Session = Depends(get_db),
+    questionnaire_id,
+    current_user=Depends(get_current_active_superuser),
+):
 
-    db_answers = crud_questionnaire_answer.get_answers_to_questionnaire(db, questionnaire_id=questionnaire_id)
+    db_answers = crud_questionnaire_answer.get_answers_to_questionnaire(
+        db, questionnaire_id=questionnaire_id
+    )
     result = []
     for answer in db_answers:
         db_answer = answer[0]
@@ -65,9 +79,37 @@ def get_questionnaire_statistic(*, db: Session = Depends(get_db), questionnaire_
         result.append(statistic)
     return result
 
-@router.post("/{questionnaire_id}/statistic/download")
-def download_questionnaire_statistic(*, db: Session = Depends(get_db), questionnaire_id: int, current_user=Depends(get_current_active_superuser)):
-    pass
+
+@router.get("/{questionnaire_id}/statistic/download")
+def download_questionnaire_statistic(
+    *,
+    db: Session = Depends(get_db),
+    questionnaire_id: int,
+    current_user=Depends(get_current_active_superuser),
+):
+    export_data = crud_questionnaire.get_questionnaire_export(db, questionnaire_id=questionnaire_id)
+    logger.debug(export_data)
+    result = []
+    for data in export_data:
+        item = QuestionnaireRow(
+            question_text=data[0],
+            firstname=data[1],
+            middlename=data[2],
+            lastname=data[3],
+            selection=data[4],
+            answer=data[5]
+        )
+        result.append(item)
+
+    output = QuestionnaireExporter.export_questionnaire_answers(db, result)
+
+    headers = {
+        "Content-Disposition": 'attachment; filename="' + str(questionnaire_id) + '"'
+    }
+
+    return StreamingResponse(output, headers=headers)
+
+
 
 @router.post("/answers/multiple", response_model=List[QuestionnaireAnswer])
 def save_questionnaires_answers(
@@ -177,7 +219,6 @@ def update_questionnaire(
     return updated_questionnaire
 
 
-
 @router.get("/{questionnaire_id}/answers/exists", response_model=bool)
 def check_if_questionnaire_answers_exists(
     *,
@@ -239,4 +280,3 @@ def get_questionnaires(
         db, task_id=task_id, user_id=current_user.id, is_before=is_before
     )
     return questionnaires
-

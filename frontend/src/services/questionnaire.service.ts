@@ -80,5 +80,17 @@ export class QuestionnaireService {
     return response!.data;
   }
 
+  public static async downloadAnswers(questionnaireId: number) {
+    const [_, response] = await handleError(
+      ApiService.get<any>(
+        {
+          resource: this.apiURL(`/${questionnaireId}/statistic/download`)
+        },
+        'arraybuffer'
+      )
+    );
+    return response!.data;
+  }
+
   private static apiURL = (path: string = '') => '/questionnaires' + path;
 }

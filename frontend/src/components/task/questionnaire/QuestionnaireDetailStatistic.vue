@@ -5,6 +5,7 @@ import { QuestionnaireService } from '../../../services/questionnaire.service';
 import { QuestionnaireAnswerStatistic } from '../../../model/questionnaires/questionnaireAnswerStatistic';
 import Spinner from '../../general/Spinner.vue';
 import PrimaryButton from '../../general/PrimaryButton.vue';
+import SaveButton from '../../general/SaveButton.vue';
 import Icon from '../../general/Icon.vue';
 
 defineEmits(['close']);
@@ -19,30 +20,69 @@ const props = defineProps({
 const answers = ref<QuestionnaireAnswerStatistic[]>([]);
 
 const loadingStatistic = ref<boolean>();
+const downloadLoading = ref<boolean>();
 
 onMounted(async () => {
   loadingStatistic.value = true;
   answers.value = await QuestionnaireService.getQuestionnaireAnswers(props.questionnaire.id);
   loadingStatistic.value = false;
 });
+
+const downloadAnswers = async () => {
+  downloadLoading.value = true;
+  const data = await QuestionnaireService.downloadAnswers(props.questionnaire.id);
+  downloadLoading.value = false;
+
+  const a = document.createElement('a');
+
+  const blob = new Blob([data], {
+    type: 'application/xlsx'
+  });
+  const date = new Date();
+  const dateString = `${date.getDate()}_${
+    date.getMonth() + 1
+  }_${date.getFullYear()}_${date.getHours()}_${date.getMinutes()}_${date.getSeconds()}`;
+  a.href = window.URL.createObjectURL(blob);
+  a.download = props.questionnaire.id + '_' + dateString + '.xlsx';
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+};
 </script>
 <template>
   <div class="flex">
     <primary-button
-      class="absolute w-fit"
+      class="w-auto"
       name="Details"
       padding-vertical="py-0.5"
-      padding-horizontal="px-2"
+      padding-horizontal="px-4"
       font-weight="font-semibold"
       font-size="text-sm"
       bg-color="bg-gray-500"
       @click.stop="$emit('close')"
     >
       <template #default>
-        <icon name="caret-left" size="16" stroke-width="24"></icon>
+        <icon name="caret-left" size="16" stroke-width="26" class="mr-1"></icon>
       </template>
     </primary-button>
     <div class="w-full text-center text-xl font-semibold">{{ questionnaire.name }}</div>
+    <div>
+      <primary-button
+        class="w-fit"
+        name="Herunterladen"
+        padding-vertical="py-0.5"
+        padding-horizontal="px-2"
+        font-weight="font-semibold"
+        font-size="text-sm"
+        bg-color="bg-gray-500"
+        @click.stop="downloadAnswers"
+      >
+        <template #default>
+          <spinner v-if="downloadLoading"></spinner>
+          <icon v-else name="download-simple" size="16" stroke-width="24" class="mr-1"></icon>
+        </template>
+      </primary-button>
+    </div>
   </div>
   <div v-if="loadingStatistic" class="flex justify-center items-center gap-2 mt-4">
     <spinner></spinner>

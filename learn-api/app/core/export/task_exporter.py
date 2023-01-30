@@ -1,10 +1,10 @@
 import re
 from io import BytesIO
-from typing import List, Tuple, Type
+from typing import List, Type
 
 import requests
-import xlsxwriter
 from app.core.config import settings
+from app.core.export.export_helper import ExportHelper
 from app.crud.crud_base_task import crud_base_task
 from app.crud.crud_task_group import crud_task_group
 from app.crud.crud_user import crud_user
@@ -18,7 +18,6 @@ from app.schemas.user import User
 from app.schemas.user_solution import UserSolution
 from pydantic import BaseModel, parse_obj_as
 from sqlalchemy.orm import Session
-from xlsxwriter import Workbook
 from xlsxwriter.worksheet import Worksheet
 
 
@@ -59,8 +58,8 @@ class TaskExporter:
         :param task_group: The task group to export the points from
         :return: Bytes representation of the worksheet
         """
-        workbook, worksheet, output = TaskExporter.initialize_xlsx_file()
-        TaskExporter.write_xlsx_header(worksheet, TaskPointRow)
+        workbook, worksheet, output = ExportHelper.initialize_xlsx_file()
+        ExportHelper.write_xlsx_header(worksheet, TaskPointRow)
 
         start_row = 2
 
@@ -95,7 +94,7 @@ class TaskExporter:
         if not task_group:
             task_group = crud_task_group.get(db, id=base_task.task_group_id)
 
-        workbook, worksheet, output = TaskExporter.initialize_xlsx_file()
+        workbook, worksheet, output = ExportHelper.initialize_xlsx_file()
 
         try:
             image = requests.get(
@@ -105,7 +104,7 @@ class TaskExporter:
             print(e)
             image = {"name": "Not Found"}
 
-        TaskExporter.write_xlsx_header(worksheet, TaskPointRow)
+        ExportHelper.write_xlsx_header(worksheet, TaskPointRow)
 
         start_row = 2
         for task in base_task.tasks:
@@ -158,9 +157,9 @@ class TaskExporter:
 
         user_solutions = crud_user_solution.get_solution_to_task(db, task_id=task.id)
 
-        workbook, worksheet, output = TaskExporter.initialize_xlsx_file()
+        workbook, worksheet, output = ExportHelper.initialize_xlsx_file()
 
-        TaskExporter.write_xlsx_header(worksheet, TaskPointRow)
+        ExportHelper.write_xlsx_header(worksheet, TaskPointRow)
 
         TaskExporter.write_rows_for_task(
             db,
@@ -313,14 +312,3 @@ class TaskExporter:
                 )
 
         return task_point_rows
-
-    @staticmethod
-    def initialize_xlsx_file() -> Tuple[Workbook, Worksheet, BytesIO]:
-        """
-        Initializes a xlsx workbook, worksheet and Bytes Buffer
-        :return: Initialized workbook, worksheet and bytes buffer
-        """
-        output = BytesIO()
-        workbook = xlsxwriter.Workbook(output)
-        worksheet = workbook.add_worksheet()
-        return workbook, worksheet, output
