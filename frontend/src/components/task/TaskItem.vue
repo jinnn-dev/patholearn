@@ -5,6 +5,10 @@ import Icon from '../general/Icon.vue';
 import RoleOnly from '../containers/RoleOnly.vue';
 import ConfirmDialog from '../general/ConfirmDialog.vue';
 import { TaskStatus } from '../../core/types/taskStatus';
+import { Task } from '../../model/task/task';
+import TaskStatistic from './TaskStatistic.vue';
+import ModalDialog from '../../components/containers/ModalDialog.vue';
+import PrimaryButton from '../general/PrimaryButton.vue';
 
 const props = defineProps({
   isOwner: {
@@ -16,8 +20,8 @@ const props = defineProps({
     type: Object as PropType<UserSolution | null>
   },
 
-  question: {
-    type: String,
+  task: {
+    type: Object as PropType<Task>,
     required: true
   },
 
@@ -34,7 +38,8 @@ const props = defineProps({
 
 const emit = defineEmits(['deleteTask', 'editTask', 'downloadUserSolutions']);
 
-const showDeleteTask = ref<Boolean>(false);
+const showDeleteTask = ref<boolean>(false);
+const showQuestionnaireStatistic = ref<boolean>(false);
 
 const deleteTask = () => {
   emit('deleteTask');
@@ -50,7 +55,7 @@ const downloadUserSolutions = () => {
 </script>
 <template>
   <div
-    :title="question"
+    :title="task.task_question"
     class="transition flex flex-col items-center mx-2 p-2 rounded-xl bg-gray-500"
     :class="disabled ? 'opacity-50' : 'hover:bg-gray-400 cursor-pointer'"
   >
@@ -69,17 +74,31 @@ const downloadUserSolutions = () => {
         <Icon v-else class="text-red-500" name="x-circle" />
       </div>
       <div class="ml-2 w-full mx-2 break-all">
-        {{ question }}
+        {{ task.task_question }}
       </div>
     </div>
     <role-only v-if="isOwner">
-      <div class="flex">
+      <div class="flex gap-4">
+        <Icon class="" name="chart-bar" @click.stop="showQuestionnaireStatistic = true"></Icon>
         <Icon v-if="showDownload" class="text-xl" name="download-simple" @click.stop="downloadUserSolutions" />
-        <Icon class="text-xl mx-2" name="pencil-simple" @click.stop="editTask" />
+        <Icon class="text-xl" name="pencil-simple" @click.stop="editTask" />
         <Icon class="text-red-400 text-xl" name="trash" @click.stop="showDeleteTask = true" />
       </div>
     </role-only>
 
+    <modal-dialog :show="showQuestionnaireStatistic" custom-classes="p-6 min-w-[50%]">
+      <div class="flex justify-between items-center gap-4 w-full">
+        <div class="w-full text-3xl">Umfragestatistiken</div>
+        <div
+          class="bg-gray-600 hover:bg-gray-500 cursor-pointer p-1 rounded-md"
+          @click="showQuestionnaireStatistic = false"
+        >
+          <Icon name="x"></Icon>
+        </div>
+      </div>
+
+      <task-statistic :task="task"></task-statistic>
+    </modal-dialog>
     <confirm-dialog
       :show="showDeleteTask"
       detail="Alle Lösungen der Nutzer werden ebenfalls gelöscht"

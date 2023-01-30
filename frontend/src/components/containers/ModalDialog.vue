@@ -47,7 +47,18 @@ watch(
               class="bg-gray-800 tex-gray-100 rounded-lg text-left shadow-xl p-4 top-1/2"
               role="dialog"
             >
-              <slot>Kein Inhalt</slot>
+              <transition
+                enter-active-class="transition ease-out duration-200 transform"
+                enter-from-class="opacity-0"
+                enter-to-class="opacity-100"
+                leave-active-class="transition ease-in duration-200 transform"
+                leave-from-class="opacity-100"
+                leave-to-class="opacity-0"
+              >
+                <div v-if="showModal">
+                  <slot>Kein Inhalt</slot>
+                </div>
+              </transition>
             </div>
           </transition>
         </div>

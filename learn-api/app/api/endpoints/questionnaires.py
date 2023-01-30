@@ -2,7 +2,12 @@ from typing import List, Any, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from pip._internal.network.utils import response_chunks
+from starlette.responses import StreamingResponse
 
+from app.core.export.questionnaire_exporter import (
+    QuestionnaireRow,
+    QuestionnaireExporter,
+)
 from app.crud.crud_questionnaire import crud_questionnaire
 from app.crud.crud_questionnaire_answer import crud_questionnaire_answer
 from app.crud.crud_questionnaire_question import crud_questionnaire_question
@@ -30,11 +35,15 @@ from app.api.deps import (
 from pydantic import BaseModel, parse_obj_as
 from sqlalchemy.orm import Session
 
+from app.schemas.questionnaire_answer_statistic import QuestionnaireAnswerStatistic
 from app.schemas.questionnaire_question import (
     QuestionnaireQuestionCreate,
     QuestionnaireQuestionUpdate,
 )
-from app.schemas.questionnaire_question_option import QuestionnaireQuestionOptionCreate
+from app.schemas.questionnaire_question_option import (
+    QuestionnaireQuestionOptionCreate,
+    QuestionnaireQuestionOption,
+)
 from app.schemas.user import User
 from app.utils.logger import logger
 
@@ -43,6 +52,66 @@ router = APIRouter()
 
 class PostSchema(QuestionnaireCreate):
     is_before: Optional[bool]
+
+
+@router.get(
+    "/{questionnaire_id}/statistic", response_model=List[QuestionnaireAnswerStatistic]
+)
+def get_questionnaire_statistic(
+    *,
+    db: Session = Depends(get_db),
+    questionnaire_id,
+    current_user=Depends(get_current_active_superuser),
+):
+
+    db_answers = crud_questionnaire_answer.get_answers_to_questionnaire(
+        db, questionnaire_id=questionnaire_id
+    )
+    result = []
+    for answer in db_answers:
+        db_answer = answer[0]
+        user = answer[1]
+        option = answer[2]
+        statistic = QuestionnaireAnswerStatistic()
+        statistic.id = db_answer.id
+        statistic.selected = db_answer.selected
+        statistic.answer = db_answer.answer
+        statistic.questionnaire_id = db_answer.questionnaire_id
+        statistic.user = parse_obj_as(User, user)
+        statistic.question_option = parse_obj_as(QuestionnaireQuestionOption, option)
+        result.append(statistic)
+    return result
+
+
+@router.get("/{questionnaire_id}/statistic/download")
+def download_questionnaire_statistic(
+    *,
+    db: Session = Depends(get_db),
+    questionnaire_id: int,
+    current_user=Depends(get_current_active_superuser),
+):
+    export_data = crud_questionnaire.get_questionnaire_export(
+        db, questionnaire_id=questionnaire_id
+    )
+    result = []
+    for data in export_data:
+        item = QuestionnaireRow(
+            question_text=data[0],
+            firstname=data[1],
+            middlename=data[2],
+            lastname=data[3],
+            selection=data[4],
+            answer=data[5],
+        )
+        result.append(item)
+
+    output = QuestionnaireExporter.export_questionnaire_answers(db, result)
+
+    headers = {
+        "Content-Disposition": 'attachment; filename="' + str(questionnaire_id) + '"'
+    }
+
+    return StreamingResponse(output, headers=headers)
 
 
 @router.post("/answers/multiple", response_model=List[QuestionnaireAnswer])

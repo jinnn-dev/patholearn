@@ -2,7 +2,9 @@ from app.crud.base import CRUDBase
 from app.crud.crud_questionnaire_answer import crud_questionnaire_answer
 from app.models.questionnaire import Questionnaire
 from app.models.questionnaire_answer import QuestionnaireAnswer
+from app.models.questionnaire_question import QuestionnaireQuestion
 from app.models.task_questionnaires import TaskQuestionnaires
+from app.models.user import User
 from app.schemas.questionnaire import (
     QuestionnaireCreate,
     QuestionnaireUpdate,
@@ -16,6 +18,32 @@ from app.utils.logger import logger
 class CRUDQuestionnaire(
     CRUDBase[Questionnaire, QuestionnaireCreate, QuestionnaireUpdate]
 ):
+
+    # SELECT questionnairequestion.question_text, user.firstname, user.middlename, user.lastname,
+    # questionnaireanswer.answer, questionnaireanswer.selected FROM questionnairequestion
+    # LEFT JOIN questionnaireanswer ON questionnaireanswer.question_id=questionnairequestion.id
+    # LEFT JOIN user ON questionnaireanswer.user_id = user.id WHERE questionnairequestion.questionnaire_id=32
+
+    def get_questionnaire_export(self, db: Session, questionnaire_id):
+        return (
+            db.query(
+                QuestionnaireQuestion.question_text,
+                User.firstname,
+                User.middlename,
+                User.lastname,
+                QuestionnaireAnswer.selected,
+                QuestionnaireAnswer.answer,
+            )
+            .join(
+                QuestionnaireAnswer,
+                QuestionnaireAnswer.question_id == QuestionnaireQuestion.id,
+                isouter=True,
+            )
+            .join(User, QuestionnaireAnswer.user_id == User.id, isouter=True)
+            .filter(QuestionnaireQuestion.questionnaire_id == questionnaire_id)
+            .all()
+        )
+
     def add_questionnaire_to_task(
         self, db: Session, *, task_id: int, questionnaire_id: int, is_before: bool
     ):

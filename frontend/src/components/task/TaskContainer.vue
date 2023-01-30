@@ -184,7 +184,6 @@ const changeTask = async (taskWithQuestionnaires: TaskWithQuestionnairesLayer) =
     !questionnaireHasAnswer(taskWithQuestionnaires.questionnaireBefore) &&
     !taskWithQuestionnaires.questionnaireBefore.isSkipped
   ) {
-    console.log('Selecting before quesitonnaire ');
     selectedQuestionnaire.value = taskWithQuestionnaires.questionnaireBefore;
     selectedTask.value = undefined;
   } else if (
@@ -194,53 +193,13 @@ const changeTask = async (taskWithQuestionnaires: TaskWithQuestionnairesLayer) =
     !questionnaireHasAnswer(taskWithQuestionnaires.questionnaireAfter) &&
     !taskWithQuestionnaires.questionnaireAfter.isSkipped
   ) {
-    console.log('Selecting after questionnaire');
     selectedQuestionnaire.value = taskWithQuestionnaires.questionnaireAfter;
     selectedTask.value = undefined;
   } else {
-    console.log('Selecting task');
     selectedQuestionnaire.value = undefined;
     selectedTask.value = taskWithQuestionnaires.task;
   }
 
-  // if (
-  //   selectedTask.value === taskWithQuestionnaires.task ||
-  //   ((selectedQuestionnaire.value === taskWithQuestionnaires.questionnaireBefore ||
-  //     selectedQuestionnaire.value === taskWithQuestionnaires.questionnaireAfter) &&
-  //     !questionnaireHasAnswer(selectedQuestionnaire.value!))
-  // )
-  //   return;
-  // if (
-  //   taskWithQuestionnaires.questionnaireBefore &&
-  //   !questionnaireHasAnswer(taskWithQuestionnaires.questionnaireBefore) &&
-  //   !taskWithQuestionnaires.questionnaireBefore.isSkipped
-  // ) {
-  //   console.log('Before');
-
-  //   selectedQuestionnaire.value = taskWithQuestionnaires.questionnaireBefore;
-  //   selectedTask.value = undefined;
-  // } else if (
-  //   (taskWithQuestionnaires.task.user_solution !== null ||
-  //     taskWithQuestionnaires.task.user_solution?.task_result?.task_status === TaskStatus.CORRECT) &&
-  //   taskWithQuestionnaires.questionnaireAfter &&
-  //   !questionnaireHasAnswer(taskWithQuestionnaires.questionnaireAfter) &&
-  //   !taskWithQuestionnaires.questionnaireAfter?.isSkipped
-  // ) {
-  //   console.log('After', taskWithQuestionnaires.questionnaireAfter?.isSkipped);
-  //   selectedQuestionnaire.value = taskWithQuestionnaires.questionnaireAfter;
-  //   selectedTask.value = undefined;
-  // } else {
-  //   console.log('SELECT TASK');
-
-  //   selectedQuestionnaire.value = undefined;
-  //   selectedTask.value = taskWithQuestionnaires.task;
-  // }
-
-  // if ((task as Questionnaire).name !== '') {
-  //   selectedQuestionnaire.value = task as Questionnaire;
-  // } else {
-  //   selectedTask.value = task as Task;
-  // }
   emit('taskSelected', selectedTask.value || selectedQuestionnaire.value);
 };
 
@@ -252,13 +211,6 @@ const selectQuestionnaire = (data: { questionnaire: Questionnaire; index: number
   selectedTask.value = undefined;
 
   selectedTaskWithQuestionnaires.value = taskMap.value[data.layer][data.index];
-  console.log(data.layer, data.index);
-
-  // if (data.questionnaire.id === selectedTaskWithQuestionnaires.value.questionnaireBefore?.id) {
-  //   selectedTaskWithQuestionnaires.value.questionnaireBefore.isSkipped === false;
-  // } else {
-  //   selectedTaskWithQuestionnaires.value.questionnaireAfter?.isSkipped === false;
-  // }
 };
 
 const answerSaved = (questionnaire: Questionnaire) => {

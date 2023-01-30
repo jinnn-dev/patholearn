@@ -3,6 +3,7 @@ import { ApiService } from './api.service';
 import { Questionnaire, QuestionnaireCreate, QuestionnaireUpdate } from '../model/questionnaires/questionnaire';
 import { QuestionnaireQuestionCreate } from '../model/questionnaires/questionnaireQuestion';
 import { QuestionnaireAnswer, QuestionnaireAnswerCreate } from '../model/questionnaires/questionnaireAnswer';
+import { QuestionnaireAnswerStatistic } from '../model/questionnaires/questionnaireAnswerStatistic';
 
 export class QuestionnaireService {
   public static async createQuestionnaire(questionnaireCreate: QuestionnaireCreate, task_id: number) {
@@ -66,6 +67,27 @@ export class QuestionnaireService {
       ApiService.get<boolean>({
         resource: this.apiURL(`/${questionnaireId}/answers/exists`)
       })
+    );
+    return response!.data;
+  }
+
+  public static async getQuestionnaireAnswers(questionnaireId: number) {
+    const [_, response] = await handleError(
+      ApiService.get<QuestionnaireAnswerStatistic[]>({
+        resource: this.apiURL(`/${questionnaireId}/statistic`)
+      })
+    );
+    return response!.data;
+  }
+
+  public static async downloadAnswers(questionnaireId: number) {
+    const [_, response] = await handleError(
+      ApiService.get<any>(
+        {
+          resource: this.apiURL(`/${questionnaireId}/statistic/download`)
+        },
+        'arraybuffer'
+      )
     );
     return response!.data;
   }

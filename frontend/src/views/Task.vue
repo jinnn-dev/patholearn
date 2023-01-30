@@ -76,7 +76,6 @@ const setSelectedTask = (task: Task | Questionnaire) => {
   if ((task as Questionnaire).name && selectedQuestionnaire.value !== (task as Questionnaire)) {
     selectedQuestionnaire.value = task as Questionnaire;
     selectedTask.value = undefined;
-    console.log('selected questionnaire');
 
     return;
   }
