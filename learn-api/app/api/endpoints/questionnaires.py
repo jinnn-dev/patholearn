@@ -30,11 +30,12 @@ from app.api.deps import (
 from pydantic import BaseModel, parse_obj_as
 from sqlalchemy.orm import Session
 
+from app.schemas.questionnaire_answer_statistic import QuestionnaireAnswerStatistic
 from app.schemas.questionnaire_question import (
     QuestionnaireQuestionCreate,
     QuestionnaireQuestionUpdate,
 )
-from app.schemas.questionnaire_question_option import QuestionnaireQuestionOptionCreate
+from app.schemas.questionnaire_question_option import QuestionnaireQuestionOptionCreate, QuestionnaireQuestionOption
 from app.schemas.user import User
 from app.utils.logger import logger
 
@@ -44,6 +45,29 @@ router = APIRouter()
 class PostSchema(QuestionnaireCreate):
     is_before: Optional[bool]
 
+
+@router.get("/{questionnaire_id}/statistic", response_model=List[QuestionnaireAnswerStatistic])
+def get_questionnaire_statistic(*, db: Session = Depends(get_db), questionnaire_id, current_user=Depends(get_current_active_superuser)):
+
+    db_answers = crud_questionnaire_answer.get_answers_to_questionnaire(db, questionnaire_id=questionnaire_id)
+    result = []
+    for answer in db_answers:
+        db_answer = answer[0]
+        user = answer[1]
+        option = answer[2]
+        statistic = QuestionnaireAnswerStatistic()
+        statistic.id = db_answer.id
+        statistic.selected = db_answer.selected
+        statistic.answer = db_answer.answer
+        statistic.questionnaire_id = db_answer.questionnaire_id
+        statistic.user = parse_obj_as(User, user)
+        statistic.question_option = parse_obj_as(QuestionnaireQuestionOption, option)
+        result.append(statistic)
+    return result
+
+@router.post("/{questionnaire_id}/statistic/download")
+def download_questionnaire_statistic(*, db: Session = Depends(get_db), questionnaire_id: int, current_user=Depends(get_current_active_superuser)):
+    pass
 
 @router.post("/answers/multiple", response_model=List[QuestionnaireAnswer])
 def save_questionnaires_answers(
@@ -153,6 +177,7 @@ def update_questionnaire(
     return updated_questionnaire
 
 
+
 @router.get("/{questionnaire_id}/answers/exists", response_model=bool)
 def check_if_questionnaire_answers_exists(
     *,
@@ -214,3 +239,4 @@ def get_questionnaires(
         db, task_id=task_id, user_id=current_user.id, is_before=is_before
     )
     return questionnaires
+

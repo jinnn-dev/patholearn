@@ -36,11 +36,12 @@ const questionnaireAfter = computed(() => questionnaires.value?.find((questionna
       <no-content class="mt-10" iconSize="w-28" text="Keine Umfragen vorhanden" textSize="text-lg"></no-content>
     </div>
 
-    <div v-else>
+    <div v-else class="w-full">
       <questionnaire-statistic
         v-if="questionnaireBefore"
         :questionnaire="questionnaireBefore"
       ></questionnaire-statistic>
+      <div class="w-full h-0.5 bg-gray-500 opacity-60 my-4"></div>
       <questionnaire-statistic v-if="questionnaireAfter" :questionnaire="questionnaireAfter"></questionnaire-statistic>
     </div>
   </div>

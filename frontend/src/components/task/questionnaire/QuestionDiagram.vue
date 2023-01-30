@@ -30,7 +30,6 @@ onMounted(() => {
     questionStatistic.value[answer.question_option_id] += 1;
     numberOfAnswers.value += 1;
   }
-  console.log(questionOption.value);
 });
 </script>
 
@@ -44,10 +43,20 @@ onMounted(() => {
             <div class="progress bg-highlight-900 block h-full rounded-full"></div>
           </span>
         </div>
-        <div class="w-1/4 flex-shrink-0 flex gap-2">{{ value }} ({{ ((value || 0) / numberOfAnswers) * 100 }}%)</div>
+        <div class="w-1/6 flex-shrink-0 flex gap-2">
+          {{ value }} ({{ (((value || 0) / numberOfAnswers) * 100).toFixed(2) }}%)
+        </div>
       </div>
     </div>
-    <div class="text-right">Summe:{{ numberOfAnswers }}</div>
+    <div class="flex mt-2">
+      <div class="w-full"></div>
+      <div
+        class="flex gap-2 items-center w-1/6 text-gray-100 font-semibold flex-shrink-0 text-left border-double border-t-4 border-gray-300"
+      >
+        <span>&#8721;</span>
+        <span class="pt-0.5">{{ numberOfAnswers }}</span>
+      </div>
+    </div>
   </div>
 </template>
 <style>
