@@ -9,7 +9,7 @@ import Spinner from '../general/Spinner.vue';
 
 const emit = defineEmits(['close', 'selectAnnotation']);
 
-const props = defineProps({
+defineProps({
   validationResult: {
     type: Array as PropType<ValidationResult[]>,
     default: []
