@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, PropType, ref, nextTick, watch } from 'vue';
+import { onMounted, PropType, ref, watch } from 'vue';
 
 import { Task } from '../../model/task/task';
 import { BaseTask } from '../../model/task/baseTask';
@@ -13,12 +13,9 @@ import { TaskStatus } from '../../core/types/taskStatus';
 import ConfirmButtons from '../general/ConfirmButtons.vue';
 import SelectUserSolution from './SelectUserSolution.vue';
 import Spinner from '../general/Spinner.vue';
-import { QuestionnaireService } from '../../services/questionnaire.service';
 import { Questionnaire, questionnaireHasAnswer } from '../../model/questionnaires/questionnaire';
-import AnswerQuestionnaire from './questionnaire/AnswerQuestionnaire.vue';
-import { LayeredTasks, TaskWithQuestionnaires, TaskWithQuestionnairesLayer, LayerQuestionnaire } from './task-types';
+import { LayeredTasks, TaskWithQuestionnairesLayer } from './task-types';
 import QuestionnaireAnswerViewer from './questionnaire/QuestionnaireAnswerViewer.vue';
-import { userSolutionLocked } from '../../core/viewer/viewerState';
 
 type SliderPosition = 'tasks' | 'solutions';
 
@@ -51,11 +48,7 @@ const sliderPosition = ref<SliderPosition>('tasks');
 
 const users = ref<any[]>();
 
-const activatedUsers = ref<number[]>();
-
 const userSolutionsLoading = ref<boolean>(false);
-
-const currentTaskIndex = ref<number>(0);
 
 watch(
   () => props.userSolutionSolving,
@@ -118,19 +111,6 @@ onMounted(async () => {
         }
       }
     }
-    // for (const [_, value] of Object.entries(taskMap.value)) {
-    //   for (const task of value as TaskWithQuestionnaires[]) {
-    //     if (
-    //       questionnaireHasAnswer(task.questionnaireBefore) ||
-    //       questionnaireHasAnswer(task.questionnaireAfter) ||
-    //       task.task.user_solution === null ||
-    //       task.task.user_solution?.task_result?.task_status !== TaskStatus.CORRECT
-    //     ) {
-    //       changeTask(task);
-    //       return;
-    //     }
-    //   }
-    // }
   }
 });
 
@@ -150,10 +130,6 @@ const showUserSolution = (userId: number) => {
 const hideUserSolution = (userId: number) => {
   emit('hide-user-solution', userId);
 };
-
-// const userSolutionClicked = (userId: number) => {
-//   emit('toggleUserSolution', userId);
-// };
 
 const updateTask = (task: Task) => {
   const index = taskMap.value[task.layer].findIndex((item) => item.task.id === task.id);
@@ -227,17 +203,7 @@ const answerSkipped = () => {
   if (selectedQuestionnaire.value.is_before) {
     selectedTaskWithQuestionnaires.value.questionnaireBefore!.isSkipped = true;
     changeTask(selectedTaskWithQuestionnaires.value);
-    // if (
-    //   selectedTaskWithQuestionnaires.value?.task.user_solution !== null &&
-    //   selectedTaskWithQuestionnaires.value?.task.user_solution?.task_result !== null
-    // ) {
-    //   selectedTaskWithQuestionnaires.value.questionnaireBefore!.isSkipped = true;
-    //   selectedQuestionnaire.value = selectedTaskWithQuestionnaires.value?.questionnaireAfter;
-    // } else {
-    //   selectedQuestionnaire.value = undefined;
-    //   selectedTaskWithQuestionnaires.value.questionnaireAfter!.isSkipped = false;
-    //   selectedTask.value = selectedTaskWithQuestionnaires.value?.task;
-    // }
+
     emit('taskSelected', selectedTask.value || selectedQuestionnaire.value);
   } else {
     selectedTaskWithQuestionnaires.value.questionnaireAfter!.isSkipped = true;
