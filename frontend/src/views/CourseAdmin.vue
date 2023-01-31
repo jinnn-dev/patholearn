@@ -4,7 +4,6 @@ import { Course, UpdateCourse } from '../model/course';
 import { useRoute } from 'vue-router';
 import { TaskGroup } from '../model/task/taskGroup';
 import { CourseService } from '../services/course.service';
-import { TaskService } from '../services/task.service';
 import { TaskGroupService } from '../services/task-group.service';
 import router from '../router';
 import ModalDialog from '../components/containers/ModalDialog.vue';
@@ -31,15 +30,6 @@ watchEffect(() => {
 
 const loading = ref<boolean>(true);
 
-const showModal = ref<boolean>(false);
-const formData = reactive({
-  name: '',
-  slide_id: '',
-  task_group_id: -1
-});
-const taskLoading = ref<boolean>(false);
-const taskError = ref<boolean>(false);
-
 const fromGroupData = reactive({
   name: ''
 });
@@ -60,33 +50,6 @@ onMounted(async () => {
   course.value = await CourseService.getCourseDetails(route.params.id as string);
   loading.value = false;
 });
-
-const onSubmit = () => {
-  taskLoading.value = true;
-  TaskService.createBaseTask({
-    name: formData.name,
-    slide_id: formData.slide_id,
-    ...(formData.task_group_id !== -1 && {
-      task_group_id: formData.task_group_id
-    }),
-    course_id: course.value?.id as number
-  })
-    .then(() => {
-      taskLoading.value = false;
-      showModal.value = false;
-      formData.name = '';
-      formData.slide_id = '';
-      formData.task_group_id = -1;
-    })
-    .catch((error) => {
-      if (error.response) {
-        if (error.response.status === 400) {
-          taskError.value = true;
-        }
-      }
-      taskLoading.value = false;
-    });
-};
 
 const onGroupSubmit = () => {
   taskGroupLoading.value = true;
@@ -251,7 +214,7 @@ const editCourse = async () => {
       <input-field v-model="newCourseName" label="Kursname" />
 
       <div class="border-2 m-2 px-4 rounded-lg border-red-800">
-        <div class="my-4 text-gray-200 font-bold text-red-400">
+        <div class="my-4 font-bold text-red-400">
           ACHTUNG - Alle zugehörigen Aufgabengruppen, Aufgaben und Lösungen werden gelöscht.
         </div>
         <input-field v-model="deleteCourseVerification" tip="Bitte den Namen des Kurses eingeben um ihn zu löschen" />
@@ -274,38 +237,4 @@ const editCourse = async () => {
       ></confirm-buttons>
     </div>
   </modal-dialog>
-  <!-- <modal-dialog :show="showEditCourse">
-    <div class="relative">
-      <h1 class="text-2xl">Möchtest du den Kurs wirklich löschen?</h1>
-      <div class="my-4">
-        Alle zugehörigen Aufgabengruppen, Aufgaben und Lösungen werden gelöscht.
-      </div>
-
-      <primary-button
-        @click.prevent="showEditCourse = false"
-        class="mr-2 w-full my-5"
-        name="Kurs Löschen"
-        bgColor="bg-red-500"
-        bgHoverColor="bg-red-700"
-        fontWeight="font-normal"
-      ></primary-button>
-      <div class="flex justify-end">
-        <primary-button
-          @click.prevent="showEditCourse = false"
-          class="mr-2 w-28"
-          name="Nein"
-          bgColor="bg-gray-500"
-          bgHoverColor="bg-gray-700"
-          fontWeight="font-normal"
-        ></primary-button>
-        <save-button
-          name="Ja"
-          type="submit"
-          :loading="deleteLoading"
-          @click="deleteCourse"
-          class="w-28"
-        ></save-button>
-      </div>
-    </div>
-  </modal-dialog> -->
 </template>
