@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { Questionnaire } from '../../../model/questionnaires/questionnaire';
 import { QuestionnaireQuestionOption } from '../../../model/questionnaires/questionnaireQuestionOption';
 import { QuestionnaireQuestion } from '../../../model/questionnaires/questionnaireQuestion';
 import { QuestionnaireAnswerCreate } from '../../../model/questionnaires/questionnaireAnswer';
-import { PropType, ref, reactive, watch } from 'vue';
+import { PropType, reactive, watch } from 'vue';
 import InputArea from '../../form/InputArea.vue';
 
 const props = defineProps({
