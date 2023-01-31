@@ -1,5 +1,5 @@
-<script lang='ts' setup>
-const props = defineProps({
+<script lang="ts" setup>
+defineProps({
   loading: Boolean,
   skeletonClasses: String,
   inputClasses: String,
@@ -10,11 +10,11 @@ const props = defineProps({
 });
 </script>
 <template>
-  <div v-if='loading' :class='skeletonClasses' class='animate-skeleton bg-gray-700 rounded-lg p-4'></div>
+  <div v-if="loading" :class="skeletonClasses" class="animate-skeleton bg-gray-700 rounded-lg p-4"></div>
   <div
     v-else
     :class="inputClasses + (shouldHover ? ' hover:bg-gray-500' : '')"
-    class='transition bg-gray-600 rounded-lg p-4 shadow-md'
+    class="transition bg-gray-600 rounded-lg p-4 shadow-md"
   >
     <slot></slot>
   </div>
