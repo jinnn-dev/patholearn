@@ -34,7 +34,7 @@ import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
 import { snapAnnotation, SnapResult } from './helper/snapAnnotation';
 import { AnnotationManager } from './annotationManager';
 import { SVG_ID } from './config/generateViewerOptions';
-import { SvgOverlay, USER_SOLUTION_NODE_ID } from './svg/svg-overlay';
+import { SvgOverlay } from './svg/svg-overlay';
 import { TaskSaver } from './taskSaver';
 import { viewerLoadingState, viewerScale, viewerZoom } from './viewerState';
 import { focusAnnotation } from './helper/focusAnnotation';
