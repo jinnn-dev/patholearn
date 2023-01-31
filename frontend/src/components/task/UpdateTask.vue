@@ -130,7 +130,7 @@ export default defineComponent({
 
     const taskUpdateForm = reactive<{
       layer: number;
-      task_question: string | null;
+      task_question: string | undefined;
       knowledge_level: number;
       min_correct: number;
       task_id: number;
