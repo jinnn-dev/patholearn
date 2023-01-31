@@ -37,10 +37,10 @@ export const showSolution = ref<boolean>(false);
 export const viewerZoom = ref<number>();
 export const viewerScale = ref<number>();
 
-export const selectedPolygon = ref<Annotation | null>();
+export const selectedPolygon = ref<Annotation | undefined>();
 export const selectedTaskResultDetail = ref<TaskResultDetail | undefined>();
 export const selectedUser = ref<User | undefined>();
-export const selectedTaskResult = ref<TaskResult | null>();
+export const selectedTaskResult = ref<TaskResult | undefined>();
 
 interface LoadedUserSolution {
   task_result: TaskResult | undefined;
