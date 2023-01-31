@@ -8,7 +8,6 @@ import { TaskStatus } from '../../core/types/taskStatus';
 import { Task } from '../../model/task/task';
 import TaskStatistic from './TaskStatistic.vue';
 import ModalDialog from '../../components/containers/ModalDialog.vue';
-import PrimaryButton from '../general/PrimaryButton.vue';
 
 const props = defineProps({
   isOwner: {
