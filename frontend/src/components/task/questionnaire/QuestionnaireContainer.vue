@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { Task } from '../../../model/task/task';
 import { PropType, onMounted, ref } from 'vue';
-import { useService } from '../../../composables/useService';
 import { QuestionnaireService } from '../../../services/questionnaire.service';
 import { Questionnaire } from '../../../model/questionnaires/questionnaire';
 import Spinner from '../../general/Spinner.vue';
 import CreateQuestionnaire from './CreateQuestionnaire.vue';
-import { create } from 'domain';
 
 const props = defineProps({
   task: Object as PropType<Task>,
