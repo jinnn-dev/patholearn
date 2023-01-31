@@ -4,7 +4,7 @@ import { ref, PropType } from 'vue';
 import Icon from '../general/Icon.vue';
 import SaveButton from '../general/SaveButton.vue';
 import { TaskService } from '../../services/task.service';
-import { selectedTaskResult, selectedTaskResultDetail, taskResultLoaded } from '../../core/viewer/viewerState';
+import { selectedTaskResult, taskResultLoaded } from '../../core/viewer/viewerState';
 
 const props = defineProps({
   user: {
