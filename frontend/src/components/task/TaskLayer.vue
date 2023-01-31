@@ -12,9 +12,6 @@ import TaskItem from './TaskItem.vue';
 import Icon from '../general/Icon.vue';
 import { TaskType } from '../../core/types/taskType';
 import { Questionnaire, questionnaireHasAnswer } from '../../model/questionnaires/questionnaire';
-import { QuestionnaireService } from '../../services/questionnaire.service';
-import AnswerQuestionnaire from './questionnaire/AnswerQuestionnaire.vue';
-import { TaskStatus } from '../../core/types/taskStatus';
 import QuestionnaireLayerItem from './questionnaire/QuestionnaireLayerItem.vue';
 import { TaskWithQuestionnaires } from './task-types';
 
@@ -51,39 +48,7 @@ const emit = defineEmits([
 const taskCreationModal = ref<boolean>(false);
 const taskUpdateModal = ref<boolean>(false);
 
-// const questionairesMap = new Map<number, Questionnaire[]>();
-
-// const questionnairesBeforeMap = ref<Map<number, Questionnaire>>(new Map());
-// const questionnairesAfterMap = ref<Map<number, Questionnaire>>(new Map());
-
-// const showBeforeQuestionnaireModel = ref<boolean>(false);
-// const showAfterQuestionnaireModel = ref<boolean>(true);
-// const questionnaireToShow = ref<Questionnaire>();
-
-onMounted(async () => {
-  if (!props.selectedTaskId) return;
-  // await getQuestionnaires(props.selectedTaskId!);
-  // const questionnaire = questionnairesBeforeMap.value.get(props.selectedTaskId!);
-  // if (
-  //   questionnaire &&
-  //   questionnaire.questions &&
-  //   questionnaire.questions[0].answers &&
-  //   questionnaire.questions[0].answers.length == 0
-  // ) {
-  //   questionnaireToShow.value = questionnaire;
-  //   showBeforeQuestionnaireModel.value = true;
-  // }
-
-  // const task = props.tasks.find((task) => task.id === props.selectedTaskId);
-  // if (task) {
-  //   selectedTask.value = task;
-  // }
-});
-
 const selectTask = async (task: TaskWithQuestionnaires, index: number) => {
-  // await getQuestionnaires(task.id);
-
-  // const questionnaire = questionnairesBeforeMap.value.get(task.id);
   selectedTask.value = task.task;
 
   emit('taskSelected', {
@@ -102,23 +67,6 @@ const selectQuestionnaire = (questionnaire: Questionnaire, task: Task, index: nu
     layer: props.layerIndex
   });
 };
-
-// const getQuestionnaires = async (taskId: number) => {
-//   if (!questionairesMap.has(taskId)) {
-//     const questionaires = await QuestionnaireService.getQuestionnairesToTask(taskId);
-//     questionairesMap.set(taskId, questionaires || []);
-//   }
-
-//   if (questionairesMap.has(taskId)) {
-//     for (const questionnaire of questionairesMap.get(taskId)!) {
-//       if (questionnaire.is_before) {
-//         questionnairesBeforeMap.value.set(taskId, questionnaire);
-//       } else {
-//         questionnairesAfterMap.value.set(taskId, questionnaire);
-//       }
-//     }
-//   }
-// };
 
 const deleteTask = (taskId: number, taskIndex: number) => {
   TaskService.deleteTask(taskId).then((res: Task) => {
@@ -142,17 +90,6 @@ const removeLayer = async () => {
   }
   emit('layerDeleted', props.layerIndex);
 };
-
-// const answerSaved = (queationnaireId: number) => {
-//   if (questionnairesBeforeMap.value.has(selectedTask!.value!.id)) {
-//     questionnairesBeforeMap.value.delete(selectedTask.value!.id);
-//     showBeforeQuestionnaireModel.value = false;
-//   }
-//   if (questionnairesAfterMap.value.has(selectedTask!.value!.id)) {
-//     questionnairesAfterMap.value.delete(selectedTask.value!.id);
-//     showAfterQuestionnaireModel.value = false;
-//   }
-// };
 
 const downloadUserSolutions = async (task: Task) => {
   const data = await TaskService.downloadUserSolutions(task.id);
@@ -234,30 +171,6 @@ const downloadUserSolutions = async (task: Task) => {
       </div>
     </role-only>
   </div>
-
-  <!-- <ModalDialog
-    :show="
-      selectedTask?.user_solution?.task_result?.task_status === TaskStatus.CORRECT &&
-      !isOwner &&
-      questionnairesAfterMap.get(selectedTask.id) !== undefined &&
-      showAfterQuestionnaireModel
-    "
-  >
-    <AnswerQuestionnaire
-      v-if="selectedTask && questionnairesAfterMap.get(selectedTask.id)"
-      @answer-saved="answerSaved"
-      :questionnaire="questionnairesAfterMap.get(selectedTask.id)!"
-    >
-    </AnswerQuestionnaire>
-  </ModalDialog>
-
-  <ModalDialog customClasses="w-80%" :show="showBeforeQuestionnaireModel && !isOwner">
-    <AnswerQuestionnaire
-      v-if="questionnaireToShow"
-      @answer-saved="answerSaved"
-      :questionnaire="questionnaireToShow"
-    ></AnswerQuestionnaire>
-  </ModalDialog> -->
 
   <role-only>
     <modal-dialog :show="taskCreationModal" customClasses="w-2/5">
