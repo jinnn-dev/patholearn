@@ -23,7 +23,7 @@ import QuestionnaireAnswerViewer from '../components/task/questionnaire/Question
 
 const baseTask = ref<BaseTask>();
 const route = useRoute();
-const loading = ref<Boolean>(true);
+const loading = ref<boolean>(true);
 
 const selectedTask = ref<Task>();
 
@@ -35,7 +35,7 @@ const showTaskResult = ref<boolean>(false);
 
 const isSolving = ref<boolean>(false);
 
-const isMember = ref<Boolean>(true);
+const isMember = ref<boolean>(true);
 const course = ref<Course>();
 
 const show_solution = ref<boolean>(false);

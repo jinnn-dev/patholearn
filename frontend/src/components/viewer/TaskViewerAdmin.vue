@@ -119,7 +119,7 @@ const selectedPolygonData = reactive<{
 const showUploadDialog = ref<boolean>(false);
 const file = ref();
 
-const applyAnnotationsLoading = ref<Boolean>(false);
+const applyAnnotationsLoading = ref<boolean>(false);
 
 const isBackgroundPolygon = computed(() => selectedPolygon.value?.type === ANNOTATION_TYPE.BASE);
 

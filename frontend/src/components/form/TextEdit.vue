@@ -14,7 +14,7 @@ const props = defineProps({
   }
 });
 
-const activeEdit = ref<Boolean>(props.active);
+const activeEdit = ref<boolean>(props.active);
 
 const newValue = ref<string>(props.value!);
 

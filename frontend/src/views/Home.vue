@@ -1,4 +1,4 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import { onMounted, reactive, ref } from 'vue';
 import { Course, CreateCourse } from '../model/course';
 import { CourseService } from '../services/course.service';
@@ -18,9 +18,9 @@ import ConfirmButtons from '../components/general/ConfirmButtons.vue';
 
 const courses = ref<Course[]>([]);
 const ownerCourses = ref<Course[]>([]);
-const loading = ref<Boolean>(true);
+const loading = ref<boolean>(true);
 
-const showModal = ref<Boolean>(false);
+const showModal = ref<boolean>(false);
 
 const courseIsCreating = ref<boolean>(false);
 const courseAlreadyExists = ref<boolean>(false);
@@ -86,90 +86,90 @@ const onCourseJoin = (course: Course) => {
 <template>
   <content-container>
     <template v-slot:header>
-      <div class='flex justify-center w-full text-5xl font-semibold'>
-        <div class=''>
+      <div class="flex justify-center w-full text-5xl font-semibold">
+        <div class="">
           Willkommen zurück
           {{ appState.user?.firstname }}
         </div>
       </div>
     </template>
     <template v-slot:content>
-      <div class='flex justify-center items-center mb-8'>
-        <course-search class='w-2/3' @joined='onCourseJoin'></course-search>
+      <div class="flex justify-center items-center mb-8">
+        <course-search class="w-2/3" @joined="onCourseJoin"></course-search>
       </div>
       <role-only>
-        <div class='flex justify-between items-center'>
-          <div class='w-full text-xl font-bold text-gray-200 uppercase'>Deine Kurse</div>
-          <primary-button bgColor='bg-gray-400' class='w-48 h-10' name='Neuer Kurs' @click='showModal = !showModal'>
-            <Icon class='mr-2' name='plus' weight='bold' />
+        <div class="flex justify-between items-center">
+          <div class="w-full text-xl font-bold text-gray-200 uppercase">Deine Kurse</div>
+          <primary-button bgColor="bg-gray-400" class="w-48 h-10" name="Neuer Kurs" @click="showModal = !showModal">
+            <Icon class="mr-2" name="plus" weight="bold" />
           </primary-button>
         </div>
-        <div class='my-8'>
-          <div v-if='loading' class='flex'>
+        <div class="my-8">
+          <div v-if="loading" class="flex">
             <skeleton-card
-              v-for='i in 4'
-              :key='i'
-              :loading='loading'
-              skeletonClasses='h-24 w-44 ml-4 mb-4'
+              v-for="i in 4"
+              :key="i"
+              :loading="loading"
+              skeletonClasses="h-24 w-44 ml-4 mb-4"
             ></skeleton-card>
           </div>
-          <div v-else class='flex flex-wrap'>
-            <div v-for='course in ownerCourses' :key='course.id' class='ml-4 mb-4'>
-              <course-card :course='course' :isCourseOwner='appState.user?.is_superuser' />
+          <div v-else class="flex flex-wrap">
+            <div v-for="course in ownerCourses" :key="course.id" class="ml-4 mb-4">
+              <course-card :course="course" :isCourseOwner="appState.user?.is_superuser" />
             </div>
-            <no-content v-if='ownerCourses.length === 0' text='Noch keinen Kurs erstellt'></no-content>
+            <no-content v-if="ownerCourses.length === 0" text="Noch keinen Kurs erstellt"></no-content>
           </div>
         </div>
       </role-only>
       <div>
-        <div class='text-xl font-bold text-gray-200 uppercase'>
+        <div class="text-xl font-bold text-gray-200 uppercase">
           Deine
           {{ appState.user?.is_superuser ? 'beigetretenen' : '' }}
           Kurse
         </div>
-        <div class='my-8'>
-          <div v-if='loading' class='flex'>
-            <skeleton-card v-for='i in 4' :key='i' :loading='loading' skeletonClasses='h-24 w-44 ml-4'></skeleton-card>
+        <div class="my-8">
+          <div v-if="loading" class="flex">
+            <skeleton-card v-for="i in 4" :key="i" :loading="loading" skeletonClasses="h-24 w-44 ml-4"></skeleton-card>
           </div>
-          <div v-else class='flex flex-wrap gap-4'>
-            <div v-for='course in courses' :key='course.id'>
-              <course-card :course='course' :isCourseOwner='false' />
+          <div v-else class="flex flex-wrap gap-4">
+            <div v-for="course in courses" :key="course.id">
+              <course-card :course="course" :isCourseOwner="false" />
             </div>
-            <no-content v-if='courses.length === 0' text='Noch keinem Kurs beigetreten'></no-content>
+            <no-content v-if="courses.length === 0" text="Noch keinem Kurs beigetreten"></no-content>
           </div>
         </div>
       </div>
     </template>
   </content-container>
 
-  <modal-dialog :show='showModal' customClasses='w-[700px] h-1/2'>
+  <modal-dialog :show="showModal" customClasses="w-[700px] h-1/2">
     <div>
-      <h1 class='text-2xl text-center'>Erstelle einen neuen Kurs</h1>
-      <form class='w-full' @submit.prevent='onSubmit'>
+      <h1 class="text-2xl text-center">Erstelle einen neuen Kurs</h1>
+      <form class="w-full" @submit.prevent="onSubmit">
         <input-field
-          v-model='formData.name'
+          v-model="formData.name"
           :errorMessage="courseAlreadyExists ? 'Es gibt bereits einen Kurs mit diesem Namen.' : ''"
-          :required='true'
-          label='Kursname'
-          placeholder='Kursname'
-          tip='Gebe dem Kurs einen eindeutigen Namen.'
-          type='text'
+          :required="true"
+          label="Kursname"
+          placeholder="Kursname"
+          tip="Gebe dem Kurs einen eindeutigen Namen."
+          type="text"
         >
         </input-field>
         <!-- <div v-if="courseAlreadyExists" class="text-red-500">Es gibt bereits einen Kurs mit diesem Namen.</div> -->
 
         <input-area
-          v-model='formData.description'
-          class='h-72'
-          label='Kursbeschreibung'
-          placeholder='Das ist der tollste Kurs'
-          tip='Gebe deinem Kurs eine optionale Beschreibung'
+          v-model="formData.description"
+          class="h-72"
+          label="Kursbeschreibung"
+          placeholder="Das ist der tollste Kurs"
+          tip="Gebe deinem Kurs eine optionale Beschreibung"
         ></input-area>
         <confirm-buttons
-          :loading='courseIsCreating'
-          confirm-text='Speichern'
-          reject-text='Abbrechen'
-          @reject='hideModal'
+          :loading="courseIsCreating"
+          confirm-text="Speichern"
+          reject-text="Abbrechen"
+          @reject="hideModal"
         >
         </confirm-buttons>
       </form>
