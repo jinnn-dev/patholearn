@@ -115,7 +115,7 @@ const onCourseJoin = (course: Course) => {
           </div>
           <div v-else class="flex flex-wrap">
             <div v-for="course in ownerCourses" :key="course.id" class="ml-4 mb-4">
-              <course-card :course="course" :isCourseOwner="appState.user?.is_superuser" />
+              <course-card :course="course" :isCourseOwner="appState.user?.is_superuser || false" />
             </div>
             <no-content v-if="ownerCourses.length === 0" text="Noch keinen Kurs erstellt"></no-content>
           </div>
