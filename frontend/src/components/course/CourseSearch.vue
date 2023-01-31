@@ -10,7 +10,7 @@ import SaveButton from '../general/SaveButton.vue';
 
 const emit = defineEmits(['joined']);
 
-const searchString = debounceRef<String>('');
+const searchString = debounceRef<string>('');
 const foundCourses = ref<Course[]>([]);
 const loading = ref<boolean>(false);
 const joinCourseLoading = ref<boolean>(false);
