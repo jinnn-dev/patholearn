@@ -1,7 +1,6 @@
 import { handleError } from './error-handler';
 import { ApiService } from './api.service';
 import { Questionnaire, QuestionnaireCreate, QuestionnaireUpdate } from '../model/questionnaires/questionnaire';
-import { QuestionnaireQuestionCreate } from '../model/questionnaires/questionnaireQuestion';
 import { QuestionnaireAnswer, QuestionnaireAnswerCreate } from '../model/questionnaires/questionnaireAnswer';
 import { QuestionnaireAnswerStatistic } from '../model/questionnaires/questionnaireAnswerStatistic';
 
