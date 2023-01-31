@@ -30,8 +30,8 @@ const props = defineProps({
   max: [String, Number]
 });
 
-const onChanged = (e: { currentTarget: { value: any } }) => {
-  emit('update:modelValue', e.currentTarget.value);
+const onChanged = (e: Event) => {
+  emit('update:modelValue', (e.currentTarget as any).value);
 };
 
 watch(
