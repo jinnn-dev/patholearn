@@ -19,7 +19,6 @@ import { TaskResult } from '../model/task/result/taskResult';
 import { TaskType } from '../core/types/taskType';
 import { TaskStatus } from '../core/types/taskStatus';
 import { Questionnaire } from '../model/questionnaires/questionnaire';
-import QuestionnaireAnswerViewer from '../components/task/questionnaire/QuestionnaireAnswerViewer.vue';
 
 const baseTask = ref<BaseTask>();
 const route = useRoute();
@@ -177,6 +176,7 @@ const loadTaskSolution = async () => {
         <task-header :selectedTask="selectedTask" :solveResult="solve_result"></task-header>
 
         <task-container
+          v-if="baseTask"
           :baseTask="baseTask"
           @taskSelected="setSelectedTask($event)"
           :user-solution-solving="isSolving"
@@ -195,14 +195,14 @@ const loadTaskSolution = async () => {
         </div>
 
         <select-images-task
-          v-if="selectedTask?.task_type === TaskType.IMAGE_SELECT"
-          :base_task_id="baseTask?.id"
-          :course_id="baseTask?.course_id"
+          v-if="selectedTask?.task_type === TaskType.IMAGE_SELECT && baseTask && baseTask.task_group_id"
+          :base_task_id="baseTask.id"
+          :course_id="baseTask.course_id"
           :is_solving="isSolving"
           :show_result="showTaskResult"
           :solve_result="solve_result || selectedTask?.user_solution?.task_result"
           :task="selectedTask"
-          :task_group_id="baseTask?.task_group_id"
+          :task_group_id="baseTask.task_group_id"
         ></select-images-task>
         <div v-else>
           <task-viewer
