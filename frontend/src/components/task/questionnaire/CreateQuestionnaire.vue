@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import { Questionnaire, QuestionnaireCreate, QuestionnaireUpdate } from '../../../model/questionnaires/questionnaire';
-import {
-  QuestionnaireQuestion,
-  QuestionnaireQuestionCreate
-} from '../../../model/questionnaires/questionnaireQuestion';
+import { QuestionnaireQuestion } from '../../../model/questionnaires/questionnaireQuestion';
 import InputField from '../../form/InputField.vue';
 import ToggleButton from '../../form/ToggleButton.vue';
 import FormField from '../../form/FormField.vue';
 import PrimaryButton from '../../general/PrimaryButton.vue';
 import SaveButton from '../../general/SaveButton.vue';
 import CreateQuestionnaireQuestion from './CreateQuestionnaireQuestion.vue';
-import { ref, reactive, PropType, onMounted, watch, defineEmits } from 'vue';
+import { ref, reactive, PropType, onMounted, watch } from 'vue';
 import Icon from '../../general/Icon.vue';
 import QuestionnaireQuestionItem from './QuestionnaireQuestionItem.vue';
 import { Task } from '../../../model/task/task';
