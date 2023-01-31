@@ -116,7 +116,7 @@ onClickOutside(target, () => (openDotMenu.value = false));
   <skeleton-card :shouldHover="false" class="min-w-40 relative">
     <div class="flex items-center">
       <div class="flex-1 text-xl">
-        {{ baseTask.name }}
+        {{ baseTask?.name }}
       </div>
       <div class="flex justify-end ml-5">
         <Icon
@@ -128,15 +128,15 @@ onClickOutside(target, () => (openDotMenu.value = false));
       <dot-menu ref="target" :optionsOpen="openDotMenu" @delete="$emit('deleteBaseTask')" @edit="showEditTask = true" />
     </div>
 
-    <task-count-badge :count="baseTask.task_count"></task-count-badge>
+    <task-count-badge :count="baseTask?.task_count"></task-count-badge>
     <div class="flex mt-2 items-center">
       <div class="flex w-full items-center">
         <div class="text-sm font-medium mr-4 w-20">
-          <div v-if="baseTask.enabled" class="text-green-500 inline-block">Aktiviert</div>
+          <div v-if="baseTask?.enabled" class="text-green-500 inline-block">Aktiviert</div>
           <div v-else class="text-red-400">Deaktiviert</div>
         </div>
 
-        <toggle-button :enabled="baseTask.enabled" @changed="toggleEnabledState(baseTask)"></toggle-button>
+        <toggle-button :enabled="baseTask?.enabled" @changed="toggleEnabledState(baseTask!)"></toggle-button>
       </div>
     </div>
 
@@ -145,12 +145,12 @@ onClickOutside(target, () => (openDotMenu.value = false));
         :loading="summaryDataLoading"
         bgColor="bg-gray-300 w-48"
         name="Zusammenfassung"
-        @click.stop="loadSummary(baseTask.short_name)"
+        @click.stop="loadSummary(baseTask!.short_name)"
       ></save-button>
 
       <div
         class="transition hover:ring-2 ring-white bg-gray-500 hover:bg-gray-400 p-2 rounded-lg cursor-pointer inline-block"
-        @click.stop="downloadUserSolutions(baseTask.short_name)"
+        @click.stop="downloadUserSolutions(baseTask!.short_name)"
       >
         <Icon v-if="!downloadUserSolutionsLoading" name="download-simple" />
         <spinner v-else></spinner>
@@ -158,7 +158,7 @@ onClickOutside(target, () => (openDotMenu.value = false));
 
       <div
         class="transition hover:ring-2 ring-white bg-gray-500 hover:bg-gray-400 p-2 rounded-lg cursor-pointer inline-block"
-        @click.stop="loadTaskDetails(baseTask?.short_name)"
+        @click.stop="loadTaskDetails(baseTask!.short_name)"
       >
         <Icon v-if="!taskDetailLoading" name="chart-bar" />
         <spinner v-else></spinner>
@@ -167,7 +167,7 @@ onClickOutside(target, () => (openDotMenu.value = false));
         bgColor="bg-gray-400"
         class="text-sm w-24"
         name="Öffnen"
-        @click="$router.push('/task/' + baseTask.short_name + '/admin')"
+        @click="$router.push('/task/' + baseTask!.short_name + '/admin')"
       >
         <template v-slot:rightIcon>
           <Icon name="caret-right" strokeWidth="24"></Icon>
