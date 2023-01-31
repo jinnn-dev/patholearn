@@ -1,4 +1,4 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import { computed, PropType, ref } from 'vue';
 import { Task } from '../../../model/task/task';
 import { getTaskHints, store } from '../../../utils/hint.store';
@@ -60,29 +60,28 @@ function addHint(hint: TaskHint) {
 }
 </script>
 <template>
-  <div v-if='!creatorOpen' class='flex justify-between items-center mb-2'>
-    <div v-if='task && task.hints.length === 0' class='text-xl'>Keine Tipps vorhanden</div>
-    <primary-button bgColor='bg-gray-500' class='w-24' name='Tipp' type='button' @click.native='creatorOpen = true'>
-      <Icon class='mr-1' name='plus' />
+  <div v-if="!creatorOpen" class="flex justify-between items-center mb-2">
+    <div v-if="task && task.hints.length === 0" class="text-xl">Keine Tipps vorhanden</div>
+    <primary-button bgColor="bg-gray-500" class="w-24" name="Tipp" type="button" @click.native="creatorOpen = true">
+      <Icon class="mr-1" name="plus" />
     </primary-button>
   </div>
   <HintCreator
-    v-if='creatorOpen'
-    :key='creatorOpen'
-    :hint='selectedHint'
-    :taskId='task.id'
-    @closeMe='closeCreator'
-    @created='addHint'
-    @updated='updateList'
+    v-if="creatorOpen"
+    :hint="selectedHint"
+    :taskId="task.id"
+    @closeMe="closeCreator"
+    @created="addHint"
+    @updated="updateList"
   />
 
-  <div v-if='task && !creatorOpen && task?.hints.length > 0' class='overflow-y-auto max-h-[500px]'>
+  <div v-if="task && !creatorOpen && task?.hints.length > 0" class="overflow-y-auto max-h-[500px]">
     <Hint
-      v-for='(hint, index) in sortedHints'
-      :key='index'
-      :hint='hint'
-      @delete='deleteHint'
-      @edit='selectHint(hint)'
+      v-for="(hint, index) in sortedHints"
+      :key="index"
+      :hint="hint"
+      @delete="deleteHint"
+      @edit="selectHint(hint)"
     ></Hint>
   </div>
 </template>
