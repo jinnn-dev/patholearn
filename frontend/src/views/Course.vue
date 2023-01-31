@@ -23,10 +23,6 @@ const loading = ref<boolean>(true);
 const leaveCourseLoading = ref<boolean>(false);
 
 const showModal = ref<boolean>(false);
-const formData = reactive({
-  name: '',
-  slide_id: ''
-});
 
 const router = useRouter();
 
