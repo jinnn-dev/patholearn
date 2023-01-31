@@ -1,5 +1,4 @@
 import { User } from 'model/user';
-import { UserSolution } from '../../model/userSolution';
 import { reactive, ref } from 'vue';
 import { Annotation } from './svg/annotation/annotation';
 import { TaskResult } from '../../model/task/result/taskResult';
