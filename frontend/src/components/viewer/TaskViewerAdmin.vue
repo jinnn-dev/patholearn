@@ -47,8 +47,6 @@ import {
   hideGroup,
   setColors,
   showAllAnnotations,
-  showAllSolutionAnnotations,
-  hideAllSolutionAnnotations,
   showGroup,
   updateAnnotation
 } from '../../core/viewer/helper/taskViewerHelper';
@@ -117,7 +115,6 @@ const selectedPolygonData = reactive<{
 });
 
 const showUploadDialog = ref<boolean>(false);
-const file = ref();
 
 const applyAnnotationsLoading = ref<boolean>(false);
 
@@ -153,8 +150,6 @@ const changeToolTo = ref<Tool>();
 
 const validationResult = ref<ValidationResult[]>([]);
 const validationResultIsPending = ref(false);
-
-const visibleUserSolutions = ref<number[]>([]);
 
 watch(
   () => props.task,
@@ -245,31 +240,6 @@ watch(
     }
   }
 );
-
-// watch(
-//   () => props.selectedUserSolutions,
-//   async (newVal, _) => {
-//     if (!props.selectedUserSolutions) {
-//       visibleUserSolutions.value = [];
-//       return;
-//     }
-//     for (const userId of props.selectedUserSolutions) {
-//       const userSolutionIsVisibleIndex = visibleUserSolutions.value.indexOf(userId);
-//       if (userSolutionIsVisibleIndex !== -1) {
-//         // hideUsersolution
-//       } else {
-//         if (!loadedUserSolutions.has(userId)) {
-//           const userSolution = await TaskService.getUserSolutionToUser(props.task!.id, userId);
-//           loadedUserSolutions.set(userId, userSolution);
-//           showUserSolutionAnnotations(userId);
-//         }
-//       }
-//     }
-//   },
-//   {
-//     deep: true
-//   }
-// );
 
 const updateAnnotationColor = (color: string) => {
   let fillColor = color + ANNOTATION_COLOR.FILL_OPACITY;
@@ -385,16 +355,11 @@ const setToolbarTools = () => {
     tool = Tool.LINE_SOLUTION;
   } else {
     tool = Tool.SOLUTION_DRAWING;
-    // toolbarTools.value.push(Tool.RECT_SOLUTION);
   }
 
   if (!toolbarTools.value.includes(tool)) {
     toolbarTools.value.push(tool);
   }
-
-  // if (tool !== Tool.POINT_SOLUTION) {
-  //   toolbarTools.value.push(Tool.ADD_POINT_SOLUTION);
-  // }
 
   if (props.task?.task_type === 1 && props.task?.annotation_type === 2) {
     if (!toolbarTools.value.includes(Tool.UPLOAD)) {
@@ -1023,15 +988,6 @@ const showAllSolutionAnnotations = () => {
   </annotation-validation>
   <saving-info />
   <loading-indicator></loading-indicator>
-
-  <!--  <ground-truth-dialog-->
-  <!--    :showDialog='showUploadDialog'-->
-  <!--    :drawingViewer='drawingViewer'-->
-  <!--    :loading='applyAnnotationsLoading'-->
-  <!--    :slide-id='slide_name'-->
-  <!--    @applyAnnotations='onApplyAnnotations'-->
-  <!--    @closeDialog='showUploadDialog = false'-->
-  <!--  ></ground-truth-dialog>-->
 
   <SampleSolutionEditor
     :show-dialog="showUploadDialog"
