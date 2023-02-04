@@ -3,7 +3,7 @@ import { QuestionnaireQuestion } from '../../../model/questionnaires/questionnai
 import { PropType } from 'vue';
 import InputArea from '../../form/InputArea.vue';
 
-const props = defineProps({
+defineProps({
   question: {
     type: Object as PropType<QuestionnaireQuestion>,
     required: true

@@ -47,10 +47,8 @@ import BackgroundAnnotationSwitcher from './BackgroundAnnotationSwitcher.vue';
 import AnnotationValidation from './AnnotationValidation.vue';
 import InfoTooltip from './InfoTooltip.vue';
 import AnnotationGroup from './AnnotationGroup.vue';
-import { RESULT_POLYGON_COLOR, TaskStatus } from '../../core/types/taskStatus';
 import { ValidationResult } from '../../model/viewer/validation/validationResult';
 import { validateUserSolutionAnnotations } from '../../core/viewer/helper/validateAnnotations';
-import { TaskResultDetail } from '../../model/task/result/taskResultDetail';
 
 const props = defineProps({
   slide_name: String,
@@ -415,30 +413,6 @@ const moveHandler = (event: any) => {
     currentTool.value === Tool.ADD_POINT_USER_SOLUTION
   );
 };
-
-// const setColors = (taskResult: TaskResult) => {
-//   if (taskResult.result_detail === undefined || taskResult.result_detail.length === 0) return;
-//   if (taskResult.task_status === TaskStatus.CORRECT) {
-//     drawingViewer.value?.changeAllUserAnnotationColor(RESULT_POLYGON_COLOR[taskResult.task_status]!);
-//   }
-
-//   if (taskResult.task_status === TaskStatus.WRONG && taskResult.result_detail?.length === 0) {
-//     drawingViewer.value?.changeAllUserAnnotationColor(RESULT_POLYGON_COLOR[taskResult.task_status]!);
-//   }
-
-//   if (taskResult.result_detail) {
-//     for (const result of taskResult.result_detail) {
-//       var taskResultDetail = result as TaskResultDetail;
-//       if (!taskResultDetail.id) {
-//         continue;
-//       }
-//       drawingViewer.value?.changeAnnotationColor(taskResultDetail.id, RESULT_POLYGON_COLOR[taskResultDetail.status!]!);
-//       if (taskResultDetail.lines_outside) {
-//         drawingViewer.value?.addPolyline(taskResultDetail.id!, taskResultDetail.lines_outside);
-//       }
-//     }
-//   }
-// };
 
 const groupCreated = (group: AnnotationGroupModel) => {
   props.task?.annotation_groups.push(group);

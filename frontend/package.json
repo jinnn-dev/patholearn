@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "scripts": {
     "dev": "vite --force --host=0.0.0.0",
     "build": "vite build",
@@ -12,6 +12,8 @@
     "pretty": "prettier --write \"./**/*.{js,ts,vue}\""
   },
   "dependencies": {
+    "@sentry/tracing": "^7.36.0",
+    "@sentry/vue": "^7.36.0",
     "@types/d3-shape": "^3.0.1",
     "@vueform/slider": "^1.0.5",
     "@vuelidate/core": "^2.0.0-alpha.26",

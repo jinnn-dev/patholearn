@@ -1,17 +1,12 @@
 <script setup lang="ts">
 import { Questionnaire } from '../../../model/questionnaires/questionnaire';
-import { PropType, reactive, ref } from 'vue';
+import { PropType, ref } from 'vue';
 import { QuestionnaireAnswerCreate } from '../../../model/questionnaires/questionnaireAnswer';
-import InputArea from '../../form/InputArea.vue';
 import SaveButton from '../../general/SaveButton.vue';
 import PrimaryButton from '../../general/PrimaryButton.vue';
 import AnswerQuestionnaireItem from './AnswerQuestionnaireItem.vue';
 
-import { QuestionnaireQuestionOption } from '../../../model/questionnaires/questionnaireQuestionOption';
-import {
-  QuestionnaireQuestion,
-  QuestionnaireQuestionTypeNames
-} from '../../../model/questionnaires/questionnaireQuestion';
+import { QuestionnaireQuestion } from '../../../model/questionnaires/questionnaireQuestion';
 import { QuestionnaireService } from '../../../services/questionnaire.service';
 
 const props = defineProps({
@@ -28,11 +23,6 @@ const questionnaireAnswers = new Map<number, QuestionnaireAnswerCreate>();
 const answersSaving = ref<boolean>();
 
 const saveQuestionnaireAnswer = async () => {
-  let numAnswers = 0;
-  for (const question of props.questionnaire.questions!) {
-    numAnswers += question.options ? question.options.length : 0;
-  }
-
   if (questionnaireAnswers.size === props.questionnaire.questions!.length) {
     answersSaving.value = true;
     const items = Array.from(questionnaireAnswers.values());

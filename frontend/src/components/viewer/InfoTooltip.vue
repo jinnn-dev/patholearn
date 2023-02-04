@@ -1,4 +1,4 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { getInfoImageUrl } from '../../config';
 import { InfoImage } from '../../model/infoImage';
@@ -15,7 +15,7 @@ import LazyImage from '../general/LazyImage.vue';
 import Icon from '../general/Icon.vue';
 import ConfirmButtons from '../general/ConfirmButtons.vue';
 
-const props = defineProps({
+defineProps({
   isAdmin: {
     type: Boolean,
     default: false
@@ -215,97 +215,83 @@ const deleteExistingImage = (index: number) => {
 </script>
 <template>
   <div
-    v-if='infotooltipState.show'
-    ref='containerRef'
+    v-if="infotooltipState.show"
+    ref="containerRef"
     :class="infotooltipState.animate ? 'transition-all' : ''"
-    :style='{ transform: translateAttribute }'
-    class='absolute z-[3] max-w-[40%] px-4 py-2 rounded-xl bg-gray-700/60 backdrop-blur-md'
+    :style="{ transform: translateAttribute }"
+    class="absolute z-[3] max-w-[40%] px-4 py-2 rounded-xl bg-gray-700/60 backdrop-blur-md"
   >
-    <div class='flex flex-col'>
-      <div class='flex justify-between items-start gap-4'>
-        <h2 class='text-2xl break-word'>
+    <div class="flex flex-col">
+      <div class="flex justify-between items-start gap-4">
+        <h2 class="text-2xl break-word">
           {{ headerText || 'Kein Inhalt' }}
         </h2>
 
-        <div class='flex justify-end gap-2'>
+        <div class="flex justify-end gap-2">
           <Icon
-            v-if='isAdmin'
-            :strokeWidth='22'
-            class='cursor-pointer hover:text-gray-200'
-            name='pencil'
-            @click='openTooltip'
+            v-if="isAdmin"
+            :strokeWidth="22"
+            class="cursor-pointer hover:text-gray-200"
+            name="pencil"
+            @click="openTooltip"
           ></Icon>
-          <Icon :strokeWidth='28' class='cursor-pointer hover:text-gray-200' name='x' @click='hideTooltip'></Icon>
+          <Icon :strokeWidth="28" class="cursor-pointer hover:text-gray-200" name="x" @click="hideTooltip"></Icon>
         </div>
       </div>
-      <div class='mt-2 flex w-full'>
-        <div v-if='detailText' class='max-h-[300px] w-3/4 overflow-auto break-words text-md'>{{ detailText }}</div>
+      <div class="mt-2 flex w-full">
+        <div v-if="detailText" class="max-h-[300px] w-3/4 overflow-auto break-words text-md">{{ detailText }}</div>
 
         <div
-          v-if='infotooltipState.images && infotooltipState.images.length > 0'
-          class='max-h-[300px] overflow-auto w-36 min-h-[8rem] px-2'
+          v-if="infotooltipState.images && infotooltipState.images.length > 0"
+          class="max-h-[300px] overflow-auto w-36 min-h-[8rem] px-2"
         >
-          <div v-for='image of infotooltipState.images' :key='image' class='w-full my-2'>
+          <div v-for="image of infotooltipState.images" :key="image" class="w-full my-2">
             <lazy-image
               v-viewer
-              :imageUrl='getInfoImageUrl(image)'
-              class='cursor-pointer'
-              @imageLoaded='updateTooltipPosition'
+              :imageUrl="getInfoImageUrl(image)"
+              class="cursor-pointer"
+              @imageLoaded="updateTooltipPosition"
             ></lazy-image>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <modal-dialog :show='showEdit' customClasses='w-[40rem]'>
-    <h2 class='text-3xl'>Info bearbeiten</h2>
-    <input-field v-model='headerText' :required='true' label='Titel' type='text'></input-field>
-    <input-area v-model='detailText' class='h-[18rem]' label='Details'></input-area>
-    <FormField v-if='existingImages.length > 0' label='Vorhandene Bilder'>
-      <div class='flex flex-wrap max-h-[300px] overflow-auto gap-4'>
-        <div v-for='(image, index) in existingImages'>
+  <modal-dialog :show="showEdit" customClasses="w-[40rem]">
+    <h2 class="text-3xl">Info bearbeiten</h2>
+    <input-field v-model="headerText" :required="true" label="Titel" type="text"></input-field>
+    <input-area v-model="detailText" class="h-[18rem]" label="Details"></input-area>
+    <FormField v-if="existingImages.length > 0" label="Vorhandene Bilder">
+      <div class="flex flex-wrap max-h-[300px] overflow-auto gap-4">
+        <div v-for="(image, index) in existingImages">
           <UploadPreviewImage
-            :key='image.info_image_id'
-            :imageName='image.name'
-            :imgSrc='getInfoImageUrl(image.info_image_id)'
-            :index='index'
-            @deleteImage='deleteExistingImage(index)'
-            @imageChanged='updateExistingImage'
+            :key="image.info_image_id"
+            :imageName="image.name"
+            :imgSrc="getInfoImageUrl(image.info_image_id)"
+            :index="index"
+            @deleteImage="deleteExistingImage(index)"
+            @imageChanged="updateExistingImage"
           />
         </div>
       </div>
     </FormField>
 
     <MultiImageUpload
-      :resetArray='uploadFinished'
-      label='Neue Bilder hochladen'
-      tip='Wähle Bilder aus oder ziehe sie in das Feld'
-      @imagesDropped='setImages'
+      :resetArray="uploadFinished"
+      label="Neue Bilder hochladen"
+      tip="Wähle Bilder aus oder ziehe sie in das Feld"
+      @imagesDropped="setImages"
     ></MultiImageUpload>
-    <!-- <div v-if="uploadLoading">
-      <div class="flex gap-3 mb-3 items-center">
-        <div class="flex-1">
-          <div
-            class="animate-pulse bg-green-500 my-2 rounded-lg transition duration-10 h-3"
-            :style="{
-              width: uploadProgress + '%'
-            }"
-          ></div>
-        </div>
-        <div>{{ uploadProgress }}%</div>
-      </div>
-      <div v-if="uploadProgress == 100.0" class="font-semibold">Wird gespeichert...</div>
-    </div> -->
 
     <confirm-buttons
-      :loading='isSaving'
-      confirm-text='Speichern'
-      reject-text='Abbrechen'
-      @confirm='updateTooltip'
-      @reject='
+      :loading="isSaving"
+      confirm-text="Speichern"
+      reject-text="Abbrechen"
+      @confirm="updateTooltip"
+      @reject="
         showEdit = false;
         infotooltipState.show = true;
-      '
+      "
     >
     </confirm-buttons>
   </modal-dialog>

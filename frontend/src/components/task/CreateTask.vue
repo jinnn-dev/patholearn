@@ -16,7 +16,6 @@ import { TaskType } from '../../core/types/taskType';
 import ConfirmButtons from '../general/ConfirmButtons.vue';
 import { IconNames } from '../../../icons';
 import ToggleButton from '../form/ToggleButton.vue';
-import CreateQuestionnaire from './questionnaire/CreateQuestionnaire.vue';
 
 const emit = defineEmits(['close', 'taskCreated']);
 
@@ -184,9 +183,6 @@ const resetForm = () => {
       >
       </input-field>
       <Accordion>
-        <!-- <AccordionItem :first="true" title="Umfrage vor der Aufgabe">
-          <CreateQuestionnaire></CreateQuestionnaire>
-        </AccordionItem> -->
         <AccordionItem :first="true" title="Aufgabeneinstellungen">
           <div>Wähle einen Aufgabentyp:</div>
 
@@ -319,7 +315,6 @@ const resetForm = () => {
             </div>
           </div>
         </AccordionItem>
-        <!-- <AccordionItem :first="false" title="Umfrage nach der Aufgabe"></AccordionItem> -->
       </Accordion>
 
       <confirm-buttons

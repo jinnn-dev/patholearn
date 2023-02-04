@@ -2,7 +2,6 @@
 import { onMounted, PropType, ref } from 'vue';
 import { AnnotationViewer } from '../../../core/viewer/annotationViewer';
 import { AnnotationParser, ParseResult } from '../../../utils/annotation-parser';
-import { TempUploadImage } from '../../../model/tempUploadImage';
 import { SlideService } from '../../../services/slide.service';
 import { ANNOTATION_TYPE } from '../../../core/viewer/types/annotationType';
 import ModalDialog from '../../containers/ModalDialog.vue';
@@ -31,8 +30,6 @@ const convertResult = ref<ParseResult[]>();
 const conversionLoading = ref<boolean>();
 
 const isWrongFormat = ref<boolean>(false);
-
-const selectedImages = ref<TempUploadImage[]>();
 
 onMounted(() => {
   file.value = undefined;

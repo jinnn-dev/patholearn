@@ -1,4 +1,4 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import FormField from '../form/FormField.vue';
 
 defineEmits(['isReleased', 'changed']);
@@ -16,16 +16,16 @@ defineProps({
 });
 </script>
 <template>
-  <form-field :label='label' :margin-hor='marginHor'>
-    <div class='rounded-lg w-full overflow-hidden'>
+  <form-field :label="label" :margin-hor="marginHor">
+    <div class="rounded-lg w-full overflow-hidden">
       <input
-        id='body'
-        :value='initialColor'
-        class='h-6 w-full cursor-pointer'
-        name='body'
-        type='color'
-        @change="$emit('isReleased', $event.target.value)"
-        @input="$emit('changed', $event.target.value)"
+        id="body"
+        :value="initialColor"
+        class="h-6 w-full cursor-pointer"
+        name="body"
+        type="color"
+        @change="$emit('isReleased', ($event.target as any)?.value)"
+        @input="$emit('changed', ($event.target as any)?.value)"
       />
     </div>
   </form-field>

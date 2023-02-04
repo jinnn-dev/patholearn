@@ -14,7 +14,7 @@ import AccordionItem from '../../containers/AccordionItem.vue';
 import AnnotationSlide from './AnnotationSlide.vue';
 import ConfirmButtons from '../../general/ConfirmButtons.vue';
 
-const props = defineProps({
+defineProps({
   showDialog: Boolean,
   slideId: {
     type: String,
@@ -28,7 +28,7 @@ const containsWrongFormat = ref(false);
 
 const selectedSampleSolutionImages = ref<TempUploadImage[]>();
 
-const { loading, result, err, run, reset } = useService(ImageService.convertImagesToAnnotations);
+const { loading, result, run, reset } = useService(ImageService.convertImagesToAnnotations);
 
 const annotationsGroups = ref<AnnotationGroup[]>();
 

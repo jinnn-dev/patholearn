@@ -23,11 +23,11 @@ import ConfirmButtons from '../components/general/ConfirmButtons.vue';
 
 const uploadImages = ref<{ fileUrl: string; file: File }[]>([]);
 
-const showDeleteBaseTask = ref<Boolean>(false);
-const deleteBaseLoading = ref<Boolean>(false);
+const showDeleteBaseTask = ref<boolean>(false);
+const deleteBaseLoading = ref<boolean>(false);
 const deleteBaseTaskItem = ref<BaseTask>();
 
-const showModal = ref<Boolean>(false);
+const showModal = ref<boolean>(false);
 
 const taskGroup = ref<TaskGroup>();
 
@@ -45,11 +45,11 @@ const formData = reactive<{
 
 const uploadProgress = ref(0.0);
 
-const taskLoading = ref<Boolean>(false);
-const taskError = ref<Boolean>(false);
+const taskLoading = ref<boolean>(false);
+const taskError = ref<boolean>(false);
 
-const showTaskgroupDelete = ref<Boolean>(false);
-const deleteLoading = ref<Boolean>(false);
+const showTaskgroupDelete = ref<boolean>(false);
+const deleteLoading = ref<boolean>(false);
 
 onMounted(() => {
   TaskGroupService.getTaskGroup(route.params.id as string).then((res: TaskGroup) => {

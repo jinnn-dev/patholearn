@@ -1,7 +1,7 @@
 <template>
   <saving-info></saving-info>
 
-  <div id="viewerImage" ref="viewerRef" class="h-screen bg-gray-900" @keyup="handleKeyup"></div>
+  <div id="viewerImage" ref="viewerRef" class="h-screen bg-gray-900"></div>
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, PropType, ref, watch } from 'vue';
@@ -122,8 +122,8 @@ export default defineComponent({
     watch(
       () => imageSelectViewer.value,
       () => {
-        if (images.value !== Array.from(imageSelectViewer.value?.selectedImagesRef as Set<string>)) {
-          images.value = Array.from(imageSelectViewer.value?.selectedImagesRef as Set<string>);
+        if (images.value !== Array.from(imageSelectViewer.value?.selectedImagesRef.value as Set<string>)) {
+          images.value = Array.from(imageSelectViewer.value?.selectedImagesRef.value as Set<string>);
         }
       },
       { deep: true }

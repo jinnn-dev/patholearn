@@ -1,9 +1,9 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import FormField from '../form/FormField.vue';
 
 const emit = defineEmits(['update:modelValue']);
 
-const props = defineProps({
+defineProps({
   modelValue: String,
   placeholder: String,
   label: String,
@@ -18,21 +18,21 @@ const props = defineProps({
   autocomplete: String
 });
 
-const onChanged = (e: { currentTarget: { value: any } }) => emit('update:modelValue', e.currentTarget.value);
+const onChanged = (e: Event) => emit('update:modelValue', (e.currentTarget as any).value);
 </script>
 <template>
-  <form-field :label='label'>
+  <form-field :label="label">
     <template v-slot:icon>
       <slot></slot>
     </template>
     <input
-      :autocomplete='autocomplete'
-      :placeholder='placeholder'
-      :required='required'
-      :type='type'
-      :value='modelValue'
-      class='bg-gray-900 bg-opacity-50 placeholder-gray-400 rounded-lg w-full pl-10 focus:outline-none focus:ring-2 focus:ring-highlight-400 focus:border-transparent'
-      @input='onChanged'
+      :autocomplete="autocomplete"
+      :placeholder="placeholder"
+      :required="required"
+      :type="type"
+      :value="modelValue"
+      class="bg-gray-900 bg-opacity-50 placeholder-gray-400 rounded-lg w-full pl-10 focus:outline-none focus:ring-2 focus:ring-highlight-400 focus:border-transparent"
+      @input="onChanged"
     />
   </form-field>
 </template>

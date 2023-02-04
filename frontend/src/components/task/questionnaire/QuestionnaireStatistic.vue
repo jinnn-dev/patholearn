@@ -6,16 +6,12 @@ import PrimaryButton from '../../general/PrimaryButton.vue';
 import Icon from '../../general/Icon.vue';
 import QuestionnaireDetailStatistic from './QuestionnaireDetailStatistic.vue';
 
-const props = defineProps({
+defineProps({
   questionnaire: {
     type: Object as PropType<Questionnaire>,
     required: true
   }
 });
-
-interface QuestionnaireStatistic {
-  [key: string]: number;
-}
 
 const showQuestionnaireDetail = ref<boolean>();
 
@@ -52,9 +48,6 @@ onMounted(() => {});
         <div v-else>
           <question-diagram :question="question"></question-diagram>
         </div>
-        <!-- <div v-for="answer in question.answers">
-          {{ answer }}
-        </div> -->
       </div>
     </div>
   </div>

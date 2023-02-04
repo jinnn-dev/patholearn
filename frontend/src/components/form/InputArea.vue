@@ -1,4 +1,4 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import FormField from './FormField.vue';
 
 defineProps({
@@ -27,18 +27,18 @@ defineProps({
 
 const emit = defineEmits(['update:modelValue']);
 
-const onChanged = (e: { currentTarget: { value: any } }) => {
-  emit('update:modelValue', e.currentTarget.value);
+const onChanged = (e: Event) => {
+  emit('update:modelValue', (e.currentTarget as any).value);
 };
 </script>
 <template>
-  <form-field :errorMessage='errorMessage' :label='label' :marginHor='marginHor' :tip='tip' class='w-full h-full'>
+  <form-field :errorMessage="errorMessage" :label="label" :marginHor="marginHor" :tip="tip" class="w-full h-full">
     <textarea
-      :placeholder='placeholder'
-      :required='required'
-      :value='modelValue'
-      class='bg-gray-900 bg-opacity-50 placeholder-gray-400 rounded-lg w-full h-full resize-none text-white focus:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-highlight-400 focus:border-transparent'
-      @input='onChanged'
+      :placeholder="placeholder"
+      :required="required"
+      :value="modelValue"
+      class="bg-gray-900 bg-opacity-50 placeholder-gray-400 rounded-lg w-full h-full resize-none text-white focus:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-highlight-400 focus:border-transparent"
+      @input="onChanged"
     >
     </textarea>
   </form-field>

@@ -5,7 +5,6 @@ import { QuestionnaireService } from '../../../services/questionnaire.service';
 import { QuestionnaireAnswerStatistic } from '../../../model/questionnaires/questionnaireAnswerStatistic';
 import Spinner from '../../general/Spinner.vue';
 import PrimaryButton from '../../general/PrimaryButton.vue';
-import SaveButton from '../../general/SaveButton.vue';
 import Icon from '../../general/Icon.vue';
 
 defineEmits(['close']);

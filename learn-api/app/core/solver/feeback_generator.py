@@ -65,7 +65,6 @@ class FeedbackGenerator:
                         TaskResultFactory.partial_status(task_result)
                 else:
                     if check_name:
-
                         if not annotation.name_matches:
                             status = TaskStatus.WRONG_NAME
                             if knowledge_level == 2:
@@ -133,7 +132,6 @@ class FeedbackGenerator:
         correct_count = 0
         for key in matched_ids:
             for annotation in matched_ids[key]:
-
                 if knowledge_level != 0:
                     annotation.lines_outside = []
 

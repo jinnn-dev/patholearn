@@ -3,4 +3,5 @@ interface ImportMetaEnv {
   VITE_BASE_API_URL: string;
   VITE_SLIDE_API_URL: string;
   VITE_SLIDE_IMAGE_URL: string;
+  VITE_SENTRY_DSN: string;
 }

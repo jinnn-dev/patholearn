@@ -1,4 +1,4 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import { onMounted, reactive, ref, watch } from 'vue';
 import { email, minLength, required } from '@vuelidate/validators';
 import useVuelidate from '@vuelidate/core';
@@ -26,13 +26,13 @@ let formData = reactive({
   ...initialState
 });
 
-const showModal = ref<Boolean>(false);
+const showModal = ref<boolean>(false);
 
-const emailAlreadyExists = ref<Boolean>(false);
+const emailAlreadyExists = ref<boolean>(false);
 
-const passwordMatch = ref<Boolean>(true);
+const passwordMatch = ref<boolean>(true);
 
-const adminIsCreating = ref<Boolean>(false);
+const adminIsCreating = ref<boolean>(false);
 
 const rules = {
   firstname: { required },
@@ -49,8 +49,8 @@ const validator = useVuelidate(rules, formData);
 
 const users = ref<User[]>([]);
 
-const userLoading = ref<Boolean>(false);
-const userLoadingError = ref<Boolean>(false);
+const userLoading = ref<boolean>(false);
+const userLoadingError = ref<boolean>(false);
 
 watch(
   () => formData.email,
@@ -116,21 +116,21 @@ const onSubmit = () => {
       <h1>Benutzerverwaltung</h1>
     </template>
     <template v-slot:content>
-      <div class='flex justify-between'>
-        <subheader text='Vorhandene Lehrende'></subheader>
+      <div class="flex justify-between">
+        <subheader text="Vorhandene Lehrende"></subheader>
         <primary-button
-          bgColor='bg-gray-500'
-          class='w-44'
-          name='Neuer Lehrender'
-          @click='showModal = true'
+          bgColor="bg-gray-500"
+          class="w-44"
+          name="Neuer Lehrender"
+          @click="showModal = true"
         ></primary-button>
       </div>
-      <div class='mt-4'>
-        <card-loading :loading='userLoading'></card-loading>
-        <div v-if='!userLoading' class='flex gap-4 flex-wrap'>
-          <div v-for='user in users' :key='user.id'>
-            <skeleton-card class='flex justify-between'>
-              <div class='mr-4'>
+      <div class="mt-4">
+        <card-loading :loading="userLoading"></card-loading>
+        <div v-if="!userLoading" class="flex gap-4 flex-wrap">
+          <div v-for="user in users" :key="user.id">
+            <skeleton-card class="flex justify-between">
+              <div class="mr-4">
                 {{ user.firstname }}
                 {{ user.lastname }}
               </div>
@@ -144,60 +144,60 @@ const onSubmit = () => {
     </template>
   </content-container>
 
-  <modal-dialog :show='showModal'>
-    <h1 class='text-2xl'>Lege einen neuen Lehrenden an</h1>
-    <form class='w-full' @submit.prevent='onSubmit'>
-      <auth-input v-model='formData.firstname' :required='true' label='Vorname' placeholder='Max'>
-        <Icon name='user' />
+  <modal-dialog :show="showModal">
+    <h1 class="text-2xl">Lege einen neuen Lehrenden an</h1>
+    <form class="w-full" @submit.prevent="onSubmit">
+      <auth-input v-model="formData.firstname" :required="true" label="Vorname" placeholder="Max">
+        <Icon name="user" />
       </auth-input>
-      <auth-input v-model='formData.middlename' :required='false' label='Mittelname (Optional)' placeholder='Max'>
-        <Icon name='user' />
+      <auth-input v-model="formData.middlename" :required="false" label="Mittelname (Optional)" placeholder="Max">
+        <Icon name="user" />
       </auth-input>
-      <auth-input v-model='formData.lastname' :required='true' label='Nachname' placeholder='Max'>
-        <Icon name='user' />
+      <auth-input v-model="formData.lastname" :required="true" label="Nachname" placeholder="Max">
+        <Icon name="user" />
       </auth-input>
       <auth-input
-        v-model='formData.email'
-        :required='true'
-        autocomplete='email'
-        label='E-Mail'
-        placeholder='demo@demo.de'
-        type='email'
+        v-model="formData.email"
+        :required="true"
+        autocomplete="email"
+        label="E-Mail"
+        placeholder="demo@demo.de"
+        type="email"
       >
-        <Icon name='at' />
+        <Icon name="at" />
       </auth-input>
-      <div v-if="validator.email.$errors.some((e) => e.hasOwnProperty('$property'))" class='text-red-500'>
+      <div v-if="validator.email.$errors.some((e) => e.hasOwnProperty('$property'))" class="text-red-500">
         Keine gültige E-Mail-Adresse
       </div>
 
-      <div v-if='emailAlreadyExists' class='text-red-500'>E-Mail existiert bereits</div>
+      <div v-if="emailAlreadyExists" class="text-red-500">E-Mail existiert bereits</div>
 
       <auth-input
-        v-model='formData.password'
-        :required='true'
-        autocomplete='new-password'
-        label='Passwort'
-        placeholder='1234'
-        type='password'
+        v-model="formData.password"
+        :required="true"
+        autocomplete="new-password"
+        label="Passwort"
+        placeholder="1234"
+        type="password"
       >
-        <Icon name='key' size='24' />
+        <Icon name="key" size="24" />
       </auth-input>
       <auth-input
-        v-model='formData.confirmPassword'
-        :required='true'
-        autocomplete='new-password'
-        label='Bestätige Passwort'
-        placeholder='1234'
-        type='password'
+        v-model="formData.confirmPassword"
+        :required="true"
+        autocomplete="new-password"
+        label="Bestätige Passwort"
+        placeholder="1234"
+        type="password"
       >
-        <Icon name='key' size='24' />
+        <Icon name="key" size="24" />
       </auth-input>
-      <div v-if='!passwordMatch' class='text-red-500'>Passwörter stimmen nicht überein.</div>
+      <div v-if="!passwordMatch" class="text-red-500">Passwörter stimmen nicht überein.</div>
       <confirm-buttons
-        :loading='adminIsCreating'
-        confirm-text='Speichern'
-        reject-text='Abbrechen'
-        @reject='closeModal'
+        :loading="adminIsCreating"
+        confirm-text="Speichern"
+        reject-text="Abbrechen"
+        @reject="closeModal"
       ></confirm-buttons>
     </form>
   </modal-dialog>

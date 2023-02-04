@@ -179,7 +179,6 @@ class AnnotationAnalysis:
             no_match_ids.append(user_annotation.id)
 
             for solution_annotation in solution_annotation_data:
-
                 time_before = timer.time_elapsed
 
                 if solution_annotation.id not in correct_polygon_ids:
@@ -280,7 +279,6 @@ class AnnotationAnalysis:
                         )
 
                 except TopologicalError as e:
-
                     print(e)
 
                     if user_annotation.id in no_match_ids:

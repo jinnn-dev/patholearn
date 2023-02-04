@@ -1,4 +1,4 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue';
 import { TooltipGenerator } from '../../utils/tooltips/tooltip-generator';
 import ModalDialog from '../containers/ModalDialog.vue';
@@ -53,16 +53,6 @@ const truncatedName = computed(() => {
   const isLonger = concated.length > (props.size as number) - 6;
 
   return isLonger ? concated.substring(0, (props.size as number) - 6) + '...' : concated;
-
-  // if (props.imageName) {
-  //   return props.imageName.length > (props.size as number)
-  //     ? props.imageName.substring(0, (props.size as number) - 5) + '...'
-  //     : props.imageName;
-  // }
-
-  // props.image!.name.length > 17
-  //   ? props.image!.name.substring(0, (props.size as number) - 5) + '...'
-  //   : props.image!.name;
 });
 
 onMounted(() => {
@@ -93,41 +83,30 @@ const updateImage = () => {
 };
 </script>
 <template>
-  <!-- <div class="h-20 w-20 relative group select-none">
-      <div
-        v-if="!preview"
-        class="absolute bg-gray-900/70 hidden group-hover:flex h-20 w-20 rounded-lg items-center justify-center cursor-pointer"
-        @click="$emit('deleteImage')"
-      >
-        <Icon name="trash" class="text-red-500" strokeWidth="24" width="30" height="30" />
-      </div>
-      <lazy-image :imageClasses="'h-20 w-20 object-cover cursor-pointer'" :imageUrl="imgSrc" v-viewer></lazy-image>
-    </div> -->
-
-  <div class='flex flex-col justify-center items-center'>
-    <div class='flex justify-center items-center gap-4'>
-      <div :class='`h-${size} w-${size}`'>
-        <div class='h-full'>
+  <div class="flex flex-col justify-center items-center">
+    <div class="flex justify-center items-center gap-4">
+      <div :class="`h-${size} w-${size}`">
+        <div class="h-full">
           <lazy-image
             v-viewer
             :imageClasses="'h-full w-full object-cover cursor-pointer'"
-            :imageUrl='imgSrc'
+            :imageUrl="imgSrc"
           ></lazy-image>
         </div>
       </div>
-      <div class='flex flex-col gap-2'>
+      <div class="flex flex-col gap-2">
         <div
-          class='bg-gray-600 hover:bg-gray-500 p-1 rounded-md cursor-pointer hover:ring-2 ring-gray-100 transition-all'
+          class="bg-gray-600 hover:bg-gray-500 p-1 rounded-md cursor-pointer hover:ring-2 ring-gray-100 transition-all"
           @click="$emit('deleteImage')"
         >
-          <Icon class='text-red-500' name='trash'></Icon>
+          <Icon class="text-red-500" name="trash"></Icon>
         </div>
         <div
-          class='bg-gray-600 hover:bg-gray-500 p-1 rounded-md cursor-pointer hover:ring-2 ring-gray-100 transition-all'
+          class="bg-gray-600 hover:bg-gray-500 p-1 rounded-md cursor-pointer hover:ring-2 ring-gray-100 transition-all"
         >
           <Icon
-            class='text-white'
-            name='pencil'
+            class="text-white"
+            name="pencil"
             @click="
               showEdit = true;
               newImageName = splittedName[0] || '';
@@ -136,21 +115,21 @@ const updateImage = () => {
         </div>
       </div>
     </div>
-    <p :id='`previewImage-${index}`' class='mt-1 select-none'>{{ truncatedName }}</p>
+    <p :id="`previewImage-${index}`" class="mt-1 select-none">{{ truncatedName }}</p>
   </div>
 
-  <modal-dialog :show='showEdit' customClasses='w-[30rem]'>
-    <h2 class='text-3xl'>Bild bearbeiten</h2>
+  <modal-dialog :show="showEdit" customClasses="w-[30rem]">
+    <h2 class="text-3xl">Bild bearbeiten</h2>
 
-    <input-field v-model='newImageName' :required='true' label='Bildname' type='text'></input-field>
+    <input-field v-model="newImageName" :required="true" label="Bildname" type="text"></input-field>
     <confirm-buttons
-      confirm-text='Speichern'
-      reject-text='Abbrechen'
-      @confirm='updateImage'
-      @reject='
+      confirm-text="Speichern"
+      reject-text="Abbrechen"
+      @confirm="updateImage"
+      @reject="
         showEdit = false;
         newImageName = splittedName[0];
-      '
+      "
     ></confirm-buttons>
   </modal-dialog>
 </template>

@@ -50,14 +50,12 @@ def convert_slide(source_file_with_extension: str):
     slide_uuid, file_extension = os.path.splitext(source_file_with_extension)
     logger.info(f"Received task for file: {source_file_with_extension}")
     try:
-
         path_to_slide_folder = rf"{Config.TEMP_IMAGES_FOLDER}/{slide_uuid}"
         path_to_origin_file = (
             rf"{Config.TEMP_IMAGES_FOLDER}/{slide_uuid}/{source_file_with_extension}"
         )
 
         if file_extension.lower() == ".dcm":
-
             frame_uuids, metadata_dict = Dicom.save_dicom_frames(
                 path_to_origin_file, slide_uuid
             )

@@ -48,6 +48,8 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER_LASTNAME: str = "Admin"
     USERS_OPEN_REGISTRATION: bool = True
 
+    SENTRY_DSN = os.environ["SENTRY_DSN"] if "SENTRY_DSN" in os.environ else None
+
     class Config:
         case_sensitive = True
 

@@ -126,11 +126,11 @@ export default defineComponent({
   },
   emits: ['close', 'taskUpdated'],
   setup(props, { emit }) {
-    const taskUpdateLoading = ref<Boolean>(false);
+    const taskUpdateLoading = ref<boolean>(false);
 
     const taskUpdateForm = reactive<{
       layer: number;
-      task_question: string | null;
+      task_question: string | undefined;
       knowledge_level: number;
       min_correct: number;
       task_id: number;

@@ -706,7 +706,6 @@ def get_statistic_to_base_task(*, db: Session = Depends(get_db), short_name: str
                     if image:
                         if image["label"]:
                             if task.task_question in most_wrong_classified_images:
-
                                 if (
                                     image["label"]
                                     in most_wrong_classified_images[task.task_question]

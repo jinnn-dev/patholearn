@@ -8,6 +8,11 @@ import './index.css';
 import router from './router';
 import { ApiService } from './services/api.service';
 import { TokenService } from './services/token.service';
+import * as Sentry from '@sentry/vue';
+import { BrowserTracing } from '@sentry/tracing';
+
+import { getEnv } from './config';
+import Vue from 'vue';
 
 Icon.add(Object.values({ ...icons }));
 
@@ -17,8 +22,21 @@ if (TokenService.getToken()) {
 }
 
 const app = createApp(App);
+
 app.use(router);
 app.use(VueViewer);
+
+Sentry.init({
+  app,
+  dsn: getEnv('SENTRY_DSN'),
+  integrations: [
+    new BrowserTracing({
+      routingInstrumentation: Sentry.vueRouterInstrumentation(router),
+      tracePropagationTargets: ['localhost', 'patholearn.de', /^\//]
+    })
+  ]
+});
+
 VueViewer.setDefaults({
   zoomRatio: 1,
   title: false,

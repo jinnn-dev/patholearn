@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { defineAsyncComponent, onMounted, onUnmounted, ref, nextTick } from 'vue';
+import { defineAsyncComponent, onMounted, onUnmounted, ref } from 'vue';
 import { BaseTask } from '../model/task/baseTask';
 import { useRoute } from 'vue-router';
 import { Task } from '../model/task/task';
@@ -81,6 +81,7 @@ onUnmounted(() => {
     <task-header :selectedTask="selectedTask" :solve-result="selectedTaskResult"></task-header>
 
     <task-container
+      v-if="baseTask"
       :baseTask="baseTask"
       :isOwner="true"
       @taskSelected="selectTask($event)"
@@ -91,12 +92,12 @@ onUnmounted(() => {
     <!-- <hint-overlay :taskId="selectedTask?.id" /> -->
 
     <select-images-task
-      v-if="selectedTask?.task_type === TaskType.IMAGE_SELECT"
-      :base_task_id="baseTask?.id"
-      :course_id="baseTask?.course_id"
+      v-if="selectedTask?.task_type === TaskType.IMAGE_SELECT && baseTask && baseTask.task_group_id"
+      :base_task_id="baseTask.id"
+      :course_id="baseTask.course_id"
       :isAdmin="true"
       :task="selectedTask"
-      :task_group_id="baseTask?.task_group_id"
+      :task_group_id="baseTask.task_group_id"
     ></select-images-task>
 
     <div v-else>

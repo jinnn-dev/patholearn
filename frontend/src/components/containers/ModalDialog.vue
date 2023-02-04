@@ -9,7 +9,7 @@ const props = defineProps({
   customClasses: String
 });
 
-const showModal = ref<Boolean>(false);
+const showModal = ref<boolean>(false);
 
 watch(
   () => props.show,
