@@ -16,6 +16,7 @@ export class CourseService {
       }),
       'Courses could not be loaded'
     );
+
     return response!.data;
   }
 
@@ -79,6 +80,7 @@ export class CourseService {
       }),
       'Course could not be created'
     );
+
     return respose!.data;
   }
 

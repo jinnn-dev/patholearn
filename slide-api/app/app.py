@@ -4,6 +4,9 @@ from starlette.middleware.cors import CORSMiddleware
 from app.api.api import api_router
 from app.persistance.minio_wrapper import MinioWrapper
 
+import sentry_sdk
+import os
+
 app = FastAPI()
 
 minio_wrapper = MinioWrapper()
@@ -18,6 +21,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+sentry_sdk.init(dsn=os.getenv("SENTRY_DSN"), traces_sample_rate=1.0)
 
 
 @app.get("/")
