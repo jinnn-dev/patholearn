@@ -296,7 +296,6 @@ def add_task_annotation(
         crud_task.update(db, db_obj=task, obj_in=TaskUpdate(task_data=data))
 
     elif is_info_annotation(annotation.type):
-
         if task.info_annotations is None:
             data = [annotation]
         else:

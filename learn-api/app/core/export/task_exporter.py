@@ -287,7 +287,6 @@ class TaskExporter:
                 List[AnnotationData], user_solution.solution_data
             )
             for annotation in parsed_data:
-
                 label = annotation.name
                 if not annotation.name:
                     found_bracket_text = re.findall("\((.*?)\)", task.task_question)

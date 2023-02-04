@@ -40,7 +40,6 @@ def create_info_images(
     names: List[str] = Form(...),
     images: List[UploadFile] = File(...),
 ) -> List[InfoImage]:
-
     results = []
     for index, image in enumerate(images):
         info_image_id = str(uuid.uuid4())
@@ -89,7 +88,6 @@ def update_info_image(
 def delete_info_images(
     *, collection: Collection = Depends(get_info_image_collection), images: List[str]
 ):
-
     for image_id in images:
         try:
             crud_info_image.delete(collection, entity_id_value=image_id)

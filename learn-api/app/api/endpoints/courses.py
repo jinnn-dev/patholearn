@@ -40,10 +40,8 @@ def get_all_courses(
 def get_courses_of_user(
     db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)
 ) -> Any:
-
     courses = crud_course.get_multi_by_user(db, user_id=current_user.id)
     for course in courses:
-
         course_percentage_solved = crud_user_solution.get_solved_percentage_to_course(
             db, user_id=current_user.id, course_id=course.id
         )
@@ -104,7 +102,6 @@ def get_specific_course(
     short_name: str,
     current_user: User = Depends(get_current_active_user),
 ) -> Any:
-
     timer = Timer()
     timer.start()
 
@@ -253,7 +250,6 @@ def delete_course(
     short_name: str,
     current_user: User = Depends(get_current_active_superuser),
 ) -> Any:
-
     course = crud_course.get_by_short_name(db, short_name=short_name)
     check_if_user_can_access_course(db, user_id=current_user.id, course_id=course.id)
 

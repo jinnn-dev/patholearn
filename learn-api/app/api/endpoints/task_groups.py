@@ -53,7 +53,6 @@ def create_task_group(
     task_group_in: TaskGroupCreate,
     current_user: User = Depends(get_current_active_superuser)
 ):
-
     check_if_user_can_access_course(
         db, user_id=current_user.id, course_id=task_group_in.course_id
     )

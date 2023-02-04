@@ -18,7 +18,6 @@ from app.utils.logger import logger
 class CRUDQuestionnaire(
     CRUDBase[Questionnaire, QuestionnaireCreate, QuestionnaireUpdate]
 ):
-
     # SELECT questionnairequestion.question_text, user.firstname, user.middlename, user.lastname,
     # questionnaireanswer.answer, questionnaireanswer.selected FROM questionnairequestion
     # LEFT JOIN questionnaireanswer ON questionnaireanswer.question_id=questionnairequestion.id

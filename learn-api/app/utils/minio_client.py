@@ -26,7 +26,6 @@ class MinioClient:
     task_bucket = "task-images"
 
     def __init__(self):
-
         self.instance = Minio(
             endpoint=settings.MINIO_URL,
             access_key=settings.MINIO_ROOT_USER,
@@ -51,7 +50,6 @@ class MinioClient:
 
     def create_object(self, file_name: str, file_content: Any, content_type: Any):
         try:
-
             print(file_name, self.bucket_name)
             self.instance.fput_object(
                 self.bucket_name,

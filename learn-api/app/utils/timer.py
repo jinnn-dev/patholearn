@@ -1,5 +1,6 @@
 import time
 
+
 # https://gist.github.com/sumeet/1123871
 class Timer(object):
     """A stopwatch utility for timing execution that can be used as a regular

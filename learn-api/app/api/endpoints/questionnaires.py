@@ -63,7 +63,6 @@ def get_questionnaire_statistic(
     questionnaire_id,
     current_user=Depends(get_current_active_superuser),
 ):
-
     db_answers = crud_questionnaire_answer.get_answers_to_questionnaire(
         db, questionnaire_id=questionnaire_id
     )
@@ -147,7 +146,6 @@ def create_questionnaire_to_task(
     questionnaire_db = crud_questionnaire.create(db, obj_in=questionnaire_create)
     questions = questionnaire.questions
     for question in questions:
-
         question_create = QuestionnaireQuestionCreate(
             order=question.order,
             question_type=question.question_type,
