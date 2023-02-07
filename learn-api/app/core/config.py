@@ -49,6 +49,11 @@ class Settings(BaseSettings):
     USERS_OPEN_REGISTRATION: bool = True
 
     SENTRY_DSN = os.environ["SENTRY_DSN"] if "SENTRY_DSN" in os.environ else None
+    SENTRY_ENVIRONMENT = (
+        os.environ["SENTRY_ENVIRONMENT"]
+        if "SENTRY_ENVIRONMENT" in os.environ
+        else "production"
+    )
 
     class Config:
         case_sensitive = True
