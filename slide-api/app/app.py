@@ -22,7 +22,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-sentry_sdk.init(dsn=os.getenv("SENTRY_DSN"), traces_sample_rate=1.0)
+sentry_sdk.init(
+    dsn=os.getenv("SENTRY_DSN"),
+    environment=os.getenv("SENTRY_ENVIRONMENT")
+    if "SENTRY_ENVIRONMENT" in os.environ
+    else "production",
+    traces_sample_rate=1.0,
+)
 
 
 @app.get("/")

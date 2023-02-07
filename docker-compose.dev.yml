@@ -21,6 +21,7 @@ services:
       - MYSQL_HOST=${DATABASE_IP}
       - MYSQL_DATABASE=${DATABASE_DB}
       - SENTRY_DSN=${SENTRY_LEARN_DSN}
+      - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT}
     ports:
       - "8000:8000"
     depends_on:
@@ -77,6 +78,7 @@ services:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
       - SENTRY_DSN=${SENTRY_SLIDE_DSN}
+      - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT}
     volumes:
       - ./slide-api/app:/app
       - ./slide-api/data:/data

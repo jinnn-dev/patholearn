@@ -19,7 +19,11 @@ origins = [
     "https://dev.patholearn.de",
 ]
 
-sentry_sdk.init(dsn=settings.SENTRY_DSN, traces_sample_rate=1.0)
+sentry_sdk.init(
+    dsn=settings.SENTRY_DSN,
+    environment=settings.SENTRY_ENVIRONMENT,
+    traces_sample_rate=1.0,
+)
 
 app.add_middleware(GZipMiddleware, minimum_size=500)
 

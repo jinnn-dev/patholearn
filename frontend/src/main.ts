@@ -29,6 +29,7 @@ app.use(VueViewer);
 Sentry.init({
   app,
   dsn: getEnv('SENTRY_DSN'),
+  environment: getEnv('SENTRY_ENVIRONMENT'),
   integrations: [
     new BrowserTracing({
       routingInstrumentation: Sentry.vueRouterInstrumentation(router),
