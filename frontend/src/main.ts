@@ -12,7 +12,6 @@ import * as Sentry from '@sentry/vue';
 import { BrowserTracing } from '@sentry/tracing';
 
 import { getEnv } from './config';
-import Vue from 'vue';
 
 Icon.add(Object.values({ ...icons }));
 
