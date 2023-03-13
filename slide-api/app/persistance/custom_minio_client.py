@@ -31,7 +31,7 @@ class MinioClient:
             else "minio:9000",
             access_key=os.environ["MINIO_ROOT_USER"],
             secret_key=os.environ["MINIO_ROOT_PASSWORD"],
-            secure=False,
+            secure=True,
         )
 
     def create_bucket(self, bucket_name: str) -> None:
