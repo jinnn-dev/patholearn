@@ -1,8 +1,6 @@
 <script lang="ts" setup>
-import { notifications, addNotification } from '../../utils/notification-state';
+import { notifications } from '../../utils/notification-state';
 import Notification from './Notification.vue';
-import { NotificationLevel } from '../../model/notification';
-import { ref } from 'vue';
 
 const removeItem = (id: string) => {
   const index = notifications.value.findIndex((item) => item.id == id);
@@ -12,37 +10,6 @@ const removeItem = (id: string) => {
 
   notifications.value.splice(index, 1);
 };
-addNotification({
-  level: NotificationLevel.ERROR,
-  header: 'Error',
-  detail: 'Das sind Details des Errors',
-  showDate: true
-});
-addNotification({
-  level: NotificationLevel.INFO,
-  header: 'Info',
-  detail: 'Das ist eine Info',
-  showDate: true
-});
-addNotification({
-  level: NotificationLevel.SUCESS,
-  header: 'Erfolg',
-  detail: 'Das ist ein Erfolg',
-  showDate: false
-});
-addNotification({
-  level: NotificationLevel.WARNING,
-  header: 'Warnung',
-  detail: 'Das ist eine Warnung',
-  showDate: true
-});
-
-addNotification({
-  level: NotificationLevel.WARNING,
-  header: 'Warnung',
-  detail: 'Das ist eine Warnung',
-  showDate: true
-});
 </script>
 <template>
   <div class="fixed z-[99] top-2 right-6 transform w-80">
