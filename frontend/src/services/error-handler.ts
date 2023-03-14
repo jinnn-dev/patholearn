@@ -1,11 +1,11 @@
+import { NotificationLevel } from '../model/notification';
 import { ref } from 'vue';
+import { addNotification } from '../utils/notification-state';
 
 export interface CustomError {
   err: any;
   errorMessage?: string;
 }
-
-export const errorState = ref<CustomError[]>([]);
 
 export async function handleError<T>(p: Promise<T>, errorMessage?: string): Promise<[any, T | undefined]> {
   try {
@@ -17,12 +17,12 @@ export async function handleError<T>(p: Promise<T>, errorMessage?: string): Prom
 }
 
 export function showError(err: any, errorMessage?: string) {
-  const error: CustomError = {
-    err: err,
-    errorMessage: errorMessage
-  };
-
-  errorState.value.push(error);
-
+  addNotification({
+    level: NotificationLevel.ERROR,
+    header: errorMessage || 'Fehler',
+    showDate: true,
+    detail: err.response.data.detail,
+    timeout: 10000
+  });
   throw Error(errorMessage);
 }

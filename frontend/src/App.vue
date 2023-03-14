@@ -2,7 +2,7 @@
 import { getEnv } from './config';
 import { ref } from 'vue';
 import { detect } from 'detect-browser';
-import ErrorBar from './components/general/ErrorBar.vue';
+import NotificationBar from './components/general/NotificationBar.vue';
 
 const title = getEnv('APP_TITLE');
 document.title = title || '';
@@ -49,7 +49,7 @@ if (detectedBrowser) {
     </div>
     <router-view />
   </div>
-  <error-bar></error-bar>
+  <notification-bar></notification-bar>
 </template>
 
 <style>
