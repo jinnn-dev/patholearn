@@ -29,7 +29,7 @@ defineEmits(['confirm', 'reject']);
         fontWeight="font-normal"
         @click.prevent="$emit('reject')"
       ></primary-button>
-      <save-button :label="confirmText" :loading="loading" type="submit" @click="$emit('confirm')"></save-button>
+      <save-button :name="confirmText" :loading="loading" type="submit" @click="$emit('confirm')"></save-button>
     </div>
   </div>
 </template>
