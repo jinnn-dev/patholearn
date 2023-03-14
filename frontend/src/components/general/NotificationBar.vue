@@ -12,7 +12,7 @@ const removeItem = (id: string) => {
 };
 </script>
 <template>
-  <div class="fixed z-[99] top-2 right-6 transform w-80">
+  <div class="fixed z-[999] top-2 right-6 transform w-80">
     <TransitionGroup tag="ul" name="fade" class="relative">
       <notification
         v-for="notification in notifications"
