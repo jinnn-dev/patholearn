@@ -61,7 +61,7 @@ const answerChanged = (answer: QuestionnaireAnswerCreate, question: Questionnair
           @click="$emit('skip')"
           bg-color="bg-gray-500"
         ></PrimaryButton>
-        <SaveButton label="Einreichen" @click.stop="saveQuestionnaireAnswer" :loading="answersSaving"></SaveButton>
+        <SaveButton name="Einreichen" @click.stop="saveQuestionnaireAnswer" :loading="answersSaving"></SaveButton>
       </div>
     </div>
   </div>

@@ -187,7 +187,7 @@ const loadTaskSolution = async () => {
         <div class="fixed z-10 bottom-8 right-8">
           <save-button
             :disabled="userSolutionLocked"
-            :label="selectedTask?.can_be_solved ? 'Überprüfe Lösung' : 'Ich bin fertig'"
+            :name="selectedTask?.can_be_solved ? 'Überprüfe Lösung' : 'Ich bin fertig'"
             :loading="isSolving"
             fontWeight="font-medium"
             @click="solveTask"
