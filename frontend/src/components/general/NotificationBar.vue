@@ -13,7 +13,7 @@ const removeItem = (id: string) => {
 </script>
 <template>
   <div class="fixed z-[999] top-2 right-6 transform w-80">
-    <TransitionGroup tag="ul" name="fade" class="relative">
+    <TransitionGroup tag="ul" name="notification" class="relative">
       <notification
         v-for="notification in notifications"
         :key="notification.id"
@@ -26,22 +26,22 @@ const removeItem = (id: string) => {
 </template>
 <style>
 /* 1. declare transition */
-.fade-move,
-.fade-enter-active,
-.fade-leave-active {
+.notification-move,
+.notification-enter-active,
+.notification-leave-active {
   transition: all 0.4s cubic-bezier(0.36, 0, 0.66, -0.56);
 }
 
 /* 2. declare enter from and leave to state */
-.fade-enter-from,
-.fade-leave-to {
+.notification-enter-from,
+.notification-leave-to {
   opacity: 0;
   transform: translateX(100px);
 }
 
 /* 3. ensure leaving items are taken out of layout flow so that moving
       animations can be calculated correctly. */
-.fade-leave-active {
+.notification-leave-active {
   position: absolute;
 }
 </style>

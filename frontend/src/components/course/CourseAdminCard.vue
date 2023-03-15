@@ -49,8 +49,12 @@ const editTaskGroup = async () => {
     task_group_id: props.taskgroup.id,
     short_name: props.taskgroup.short_name
   };
-  await TaskGroupService.editTaskGroup(update);
-  props.taskgroup.name = newTaskGroupName.value;
+
+  if (props.taskgroup.name !== update.name) {
+    await TaskGroupService.editTaskGroup(update);
+    props.taskgroup.name = newTaskGroupName.value;
+  }
+
   emit('editTaskgroup', props.taskgroup);
   showEditTaskGroup.value = false;
   editTaskGroupLoading.value = false;
