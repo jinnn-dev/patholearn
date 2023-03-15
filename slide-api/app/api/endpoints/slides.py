@@ -10,13 +10,11 @@ from app.utils.slide_utils import (
     convert_binary_metadata_to_base64,
     convert_slide_binary_metadata_to_base64,
 )
-from fastapi import APIRouter, HTTPException, UploadFile, Response
+from fastapi import APIRouter, HTTPException, UploadFile
 from fastapi.params import Depends, File, Form, Query
 from pymongo.collection import Collection
 from starlette.background import BackgroundTasks
 from loguru import logger
-from starlette.responses import StreamingResponse
-
 
 logger.add("endpoints.slides.log", rotation="1 week")
 
@@ -102,18 +100,6 @@ def get_slide(*, collection: Collection = Depends(get_slide_collection), slide_i
     return {"name": slide.name}
 
 
-@router.get("/{slide_id}/layers")
-def get_slide_layers(*, slide_id: str):
-    layers = app.minio_wrapper.get_slide_layers(slide_id)
-    max_layer = -1
-    for layer in layers:
-        object_name = layer.object_name
-        layer = int(object_name.split("/")[-2])
-        if layer > max_layer:
-            max_layer = layer
-    return max_layer
-
-
 @router.delete("/{slide_id}")
 def delete_slide(
     *, collection: Collection = Depends(get_slide_collection), slide_id: str
@@ -125,12 +111,3 @@ def delete_slide(
     except Exception as e:
         logger.error(e)
         raise HTTPException(status_code=500, detail="Slide could not be deleted")
-
-
-@router.get("/{slide_id}/download/{layer}")
-def download_slide(
-    *, collection: Collection = Depends(get_slide_collection), slide_id: str, layer: int
-):
-    image = app.minio_wrapper.get_slide(slide_id, layer)
-    # slide = crud_slide.get_slide(collection=collection, slide_id=slide_id)
-    return Response(content=image, media_type="image/jpg")

@@ -97,28 +97,4 @@ export class SlideService {
     );
     return response!.data;
   }
-
-  public static async getNumberOfLayers(slide_id: string): Promise<number> {
-    const [_, response] = await handleError(
-      ApiService.get<number>({
-        resource: `/slides/${slide_id}/layers`,
-        host: SLIDE_API_URL
-      })
-    );
-    return response!.data;
-  }
-
-  public static async downloadSlide(slide_id: string, layer: number): Promise<any> {
-    const [_, response] = await handleError(
-      ApiService.get<any>(
-        {
-          resource: `/slides/${slide_id}/download/${layer}`,
-          host: SLIDE_API_URL
-        },
-        'arraybuffer'
-      )
-    );
-
-    return response!.data;
-  }
 }

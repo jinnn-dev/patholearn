@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script lang='ts' setup>
 import OpenSeadragon, { TiledImage, Viewer } from 'openseadragon';
 import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
@@ -9,11 +9,6 @@ import { debounceRef } from '../../utils/debounceRef';
 import { generateViewerOptions } from '../../core/viewer/config/generateViewerOptions';
 import ViewerBackButton from './ViewerBackButton.vue';
 import ZSlider from './ZSlider.vue';
-import SaveButton from '../general/SaveButton.vue';
-import CustomSlider from '../form/CustomSlider.vue';
-import BlurredContainer from '../general/BlurredContainer.vue';
-
-import { useService } from '../../composables/useService';
 
 const slide = ref<Slide>();
 const viewer = ref<Viewer>();
@@ -28,22 +23,12 @@ const preFetchRange = 1;
 
 const currentIndex = ref(0);
 
-const { loading: downloadLoading, result: downloadResult, run: downloadRun } = useService(SlideService.downloadSlide);
-const {
-  loading: numberLayersLoading,
-  result: numberLayersResult,
-  run: numberLayersRun
-} = useService(SlideService.getNumberOfLayers);
-
-const selectedSlideLayer = ref(0);
-
-const route = useRoute();
 onMounted(async () => {
+  const route = useRoute();
   // OpenSeadragon(viewerOptions('viewerImage', getSlideUrl(route.params.id as string)));
-  await numberLayersRun(route.params.id as string);
-
   const slide_id = route.params.id as string;
   slide.value = await SlideService.getSlide(slide_id, false);
+
   slideUrls.value = [getSlideUrl(slide_id)];
 
   if (slide.value.children) {
@@ -120,36 +105,16 @@ const deleteTiledImage = (index: number) => {
     viewer.value?.world.removeItem(previousItem);
   }
 };
-
-const downloadImage = async () => {
-  await downloadRun(route.params.id as string, selectedSlideLayer.value);
-
-  const url = window.URL.createObjectURL(new Blob([downloadResult.value]));
-  const link = document.createElement('a');
-  link.href = url;
-  link.setAttribute('download', `${route.params.id}_${selectedSlideLayer.value}.jpg`); //or any other extension
-  document.body.appendChild(link);
-  link.click();
-};
 </script>
 
 <template>
-  <viewer-back-button routeName="/slides" text="Zurück zu den WSI-Bildern"></viewer-back-button>
-  <blurred-container class="pt-8 px-4 pb-4 fixed z-50 right-2 top-1/2 -translate-y-1/2 rounded-lg">
-    <custom-slider
-      :min="0"
-      :max="numberLayersResult"
-      :tooltips="true"
-      @value-changed="selectedSlideLayer = $event"
-    ></custom-slider>
-    <save-button :loading="downloadLoading" name="Download Slide" @click="downloadImage"></save-button>
-  </blurred-container>
+  <viewer-back-button routeName='/slides' text='Zurück zu den WSI-Bildern'></viewer-back-button>
   <z-slider
-    v-if="slide?.children && slide?.children.length > 1"
-    :childCount="slide.children.length"
-    @z-changed="changeTile"
+    v-if='slide?.children && slide?.children.length > 1'
+    :childCount='slide.children.length'
+    @z-changed='changeTile'
   ></z-slider>
-  <div id="viewerImage" class="h-screen"></div>
+  <div id='viewerImage' class='h-screen'></div>
 </template>
 <style>
 #viewerImage {
