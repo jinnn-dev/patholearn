@@ -88,5 +88,22 @@ class MinioClient:
             self.instance.remove_object(bucket_name, item.object_name)
         logger.info("✔️ All Objects deleted")
 
-    def get_object(self, *, bucket_name: str, file_name: str):
-        return self.instance.get_object(bucket_name, object_name=file_name)
+    def get_object_names_in_folder(self, *, bucket_name: str, parent_folder_path: str):
+        return self.instance.list_objects(bucket_name, prefix=parent_folder_path)
+
+    def get_objects_in_folder(self, *, bucket_name: str, folder_path: str):
+        images = self.instance.list_objects(
+            bucket_name, prefix=folder_path, recursive=True
+        )
+        result_images = []
+        for image in images:
+            try:
+                # print(image.object_name)
+                obj = self.instance.get_object(
+                    bucket_name, image.object_name, "/image.jpeg"
+                )
+                result_images.append({"name": image.object_name, "data": obj.data})
+            finally:
+                obj.close()
+                obj.release_conn()
+        return result_images
