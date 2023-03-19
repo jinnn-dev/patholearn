@@ -128,9 +128,10 @@ def delete_slide(
 
 
 @router.get("/{slide_id}/download/{layer}")
-def download_slide(
-    *, collection: Collection = Depends(get_slide_collection), slide_id: str, layer: int
-):
-    image = app.minio_wrapper.get_slide(slide_id, layer)
-    # slide = crud_slide.get_slide(collection=collection, slide_id=slide_id)
-    return Response(content=image, media_type="image/jpg")
+def download_slide(*, slide_id: str, layer: int):
+    try:
+        image = app.minio_wrapper.get_slide(slide_id, layer)
+        return Response(content=image, media_type="image/jpg")
+    except Exception as e:
+        logger.error(e)
+        raise HTTPException(status_code=500, detail="Slide could not be downloaded")

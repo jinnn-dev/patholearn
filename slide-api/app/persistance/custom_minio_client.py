@@ -91,6 +91,13 @@ class MinioClient:
     def get_object_names_in_folder(self, *, bucket_name: str, parent_folder_path: str):
         return self.instance.list_objects(bucket_name, prefix=parent_folder_path)
 
+    def get_object(self, *, bucket_name: str, object_path: str):
+        try:
+            result = self.instance.get_object(bucket_name, object_path)
+            return result.data
+        except:
+            return None
+
     def get_objects_in_folder(self, *, bucket_name: str, folder_path: str):
         images = self.instance.list_objects(
             bucket_name, prefix=folder_path, recursive=True
@@ -99,9 +106,7 @@ class MinioClient:
         for image in images:
             try:
                 # print(image.object_name)
-                obj = self.instance.get_object(
-                    bucket_name, image.object_name, "/image.jpeg"
-                )
+                obj = self.instance.get_object(bucket_name, image.object_name)
                 result_images.append({"name": image.object_name, "data": obj.data})
             finally:
                 obj.close()

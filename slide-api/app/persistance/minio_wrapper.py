@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import numpy as np
 from cv2 import cv2
+from loguru import logger
 
 
 class MinioWrapper:
@@ -67,6 +68,17 @@ class MinioWrapper:
         return list(result)
 
     def get_slide(self, slide_id: str, layer=0):
+
+        object_path = f"{slide_id}/{layer}.jpeg"
+
+        slide = self.minio_client.get_object(
+            bucket_name=MinioWrapper.pyramid_bucket, object_path=object_path
+        )
+
+        if slide is not None:
+            logger.info("Slide is cached")
+            return slide
+        logger.info("Slide is not cached")
         result = self.minio_client.get_objects_in_folder(
             bucket_name=MinioWrapper.pyramid_bucket,
             folder_path=f"{slide_id}/dzi_files/{layer}",
@@ -120,4 +132,17 @@ class MinioWrapper:
 
             curr_x += update_x
         _, im_jpg = cv2.imencode(".jpg", output_image)
+
+        file_name = f"{layer}.jpeg"
+        cv2.imwrite(file_name, output_image)
+
+        self.minio_client.create_object(
+            bucket_name=MinioWrapper.pyramid_bucket,
+            file_name=f"{slide_id}/{file_name}",
+            file_content=file_name,
+            content_type="image/jpeg",
+        )
+
+        os.remove(file_name)
+
         return im_jpg.tobytes()
