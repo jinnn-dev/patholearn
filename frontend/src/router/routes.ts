@@ -4,6 +4,10 @@ export const routes = [
     redirect: '/home'
   },
   {
+    path: '/ai',
+    component: () => import('../views/Ai.vue')
+  },
+  {
     path: '/login',
     name: 'Login',
     meta: {
