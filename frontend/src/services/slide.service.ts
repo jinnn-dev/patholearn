@@ -116,7 +116,8 @@ export class SlideService {
           host: SLIDE_API_URL
         },
         'arraybuffer'
-      )
+      ),
+      'Slide could not be downloaded'
     );
 
     return response!.data;
