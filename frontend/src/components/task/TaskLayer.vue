@@ -105,6 +105,21 @@ const downloadUserSolutions = async (task: Task) => {
   document.body.appendChild(a);
   a.click();
 };
+
+const downloadMask = async (task: Task) => {
+  const data = await TaskService.downloadMask(task.id);
+  const a = document.createElement('a');
+
+  const blob = new Blob([data], {
+    type: 'image/png'
+  });
+
+  a.href = window.URL.createObjectURL(blob);
+  a.download = task.id + 'png';
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+};
 </script>
 <template>
   <div class="w-full flex items-center justify-between p-2 bg-gray-600 sticky top-0 z-10">
@@ -148,6 +163,7 @@ const downloadUserSolutions = async (task: Task) => {
         @downloadUserSolutions="downloadUserSolutions(taskWithQuestionnaire.task)"
         @editTask="editTask(taskWithQuestionnaire.task)"
         @click.stop="selectTask(taskWithQuestionnaire, taskIndex)"
+        @download-mask="downloadMask(taskWithQuestionnaire.task)"
       ></task-item>
       <questionnaire-layer-item
         v-if="taskWithQuestionnaire.questionnaireAfter && !isOwner"
