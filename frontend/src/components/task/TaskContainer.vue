@@ -319,7 +319,7 @@ const deleteBaseTask = () => {
       <div class="flex flex-col justify-center items-center w-full">
         <div v-for="(layer, index) in taskMap" :key="index" class="w-full">
           <task-layer
-            :baseTaskId="baseTask.id"
+            :baseTask="baseTask"
             :isOwner="isOwner"
             :layerIndex="+index"
             :selectedTaskId="selectedTask?.id"

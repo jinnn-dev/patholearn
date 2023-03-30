@@ -14,6 +14,8 @@ import { TaskType } from '../../core/types/taskType';
 import { Questionnaire, questionnaireHasAnswer } from '../../model/questionnaires/questionnaire';
 import QuestionnaireLayerItem from './questionnaire/QuestionnaireLayerItem.vue';
 import { TaskWithQuestionnaires } from './task-types';
+import { SlideService } from '../../services/slide.service';
+import { BaseTask } from '../../model/task/baseTask';
 
 const props = defineProps({
   layerIndex: {
@@ -24,8 +26,8 @@ const props = defineProps({
     type: Array as PropType<TaskWithQuestionnaires[]>,
     default: []
   },
-  baseTaskId: {
-    type: Number,
+  baseTask: {
+    type: Object as PropType<BaseTask>,
     required: true
   },
   selectedTaskId: Number,
@@ -109,16 +111,29 @@ const downloadUserSolutions = async (task: Task) => {
 const downloadMask = async (task: Task) => {
   const data = await TaskService.downloadMask(task.id);
   const a = document.createElement('a');
-
-  const blob = new Blob([data], {
+  const blobA = new Blob([data], {
     type: 'image/png'
   });
 
-  a.href = window.URL.createObjectURL(blob);
-  a.download = task.id + 'png';
+  a.href = window.URL.createObjectURL(blobA);
+  a.download = task.id + '.png';
   a.style.display = 'none';
   document.body.appendChild(a);
   a.click();
+
+  const slide = await SlideService.downloadSlide(props.baseTask.slide_id || '', -1);
+
+  const b = document.createElement('a');
+
+  const blobB = new Blob([slide], {
+    type: 'image/jpeg'
+  });
+
+  b.href = window.URL.createObjectURL(blobB);
+  b.download = task.id + '.jpeg';
+  b.style.display = 'none';
+  document.body.appendChild(b);
+  b.click();
 };
 </script>
 <template>
