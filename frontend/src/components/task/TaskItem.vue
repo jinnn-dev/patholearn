@@ -35,7 +35,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['deleteTask', 'editTask', 'downloadUserSolutions']);
+const emit = defineEmits(['deleteTask', 'editTask', 'downloadUserSolutions', 'downloadMask']);
 
 const showDeleteTask = ref<boolean>(false);
 const showQuestionnaireStatistic = ref<boolean>(false);
@@ -50,6 +50,10 @@ const editTask = () => {
 
 const downloadUserSolutions = () => {
   emit('downloadUserSolutions');
+};
+
+const downloadMask = () => {
+  emit('downloadMask');
 };
 </script>
 <template>
@@ -78,6 +82,7 @@ const downloadUserSolutions = () => {
     </div>
     <role-only v-if="isOwner">
       <div class="flex gap-4">
+        <Icon name="caret-down" @click.stop="downloadMask"></Icon>
         <Icon class="" name="chart-bar" @click.stop="showQuestionnaireStatistic = true"></Icon>
         <Icon v-if="showDownload" class="text-xl" name="download-simple" @click.stop="downloadUserSolutions" />
         <Icon class="text-xl" name="pencil-simple" @click.stop="editTask" />

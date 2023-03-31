@@ -14,6 +14,8 @@ import { TaskType } from '../../core/types/taskType';
 import { Questionnaire, questionnaireHasAnswer } from '../../model/questionnaires/questionnaire';
 import QuestionnaireLayerItem from './questionnaire/QuestionnaireLayerItem.vue';
 import { TaskWithQuestionnaires } from './task-types';
+import { SlideService } from '../../services/slide.service';
+import { BaseTask } from '../../model/task/baseTask';
 
 const props = defineProps({
   layerIndex: {
@@ -24,8 +26,8 @@ const props = defineProps({
     type: Array as PropType<TaskWithQuestionnaires[]>,
     default: []
   },
-  baseTaskId: {
-    type: Number,
+  baseTask: {
+    type: Object as PropType<BaseTask>,
     required: true
   },
   selectedTaskId: Number,
@@ -105,6 +107,34 @@ const downloadUserSolutions = async (task: Task) => {
   document.body.appendChild(a);
   a.click();
 };
+
+const downloadMask = async (task: Task) => {
+  const data = await TaskService.downloadMask(task.id);
+  const a = document.createElement('a');
+  const blobA = new Blob([data], {
+    type: 'image/png'
+  });
+
+  a.href = window.URL.createObjectURL(blobA);
+  a.download = task.id + '.png';
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+
+  const slide = await SlideService.downloadSlide(props.baseTask.slide_id || '', -1);
+
+  const b = document.createElement('a');
+
+  const blobB = new Blob([slide], {
+    type: 'image/jpeg'
+  });
+
+  b.href = window.URL.createObjectURL(blobB);
+  b.download = task.id + '.jpeg';
+  b.style.display = 'none';
+  document.body.appendChild(b);
+  b.click();
+};
 </script>
 <template>
   <div class="w-full flex items-center justify-between p-2 bg-gray-600 sticky top-0 z-10">
@@ -148,6 +178,7 @@ const downloadUserSolutions = async (task: Task) => {
         @downloadUserSolutions="downloadUserSolutions(taskWithQuestionnaire.task)"
         @editTask="editTask(taskWithQuestionnaire.task)"
         @click.stop="selectTask(taskWithQuestionnaire, taskIndex)"
+        @download-mask="downloadMask(taskWithQuestionnaire.task)"
       ></task-item>
       <questionnaire-layer-item
         v-if="taskWithQuestionnaire.questionnaireAfter && !isOwner"

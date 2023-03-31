@@ -12,7 +12,7 @@ app = FastAPI()
 minio_wrapper = MinioWrapper()
 minio_wrapper.init_buckets()
 
-origins = ["http://localhost:8000", "http://localhost:5173"]
+origins = ["http://localhost:8000", "http://localhost:5173", "http://localhost:5174"]
 
 app.add_middleware(
     CORSMiddleware,
