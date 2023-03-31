@@ -31,8 +31,7 @@ services:
       - lern_db
 
   lern_db:
-    image: mysql:8.0
-    platform: linux/x86_64
+    image: arm64v8/mysql:oracle
     restart: unless-stopped
     environment:
       - MYSQL_DATABASE=${DATABASE_DB}

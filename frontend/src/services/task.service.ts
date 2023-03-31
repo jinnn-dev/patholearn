@@ -609,5 +609,18 @@ export class TaskService {
     return response!.data;
   }
 
+  public static async downloadMask(taskId: number) {
+    const [_, response] = await handleError(
+      ApiService.get<any>(
+        {
+          resource: this._apiUrl(`/task/${taskId}/mask`)
+        },
+        'arraybuffer'
+      ),
+      'Download mask failed'
+    );
+    return response!.data;
+  }
+
   private static _apiUrl = (shortName: string = '') => '/tasks' + shortName;
 }

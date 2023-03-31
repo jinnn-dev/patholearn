@@ -35,6 +35,7 @@ class Timer(object):
         """Initialize a new `Stopwatch`, but do not start timing."""
         self.start_time = None
         self.stop_time = None
+        self.curr_checkpoint_time = None
 
     def start(self):
         """Start timing."""
@@ -43,6 +44,16 @@ class Timer(object):
     def stop(self):
         """Stop timing."""
         self.stop_time = time.time()
+
+    def checkpoint_time(self) -> float:
+        """Set checkpoint time"""
+        old_checkpoint_time = self.curr_checkpoint_time
+        self.curr_checkpoint_time = time.time()
+        return (
+            self.curr_checkpoint_time - self.start_time
+            if old_checkpoint_time is None
+            else self.curr_checkpoint_time - old_checkpoint_time
+        )
 
     @property
     def time_elapsed(self):

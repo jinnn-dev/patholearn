@@ -60,6 +60,16 @@ class MinioWrapper:
             bucket_name=MinioWrapper.info_bucket, file_name=file_name
         )
 
+    def get_max_slide_layer(self, slide_id: str):
+        layers = self.get_slide_layers(slide_id)
+        max_layer = -1
+        for layer in layers:
+            object_name = layer.object_name
+            layer = int(object_name.split("/")[-2])
+            if layer > max_layer:
+                max_layer = layer
+        return max_layer
+
     def get_slide_layers(self, slide_id: str):
         result = self.minio_client.get_object_names_in_folder(
             bucket_name=MinioWrapper.pyramid_bucket,
@@ -68,6 +78,8 @@ class MinioWrapper:
         return list(result)
 
     def get_slide(self, slide_id: str, layer=0):
+        if layer == -1:
+            layer = self.get_max_slide_layer(slide_id)
 
         object_path = f"{slide_id}/{layer}.jpeg"
 
