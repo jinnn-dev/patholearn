@@ -1,4 +1,5 @@
 import os
+from typing import Dict
 
 from fastapi import FastAPI, Depends
 from starlette.middleware.cors import CORSMiddleware
@@ -6,6 +7,11 @@ from supertokens_python import init, get_all_cors_headers
 from supertokens_python.framework.fastapi import get_middleware
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
+from supertokens_python.recipe.usermetadata.asyncio import (
+    update_user_metadata,
+    clear_user_metadata,
+)
+
 import sentry_sdk
 
 import app.config as config
@@ -35,6 +41,16 @@ async def secure_api(s: SessionContainer = Depends(verify_session())):
         "userId": s.get_user_id(),
         "accessTokenPayload": s.get_access_token_payload(),
     }
+
+
+@app.put("/user/metadata")
+async def set_user_metadata(
+    metadata: Dict, s: SessionContainer = Depends(verify_session())
+):
+    user_id = metadata["user_id"]
+    data = metadata["metadata"]
+    result = await update_user_metadata(user_id, data)
+    return result
 
 
 app = CORSMiddleware(

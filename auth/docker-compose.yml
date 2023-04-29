@@ -28,7 +28,7 @@ services:
     ports:
       - 3567:3567
     environment:
-      MYSQL_CONNECTION_URI: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/{MYSQL_DB}
+      MYSQL_CONNECTION_URI: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DB}
     networks:
       - auth-network
     restart: unless-stopped

@@ -1,16 +1,23 @@
-from supertokens_python.recipe import session, emailpassword, dashboard
+from supertokens_python.recipe import (
+    session,
+    emailpassword,
+    dashboard,
+    usermetadata,
+    userroles,
+)
 from supertokens_python import (
     InputAppInfo,
     SupertokensConfig,
 )
+import os
 
 # this is the location of the SuperTokens core.
 supertokens_config = SupertokensConfig(connection_uri="http://supertokens:3567")
 
 app_info = InputAppInfo(
     app_name="Patholearn Authentication",
-    api_domain="http://localhost:3001",
-    website_domain="http://localhost:3000",
+    api_domain=os.environ.get("API_DOMAIN", "http://localhost:3001"),
+    website_domain=os.environ.get("WEBSITE_DOMAIN", "http://localhost:5174"),
 )
 
 framework = "fastapi"
@@ -21,4 +28,6 @@ recipe_list = [
     emailpassword.init(sign_up_feature=emailpassword.InputSignUpFeature()),
     session.init(),
     dashboard.init(),
+    usermetadata.init(),
+    userroles.init(),
 ]
