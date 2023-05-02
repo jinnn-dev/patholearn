@@ -206,7 +206,7 @@ const downloadMask = async (task: Task) => {
   <role-only>
     <modal-dialog :show="taskCreationModal" customClasses="w-2/5">
       <CreateTask
-        :baseTaskId="baseTaskId"
+        :baseTaskId="baseTask.id"
         :layerIndex="layerIndex"
         @close="taskCreationModal = false"
         @taskCreated="$emit('taskCreated', $event)"

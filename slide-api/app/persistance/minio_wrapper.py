@@ -8,6 +8,7 @@ from pathlib import Path
 import numpy as np
 from cv2 import cv2
 from loguru import logger
+import xml.etree.ElementTree as ET
 
 
 class MinioWrapper:
@@ -87,14 +88,25 @@ class MinioWrapper:
             bucket_name=MinioWrapper.pyramid_bucket, object_path=object_path
         )
 
-        if slide is not None:
-            logger.info("Slide is cached")
-            return slide
+        # if slide is not None:
+        #     logger.info("Slide is cached")
+        #     return slide
         logger.info("Slide is not cached")
         result = self.minio_client.get_objects_in_folder(
             bucket_name=MinioWrapper.pyramid_bucket,
             folder_path=f"{slide_id}/dzi_files/{layer}",
         )
+
+        dzi_file = self.minio_client.get_object(
+            bucket_name=MinioWrapper.pyramid_bucket, object_path=f"{slide_id}/dzi.dzi"
+        )
+
+        tree = ET.parse(ET.fromstring(dzi_file))
+        root = tree.getroot()
+        for child in root:
+            print(child.attrib)
+
+        logger.info(dzi_file)
 
         data = {}
 
@@ -121,6 +133,10 @@ class MinioWrapper:
             if y > max_y:
                 max_y = y
             data[base_name] = parsed_image
+
+        logger.info(
+            f"{str(len(result))}, {str(max_x)}, {str(max_width)}, {str(max_y)}, {str(max_height)}"
+        )
 
         output_image = np.zeros(
             (max_height - max_y + 1, max_width - max_x + 1, 3), dtype=np.uint8

@@ -74,7 +74,8 @@ export class ApiService {
       },
       ...(responseType && {
         responseType: responseType
-      })
+      }),
+      withCredentials: true
     });
   }
 
@@ -88,7 +89,7 @@ export class ApiService {
    * @returns The Promise with the return data
    */
   public static post<T>({ resource, data, config, host = BASE_API_URL }: Post): Promise<AxiosResponse<T>> {
-    return axios.post(host + resource, data, config);
+    return axios.post(host + resource, data, { ...config, withCredentials: true });
   }
 
   /**
@@ -103,7 +104,8 @@ export class ApiService {
     return axios.put(host + resource, data, {
       headers: {
         'Content-Type': 'application/json'
-      }
+      },
+      withCredentials: true
     });
   }
 
@@ -117,7 +119,8 @@ export class ApiService {
    */
   public static delete<T>({ resource, host = BASE_API_URL, data }: Delete): Promise<AxiosResponse<T>> {
     return axios.delete(host + resource, {
-      ...(data && { data: data })
+      ...(data && { data: data }),
+      withCredentials: true
     });
   }
 

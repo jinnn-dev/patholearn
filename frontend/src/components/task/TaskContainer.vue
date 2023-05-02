@@ -123,11 +123,11 @@ const changeSliderPosition = async (position: SliderPosition) => {
   }
 };
 
-const showUserSolution = (userId: number) => {
+const showUserSolution = (userId: string) => {
   emit('show-user-solution', userId);
 };
 
-const hideUserSolution = (userId: number) => {
+const hideUserSolution = (userId: string) => {
   emit('hide-user-solution', userId);
 };
 

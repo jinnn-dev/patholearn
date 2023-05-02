@@ -16,7 +16,6 @@ import ConfirmButtons from '../components/general/ConfirmButtons.vue';
 
 const initialState = {
   firstname: '',
-  middlename: '',
   lastname: '',
   email: '',
   password: '',
@@ -86,13 +85,7 @@ const closeModal = () => {
 
 const onSubmit = () => {
   adminIsCreating.value = true;
-  AuthService.registerAdmin(
-    formData.firstname,
-    formData.middlename,
-    formData.lastname,
-    formData.email,
-    formData.password
-  )
+  AuthService.registerAdmin(formData.firstname, formData.lastname, formData.email, formData.password)
     .then((res) => {
       showModal.value = false;
       users.value.push(res);
@@ -150,9 +143,7 @@ const onSubmit = () => {
       <auth-input v-model="formData.firstname" :required="true" label="Vorname" placeholder="Max">
         <Icon name="user" />
       </auth-input>
-      <auth-input v-model="formData.middlename" :required="false" label="Mittelname (Optional)" placeholder="Max">
-        <Icon name="user" />
-      </auth-input>
+
       <auth-input v-model="formData.lastname" :required="true" label="Nachname" placeholder="Max">
         <Icon name="user" />
       </auth-input>

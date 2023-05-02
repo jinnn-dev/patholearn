@@ -10,20 +10,20 @@ class QuestionnaireAnswerBase(BaseModel):
 
 
 class QuestionnaireAnswerCreate(QuestionnaireAnswerBase):
-    user_id: Optional[int]
+    user_id: Optional[str]
     question_id: int
     question_option_id: Optional[int]
 
 
 class QuestionnaireAnswerUpdate(QuestionnaireAnswerBase):
     id: int
-    user_id: Optional[int]
+    user_id: Optional[str]
     question_id: Optional[int]
 
 
 class QuestionnaireAnswerInDBBase(QuestionnaireAnswerBase):
     id: int
-    user_id: int
+    user_id: str
     question_id: int
 
     class Config:

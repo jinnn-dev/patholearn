@@ -1,6 +1,5 @@
 export interface SummaryUser {
   firstname: string;
-  middlename: string;
   lastname: string;
 }
 

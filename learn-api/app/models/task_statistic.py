@@ -1,11 +1,11 @@
-from sqlalchemy import JSON, Column, ForeignKey, Integer, Numeric, text, DateTime
+from sqlalchemy import JSON, Column, ForeignKey, Integer, Numeric, text, DateTime, CHAR
 
 from app.db.base_class import Base
 
 
 class TaskStatistic(Base):
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    user_id = Column(CHAR(36), ForeignKey("user.id"), nullable=False)
     task_id = Column(Integer, ForeignKey("task.id"), nullable=False)
     base_task_id = Column(Integer, ForeignKey("basetask.id"))
     solved_date = Column(DateTime, nullable=False)

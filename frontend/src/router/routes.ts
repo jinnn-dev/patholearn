@@ -4,6 +4,15 @@ export const routes = [
     redirect: '/home'
   },
   {
+    path: '/ai',
+    component: () => import('../views/Ai.vue')
+  },
+  {
+    path: '/auth/:pathMatch(.*)*',
+    name: 'auth',
+    component: () => import('../views/auth/Login.vue')
+  },
+  {
     path: '/login',
     name: 'Login',
     meta: {

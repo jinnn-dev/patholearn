@@ -389,7 +389,6 @@ def get_membersolution_summary(
         row = SummaryRow()
         row.user = SummaryUser()
         row.user.firstname = member.firstname
-        row.user.middlename = member.middlename
         row.user.lastname = member.lastname
         row.summary = []
         for task in base_task.tasks:
@@ -534,7 +533,7 @@ def solve_task_to_user(
     *,
     db: Session = Depends(get_db),
     task_id: int,
-    user_id: int,
+    user_id: str,
     current_user: User = Depends(get_current_active_superuser),
 ):
     timer = Timer()

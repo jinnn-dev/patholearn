@@ -2,7 +2,7 @@
   "name": "frontend",
   "version": "0.4.5",
   "scripts": {
-    "dev": "vite --force --host=0.0.0.0",
+    "dev": "vite --force --host=0.0.0.0 --port=5174",
     "build": "vite build",
     "serve": "vite preview",
     "test": "jest test --coverage",
@@ -27,6 +27,7 @@
     "jsts": "^2.9.3",
     "nanoid": "^3.1.22",
     "openseadragon": "^2.4.2",
+    "supertokens-web-js": "^0.5.0",
     "swiper": "^7.0.7",
     "tippy.js": "^6.3.1",
     "v-viewer": "^3.0.10",

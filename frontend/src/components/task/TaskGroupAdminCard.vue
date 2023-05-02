@@ -211,7 +211,6 @@ onClickOutside(target, () => (openDotMenu.value = false));
           >
             {{ row.user.lastname }},
             {{ row.user.firstname }}
-            {{ row.user.middlename }}
           </div>
           <div
             v-for="(taskvalue, index) of row.summary"

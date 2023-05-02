@@ -11,7 +11,7 @@ from app.schemas.task_group import TaskGroupCreate, TaskGroupUpdate
 
 class CRUDTaskGroup(CRUDBase[TaskGroup, TaskGroupCreate, TaskGroupUpdate]):
     def has_new_task_multiple_task_groups(
-        self, db: Session, user_id: int, task_group_ids: List[int]
+        self, db: Session, user_id: str, task_group_ids: List[int]
     ):
         base_tasks = (
             db.query(BaseTask.id)

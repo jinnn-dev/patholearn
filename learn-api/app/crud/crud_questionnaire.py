@@ -28,7 +28,6 @@ class CRUDQuestionnaire(
             db.query(
                 QuestionnaireQuestion.question_text,
                 User.firstname,
-                User.middlename,
                 User.lastname,
                 QuestionnaireAnswer.selected,
                 QuestionnaireAnswer.answer,
@@ -56,7 +55,7 @@ class CRUDQuestionnaire(
         return db_obj
 
     def get_questionnaires_to_task(
-        self, db: Session, *, task_id: int, user_id: int, is_before: bool = None
+        self, db: Session, *, task_id: int, user_id: str, is_before: bool = None
     ):
         if is_before is None:
             task_questionnaires = (

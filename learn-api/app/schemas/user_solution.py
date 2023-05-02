@@ -16,7 +16,7 @@ class UserSolutionBase(BaseModel):
 
 class UserSolutionCreate(BaseModel):
     task_id: int
-    user_id: Optional[int]
+    user_id: Optional[str]
     base_task_id: int
     task_group_id: int
     course_id: Optional[int]
@@ -25,15 +25,15 @@ class UserSolutionCreate(BaseModel):
 
 
 class UserSolutionUpdate(BaseModel):
-    user_id: Optional[int]
-    task_id: Optional[int]
+    user_id: Optional[str]
+    task_id: Optional[str]
     solution_data: Optional[Any]
     task_result: Optional[TaskFeedback]
     percentage_solved: Optional[float]
 
 
 class UserSolutionInDB(UserSolutionBase):
-    user_id: Optional[int]
+    user_id: Optional[str]
     task_id: int
     base_task_id: int
     task_group_id: int

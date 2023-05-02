@@ -15,6 +15,8 @@ from app.crud.crud_user import crud_user
 from app.db.session import SessionLocal, SessionManager, close_session
 from app.models.user import User
 from app.schemas.token import TokenPayload
+from supertokens_python.recipe.session.framework.fastapi import verify_session
+from supertokens_python.recipe.session import SessionContainer
 
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_STR}/login/access-token"
@@ -41,7 +43,7 @@ def get_db(background_tasks: BackgroundTasks):
         yield db
 
 
-def get_current_user(
+def get_current_user_back(
     db: Session = Depends(get_db), token: str = Depends(reusable_oauth2)
 ) -> User:
     """
@@ -68,7 +70,20 @@ def get_current_user(
     return loaded_user
 
 
-def get_current_active_user(
+async def get_current_user(
+    db: Session = Depends(get_db), s: SessionContainer = Depends(verify_session())
+):
+    user_id = s.get_user_id()
+    loaded_user = crud_user.get(db, id=user_id)
+
+    return loaded_user
+
+
+async def get_current_active_user(current_user: User = Depends(get_current_user)):
+    return current_user
+
+
+def get_current_active_user_BACK(
     current_user: User = Depends(get_current_user),
 ) -> User:
     """
@@ -98,7 +113,7 @@ def get_current_active_superuser(
     return current_user
 
 
-def check_if_user_can_access_course(db: Session, user_id: int, course_id: int) -> None:
+def check_if_user_can_access_course(db: Session, user_id: str, course_id: int) -> None:
     if not crud_course.user_is_course_owner(db, user_id=user_id, course_id=course_id):
         raise HTTPException(
             status_code=403, detail="The user doesn't have enough privileges"
@@ -106,7 +121,7 @@ def check_if_user_can_access_course(db: Session, user_id: int, course_id: int) -
 
 
 def check_if_user_can_access_task(
-    db: Session, *, user_id: int, base_task_id: int
+    db: Session, *, user_id: str, base_task_id: int
 ) -> None:
     base_task = crud_base_task.get(db, id=base_task_id)
     check_if_user_can_access_course(db, user_id=user_id, course_id=base_task.course_id)

@@ -4,11 +4,13 @@ import { email, required } from '@vuelidate/validators';
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { getEnv } from '../../config';
-import { AuthService } from '../../services/auth.service';
+import { AuthError, AuthService } from '../../services/auth.service';
 import SaveButton from '../../components/general/SaveButton.vue';
 import AuthInput from '../../components/auth/AuthInput.vue';
 import Icon from '../../components/general/Icon.vue';
-
+import Session from 'supertokens-web-js/recipe/session';
+import EmailPassword from 'supertokens-web-js/recipe/emailpassword';
+import { AiService } from '../../services/ai.service';
 const formData = reactive({
   email: '',
   password: ''
@@ -27,21 +29,23 @@ const rules = {
 
 const validator = useVuelidate(rules, formData);
 
-const onSubmit = () => {
+const onSubmit = async () => {
   validator.value.$touch();
 
   if (!validator.value.$invalid) {
     loginLoading.value = true;
-    AuthService.login(formData.email, formData.password)
-      .then(() => {
-        loginLoading.value = false;
-        router.push('/home');
-      })
-      .catch(() => {
-        error.value = true;
-        loginLoading.value = false;
-        formData.password = '';
-      });
+
+    const response = await AuthService.loginUser({
+      email: formData.email,
+      password: formData.password
+    });
+
+    if (response !== AuthError.WrongCredentials) {
+      await router.push('/');
+    } else {
+      error.value = true;
+    }
+    loginLoading.value = false;
   }
 };
 </script>

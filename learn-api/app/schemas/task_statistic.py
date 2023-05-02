@@ -8,7 +8,7 @@ from app.schemas.task import TaskFeedback
 
 
 class TaskStatisticBase(BaseModel):
-    user_id: int
+    user_id: str
     task_id: int
     base_task_id: int
     solved_date: datetime

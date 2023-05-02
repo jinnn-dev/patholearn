@@ -3,14 +3,15 @@ import { reactive, ref, watch } from 'vue';
 import { email, minLength, required } from '@vuelidate/validators';
 import useVuelidate from '@vuelidate/core';
 import { useRouter } from 'vue-router';
-import { AuthService } from '../../services/auth.service';
+import { AuthService, AuthError } from '../../services/auth.service';
 import AuthInput from '../../components/auth/AuthInput.vue';
 import Icon from '../../components/general/Icon.vue';
 import SaveButton from '../../components/general/SaveButton.vue';
+import EmailPassword from 'supertokens-web-js/recipe/emailpassword';
+import Session from 'supertokens-web-js/recipe/session';
 
 const formData = reactive({
   firstname: '',
-  middlename: '',
   lastname: '',
   email: '',
   password: '',
@@ -27,6 +28,7 @@ watch(
 );
 
 const emailAlreadyExists = ref<boolean>(false);
+const passwordToWeak = ref<boolean>(false);
 
 const passwordMatch = ref<boolean>(true);
 
@@ -46,25 +48,27 @@ const rules = {
 const validator = useVuelidate(rules, formData);
 
 const router = useRouter();
-const onSubmit = () => {
+const onSubmit = async () => {
+  registerLoading.value = true;
+
   validator.value.$touch();
   passwordMatch.value = formData.password == formData.confirmPassword;
-  if (!validator.value.$invalid) {
-    registerLoading.value = true;
-    AuthService.register(formData.firstname, formData.middlename, formData.lastname, formData.email, formData.password)
-      .then(() => {
-        registerLoading.value = false;
-        router.push('/login');
-      })
-      .catch((error) => {
-        if (error.response) {
-          if (error.response.status === 400) {
-            emailAlreadyExists.value = true;
-          }
-        }
-        registerLoading.value = false;
-      });
+  if (!validator.value.$invalid && passwordMatch.value) {
+    const emailExists = await AuthService.doesEmailExists(formData.email);
+    if (emailExists) {
+      emailAlreadyExists.value = emailExists;
+      registerLoading.value = false;
+      return;
+    }
+
+    const response = await AuthService.registerUser(formData);
+
+    if (response === AuthError.PasswordToWeak) {
+      passwordToWeak.value = true;
+    }
   }
+  router.push('/login');
+  registerLoading.value = false;
 };
 </script>
 <template>
@@ -75,9 +79,7 @@ const onSubmit = () => {
         <auth-input v-model="formData.firstname" :required="true" label="Vorname" placeholder="Max">
           <Icon name="user" />
         </auth-input>
-        <auth-input v-model="formData.middlename" :required="false" label="Mittelname (Optional)" placeholder="Max">
-          <Icon name="user" />
-        </auth-input>
+
         <auth-input v-model="formData.lastname" :required="true" label="Nachname" placeholder="Max">
           <Icon name="user" />
         </auth-input>
@@ -95,7 +97,7 @@ const onSubmit = () => {
           Keine gültige E-Mail-Adresse
         </div>
 
-        <div v-if="emailAlreadyExists" class="text-red-500">E-Mail existiert bereits</div>
+        <div v-if="emailAlreadyExists" class="text-red-400 font-semibold">E-Mail existiert bereits</div>
 
         <auth-input
           v-model="formData.password"
@@ -107,6 +109,9 @@ const onSubmit = () => {
         >
           <Icon name="user" />
         </auth-input>
+        <div v-if="passwordToWeak" class="text-red-500">
+          Das Passwort muss mindestens 8 Zeichen lang sein und eine Zahl enthalten
+        </div>
         <auth-input
           v-model="formData.confirmPassword"
           :required="true"

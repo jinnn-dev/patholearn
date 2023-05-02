@@ -1,5 +1,6 @@
 module.exports = {
   darkMode: 'class',
+
   content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   safelist: [
     'bg-gray-700/95',
