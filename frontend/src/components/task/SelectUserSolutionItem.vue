@@ -20,7 +20,7 @@ const emit = defineEmits(['show-user-solution', 'hide-user-solution']);
 
 const isEnabled = ref<boolean>(false);
 
-const userSolutionClicked = (userId: number) => {
+const userSolutionClicked = (userId: string) => {
   if (isEnabled.value) {
     emit('hide-user-solution', userId);
   } else {
@@ -46,7 +46,6 @@ const solveUserSolution = async () => {
     </div>
     <div class="w-full flex justify-start gap-2 break-all">
       <div class="shrink-0">{{ user.firstname }}</div>
-      <div v-if="user.middlename" class="shrink-0">{{ user.middlename }}</div>
       <div>{{ user.lastname }}</div>
     </div>
     <div>

@@ -8,6 +8,11 @@ export const routes = [
     component: () => import('../views/Ai.vue')
   },
   {
+    path: '/auth/:pathMatch(.*)*',
+    name: 'auth',
+    component: () => import('../views/auth/Login.vue')
+  },
+  {
     path: '/login',
     name: 'Login',
     meta: {

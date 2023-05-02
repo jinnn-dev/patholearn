@@ -21,8 +21,8 @@ const route = useRoute();
 
 const selectedTask = ref<Task>();
 
-const showUserSolutionId = ref<number>();
-const hideUserSolutionId = ref<number>();
+const showUserSolutionId = ref<string>();
+const hideUserSolutionId = ref<string>();
 
 const selectTask = (task: Task) => {
   if (task) {
@@ -41,12 +41,12 @@ const selectTask = (task: Task) => {
   hideUserSolutionId.value = undefined;
 };
 
-const showUserSolution = (userId: number) => {
+const showUserSolution = (userId: string) => {
   showUserSolutionId.value = userId;
   hideUserSolutionId.value = undefined;
 };
 
-const hideUserSolution = (userId: number) => {
+const hideUserSolution = (userId: string) => {
   hideUserSolutionId.value = userId;
   showUserSolutionId.value = undefined;
 };
@@ -54,6 +54,7 @@ const hideUserSolution = (userId: number) => {
 onMounted(() => {
   viewerLoadingState.dataLoaded = false;
   viewerLoadingState.tilesLoaded = false;
+
   document.body.style.overflow = 'hidden';
   TaskService.getBaseTaskAdmin(route.params.id as string)
     .then((res: BaseTask) => {

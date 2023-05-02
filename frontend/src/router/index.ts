@@ -3,6 +3,7 @@ import { AuthService } from '../services/auth.service';
 import { TokenService } from '../services/token.service';
 import { appState } from '../utils/app.state';
 import { routes } from './routes';
+import Session from 'supertokens-web-js/recipe/session';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -13,7 +14,7 @@ router.beforeEach(async (to, _from, next) => {
   const isPublic = to.matched.some((record) => record.meta.public);
   const onlyWhenLoggedOut = to.matched.some((record) => record.meta.onlyWhenLoggedOut);
   const adminRoute = to.matched.some((record) => record.meta.adminRoute);
-  const loggedIn = !!TokenService.getToken();
+  const loggedIn = await Session.doesSessionExist();
 
   if (!isPublic && !loggedIn) {
     return next({

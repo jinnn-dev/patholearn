@@ -2,6 +2,8 @@
 JSON_STRING='window.configs = { \
   "SLIDE_API_URL":"'"${SLIDE_API_URL}"'", \
   "BASE_API_URL":"'"${BASE_API_URL}"'", \
+  "AI_API_URL":"'"${AI_API_URL}"'", \
+  "AUTH_API_URL":"'"${AUTH_API_URL}"'", \
   "APP_TITLE":"'"${APP_TITLE}"'", \
   "APP_LOGO_URL":"'"${APP_LOGO_URL}"'", \
   "APP_FAVICON_URL":"'"${APP_FAVICON_URL}"'", \

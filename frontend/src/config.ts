@@ -6,6 +6,7 @@ export function getEnv(name: string) {
 const SLIDE_API_URL = getEnv('SLIDE_API_URL');
 const BASE_API_URL = getEnv('BASE_API_URL');
 const AI_API_URL = getEnv('AI_API_URL');
+const AUTH_API_URL = getEnv('AUTH_API_URL');
 const SLIDE_IMAGE_URL = getEnv('SLIDE_IMAGE_URL');
 const APP_LOGO_URL = getEnv('APP_LOGO_URL');
 const SLIDE_URL = `${SLIDE_IMAGE_URL}/pyramids`;
@@ -26,6 +27,7 @@ export {
   BASE_API_URL,
   SLIDE_API_URL,
   AI_API_URL,
+  AUTH_API_URL,
   SLIDE_IMAGE_URL,
   SLIDE_URL,
   getSlideUrl,

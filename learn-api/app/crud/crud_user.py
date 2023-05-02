@@ -28,12 +28,13 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         :return: the created user
         """
         user = User()
+        user.id = obj_in.id
         user.email = obj_in.email
         user.firstname = obj_in.firstname
-        user.middlename = obj_in.middlename
         user.lastname = obj_in.lastname
-        user.hashed_password = get_password_hash(obj_in.password)
+        # user.hashed_password = get_password_hash(obj_in.password)
         user.is_superuser = obj_in.is_superuser
+        user.last_login = obj_in.last_login
         db.add(user)
         db.commit()
         db.refresh(user)

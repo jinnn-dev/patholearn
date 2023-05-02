@@ -2,13 +2,20 @@ from fastapi import FastAPI
 
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
+from supertokens_python.recipe import session
+from supertokens_python import (
+    init,
+    get_all_cors_headers,
+    SupertokensConfig,
+    InputAppInfo,
+)
+import sentry_sdk
 
 from app.api.api import api_router
 from app.core.config import settings
 from app.utils.logger import logger
 from app.utils.minio_client import MinioClient, minio_client
-
-import sentry_sdk
+import app.auth_config as config
 
 app = FastAPI()
 
@@ -19,6 +26,14 @@ origins = [
     "http://patholearn.de",
     "https://dev.patholearn.de",
 ]
+
+init(
+    supertokens_config=config.supertokens_config,
+    app_info=config.app_info,
+    framework=config.framework,
+    recipe_list=config.recipe_list,
+    mode="asgi",
+)
 
 sentry_sdk.init(
     dsn=settings.SENTRY_DSN,
@@ -35,7 +50,7 @@ app.add_middleware(
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*"] + get_all_cors_headers(),
 )
 
 

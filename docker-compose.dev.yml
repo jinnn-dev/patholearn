@@ -8,6 +8,9 @@ services:
         - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
         - MYSQL_HOST=${DATABASE_IP}
         - MYSQL_DATABASE=${DATABASE_DB}
+    networks:
+      - auth_auth-network
+      - patholearn-network
     volumes:
       - ./learn-api/app:/app
       - ./learn-api/alembic:/alembic
@@ -20,18 +23,23 @@ services:
       - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
       - MYSQL_HOST=${DATABASE_IP}
       - MYSQL_DATABASE=${DATABASE_DB}
+      - MYSQL_USER=${DATABASE_USER}
+      - MYSQL_PASSWORD=${DATABASE_PASSWORD}
       - SENTRY_DSN=${SENTRY_LEARN_DSN}
       - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT}
+      - LEARN_API_ADMIN_EMAIL=${LEARN_API_ADMIN_EMAIL}
+      - LEARN_API_ADMIN_PASSWORD=${LEARN_API_ADMIN_PASSWORD}
+      - LEARN_API_ADMIN_FIRSTNAME=${LEARN_API_ADMIN_FIRSTNAME}
+      - LEARN_API_ADMIN_LASTNAME=${LEARN_API_ADMIN_LASTNAME}
     ports:
       - '8000:8000'
     depends_on:
-      - lern_db
-      - rabbit
-    links:
-      - lern_db
-
+      lern_db:
+        condition: service_healthy
   lern_db:
-    image: arm64v8/mysql:oracle
+    image: mysql:latest
+    networks:
+      - patholearn-network
     restart: unless-stopped
     environment:
       - MYSQL_DATABASE=${DATABASE_DB}
@@ -42,31 +50,18 @@ services:
       - '3306:${DATABASE_PORT}'
     volumes:
       - my-db:/var/lib/mysql
-
-  # frontend:
-  #   image: node:16
-  #   command: bash -c "npm install && npm run dev"
-  #   environment:
-  #     - BASE_API_URL=${BASE_API_URL}
-  #     - SLIDE_IMAGE_URL=${SLIDE_IMAGE_URL}
-  #     - SLIDE_API_URL=${SLIDE_API_URL}
-  #     - APP_TITLE=${APP_TITLE}
-  #     - APP_FAVICON_URL=${APP_FAVICON_URL}
-  #     - FRONTEND_VERSION=${FRONTEND_VERSION}
-  #   ports:
-  #     - 3000:3000
-  #   volumes:
-  #     - ./frontend:/srv/frontend:rw
-  #   working_dir: /srv/frontend
-  #   depends_on:
-  #     - slide_api
-  #     - lern_api
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      timeout: 20s
+      retries: 10
 
   slide_api:
     build:
       context: ./slide-api/.
       dockerfile: dev.dockerfile
     image: ${DOCKER_PREFIX}/${DOCKER_APPLICATION_TITLE}-slide_api:dev
+    networks:
+      - patholearn-network
     ports:
       - '8001:8000'
     command: uvicorn app.app:app --reload --host 0.0.0.0 --port 8000 --no-server-header
@@ -87,6 +82,8 @@ services:
 
   slide_worker:
     image: ${DOCKER_PREFIX}/${DOCKER_APPLICATION_TITLE}-slide_api:dev
+    networks:
+      - patholearn-network
     depends_on:
       - slide_api
     command: watchmedo auto-restart --recursive --directory="./app" --patterns="*.py" -- celery --app worker.celery_app worker --loglevel=info
@@ -103,6 +100,8 @@ services:
 
   slide_db:
     image: mongo:latest
+    networks:
+      - patholearn-network
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
@@ -113,6 +112,8 @@ services:
 
   minio:
     image: minio/minio
+    networks:
+      - patholearn-network
     ports:
       - '9000:9000'
       - '9001:9001'
@@ -125,6 +126,8 @@ services:
 
   rabbit:
     image: rabbitmq:latest
+    networks:
+      - patholearn-network
     ports:
       - '5672:5672'
 
@@ -132,6 +135,9 @@ services:
     build:
       context: ./ai-api/.
       dockerfile: dockerfile
+    networks:
+      - auth_auth-network
+      - patholearn-network
     volumes:
       - ./ai-api/app:/app
     environment:
@@ -139,6 +145,12 @@ services:
       - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT}
     ports:
       - '8888:8000'
+
+networks:
+  auth_auth-network:
+    external: true
+  patholearn-network:
+    external: false
 
 volumes:
   my-db:

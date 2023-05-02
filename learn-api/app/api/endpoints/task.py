@@ -642,7 +642,7 @@ def get_user_solution_to_user(
     *,
     db: Session = Depends(get_db),
     task_id: int,
-    user_id: int,
+    user_id: str,
     current_user: User = Depends(get_current_active_superuser),
 ):
     task = crud_task.get(db=db, id=task_id)

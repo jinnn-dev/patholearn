@@ -1,4 +1,8 @@
-.env*
+.env
+.env.dev
+.env.local
+.env.stage
+.env.prod
 minio_data/
 convert.py
 result.json

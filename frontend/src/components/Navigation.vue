@@ -5,7 +5,7 @@ import RoleOnly from './containers/RoleOnly.vue';
 import { getEnv } from '../config';
 
 const onLogout = async () => {
-  AuthService.logout();
+  await AuthService.logout();
   router.go(0);
 };
 </script>

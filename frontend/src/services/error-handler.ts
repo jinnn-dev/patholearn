@@ -21,8 +21,9 @@ export function showError(err: any, errorMessage?: string) {
     level: NotificationLevel.ERROR,
     header: errorMessage || 'Fehler',
     showDate: true,
-    detail: err.response.data.detail,
+    detail: err.response !== undefined ? err.response.data.detail : err.message,
     timeout: 10000
   });
-  throw Error(errorMessage);
+
+  // throw Error(errorMessage);
 }

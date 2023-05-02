@@ -21,7 +21,7 @@ init(
     app_info=InputAppInfo(
         app_name="AI Authentication",
         api_domain="http://api:3001",
-        website_domain="http://localhost:3000",
+        website_domain="http://localhost:5174",
     ),
     framework="fastapi",
     mode="asgi",
@@ -54,7 +54,9 @@ sio = SocketManager(app=app, cors_allowed_origins=[], logger=True)
 
 
 @app.get("/sessioninfo")
-async def secure_api(s: SessionContainer = Depends(verify_session())):
+async def secure_api(
+    s: SessionContainer = Depends(verify_session()),
+):
     return {
         "sessionHandle": s.get_handle(),
         "userId": s.get_user_id(),

@@ -5,7 +5,6 @@ from pydantic import BaseModel
 
 class SummaryUser(BaseModel):
     firstname: Optional[str]
-    middlename: Optional[str]
     lastname: Optional[str]
 
 

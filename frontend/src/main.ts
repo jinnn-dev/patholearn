@@ -10,8 +10,12 @@ import { ApiService } from './services/api.service';
 import { TokenService } from './services/token.service';
 import * as Sentry from '@sentry/vue';
 import { BrowserTracing } from '@sentry/tracing';
+import SuperTokens from 'supertokens-web-js';
 
 import { getEnv } from './config';
+import { SuperTokensWebJSConfig } from './supertoken-config';
+
+SuperTokens.init(SuperTokensWebJSConfig);
 
 Icon.add(Object.values({ ...icons }));
 
