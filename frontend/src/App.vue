@@ -3,6 +3,9 @@ import { getEnv } from './config';
 import { ref } from 'vue';
 import { detect } from 'detect-browser';
 import NotificationBar from './components/general/NotificationBar.vue';
+import { useRoute } from 'vue-router';
+import Sidebar from './components/menu/Sidebar.vue';
+const route = useRoute();
 
 const title = getEnv('APP_TITLE');
 document.title = title || '';
@@ -47,12 +50,20 @@ if (detectedBrowser) {
       <p class="text-lg">Dein Browser wird von dieser Software nicht unterstützt!</p>
       <p class="text-sm text-gray-200">Bitte wechsel zu einem Chromium-basierten Browser wie Chrome oder Edge</p>
     </div>
-    <router-view />
+    <div class="flex">
+      <sidebar class="flex-shrink-0" v-if="!route.meta.disableNavigation"></sidebar>
+      <main class="w-full">
+        <router-view />
+      </main>
+    </div>
   </div>
   <notification-bar></notification-bar>
 </template>
 
 <style>
+a.router-link-exact-active {
+  @apply text-highlight-500;
+}
 @font-face {
   font-family: 'Poppins';
   src: url('/Poppins/Poppins-Light.ttf') format('truetype');

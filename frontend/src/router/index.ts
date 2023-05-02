@@ -11,12 +11,11 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, _from, next) => {
-  const isPublic = to.matched.some((record) => record.meta.public);
   const onlyWhenLoggedOut = to.matched.some((record) => record.meta.onlyWhenLoggedOut);
   const adminRoute = to.matched.some((record) => record.meta.adminRoute);
   const loggedIn = await Session.doesSessionExist();
 
-  if (!isPublic && !loggedIn) {
+  if (!onlyWhenLoggedOut && !loggedIn) {
     return next({
       path: '/login',
       query: { redirect: to.fullPath }

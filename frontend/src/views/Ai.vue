@@ -3,7 +3,7 @@ import { useService } from '../composables/useService';
 import { AiService } from '../services/ai.service';
 import { onMounted, ref } from 'vue';
 import Session from 'supertokens-web-js/recipe/session';
-import EmailPassword from 'supertokens-web-js/recipe/emailpassword';
+import Sidebar from '../components/menu/Sidebar.vue';
 
 const { result, run } = useService(AiService.getSessionInformation);
 
@@ -16,10 +16,11 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <!-- <div id="authapp"></div> -->
-  <div>
-    <div>AI VIEW</div>
-    <div>{{ result }}</div>
-    <div>{{ userId }}</div>
+  <div class="flex">
+    <!-- <sidebar class="flex-shrink-0"></sidebar> -->
+    <!-- <div id="authapp"></div> -->
+    <div class="h-[4000px] p-2 bg-gray-900 w-full">
+      <div>AI VIEW</div>
+    </div>
   </div>
 </template>
