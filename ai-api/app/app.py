@@ -16,6 +16,9 @@ from supertokens_python.recipe import session
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
 
+from app.config.config import Config
+import app.clearml_wrapper.clearml_wrapper as clearml_wrapper
+
 init(
     supertokens_config=SupertokensConfig(connection_uri="http://supertokens:3567"),
     app_info=InputAppInfo(
@@ -26,7 +29,7 @@ init(
     framework="fastapi",
     mode="asgi",
     recipe_list=[
-        session.init(),
+        session.init(anti_csrf="NONE"),
     ],
 )
 
@@ -62,6 +65,16 @@ async def secure_api(
         "userId": s.get_user_id(),
         "accessTokenPayload": s.get_access_token_payload(),
     }
+
+
+@app.post("/datasets")
+async def login(s: SessionContainer = Depends(verify_session())):
+    return clearml_wrapper.get_datasets()
+
+
+@app.post("/projects")
+async def get_projects(s: SessionContainer = Depends(verify_session())):
+    return clearml_wrapper.get_projects()
 
 
 @app.get("/")
