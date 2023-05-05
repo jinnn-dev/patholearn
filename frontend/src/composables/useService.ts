@@ -1,6 +1,10 @@
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
-export function useService<T, A extends unknown[]>(asyncFunc: (...args: A) => Promise<T>) {
+export function useService<T, A extends unknown[]>(
+  asyncFunc: (...args: A) => Promise<T>,
+  runOnMounted = false,
+  ...onMountedArgs: A | undefined[]
+) {
   const loading = ref(false);
   const result = ref<T>();
   const err = ref<any>();
@@ -15,6 +19,12 @@ export function useService<T, A extends unknown[]>(asyncFunc: (...args: A) => Pr
     }
     loading.value = false;
   };
+
+  if (runOnMounted) {
+    onMounted(async () => {
+      await run(...(onMountedArgs as A));
+    });
+  }
 
   const reset = () => {
     loading.value = false;

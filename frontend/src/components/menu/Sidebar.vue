@@ -5,16 +5,10 @@ import SidebarHeader from './SidebarHeader.vue';
 import SidebarSeperator from './SidebarSeperator.vue';
 import SidebarUser from './SidebarUser.vue';
 import Icon from '../general/Icon.vue';
-import { IconNames } from '../../../icons';
 import RoleOnly from '../../components/containers/RoleOnly.vue';
 import { appState } from '../../utils/app.state';
-interface SidebarRoute {
-  to: string;
-  icon: IconNames;
-  label: string;
-  children?: SidebarRoute;
-  restricted?: boolean;
-}
+import { SidebarRoute } from './sidebar-route';
+import SidebarDropdown from './SidebarDropdown.vue';
 
 const sidebarRoutes = ref<SidebarRoute[]>([
   {
@@ -37,7 +31,19 @@ const sidebarRoutes = ref<SidebarRoute[]>([
   {
     to: '/ai',
     icon: 'brain',
-    label: 'Künstliche Intelligenz'
+    label: 'Künstliche Intelligenz',
+    children: [
+      {
+        to: '/ai/datasets',
+        icon: 'database',
+        label: 'Datensätze'
+      },
+      {
+        to: '/ai/projects',
+        icon: 'folder-notch',
+        label: 'Projekte'
+      }
+    ]
   }
 ]);
 
@@ -52,17 +58,26 @@ const isCollapsed = ref<boolean>(false);
       <sidebar-header :is-collapsed="isCollapsed"></sidebar-header>
       <sidebar-seperator class="mb-4"></sidebar-seperator>
       <div v-for="route in sidebarRoutes" class="my-2">
-        <sidebar-item
-          v-if="(appState.user?.is_superuser && route.restricted) || !route.restricted"
-          :label="route.label"
-          :icon="route.icon"
-          :is-collapsed="isCollapsed"
-          :to="route.to"
-        ></sidebar-item>
+        <div v-if="route.children">
+          <sidebar-dropdown :route="route" :is-collapsed="isCollapsed"></sidebar-dropdown>
+        </div>
+        <div v-else>
+          <sidebar-item
+            v-if="(appState.user?.is_superuser && route.restricted) || !route.restricted"
+            :label="route.label"
+            :icon="route.icon"
+            :is-collapsed="isCollapsed"
+            :to="route.to"
+          ></sidebar-item>
+        </div>
       </div>
     </div>
+
     <div>
+      <sidebar-seperator></sidebar-seperator>
       <sidebar-user :is-collapsed="isCollapsed"></sidebar-user>
+      <sidebar-seperator></sidebar-seperator>
+
       <div class="p-2">
         <div
           class="flex justify-center p-2 hover:bg-gray-700 rounded-md cursor-pointer select-none"

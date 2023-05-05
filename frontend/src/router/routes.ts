@@ -8,7 +8,21 @@ export const routes = [
     meta: {
       public: true
     },
-    component: () => import('../views/Ai.vue')
+    component: () => import('../views/ai/Ai.vue')
+  },
+  {
+    path: '/ai/datasets',
+    meta: {
+      public: true
+    },
+    component: () => import('../views/ai/Datasets.vue')
+  },
+  {
+    path: '/ai/projects',
+    meta: {
+      public: true
+    },
+    component: () => import('../views/ai/Projects.vue')
   },
   {
     path: '/login',

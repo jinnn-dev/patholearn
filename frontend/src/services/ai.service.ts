@@ -38,6 +38,28 @@ export class AiService {
   //   return response!.data;
   // }
 
+  public static async getDatasets() {
+    const [_, response] = await handleError(
+      ApiService.post({
+        resource: '/datasets',
+        host: AI_API_URL
+      }),
+      'Datensätze konnten nicht geladen werden'
+    );
+    return response!.data;
+  }
+
+  public static async getProjects() {
+    const [_, response] = await handleError(
+      ApiService.post({
+        resource: '/projects',
+        host: AI_API_URL
+      }),
+      'Projekte konnten nicht geladen werden'
+    );
+    return response!.data;
+  }
+
   public static async getSessionInformation() {
     const [_, response] = await handleError(
       ApiService.get({
