@@ -5,6 +5,8 @@ import { detect } from 'detect-browser';
 import NotificationBar from './components/general/NotificationBar.vue';
 import { useRoute } from 'vue-router';
 import Sidebar from './components/menu/Sidebar.vue';
+import AppLoading from './components/AppLoading.vue';
+
 const route = useRoute();
 
 const title = getEnv('APP_TITLE');
@@ -52,6 +54,8 @@ if (detectedBrowser) {
     </div>
     <div class="flex">
       <sidebar class="flex-shrink-0" v-if="!route.meta.disableNavigation"></sidebar>
+      <app-loading v-if="route.path !== '/login' && route.path !== '/register'"></app-loading>
+
       <main class="w-full">
         <router-view />
       </main>
@@ -61,6 +65,20 @@ if (detectedBrowser) {
 </template>
 
 <style>
+html {
+  background-color: rgb(24 26 32);
+}
+.spawn-enter-active,
+.spawn-leave-active {
+  transition: opacity 0.3s ease-in-out;
+  transition-delay: 200ms;
+}
+
+.spawn-enter,
+.spawn-leave-to {
+  opacity: 0;
+}
+
 a.router-link-exact-active {
   @apply text-highlight-500;
 }

@@ -1,7 +1,10 @@
 import { ApiService } from './api.service';
 import { AI_API_URL } from '../config';
-import axios from 'axios';
 import { handleError } from './error-handler';
+import { Project } from '../model/ai/projects/project';
+import { Dataset } from '../model/ai/datasets/dataset';
+import { Task } from '../model/ai/tasks/task';
+import { LogEntry } from '../model/ai/tasks/log-entry';
 
 export class AiService {
   // public static async ping() {
@@ -40,7 +43,7 @@ export class AiService {
 
   public static async getDatasets() {
     const [_, response] = await handleError(
-      ApiService.post({
+      ApiService.get<Dataset[]>({
         resource: '/datasets',
         host: AI_API_URL
       }),
@@ -50,12 +53,64 @@ export class AiService {
   }
 
   public static async getProjects() {
+    console.log('GET PROJECTS');
+
     const [_, response] = await handleError(
-      ApiService.post({
+      ApiService.get<Project[]>({
         resource: '/projects',
         host: AI_API_URL
       }),
       'Projekte konnten nicht geladen werden'
+    );
+    return response!.data;
+  }
+
+  public static async getProject(projectId: string) {
+    const [_, response] = await handleError(
+      ApiService.get<Project>({
+        resource: `/projects/${projectId}`,
+        host: AI_API_URL
+      })
+    );
+    return response?.data;
+  }
+
+  public static async getTasksToProject(projectId: string) {
+    const [_, response] = await handleError(
+      ApiService.get<Task[]>({
+        resource: `/projects/${projectId}/tasks`,
+        host: AI_API_URL
+      })
+    );
+    return response!.data;
+  }
+
+  public static async getTask(taskId: string) {
+    const [_, response] = await handleError(
+      ApiService.get<Task>({
+        resource: `/tasks/${taskId}`,
+        host: AI_API_URL
+      })
+    );
+    return response!.data;
+  }
+
+  public static async getTaskLog(taskId: string) {
+    const [_, response] = await handleError(
+      ApiService.get<LogEntry[]>({
+        resource: `/tasks/${taskId}/log`,
+        host: AI_API_URL
+      })
+    );
+    return response!.data.reverse();
+  }
+
+  public static async getTaskMetrics(taskId: string) {
+    const [_, response] = await handleError(
+      ApiService.get<any[]>({
+        resource: `/tasks/${taskId}/metrics`,
+        host: AI_API_URL
+      })
     );
     return response!.data;
   }

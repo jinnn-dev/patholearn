@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { useService } from '../../composables/useService';
-import { AiService } from '../../services/ai.service';
-
-const { result, loading } = useService(AiService.getDatasets, true);
+import DatasetList from '../../components/ai/datasets/DatasetList.vue';
 </script>
 <template>
-  <div v-if="loading">Loading...</div>
-  <div v-else>{{ result }}</div>
+  <div class="pt-4 px-4">
+    <div class="text-5xl text-center">Datensätze</div>
+    <div class="mt-10">
+      <dataset-list></dataset-list>
+    </div>
+  </div>
 </template>

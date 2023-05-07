@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { AuthService } from '../services/auth.service';
 import { TokenService } from '../services/token.service';
-import { appState } from '../utils/app.state';
+import { appLoading, appState } from '../utils/app.state';
 import { routes } from './routes';
 import Session from 'supertokens-web-js/recipe/session';
 
@@ -32,13 +32,22 @@ router.beforeEach(async (to, _from, next) => {
   }
 
   if (adminRoute && !appState.user?.is_superuser) {
+    appLoading.value = false;
+
     return next({
       path: '/home'
     });
   }
 
   if (loggedIn && onlyWhenLoggedOut) {
+    appLoading.value = false;
     return next('/');
+  }
+
+  if (to.path === '/login' || to.path === '/register') {
+    appLoading.value = true;
+  } else {
+    appLoading.value = false;
   }
 
   next();

@@ -1,25 +1,26 @@
 <script setup lang="ts">
-import { useService } from '../../composables/useService';
-import { AiService } from '../../services/ai.service';
-import { onMounted, ref } from 'vue';
-import Session from 'supertokens-web-js/recipe/session';
-
-const { result: datasets, run: runGetDatasets } = useService(AiService.getDatasets);
-const { result: projects, run: runGetProjects } = useService(AiService.getProjects);
-
-onMounted(async () => {
-  Promise.all([runGetDatasets(), runGetProjects()]);
-});
+import ProjectList from '../../components/ai/projects/ProjectList.vue';
+import DatasetList from '../../components/ai/datasets/DatasetList.vue';
+import ContentContainer from '../../components/containers/ContentContainer.vue';
 </script>
 <template>
-  <div class="flex">
-    <!-- <sidebar class="flex-shrink-0"></sidebar> -->
-    <!-- <div id="authapp"></div> -->
-    <div class="h-[4000px] p-2 bg-gray-900 w-full">
-      <div>AI VIEW</div>
-      <div>{{ datasets }}</div>
-      <div>----</div>
-      <div>{{ projects }}</div>
-    </div>
+  <div class="pt-8 px-4">
+    <content-container>
+      <template #header> Künstliche Intelligenz </template>
+      <template #content>
+        <div>
+          <div class="text-2xl mb-4">Projekte</div>
+          <div>
+            <project-list></project-list>
+          </div>
+        </div>
+        <div class="mt-8">
+          <div class="text-2xl mb-4">Datensätze</div>
+          <div>
+            <dataset-list></dataset-list>
+          </div>
+        </div>
+      </template>
+    </content-container>
   </div>
 </template>

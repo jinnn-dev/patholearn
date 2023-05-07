@@ -1,4 +1,6 @@
-export const routes = [
+import { RouteRecordRaw } from 'vue-router';
+
+export const routes: RouteRecordRaw[] = [
   {
     path: '/',
     redirect: '/home'
@@ -22,7 +24,41 @@ export const routes = [
     meta: {
       public: true
     },
-    component: () => import('../views/ai/Projects.vue')
+    component: () => import('../views/ai/projects/Projects.vue')
+  },
+  {
+    path: '/ai/projects/:id',
+    name: 'Project',
+    meta: {
+      public: true
+    },
+    component: () => import('../views/ai/projects/Project.vue')
+  },
+  {
+    path: '/ai/tasks/:id',
+    name: 'Ai Task',
+    meta: {
+      public: true
+    },
+    component: () => import('../views/ai/tasks/Task.vue'),
+    children: [
+      {
+        path: 'console',
+        name: 'Task Console',
+        meta: {
+          public: true
+        },
+        component: () => import('../views/ai/tasks/TaskConsole.vue')
+      },
+      {
+        path: 'metrics',
+        name: 'Task Metrics',
+        meta: {
+          public: true
+        },
+        component: () => import('../views/ai/tasks/TaskMetrics.vue')
+      }
+    ]
   },
   {
     path: '/login',

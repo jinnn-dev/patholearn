@@ -67,16 +67,44 @@ async def secure_api(
     }
 
 
-@app.post("/datasets")
+@app.get("/datasets")
 async def login(s: SessionContainer = Depends(verify_session())):
     return clearml_wrapper.get_datasets()
 
 
-@app.post("/projects")
+@app.get("/projects")
 async def get_projects(s: SessionContainer = Depends(verify_session())):
     return clearml_wrapper.get_projects()
 
 
+@app.get("/projects/{project_id}")
+async def get_project(project_id: str, _: SessionContainer = Depends(verify_session())):
+    return clearml_wrapper.get_project(project_id)
+
+
+@app.get("/projects/{project_id}/tasks")
+async def get_tasks_to_projects(
+    project_id: str, s: SessionContainer = Depends(verify_session())
+):
+    return clearml_wrapper.get_tasks_to_project(project_id)
+
+
+@app.get("/tasks/{task_id}")
+async def get_task(task_id: str, _: SessionContainer = Depends(verify_session())):
+    return clearml_wrapper.get_task(task_id)
+
+
+@app.get("/tasks/{task_id}/log")
+async def get_task_log(task_id: str, _: SessionContainer = Depends(verify_session())):
+    return clearml_wrapper.get_task_log(task_id)
+
+
+@app.get("/tasks/{task_id}/metrics")
+async def get_task_log(task_id: str, _: SessionContainer = Depends(verify_session())):
+    return clearml_wrapper.get_task_metrics(task_id)
+
+
+@app.post
 @app.get("/")
 def root():
     return {"Hello": "World"}
