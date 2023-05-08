@@ -31,14 +31,11 @@ const onLogout = async () => {
         <router-link class="transition text-gray-200 hover:text-highlight-800 mr-8" to="/users">
           Benutzerverwaltung
         </router-link>
-        <router-link class="transition text-gray-200 hover:text-highlight-800 mr-8" to="/ai"> AI </router-link>
       </role-only>
+      <router-link class="transition text-gray-200 hover:text-highlight-800 mr-8" to="/ai"> AI </router-link>
+
       <div class="transition cursor-pointer text-gray-200 hover:text-highlight-800 mr-8" @click="onLogout">Logout</div>
     </div>
   </nav>
 </template>
-<style>
-a.router-link-exact-active {
-  @apply text-highlight-500;
-}
-</style>
+<style></style>

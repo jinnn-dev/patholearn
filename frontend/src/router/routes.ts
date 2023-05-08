@@ -1,23 +1,72 @@
-export const routes = [
+import { RouteRecordRaw } from 'vue-router';
+
+export const routes: RouteRecordRaw[] = [
   {
     path: '/',
     redirect: '/home'
   },
   {
     path: '/ai',
-    component: () => import('../views/Ai.vue')
+    meta: {
+      public: true
+    },
+    component: () => import('../views/ai/Ai.vue')
   },
   {
-    path: '/auth/:pathMatch(.*)*',
-    name: 'auth',
-    component: () => import('../views/auth/Login.vue')
+    path: '/ai/datasets',
+    meta: {
+      public: true
+    },
+    component: () => import('../views/ai/Datasets.vue')
+  },
+  {
+    path: '/ai/projects',
+    meta: {
+      public: true
+    },
+    component: () => import('../views/ai/projects/Projects.vue')
+  },
+  {
+    path: '/ai/projects/:id',
+    name: 'Project',
+    meta: {
+      public: true
+    },
+    component: () => import('../views/ai/projects/Project.vue')
+  },
+  {
+    path: '/ai/tasks/:id',
+    name: 'Ai Task',
+    meta: {
+      public: true
+    },
+    component: () => import('../views/ai/tasks/Task.vue'),
+    children: [
+      {
+        path: 'console',
+        name: 'Task Console',
+        meta: {
+          public: true
+        },
+        component: () => import('../views/ai/tasks/TaskConsole.vue')
+      },
+      {
+        path: 'metrics',
+        name: 'Task Metrics',
+        meta: {
+          public: true
+        },
+        component: () => import('../views/ai/tasks/TaskMetrics.vue')
+      }
+    ]
   },
   {
     path: '/login',
     name: 'Login',
     meta: {
       public: true,
-      onlyWhenLoggedOut: true
+      onlyWhenLoggedOut: true,
+      disableNavigation: true
     },
     component: () => import('../views/auth/Login.vue')
   },
@@ -26,7 +75,8 @@ export const routes = [
     name: 'Register',
     meta: {
       public: true,
-      onlyWhenLoggedOut: true
+      onlyWhenLoggedOut: true,
+      disableNavigation: true
     },
     component: () => import('../views/auth/Register.vue')
   },
@@ -47,7 +97,8 @@ export const routes = [
     path: '/slides/:id',
     name: 'SpecificSlide',
     meta: {
-      adminRoute: true
+      adminRoute: true,
+      disableNavigation: true
     },
     component: () => import('../components/viewer/SlideViewer.vue')
   },
@@ -80,13 +131,17 @@ export const routes = [
   {
     path: '/task/:id',
     name: 'Task',
+    meta: {
+      disableNavigation: true
+    },
     component: () => import('../views/Task.vue')
   },
   {
     path: '/task/:id/admin',
     name: 'Task Admin',
     meta: {
-      adminRoute: true
+      adminRoute: true,
+      disableNavigation: true
     },
     component: () => import('../views/TaskAdmin.vue')
   },

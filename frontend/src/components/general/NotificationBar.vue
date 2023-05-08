@@ -25,22 +25,18 @@ const removeItem = (id: string) => {
   </div>
 </template>
 <style>
-/* 1. declare transition */
 .notification-move,
 .notification-enter-active,
 .notification-leave-active {
   transition: all 0.4s cubic-bezier(0.36, 0, 0.66, -0.56);
 }
 
-/* 2. declare enter from and leave to state */
 .notification-enter-from,
 .notification-leave-to {
   opacity: 0;
   transform: translateX(100px);
 }
 
-/* 3. ensure leaving items are taken out of layout flow so that moving
-      animations can be calculated correctly. */
 .notification-leave-active {
   position: absolute;
 }
