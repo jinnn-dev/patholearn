@@ -1,6 +1,7 @@
 <template>
   <v-chart
-    class="w-full min-h-[300px] rounded-lg overflow-hidden"
+    class="w-full rounded-lg overflow-hidden"
+    :class="`min-h-[${height}px]`"
     theme="custom"
     :option="option"
     ref="chart"
@@ -32,17 +33,21 @@ const chart = ref();
 
 const props = defineProps({
   data: Array,
-  name: String
+  name: String,
+  height: {
+    type: String,
+    default: '400'
+  }
 });
 
 const option = ref({
-  title: {
-    text: props.name,
-    left: 'center'
-  },
+  // title: {
+  //   text: props.name,
+  //   left: 'center'
+  // },
   tooltip: {
     trigger: 'axis',
-    formatter: '{c}'
+    confine: true
   },
   xAxis: {
     type: 'value'
@@ -52,8 +57,14 @@ const option = ref({
   },
   legend: {
     orient: 'horizontal',
-    right: 10,
-    top: 'bottom'
+    top: 'top',
+    center: 'center'
+  },
+  grid: {
+    left: 50,
+    top: 40,
+    right: 30,
+    bottom: 70
   },
   series: props.data,
   dataZoom: [

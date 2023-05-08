@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import DatasetList from '../../components/ai/datasets/DatasetList.vue';
+import ContentContainer from '../../components/containers/ContentContainer.vue';
 </script>
 <template>
-  <div class="pt-4 px-4">
-    <div class="text-5xl text-center">Datensätze</div>
-    <div class="mt-10">
+  <content-container margin="mt-8">
+    <template #header> Datensätze </template>
+    <template #content>
       <dataset-list></dataset-list>
-    </div>
-  </div>
+    </template>
+  </content-container>
 </template>

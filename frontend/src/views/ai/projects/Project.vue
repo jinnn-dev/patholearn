@@ -9,7 +9,7 @@ const route = useRoute();
 const { result: project, loading } = useService(AiService.getProject, true, route.params.id as string);
 </script>
 <template>
-  <content-container :loading="loading">
+  <content-container :loading="loading" margin="mt-0" back-route="/ai/projects" back-text="Projekte">
     <template #header>
       <div>{{ project?.basename }}</div>
     </template>

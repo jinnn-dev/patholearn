@@ -102,7 +102,7 @@ export class AiService {
         host: AI_API_URL
       })
     );
-    return response!.data.reverse();
+    return response!.data;
   }
 
   public static async getTaskMetrics(taskId: string) {
