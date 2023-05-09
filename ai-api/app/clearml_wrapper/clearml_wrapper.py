@@ -36,6 +36,17 @@ def get_datasets():
     return response.json()["data"]["projects"]
 
 
+def create_project(project_name: str, description: str = None):
+    with httpx.Client() as client:
+        response = client.post(
+            f"{Config.CLEARML_API}/projects.create",
+            json={"name": project_name, "description": description},
+            auth=(Config.CLEARML_API_ACCESS_KEY, Config.CLEARML_API_SECRET_KEY),
+        )
+
+    return response.json()["data"]
+
+
 def get_projects():
     response = httpx.post(
         f"{Config.CLEARML_API}/projects.get_all_ex",

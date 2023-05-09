@@ -72,6 +72,16 @@ async def login(s: SessionContainer = Depends(verify_session())):
     return clearml_wrapper.get_datasets()
 
 
+@app.post("/projects")
+async def create_project(
+    create_body: dict, s: SessionContainer = Depends(verify_session())
+):
+    print(create_body)
+    return clearml_wrapper.create_project(
+        project_name=create_body["project_name"], description=create_body["description"]
+    )
+
+
 @app.get("/projects")
 async def get_projects(s: SessionContainer = Depends(verify_session())):
     return clearml_wrapper.get_projects()
