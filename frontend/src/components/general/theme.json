@@ -190,7 +190,7 @@
     "splitLine": {
       "show": true,
       "lineStyle": {
-        "color": ["#aaaaaa"]
+        "color": ["#404F6455"]
       }
     },
     "splitArea": {
@@ -220,7 +220,7 @@
     "splitLine": {
       "show": true,
       "lineStyle": {
-        "color": ["#444444"]
+        "color": ["#404F6455"]
       }
     },
     "splitArea": {
@@ -250,7 +250,7 @@
     "splitLine": {
       "show": true,
       "lineStyle": {
-        "color": ["#aaaaaa"]
+        "color": ["#404F6455"]
       }
     },
     "splitArea": {
@@ -280,7 +280,7 @@
     "splitLine": {
       "show": true,
       "lineStyle": {
-        "color": ["#aaaaaa"]
+        "color": ["#404F6455"]
       }
     },
     "splitArea": {
@@ -306,15 +306,23 @@
     }
   },
   "tooltip": {
+    "backgroundColor": "#404F64",
+    "borderColor": "#262A34",
     "axisPointer": {
+      "label": {
+        "backgroundColor": "#404F64"
+      },
       "lineStyle": {
-        "color": "#eeeeee",
+        "color": "#5D7290",
         "width": "1"
       },
       "crossStyle": {
-        "color": "#eeeeee",
+        "color": "#5D7290",
         "width": "1"
       }
+    },
+    "textStyle": {
+      "color": "#fff"
     }
   },
   "timeline": {
