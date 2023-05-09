@@ -292,11 +292,11 @@
   },
   "toolbox": {
     "iconStyle": {
-      "borderColor": "#999999"
+      "borderColor": "#5D7290"
     },
     "emphasis": {
       "iconStyle": {
-        "borderColor": "#666666"
+        "borderColor": "#B2BDCD"
       }
     }
   },
