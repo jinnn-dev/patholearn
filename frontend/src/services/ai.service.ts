@@ -52,9 +52,23 @@ export class AiService {
     return response!.data;
   }
 
-  public static async getProjects() {
-    console.log('GET PROJECTS');
+  public static async createProject(project_name: string, description?: string) {
+    const [_, response] = await handleError(
+      ApiService.post({
+        resource: '/projects',
+        host: AI_API_URL,
+        data: {
+          project_name,
+          description
+        }
+      }),
+      'Projekt konnte nicht erstellt werden'
+    );
 
+    return response!.data;
+  }
+
+  public static async getProjects() {
     const [_, response] = await handleError(
       ApiService.get<Project[]>({
         resource: '/projects',
