@@ -47,7 +47,10 @@ const option = ref({
   // },
   tooltip: {
     trigger: 'axis',
-    confine: true
+    confine: true,
+    axisPointer: {
+      type: 'cross'
+    }
   },
   xAxis: {
     type: 'value'
