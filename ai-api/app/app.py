@@ -1,6 +1,7 @@
 import os
 import logging
 import sys
+import time
 
 from fastapi import FastAPI, Depends
 from fastapi_socketio import SocketManager
@@ -64,6 +65,16 @@ app.add_middleware(
 )
 
 sio = SocketManager(app=app, cors_allowed_origins=[], logger=True)
+
+
+@app.get("/ping")
+async def ping():
+    return "Ok"
+
+
+@app.get("/ping/clearml")
+async def ping_clearml():
+    return clearml_wrapper.ping()
 
 
 @app.get("/sessioninfo")
@@ -154,8 +165,3 @@ def root():
         False if os.environ.get("WEBSOCKET_SSL") == "False" else True,
     )
     return {"Hello": "World"}
-
-
-@app.get("/ping")
-def ping():
-    return {"Status": "Ok"}

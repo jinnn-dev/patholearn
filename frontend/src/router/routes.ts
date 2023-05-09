@@ -86,6 +86,14 @@ export const routes: RouteRecordRaw[] = [
     ]
   },
   {
+    path: '/ai/status',
+    name: 'Status',
+    meta: {
+      public: true
+    },
+    component: () => import('../views/ai/Status.vue')
+  },
+  {
     path: '/login',
     name: 'Login',
     meta: {

@@ -1,15 +1,23 @@
-import json
-from typing import List
-
-from clearml.backend_api.session.client import APIClient, StrictSession
-from clearml.backend_api.session.client.client import TableResponse, Entity
-from clearml.backend_api.services.v2_23.projects import ProjectsGetAllResponseSingle
 import httpx
 
 from app.config.config import Config
 from app.train.train_model import start_training
 
-session = StrictSession(initialize_logging=True)
+
+def ping():
+    try:
+        with httpx.Client() as client:
+            response = client.post(
+                f"{Config.CLEARML_API}/debug.ping",
+                auth=(Config.CLEARML_API_ACCESS_KEY, Config.CLEARML_API_SECRET_KEY),
+                timeout=100,
+            )
+            if response.json()["data"]["msg"] == "ClearML server":
+                return "Ok"
+            return "Error"
+    except (httpx.ConnectError, httpx.ConnectTimeout) as e:
+        print(e)
+        return "Error"
 
 
 def get_specific_dataset(dataset_id):
