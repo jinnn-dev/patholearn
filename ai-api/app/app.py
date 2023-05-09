@@ -1,6 +1,7 @@
 import os
 import logging
 import sys
+import time
 
 from fastapi import FastAPI, Depends
 from fastapi_socketio import SocketManager
@@ -56,6 +57,16 @@ app.add_middleware(
 sio = SocketManager(app=app, cors_allowed_origins=[], logger=True)
 
 
+@app.get("/ping")
+async def ping():
+    return "Ok"
+
+
+@app.get("/ping/clearml")
+async def ping_clearml():
+    return clearml_wrapper.ping()
+
+
 @app.get("/sessioninfo")
 async def secure_api(
     s: SessionContainer = Depends(verify_session()),
@@ -108,8 +119,3 @@ async def get_task_log(task_id: str, _: SessionContainer = Depends(verify_sessio
 @app.get("/")
 def root():
     return {"Hello": "World"}
-
-
-@app.get("/ping")
-def ping():
-    return {"Status": "Ok"}
