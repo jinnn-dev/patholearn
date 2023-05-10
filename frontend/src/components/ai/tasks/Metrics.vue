@@ -3,6 +3,7 @@ import { useRoute } from 'vue-router';
 import { useService } from '../../../composables/useService';
 import { AiService } from '../../../services/ai.service';
 import Diagram from '../../general/Diagram.vue';
+import NoContent from '../../general/NoContent.vue';
 const route = useRoute();
 
 const { result: metrics, loading } = useService(AiService.getTaskMetrics, true, route.params.id as string);
@@ -38,10 +39,15 @@ const processData = (series: any) => {
         <div class="animate-skeleton bg-gray-700 min-h-[400px] w-full rounded-lg"></div>
       </div>
     </div>
-    <div v-else class="grid grid-cols-1 2xl:grid-cols-2 gap-4">
-      <div v-for="(value, name, index) in metrics">
-        <div class="text-center mb-2 text-lg font-semibold">{{ name }}</div>
-        <diagram :data="processData(value)" :name="name + ''" height="400"></diagram>
+    <div v-else>
+      <div v-if="!metrics || metrics.length === 0" class="mt-8">
+        <no-content text="Noch keine Metriken"></no-content>
+      </div>
+      <div v-else class="grid grid-cols-1 2xl:grid-cols-2 gap-4">
+        <div v-for="(value, name, index) in metrics">
+          <div class="text-center mb-2 text-lg font-semibold">{{ name }}</div>
+          <diagram :data="processData(value)" :name="name + ''" height="400"></diagram>
+        </div>
       </div>
     </div>
   </div>
