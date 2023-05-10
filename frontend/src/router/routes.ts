@@ -33,6 +33,14 @@ export const routes: RouteRecordRaw[] = [
           public: true
         },
         component: () => import('../views/ai/tasks/TaskConsole.vue')
+      },
+      {
+        path: 'images',
+        name: 'Dataset Images',
+        meta: {
+          public: true
+        },
+        component: () => import('../views/ai/datasets/DatasetImages.vue')
       }
     ]
   },

@@ -52,6 +52,17 @@ export class AiService {
     return response!.data;
   }
 
+  public static async getDatasetImages(dataset_id: string) {
+    const [_, response] = await handleError(
+      ApiService.get<string[]>({
+        resource: `/datasets/${dataset_id}/images`,
+        host: AI_API_URL
+      }),
+      'Bilder konnten nicht gealden werden'
+    );
+    return response!.data;
+  }
+
   public static async getSpecificDataset(datasetId: string) {
     const [_, response] = await handleError(
       ApiService.get<Dataset>({
