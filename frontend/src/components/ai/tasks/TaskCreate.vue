@@ -41,7 +41,7 @@ const createTask = async () => {
 <template>
   <div class="flex justify-end items-center">
     <div>
-      <primary-button bg-color="bg-gray-500" name="Neues Projekt" @click="showCreate = true"></primary-button>
+      <primary-button bg-color="bg-gray-500" name="Neue Aufgabe" @click="showCreate = true"></primary-button>
     </div>
   </div>
 
