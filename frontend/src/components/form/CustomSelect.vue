@@ -45,6 +45,10 @@ const props = defineProps({
   isSearchable: {
     type: Boolean,
     default: true
+  },
+  dropdownTopDistance: {
+    type: [String, Number],
+    default: '80'
   }
 });
 
@@ -136,8 +140,8 @@ const isObject = (value: object | string): boolean => {
 
     <div
       v-if="isFocus"
-      :class="MAPPED_OPTION_WRAPPER_SIZE[displayType]"
-      class="absolute top-[80px] left-auto max-h-62 w-full bg-gray-500 rounded-lg shadow-md z-[99] overflow-auto border-2 border-gray-300"
+      :class="MAPPED_OPTION_WRAPPER_SIZE[displayType] + ` top-[${dropdownTopDistance}px]`"
+      class="absolute left-auto max-h-62 w-full bg-gray-500 rounded-lg shadow-md z-[99] overflow-auto border-2 border-gray-300"
     >
       <div v-if="filteredData?.length === 0" class="p-2">Nichts gefunden</div>
       <div v-else class="w-full divide-y-2 divide-gray-600">

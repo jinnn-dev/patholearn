@@ -146,8 +146,22 @@ services:
       - CLEARML_API=${CLEARML_API}
       - CLEARML_API_ACCESS_KEY=${CLEARML_API_ACCESS_KEY}
       - CLEARML_API_SECRET_KEY=${CLEARML_API_SECRET_KEY}
+      - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
     ports:
       - '8888:8000'
+
+  ai_worker:
+    build:
+      context: ./ai-worker/.
+      dockerfile: dockerfile
+    networks:
+      - auth_auth-network
+      - patholearn-network
+    volumes:
+      - ./ai-worker/app:/app
+    command: celery --app worker.celery_app worker --loglevel=info --without-gossip --without-mingle --without-heartbeat -Ofair -Q ai
+    environment:
+      - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
 
 networks:
   auth_auth-network:

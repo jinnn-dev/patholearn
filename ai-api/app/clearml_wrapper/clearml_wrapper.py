@@ -1,6 +1,7 @@
 import httpx
 
 from app.config.config import Config
+from app.train.train_model import start_training
 
 
 def ping():
@@ -17,6 +18,46 @@ def ping():
     except (httpx.ConnectError, httpx.ConnectTimeout) as e:
         print(e)
         return "Error"
+
+
+def get_specific_dataset(dataset_id):
+    with httpx.Client() as client:
+        response = client.post(
+            f"{Config.CLEARML_API}/tasks.get_all_ex",
+            json={
+                "id": [],
+                "project": [dataset_id],
+                "order_by": ["-last_update"],
+                "type": ["data_processing"],
+                "user": [],
+                "system_tags": ["__$and", "__$not", "archived", "dataset"],
+                "include_subprojects": False,
+                "search_hidden": True,
+                "only_fields": [
+                    "name",
+                    "status",
+                    "system_tags",
+                    "project",
+                    "company",
+                    "last_change",
+                    "started",
+                    "last_iteration",
+                    "tags",
+                    "user.name",
+                    "runtime.progress",
+                    "hyperparams.properties.version.value",
+                    "project.name",
+                    "last_update",
+                    "runtime._pipeline_hash",
+                    "runtime.version",
+                    "execution.queue",
+                    "type",
+                    "hyperparams.properties.version",
+                ],
+            },
+            auth=(Config.CLEARML_API_ACCESS_KEY, Config.CLEARML_API_SECRET_KEY),
+        )
+    return response.json()["data"]["tasks"][0]
 
 
 def get_datasets():
@@ -44,6 +85,32 @@ def get_datasets():
     return response.json()["data"]["projects"]
 
 
+def get_datatset_debug_images(dataset_id: str):
+    with httpx.Client() as client:
+        response = client.post(
+            f"{Config.CLEARML_API}/events.debug_images",
+            json={"metrics": [{"task": dataset_id, "metric": None}], "iters": 10},
+            auth=(Config.CLEARML_API_ACCESS_KEY, Config.CLEARML_API_SECRET_KEY),
+        )
+    print(len(response.json()["data"]["metrics"][0]["iterations"]))
+    events = response.json()["data"]["metrics"][0]["iterations"][0]["events"]
+    urls = []
+    for event in events:
+        urls.append(event["url"].replace("s3", "http"))
+    return urls
+
+
+def create_project(project_name: str, description: str = None):
+    with httpx.Client() as client:
+        response = client.post(
+            f"{Config.CLEARML_API}/projects.create",
+            json={"name": project_name, "description": description},
+            auth=(Config.CLEARML_API_ACCESS_KEY, Config.CLEARML_API_SECRET_KEY),
+        )
+
+    return response.json()["data"]
+
+
 def get_projects():
     response = httpx.post(
         f"{Config.CLEARML_API}/projects.get_all_ex",
@@ -57,7 +124,6 @@ def get_projects():
 
 
 def get_project(project_id: str):
-    print(project_id)
     response = httpx.post(
         f"{Config.CLEARML_API}/projects.get_by_id",
         json={"project": project_id},
@@ -91,10 +157,21 @@ def get_tasks_to_project(project_id: str):
     return response.json()["data"]["tasks"]
 
 
+def create_task_and_enque(data: dict):
+    dataset_task = get_specific_dataset(data["dataset_id"])
+    data["dataset_id"] = dataset_task["id"]
+    project = get_project(data["project_id"])
+    data["project_name"] = project["name"]
+    return start_training(data)
+
+
 def get_task(task_id: str):
     response = httpx.post(
         f"{Config.CLEARML_API}/tasks.get_by_id_ex",
-        json={"id": [task_id]},
+        json={
+            "id": [task_id],
+            "only_fields": ["id", "name", "status", "project", "last_worker"],
+        },
         auth=(Config.CLEARML_API_ACCESS_KEY, Config.CLEARML_API_SECRET_KEY),
     )
 

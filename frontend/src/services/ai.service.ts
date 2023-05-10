@@ -76,9 +76,45 @@ export class AiService {
     return response!.data;
   }
 
-  public static async getProjects() {
-    console.log('GET PROJECTS');
+  public static async getDatasetImages(dataset_id: string) {
+    const [_, response] = await handleError(
+      ApiService.get<string[]>({
+        resource: `/datasets/${dataset_id}/images`,
+        host: AI_API_URL
+      }),
+      'Bilder konnten nicht gealden werden'
+    );
+    return response!.data;
+  }
 
+  public static async getSpecificDataset(datasetId: string) {
+    const [_, response] = await handleError(
+      ApiService.get<Dataset>({
+        resource: `/datasets/${datasetId}`,
+        host: AI_API_URL
+      }),
+      'Datensatz konnte nicht gealden werden'
+    );
+    return response!.data;
+  }
+
+  public static async createProject(project_name: string, description?: string) {
+    const [_, response] = await handleError(
+      ApiService.post({
+        resource: '/projects',
+        host: AI_API_URL,
+        data: {
+          project_name,
+          description
+        }
+      }),
+      'Projekt konnte nicht erstellt werden'
+    );
+
+    return response!.data;
+  }
+
+  public static async getProjects() {
     const [_, response] = await handleError(
       ApiService.get<Project[]>({
         resource: '/projects',
@@ -97,6 +133,22 @@ export class AiService {
       })
     );
     return response?.data;
+  }
+
+  public static async createTask(data: {
+    task_name: string;
+    project_id: string;
+    model_name: string;
+    dataset_id: string;
+  }) {
+    const [_, response] = await handleError(
+      ApiService.post<Task>({
+        resource: `/tasks`,
+        data: data,
+        host: AI_API_URL
+      })
+    );
+    return response!.data;
   }
 
   public static async getTasksToProject(projectId: string) {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import DatasetList from '../../components/ai/datasets/DatasetList.vue';
-import ContentContainer from '../../components/containers/ContentContainer.vue';
+import DatasetList from '../../../components/ai/datasets/DatasetList.vue';
+import ContentContainer from '../../../components/containers/ContentContainer.vue';
 </script>
 <template>
   <content-container margin="mt-8">

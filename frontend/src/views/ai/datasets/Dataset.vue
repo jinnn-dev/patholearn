@@ -1,35 +1,34 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
-import { useService } from '../../../composables/useService';
 import { AiService } from '../../../services/ai.service';
+import { useService } from '../../../composables/useService';
 import ContentContainer from '../../../components/containers/ContentContainer.vue';
+import { useRoute } from 'vue-router';
 
 const route = useRoute();
 
-const { result: task, loading } = useService(AiService.getTask, true, route.params.id as string);
+const { result: dataset, loading } = useService(AiService.getTask, true, route.params.id as string);
 </script>
 <template>
-  <content-container :loading="loading" :back-route="`/ai/projects/${task?.project.id}`">
+  <content-container :loading="loading" back-route="/ai/datasets" back-text="Datensätze">
     <template #header>
-      <div>{{ task!.name }}</div>
+      <div>{{ dataset?.name }}</div>
       <div class="mt-4 flex justify-center items-center gap-4">
-        <div class="text-center text-lg bg-purple-900/50 px-2 py-1 rounded-full">{{ task?.status }}</div>
-        <div class="text-center text-xl font-semibold bg-green-900/50 px-2 py-1 rounded-full" v-if="task?.last_worker">
-          {{ task?.last_worker }}
+        <div class="text-center text-lg bg-purple-900/50 px-2 py-1 rounded-full">
+          {{ dataset?.status }}
         </div>
       </div>
     </template>
     <template #content>
-      <div class="flex justify-center gap-8 text-xl mb-4">
+      <div class="flex justify-center gap-8 text-xl mb-8">
         <router-link
-          :to="`/ai/tasks/${route.params.id as string}`"
+          :to="`/ai/datasets/${route.params.id as string}`"
           class="hover:text-highlight-900 cursor-pointer bg-gray-700 p-2 rounded-lg"
           >Konsole</router-link
         >
         <router-link
-          :to="`/ai/tasks/${route.params.id as string}/metrics`"
+          :to="`/ai/datasets/${route.params.id as string}/images`"
           class="hover:text-highlight-900 cursor-pointer bg-gray-700 p-2 rounded-lg"
-          >Metriken</router-link
+          >Bilder</router-link
         >
       </div>
       <router-view></router-view>

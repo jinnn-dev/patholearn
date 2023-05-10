@@ -3,16 +3,21 @@ import ProjectCard from './ProjectCard.vue';
 import { useService } from '../../../composables/useService';
 import { AiService } from '../../../services/ai.service';
 import SkeletonCard from '../../containers/SkeletonCard.vue';
-
-const { result: projects, loading } = useService(AiService.getProjects, true);
+import ProjectCreate from './ProjectCreate.vue';
+const { result: projects, loading, run } = useService(AiService.getProjects, true);
 </script>
 <template>
   <div>
     <div v-if="loading" class="flex gap-5 flex-wrap">
       <skeleton-card :loading="true" v-for="i in [0, 1, 3, 4]" skeleton-classes="w-36 h-24"></skeleton-card>
     </div>
-    <div v-else class="flex gap-4 flex-wrap">
-      <project-card v-for="project in projects" :project="project"></project-card>
+    <div v-else>
+      <project-create @project-created="run"></project-create>
+      <div class="flex gap-4 flex-wrap mt-4">
+        <div v-for="project in projects">
+          <project-card :project="project" v-if="!project.parent"></project-card>
+        </div>
+      </div>
     </div>
   </div>
 </template>

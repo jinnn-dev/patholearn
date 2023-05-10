@@ -17,7 +17,32 @@ export const routes: RouteRecordRaw[] = [
     meta: {
       public: true
     },
-    component: () => import('../views/ai/Datasets.vue')
+    component: () => import('../views/ai/datasets/Datasets.vue')
+  },
+  {
+    path: '/ai/datasets/:id',
+    meta: {
+      public: true
+    },
+    component: () => import('../views/ai/datasets/Dataset.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Dataset Console',
+        meta: {
+          public: true
+        },
+        component: () => import('../views/ai/tasks/TaskConsole.vue')
+      },
+      {
+        path: 'images',
+        name: 'Dataset Images',
+        meta: {
+          public: true
+        },
+        component: () => import('../views/ai/datasets/DatasetImages.vue')
+      }
+    ]
   },
   {
     path: '/ai/projects',
@@ -43,7 +68,7 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('../views/ai/tasks/Task.vue'),
     children: [
       {
-        path: 'console',
+        path: '',
         name: 'Task Console',
         meta: {
           public: true

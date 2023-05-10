@@ -4,4 +4,7 @@ export interface Project {
   basename: string;
   description: string;
   created: string;
+  parent: {
+    id: string;
+  };
 }
