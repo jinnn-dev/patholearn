@@ -11,12 +11,14 @@ const { result: dataset, loading } = useService(AiService.getTask, true, route.p
 <template>
   <content-container :loading="loading" back-route="/ai/datasets" back-text="Datensätze">
     <template #header>
-      {{ dataset?.name }}
+      <div>{{ dataset?.name }}</div>
+      <div class="mt-4 flex justify-center items-center gap-4">
+        <div class="text-center text-lg bg-purple-900/50 px-2 py-1 rounded-full">
+          {{ dataset?.status }}
+        </div>
+      </div>
     </template>
     <template #content>
-      <div class="mb-4">
-        <div class="text-center text-xl font-semibold">Status: {{ dataset?.status }}</div>
-      </div>
       <div class="flex justify-center gap-8 text-xl mb-8">
         <router-link
           :to="`/ai/datasets/${route.params.id as string}`"
