@@ -14,7 +14,9 @@ const { result: projects, loading, run } = useService(AiService.getProjects, tru
     <div v-else>
       <project-create @project-created="run"></project-create>
       <div class="flex gap-4 flex-wrap mt-4">
-        <project-card v-for="project in projects" :project="project"></project-card>
+        <div v-for="project in projects">
+          <project-card :project="project" v-if="!project.parent"></project-card>
+        </div>
       </div>
     </div>
   </div>

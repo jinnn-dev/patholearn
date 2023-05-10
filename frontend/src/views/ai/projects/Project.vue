@@ -4,6 +4,7 @@ import { useService } from '../../../composables/useService';
 import { AiService } from '../../../services/ai.service';
 import ContentContainer from '../../../components/containers/ContentContainer.vue';
 import TaskList from '../../../components/ai/tasks/TaskList.vue';
+
 const route = useRoute();
 const { result: project, loading } = useService(AiService.getProject, true, route.params.id as string);
 </script>
