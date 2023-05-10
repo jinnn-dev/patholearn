@@ -6,7 +6,7 @@ import { notifications } from '../../../utils/notification-state';
 import { NotificationLevel } from '../../../model/notification';
 import TaskCard from './TaskCard.vue';
 import TaskCreate from './TaskCreate.vue';
-
+import NoContent from '../../general/NoContent.vue';
 const props = defineProps({
   projectId: {
     type: String,
@@ -36,7 +36,10 @@ const createNotification = () => {
       <div>
         <task-create :project-id="projectId" @task-created="createNotification()"></task-create>
       </div>
-      <div class="flex gap-4 flex-wrap" s>
+      <div v-if="!tasks || tasks.length === 0">
+        <no-content text="Keine Aufgaben vorhanden"></no-content>
+      </div>
+      <div class="flex gap-4 flex-wrap">
         <task-card v-for="task in tasks" :task="task"></task-card>
       </div>
     </div>
