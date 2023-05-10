@@ -11,12 +11,15 @@ const { result: task, loading } = useService(AiService.getTask, true, route.para
 <template>
   <content-container :loading="loading" :back-route="`/ai/projects/${task?.project.id}`">
     <template #header>
-      {{ task!.name }}
+      <div>{{ task!.name }}</div>
+      <div class="mt-4 flex justify-center items-center gap-4">
+        <div class="text-center text-lg bg-purple-900/50 px-2 py-1 rounded-full">{{ task?.status }}</div>
+        <div class="text-center text-xl font-semibold bg-green-900/50 px-2 py-1 rounded-full" v-if="task?.last_worker">
+          {{ task?.last_worker }}
+        </div>
+      </div>
     </template>
     <template #content>
-      <div class="mb-4">
-        <div class="text-center text-xl font-semibold">Status: {{ task?.status }}</div>
-      </div>
       <div class="flex justify-center gap-8 text-xl mb-4">
         <router-link
           :to="`/ai/tasks/${route.params.id as string}`"
