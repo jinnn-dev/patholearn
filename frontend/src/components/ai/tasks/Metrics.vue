@@ -24,7 +24,8 @@ const processData = (series: any) => {
       name: current_series.name,
       type: 'line',
       data: data,
-      showSymbol: false
+      showSymbol: true,
+      symbolSize: 6
     });
   }
 
