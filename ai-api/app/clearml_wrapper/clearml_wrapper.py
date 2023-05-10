@@ -162,7 +162,7 @@ def get_task(task_id: str):
         f"{Config.CLEARML_API}/tasks.get_by_id_ex",
         json={
             "id": [task_id],
-            "only_fields": ["id", "name", "status", "project"],
+            "only_fields": ["id", "name", "status", "project", "last_worker"],
         },
         auth=(Config.CLEARML_API_ACCESS_KEY, Config.CLEARML_API_SECRET_KEY),
     )
