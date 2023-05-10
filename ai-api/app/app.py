@@ -71,6 +71,13 @@ async def login(s: SessionContainer = Depends(verify_session())):
     return clearml_wrapper.get_datasets()
 
 
+@app.get("/datasets/{dataset_id}/images")
+async def get_dataset_images(
+    dataset_id: str, _: SessionContainer = Depends(verify_session())
+):
+    return clearml_wrapper.get_datatset_debug_images(dataset_id)
+
+
 @app.get("/datasets/{dataset_project_id}")
 async def get_specific_dataset(
     dataset_project_id: str, s: SessionContainer = Depends(verify_session())

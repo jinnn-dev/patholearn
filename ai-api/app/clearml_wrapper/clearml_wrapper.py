@@ -77,6 +77,21 @@ def get_datasets():
     return response.json()["data"]["projects"]
 
 
+def get_datatset_debug_images(dataset_id: str):
+    with httpx.Client() as client:
+        response = client.post(
+            f"{Config.CLEARML_API}/events.debug_images",
+            json={"metrics": [{"task": dataset_id, "metric": None}], "iters": 10},
+            auth=(Config.CLEARML_API_ACCESS_KEY, Config.CLEARML_API_SECRET_KEY),
+        )
+    print(len(response.json()["data"]["metrics"][0]["iterations"]))
+    events = response.json()["data"]["metrics"][0]["iterations"][0]["events"]
+    urls = []
+    for event in events:
+        urls.append(event["url"].replace("s3", "http"))
+    return urls
+
+
 def create_project(project_name: str, description: str = None):
     with httpx.Client() as client:
         response = client.post(
@@ -145,7 +160,10 @@ def create_task_and_enque(data: dict):
 def get_task(task_id: str):
     response = httpx.post(
         f"{Config.CLEARML_API}/tasks.get_by_id_ex",
-        json={"id": [task_id]},
+        json={
+            "id": [task_id],
+            "only_fields": ["id", "name", "status", "project"],
+        },
         auth=(Config.CLEARML_API_ACCESS_KEY, Config.CLEARML_API_SECRET_KEY),
     )
 
