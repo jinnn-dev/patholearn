@@ -14,15 +14,18 @@ const { result: task, loading } = useService(AiService.getTask, true, route.para
       {{ task!.name }}
     </template>
     <template #content>
+      <div class="mb-4">
+        <div class="text-center text-xl font-semibold">Status: {{ task?.status }}</div>
+      </div>
       <div class="flex justify-center gap-8 text-xl mb-4">
         <router-link
-          :to="`/ai/tasks/${route.params.id as string}/console`"
-          class="hover:text-highlight-900 cursor-pointer"
+          :to="`/ai/tasks/${route.params.id as string}`"
+          class="hover:text-highlight-900 cursor-pointer bg-gray-700 p-2 rounded-lg"
           >Konsole</router-link
         >
         <router-link
           :to="`/ai/tasks/${route.params.id as string}/metrics`"
-          class="hover:text-highlight-900 cursor-pointer"
+          class="hover:text-highlight-900 cursor-pointer bg-gray-700 p-2 rounded-lg"
           >Metriken</router-link
         >
       </div>

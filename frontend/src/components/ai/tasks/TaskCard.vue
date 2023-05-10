@@ -21,11 +21,11 @@ defineProps({
         <div class="text-gray-300 text-sm font-semibold">Status</div>
         <pre class="bg-gray-800 py-1 px-2 rounded-lg text-sm">{{ task.status }}</pre>
       </div>
-      <div class="flex flex-col items-start">
+      <div class="flex flex-col items-start" v-if="task.status_message">
         <div class="text-gray-300 text-sm font-semibold">Status Message</div>
         <pre class="bg-gray-800 py-1 px-2 rounded-lg text-sm">{{ task.status_message }}</pre>
       </div>
-      <div class="flex flex-col items-start">
+      <div class="flex flex-col items-start" v-if="task.status_reason">
         <div class="text-gray-300 text-sm font-semibold">Status Reason</div>
         <pre class="bg-gray-800 py-1 px-2 rounded-lg text-sm">{{ task.status_reason }}</pre>
       </div>

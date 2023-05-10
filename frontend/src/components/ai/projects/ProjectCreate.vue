@@ -8,7 +8,6 @@ import InputField from '../../form/InputField.vue';
 import InputArea from '../../form/InputArea.vue';
 import { useService } from '../../../composables/useService';
 import { AiService } from '../../../services/ai.service';
-import { create } from 'd3-selection';
 
 const showCreate = ref<boolean>(false);
 
@@ -40,14 +39,12 @@ const createProject = async () => {
       tip="Name des Projekts"
       :required="true"
     ></input-field>
-    {{ createProjectData.project_name }}
     <input-area
       v-model:model-value="createProjectData.description"
       class="h-64"
       label="Beschreibung"
       tip="Beschreibung des Projekts"
     ></input-area>
-    {{ createProjectData.description }}
 
     <confirm-buttons
       :loading="loading"
