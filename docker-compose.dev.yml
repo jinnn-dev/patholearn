@@ -138,6 +138,7 @@ services:
     networks:
       - auth_auth-network
       - patholearn-network
+      - ws_ws-network
     volumes:
       - ./ai-api/app:/app
     environment:
@@ -147,6 +148,12 @@ services:
       - CLEARML_API_ACCESS_KEY=${CLEARML_API_ACCESS_KEY}
       - CLEARML_API_SECRET_KEY=${CLEARML_API_SECRET_KEY}
       - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
+      - WEBSOCKET_APP_ID=${WEBSOCKET_APP_ID}
+      - WEBSOCKET_APP_KEY=${WEBSOCKET_APP_KEY}
+      - WEBSOCKET_APP_SECRET=${WEBSOCKET_APP_SECRET}
+      - WEBSOCKET_HOST=${WEBSOCKET_HOST}
+      - WEBSOCKET_PORT=${WEBSOCKET_PORT}
+      - WEBSOCKET_SSL=${WEBSOCKET_SSL}
     ports:
       - '8888:8000'
 
@@ -165,6 +172,8 @@ services:
 
 networks:
   auth_auth-network:
+    external: true
+  ws_ws-network:
     external: true
   patholearn-network:
     external: false

@@ -15,7 +15,7 @@ from supertokens_python import (
 from supertokens_python.recipe import session
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
-
+import pusher
 import app.clearml_wrapper.clearml_wrapper as clearml_wrapper
 
 init(
@@ -38,11 +38,22 @@ app = FastAPI()
 
 origins = ["http://localhost:5173", "http://localhost:5174"]
 
+ws_client = pusher.Pusher(
+    app_id=os.environ.get("WEBSOCKET_APP_ID"),
+    key=os.environ.get("WEBSOCKET_APP_KEY"),
+    secret=os.environ.get("WEBSOCKET_APP_SECRET"),
+    host="ws",
+    port=int(os.environ.get("WEBSOCKET_PORT")),
+    ssl=False if os.environ.get("WEBSOCKET_SSL") == "False" else True,
+)
+
+
 sentry_sdk.init(
     dsn=os.environ.get("SENTRY_DSN", ""),
     environment=os.environ.get("SENTRY_ENVIRONMENT", ""),
     traces_sample_rate=1.0,
 )
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -131,9 +142,17 @@ async def get_task_log(task_id: str, _: SessionContainer = Depends(verify_sessio
     return clearml_wrapper.get_task_metrics(task_id)
 
 
-@app.post
 @app.get("/")
 def root():
+    result = ws_client.trigger("chat-bot", "message", "Das ist eine Nachricht")
+    print(
+        os.environ.get("WEBSOCKET_APP_ID"),
+        os.environ.get("WEBSOCKET_APP_KEY"),
+        os.environ.get("WEBSOCKET_APP_SECRET"),
+        os.environ.get("WEBSOCKET_HOST"),
+        int(os.environ.get("WEBSOCKET_PORT")),
+        False if os.environ.get("WEBSOCKET_SSL") == "False" else True,
+    )
     return {"Hello": "World"}
 
 
