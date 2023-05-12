@@ -2,7 +2,6 @@
 import { onMounted, ref, watch } from 'vue';
 import { wsClient } from '../../services/ws.service';
 import { addNotification } from '../../utils/notification-state';
-import { NotificationLevel } from '../../model/notification';
 import Icon from '../general/Icon.vue';
 import Spinner from '../general/Spinner.vue';
 import { websocketLoading } from '../../utils/app.state';
@@ -28,7 +27,7 @@ watch(
     wsClient.value.connection.bind('error', (error: any) => {
       addNotification({
         header: 'Websocket konnte nicht verbunden werden',
-        level: NotificationLevel.ERROR,
+        level: 'error',
         detail: error,
         showDate: false,
         timeout: 1000

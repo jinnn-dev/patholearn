@@ -1,7 +1,6 @@
 import Pusher from 'pusher-js';
 import { getEnv } from '../config';
 import { addNotification } from '../utils/notification-state';
-import { NotificationLevel } from '../model/notification';
 import { ref } from 'vue';
 import { websocketLoading } from '../utils/app.state';
 
@@ -21,7 +20,7 @@ export function initWebsocket() {
     });
   } catch (e: any) {
     addNotification({
-      level: NotificationLevel.ERROR,
+      level: 'error',
       header: 'Websocket konnte nicht verbunden werden',
       detail: e,
       showDate: false,

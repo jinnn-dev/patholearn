@@ -1,9 +1,4 @@
-export enum NotificationLevel {
-  INFO,
-  WARNING,
-  ERROR,
-  SUCESS
-}
+export type NotificationLevel = 'info' | 'warning' | 'error' | 'sucess';
 
 export interface Notification {
   id: string;
