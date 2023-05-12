@@ -18,6 +18,7 @@ from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
 import app.clearml_wrapper.clearml_wrapper as clearml_wrapper
 
+
 init(
     supertokens_config=SupertokensConfig(connection_uri="http://supertokens:3567"),
     app_info=InputAppInfo(
@@ -101,9 +102,20 @@ async def get_specific_dataset(
 async def create_project(
     create_body: dict, s: SessionContainer = Depends(verify_session())
 ):
-    return clearml_wrapper.create_project(
-        project_name=create_body["project_name"], description=create_body["description"]
+    project = clearml_wrapper.create_project(
+        project_name=create_body["project_name"],
+        description=create_body["description"]
+        if "description" in create_body
+        else None,
     )
+    return project
+
+
+@app.delete("/projects/{project_id}")
+async def delete_project(
+    project_id: str, _: SessionContainer = Depends(verify_session())
+):
+    return clearml_wrapper.delete_project(project_id)
 
 
 @app.get("/projects")
@@ -117,7 +129,7 @@ async def get_project(project_id: str, _: SessionContainer = Depends(verify_sess
 
 
 @app.get("/projects/{project_id}/tasks")
-async def get_tasks_to_projects(
+async def get_project_tasks(
     project_id: str, s: SessionContainer = Depends(verify_session())
 ):
     return clearml_wrapper.get_tasks_to_project(project_id)
