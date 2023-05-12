@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import ProjectList from '../../../components/ai/projects/ProjectList.vue';
-import PrimaryButton from '../../../components/general/PrimaryButton.vue';
-
 import ContentContainer from '../../../components/containers/ContentContainer.vue';
 </script>
 <template>
