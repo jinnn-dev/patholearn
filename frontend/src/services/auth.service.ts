@@ -29,12 +29,12 @@ export enum AuthError {
 export class AuthService {
   public static async ping() {
     const [_, response] = await handleError(
-      ApiService.get<any>({
-        resource: '/sessioninfo',
+      ApiService.get<string>({
+        resource: '/ping',
         host: AUTH_API_URL
       })
     );
-    return response !== undefined && response.data !== undefined;
+    return response?.data;
   }
 
   /**

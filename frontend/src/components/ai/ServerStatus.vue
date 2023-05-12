@@ -24,7 +24,7 @@ const { result: authResult, loading: authLoading } = useService(AuthService.ping
       <status-item name="Websocket Server" :status="wsIsConnected" :loading="websocketLoading"> </status-item>
       <status-item name="WSI API" :status="slideResult?.Hello === 'World' ? true : false" :loading="slideLoading">
       </status-item>
-      <status-item name="Auth API" :status="authResult" :loading="authLoading"> </status-item>
+      <status-item name="Auth API" :status="authResult === 'Ok' ? true : false" :loading="authLoading"> </status-item>
     </div>
   </div>
 </template>
