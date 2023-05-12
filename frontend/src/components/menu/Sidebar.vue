@@ -42,13 +42,13 @@ const sidebarRoutes = ref<SidebarRoute[]>([
         to: '/ai/projects',
         icon: 'folder-notch',
         label: 'Projekte'
-      },
-      {
-        to: '/ai/status',
-        icon: 'pulse',
-        label: 'Status'
       }
     ]
+  },
+  {
+    to: '/status',
+    icon: 'pulse',
+    label: 'Status'
   }
 ]);
 

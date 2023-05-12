@@ -86,12 +86,12 @@ export const routes: RouteRecordRaw[] = [
     ]
   },
   {
-    path: '/ai/status',
+    path: '/status',
     name: 'Status',
     meta: {
       public: true
     },
-    component: () => import('../views/ai/Status.vue')
+    component: () => import('../views/ServerStatus.vue')
   },
   {
     path: '/login',
