@@ -21,8 +21,14 @@ const CONNECTION_ICON_SIZE = 32;
       <div class="flex justify-center bg-gray-700 p-2 rounded-xl">
         <spinner v-if="aiLoading"></spinner>
         <div v-else>
-          <icon v-if="aiResult == 'Ok'" name="plugs-connected" stroke-width="0" :size="CONNECTION_ICON_SIZE"></icon>
-          <icon v-else name="plugs" stroke-width="0" :size="CONNECTION_ICON_SIZE"></icon>
+          <icon
+            v-if="aiResult == 'Ok'"
+            name="plugs-connected"
+            class="text-green-500"
+            stroke-width="0"
+            :size="CONNECTION_ICON_SIZE"
+          ></icon>
+          <icon v-else name="plugs" class="text-red-500" stroke-width="0" :size="CONNECTION_ICON_SIZE"></icon>
         </div>
       </div>
       <div
@@ -42,10 +48,11 @@ const CONNECTION_ICON_SIZE = 32;
           <icon
             v-if="clearmlResult == 'Ok'"
             name="plugs-connected"
+            class="text-green-500"
             stroke-width="0"
             :size="CONNECTION_ICON_SIZE"
           ></icon>
-          <icon v-else name="plugs" stroke-width="0" :size="CONNECTION_ICON_SIZE"></icon>
+          <icon v-else name="plugs" class="text-red-500" stroke-width="0" :size="CONNECTION_ICON_SIZE"></icon>
         </div>
       </div>
       <div
