@@ -55,7 +55,7 @@ const toggleWsConnection = () => {
 </script>
 <template>
   <div
-    class="relative flex items-center whitespace-nowrap text-sm w-full transition-[padding]"
+    class="relative flex items-center whitespace-nowrap text-sm w-full transition-[padding] select-none"
     :class="isCollapsed ? 'px-2' : 'px-0'"
   >
     <div
