@@ -27,6 +27,7 @@
     "jsts": "^2.9.3",
     "nanoid": "^3.1.22",
     "openseadragon": "^2.4.2",
+    "pusher-js": "^8.0.2",
     "supertokens-web-js": "^0.5.0",
     "swiper": "^7.0.7",
     "tippy.js": "^6.3.1",

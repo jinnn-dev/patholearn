@@ -3,7 +3,7 @@ import { useService } from '../../composables/useService';
 import Icon from '../../components/general/Icon.vue';
 import { AiService } from '../../services/ai.service';
 import Spinner from '../../components/general/Spinner.vue';
-
+import { onMounted } from 'vue';
 const { result: aiResult, loading: aiLoading } = useService(AiService.ping, true);
 const { result: clearmlResult, loading: clearmlLoading } = useService(AiService.pingClearml, true);
 

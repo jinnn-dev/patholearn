@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import SidebarItem from './SidebarItem.vue';
 import SidebarHeader from './SidebarHeader.vue';
 import SidebarSeperator from './SidebarSeperator.vue';
 import SidebarUser from './SidebarUser.vue';
 import Icon from '../general/Icon.vue';
-import RoleOnly from '../../components/containers/RoleOnly.vue';
 import { appState } from '../../utils/app.state';
 import { SidebarRoute } from './sidebar-route';
 import SidebarDropdown from './SidebarDropdown.vue';
+import StatusIndicator from '../ws/StatusIndicator.vue';
+import { initWebsocket } from '../../services/ws.service';
 
 const sidebarRoutes = ref<SidebarRoute[]>([
   {
@@ -52,6 +53,10 @@ const sidebarRoutes = ref<SidebarRoute[]>([
   }
 ]);
 
+onMounted(() => {
+  initWebsocket();
+});
+
 const isCollapsed = ref<boolean>(false);
 </script>
 <template>
@@ -79,6 +84,7 @@ const isCollapsed = ref<boolean>(false);
     </div>
 
     <div>
+      <status-indicator :is-collapsed="isCollapsed" class="mb-2"></status-indicator>
       <sidebar-seperator></sidebar-seperator>
       <sidebar-user :is-collapsed="isCollapsed"></sidebar-user>
       <sidebar-seperator></sidebar-seperator>

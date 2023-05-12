@@ -6,6 +6,7 @@ import NotificationBar from './components/general/NotificationBar.vue';
 import { useRoute } from 'vue-router';
 import Sidebar from './components/menu/Sidebar.vue';
 import AppLoading from './components/AppLoading.vue';
+import { appState } from './utils/app.state';
 
 const route = useRoute();
 
@@ -53,9 +54,8 @@ if (detectedBrowser) {
       <p class="text-sm text-gray-200">Bitte wechsel zu einem Chromium-basierten Browser wie Chrome oder Edge</p>
     </div>
     <div class="flex">
-      <sidebar class="flex-shrink-0" v-if="!route.meta.disableNavigation"></sidebar>
-      <app-loading v-if="route.path !== '/login' && route.path !== '/register'"></app-loading>
-
+      <app-loading></app-loading>
+      <sidebar class="flex-shrink-0" v-if="appState.user && !route.meta.disableNavigation"></sidebar>
       <main class="w-full">
         <router-view />
       </main>
