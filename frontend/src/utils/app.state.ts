@@ -14,3 +14,4 @@ export const appLoading = ref<boolean>(true);
 export const isLogin = ref<boolean>(false);
 
 export const websocketLoading = ref<boolean>(false);
+export const wsIsConnected = ref<boolean>(false);

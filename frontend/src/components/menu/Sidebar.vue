@@ -9,7 +9,6 @@ import { appState } from '../../utils/app.state';
 import { SidebarRoute } from './sidebar-route';
 import SidebarDropdown from './SidebarDropdown.vue';
 import StatusIndicator from '../ws/StatusIndicator.vue';
-import { initWebsocket } from '../../services/ws.service';
 
 const sidebarRoutes = ref<SidebarRoute[]>([
   {
@@ -52,10 +51,6 @@ const sidebarRoutes = ref<SidebarRoute[]>([
     ]
   }
 ]);
-
-onMounted(() => {
-  initWebsocket();
-});
 
 const isCollapsed = ref<boolean>(false);
 </script>

@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 import { getEnv } from './config';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { detect } from 'detect-browser';
 import NotificationBar from './components/general/NotificationBar.vue';
 import { useRoute } from 'vue-router';
 import Sidebar from './components/menu/Sidebar.vue';
 import AppLoading from './components/AppLoading.vue';
 import { appState } from './utils/app.state';
+import { initWebsocket, registerConnectionEvents } from './services/ws.service';
 
 const route = useRoute();
 
@@ -41,10 +42,19 @@ if (detectedBrowser) {
       break;
   }
 }
+
+watch(
+  () => route.path,
+  async () => {
+    if (route.path !== '/login' && route.path !== '/register') {
+      if (initWebsocket()) {
+        registerConnectionEvents();
+      }
+    }
+  }
+);
 </script>
 <template>
-  <!--  <div-->
-  <!--    class='hidden backdrop-blur backdrop-blur-0 backdrop-blur-sm backdrop-blur-md backdrop-blur-lg backdrop-blur-xl backdrop-blur-2xl backdrop-blur-3xl'></div>-->
   <div class="w-full bg-gray-800 text-gray-100 min-h-screen">
     <div
       v-if="showBrowserWarning"
