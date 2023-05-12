@@ -33,6 +33,16 @@ export function initWebsocket() {
   return true;
 }
 
+export function connect() {
+  wsClient.value?.connect();
+  wsIsConnected.value = true;
+}
+
+export function disconnect() {
+  wsClient.value?.disconnect();
+  wsIsConnected.value = false;
+}
+
 export function registerConnectionEvents() {
   if (!wsClient.value) {
     return;

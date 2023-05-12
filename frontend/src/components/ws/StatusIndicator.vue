@@ -4,6 +4,7 @@ import { wsClient } from '../../services/ws.service';
 import Icon from '../general/Icon.vue';
 import Spinner from '../general/Spinner.vue';
 import { websocketLoading, wsIsConnected } from '../../utils/app.state';
+import { disconnect, connect } from '../../services/ws.service';
 defineProps({
   isCollapsed: {
     type: Boolean,
@@ -18,9 +19,9 @@ watch(
 
 const toggleWsConnection = () => {
   if (wsIsConnected.value) {
-    wsClient.value?.disconnect();
+    disconnect();
   } else {
-    wsClient.value?.connect();
+    connect();
   }
 };
 </script>
