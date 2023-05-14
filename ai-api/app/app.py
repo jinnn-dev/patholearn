@@ -2,6 +2,8 @@ import os
 import logging
 import sys
 import time
+import uuid
+import random
 
 from fastapi import FastAPI, Depends
 from fastapi_socketio import SocketManager
@@ -13,11 +15,13 @@ from supertokens_python import (
     SupertokensConfig,
     InputAppInfo,
 )
-from supertokens_python.recipe import session
+from supertokens_python.recipe import session, usermetadata
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
+from supertokens_python.recipe.usermetadata.asyncio import get_user_metadata
 import app.clearml_wrapper.clearml_wrapper as clearml_wrapper
 from app.router.api_router import api_router
+from app.ws.client import ws_client
 
 init(
     supertokens_config=SupertokensConfig(connection_uri="http://supertokens:3567"),
@@ -28,9 +32,7 @@ init(
     ),
     framework="fastapi",
     mode="asgi",
-    recipe_list=[
-        session.init(anti_csrf="NONE"),
-    ],
+    recipe_list=[session.init(anti_csrf="NONE"), usermetadata.init()],
 )
 
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
@@ -71,6 +73,37 @@ async def ping():
 @app.get("/ping/clearml")
 async def ping_clearml():
     return clearml_wrapper.ping()
+
+
+@app.post("/auth")
+async def ws_login(body: dict, s: SessionContainer = Depends(verify_session())):
+    channel_name: str = body["channel_name"]
+
+    user_id = s.get_user_id()
+    metadataResult = await get_user_metadata(user_id)
+
+    socket_user_id = str(uuid.uuid4())
+
+    if "private-" in channel_name:
+        auth = ws_client.authenticate(
+            channel=channel_name,
+            socket_id=body["socket_id"],
+        )
+    else:
+        auth = ws_client.authenticate(
+            channel=channel_name,
+            socket_id=body["socket_id"],
+            custom_data={
+                "user_id": socket_user_id,
+                "user_info": {
+                    "id": user_id,
+                    "color": "#"
+                    + "".join([random.choice("0123456789ABCDEF") for j in range(6)]),
+                    **(metadataResult.metadata),
+                },
+            },
+        )
+    return auth
 
 
 @app.get("/sessioninfo")
