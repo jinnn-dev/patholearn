@@ -2,7 +2,9 @@
 import { watch } from 'vue';
 import FormField from './FormField.vue';
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'focus', 'blur']);
+
+const color = '#FFAAFF';
 
 const props = defineProps({
   modelValue: [String, Number],
@@ -27,7 +29,9 @@ const props = defineProps({
     default: 'my-4'
   },
   min: [String, Number],
-  max: [String, Number]
+  max: [String, Number],
+  lockedBy: String,
+  lockedColor: String
 });
 
 const onChanged = (e: Event) => {
@@ -42,7 +46,15 @@ watch(
 );
 </script>
 <template>
-  <form-field :errorMessage="errorMessage" :label="label" :marginHor="marginHor" :tip="tip" class="w-full">
+  <form-field
+    :errorMessage="errorMessage"
+    :label="label"
+    :marginHor="marginHor"
+    :tip="tip"
+    :lockedBy="lockedBy"
+    :lockedColor="lockedColor"
+    class="w-full"
+  >
     <template v-slot:icon>
       <slot name="firstIcon"></slot>
     </template>
@@ -54,8 +66,11 @@ watch(
       :required="required"
       :type="type"
       :value="modelValue"
-      class="bg-gray-900 bg-opacity-50 placeholder-gray-400 rounded-lg w-full focus:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-highlight-400 focus:border-transparent"
+      :disabled="lockedBy !== undefined"
+      class="bg-gray-900 disabled:bg-gray-500 bg-opacity-50 disabled:bg-opacity-50 placeholder-gray-400 rounded-lg w-full focus:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-highlight-400 focus:border-transparent"
       @input="onChanged"
+      @focus="$emit('focus')"
+      @blur="$emit('blur')"
     />
   </form-field>
 </template>
