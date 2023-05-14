@@ -86,6 +86,13 @@ export const routes: RouteRecordRaw[] = [
     ]
   },
   {
+    path: '/ai/builder',
+    meta: {
+      public: true
+    },
+    component: () => import('../views/ai/builder/Builder.vue')
+  },
+  {
     path: '/status',
     name: 'Status',
     meta: {

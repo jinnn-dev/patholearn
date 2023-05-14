@@ -1,24 +1,54 @@
-import Pusher from 'pusher-js';
 import { getEnv } from '../config';
 import { addNotification } from '../utils/notification-state';
 import { ref } from 'vue';
 import { websocketLoading, wsIsConnected } from '../utils/app.state';
+import { AI_API_URL } from '../config';
+import { AiService } from './ai.service';
+import Pusher, {
+  Channel,
+  ChannelAuthorizationCallback,
+  Options,
+  ChannelAuthorizerGenerator,
+  DeprecatedAuthOptions
+} from 'pusher-js';
+import axios from 'axios';
+import { DeprecatedAuthorizerOptions } from 'pusher-js/types/src/core/auth/deprecated_channel_authorizer';
 
 export let wsClient = ref<Pusher | undefined>(undefined);
 
 export function initWebsocket() {
+  // Pusher.logToConsole = true;
   if (wsClient.value) {
     return false;
   }
   websocketLoading.value = true;
+
   try {
     wsClient.value = new Pusher(getEnv('WEBSOCKET_APP_KEY'), {
       cluster: '',
       wsHost: getEnv('WEBSOCKET_HOST'),
       wsPort: getEnv('WEBSOCKET_PORT'),
       forceTLS: false,
-      disableStats: true,
-      enabledTransports: ['ws', 'wss']
+      enableStats: false,
+      enabledTransports: ['ws', 'wss'],
+      authorizer: (channel: Channel, options: DeprecatedAuthorizerOptions) => {
+        return {
+          authorize: (socketId: string, callback: ChannelAuthorizationCallback) => {
+            AiService.wsLogin({
+              channel_name: channel.name,
+              socket_id: socketId
+            })
+              .then((response) => {
+                callback(null, response);
+              })
+              .catch((error) => {
+                callback(new Error(`Error authenticating with server: ${error}`), {
+                  auth: ''
+                });
+              });
+          }
+        };
+      }
     });
   } catch (e: any) {
     addNotification({

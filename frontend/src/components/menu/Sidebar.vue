@@ -42,6 +42,11 @@ const sidebarRoutes = ref<SidebarRoute[]>([
         to: '/ai/projects',
         icon: 'folder-notch',
         label: 'Projekte'
+      },
+      {
+        to: '/ai/builder',
+        icon: 'tree-structure',
+        label: 'Builder'
       }
     ]
   },
