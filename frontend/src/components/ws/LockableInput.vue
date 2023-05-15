@@ -56,6 +56,7 @@ const lockedUser = computed(() => props.members?.find((member) => member.id === 
 
 const lockInput = async () => {
   await lock(props.id, props.me.id);
+
   props.channel.trigger(`client-lock-${props.id}`, {
     id: props.id,
     userId: props.me.id
@@ -63,9 +64,15 @@ const lockInput = async () => {
 };
 
 const input = (value: string) => {
+  console.log(lockedBy.value, lockedBy.value !== props.me.id);
+
+  if (lockedBy.value !== null && lockedBy.value !== props.me.id) {
+    return;
+  }
   props.channel.trigger(`client-input-${props.id}`, {
     id: props.id,
-    value: value
+    value: value,
+    from: props.me.id
   });
 };
 
@@ -83,6 +90,8 @@ onMounted(() => {
   });
 
   props.channel.bind(`client-input-${props.id}`, (value: any) => {
+    console.log(value.from);
+
     if (value.userId === props.me.id) {
       return;
     }
