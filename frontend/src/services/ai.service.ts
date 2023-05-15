@@ -257,4 +257,17 @@ export class AiService {
     );
     return response!.data;
   }
+
+  public static async unlockToUser(userId: string) {
+    const [_, response] = await handleError(
+      ApiService.put<any>({
+        resource: '/builder/state/unlock/user',
+        host: AI_API_URL,
+        data: {
+          user_id: userId
+        }
+      })
+    );
+    return response!.data;
+  }
 }
