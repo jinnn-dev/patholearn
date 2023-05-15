@@ -70,7 +70,6 @@ async def get_state(s: SessionContainer = Depends(verify_session())):
     result = []
     async for element in builder_collection.find():
         result.append(element)
-    print(result)
     return builder_state
 
 
@@ -120,6 +119,23 @@ async def updateState(
         },
         {"$set": {"fields.$[field].lockedBy": None}},
         array_filters=[{"field.id": body.field_id}],
+        upsert=False,
+    )
+    return "Ok"
+
+
+@router.put("/state/unlock/user", response_model=str)
+async def updateState(
+    body,
+    s: SessionContainer = Depends(verify_session()),
+):
+    print("UPDATING USER STATE")
+    await builder_collection.update_one(
+        {
+            "_id": ObjectId("6462829563d1dfdd7fae0846"),
+        },
+        {"$set": {"fields.$[elem].lockedBy": None}},
+        array_filters=[{"elem.lockedBy": {"$eq": body["user_id"]}}],
         upsert=False,
     )
     return "Ok"
