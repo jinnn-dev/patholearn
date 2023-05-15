@@ -8,6 +8,7 @@ services:
         - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
         - MYSQL_HOST=${DATABASE_IP}
         - MYSQL_DATABASE=${DATABASE_DB}
+    restart: unless-stopped
     networks:
       - auth_auth-network
       - patholearn-network
@@ -62,6 +63,7 @@ services:
     image: ${DOCKER_PREFIX}/${DOCKER_APPLICATION_TITLE}-slide_api:dev
     networks:
       - patholearn-network
+    restart: unless-stopped
     ports:
       - '8001:8000'
     command: uvicorn app.app:app --reload --host 0.0.0.0 --port 8000 --no-server-header
@@ -82,6 +84,7 @@ services:
 
   slide_worker:
     image: ${DOCKER_PREFIX}/${DOCKER_APPLICATION_TITLE}-slide_api:dev
+    restart: unless-stopped
     networks:
       - patholearn-network
     depends_on:
@@ -100,6 +103,7 @@ services:
 
   slide_db:
     image: mongo:latest
+    restart: unless-stopped
     networks:
       - patholearn-network
     environment:
@@ -112,6 +116,7 @@ services:
 
   minio:
     image: minio/minio
+    restart: unless-stopped
     networks:
       - patholearn-network
     ports:
@@ -126,6 +131,7 @@ services:
 
   rabbit:
     image: rabbitmq:latest
+    restart: unless-stopped
     networks:
       - patholearn-network
     ports:
@@ -135,6 +141,7 @@ services:
     build:
       context: ./ai-api/.
       dockerfile: dockerfile
+    restart: unless-stopped
     networks:
       - auth_auth-network
       - patholearn-network
@@ -162,6 +169,7 @@ services:
     build:
       context: ./ai-worker/.
       dockerfile: dockerfile
+    restart: unless-stopped
     networks:
       - auth_auth-network
       - patholearn-network
@@ -173,6 +181,7 @@ services:
 
   ai_db:
     image: mongo:latest
+    restart: unless-stopped
     networks:
       - patholearn-network
     environment:
