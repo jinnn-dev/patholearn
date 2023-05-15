@@ -55,7 +55,6 @@ const lockedBy = ref(props.initialLockedBy);
 const lockedUser = computed(() => props.members?.find((member) => member.id === lockedBy.value));
 
 const lockInput = async () => {
-  console.log('Lock');
   await lock(props.id, props.me.id);
   props.channel.trigger(`client-lock-${props.id}`, {
     id: props.id,
