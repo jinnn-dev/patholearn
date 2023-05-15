@@ -154,6 +154,7 @@ services:
       - WEBSOCKET_HOST=${WEBSOCKET_HOST}
       - WEBSOCKET_PORT=${WEBSOCKET_PORT}
       - WEBSOCKET_SSL=${WEBSOCKET_SSL}
+      - DATABASE_URL=${MONGO_AI_DRIVER}://${MONGO_AI_USER}:${MONGO_AI_PASSWORD}@${MONGO_AI_IP}:${MONGO_AI_PORT} 
     ports:
       - '8888:8000'
 
@@ -170,6 +171,18 @@ services:
     environment:
       - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
 
+  ai_db:
+    image: mongo:latest
+    networks:
+      - patholearn-network
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_AI_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_AI_INITDB_ROOT_PASSWORD}
+    ports:
+      - '27018:${MONGO_AI_PORT}'
+    volumes:
+      - ai_db_data:/mongodb
+
 networks:
   auth_auth-network:
     external: true
@@ -181,3 +194,4 @@ networks:
 volumes:
   my-db:
   mongodb_data:
+  ai_db_data:

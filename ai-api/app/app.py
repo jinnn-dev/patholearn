@@ -22,6 +22,7 @@ from supertokens_python.recipe.usermetadata.asyncio import get_user_metadata
 import app.clearml_wrapper.clearml_wrapper as clearml_wrapper
 from app.router.api_router import api_router
 from app.ws.client import ws_client
+from app.database.database import client, test_collection
 
 init(
     supertokens_config=SupertokensConfig(connection_uri="http://supertokens:3567"),
@@ -61,8 +62,21 @@ sio = SocketManager(app=app, cors_allowed_origins=[], logger=True)
 
 
 @app.get("/")
-def root():
+async def root():
+    start_time = time.time()
+    result = []
+    async for element in test_collection.find():
+        result.append(element)
+    print(result)
+    print((time.time() - start_time) * 1000)
     return {"Hello": "World"}
+
+
+@app.get("/insert")
+async def insert():
+    test = await test_collection.insert_one({"test": "test"})
+    new_test = await test_collection.find_one({"_id": test.inserted_id})
+    return {"test": new_test["test"]}
 
 
 @app.get("/ping")
