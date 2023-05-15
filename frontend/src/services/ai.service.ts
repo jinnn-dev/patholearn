@@ -206,4 +206,55 @@ export class AiService {
 
     return response!.data;
   }
+
+  public static async getBuilderState() {
+    const [_, response] = await handleError(
+      ApiService.get<any>({
+        resource: '/builder/state',
+        host: AI_API_URL
+      })
+    );
+    return response!.data;
+  }
+
+  public static async updateBuilderState(fieldId: string, value?: string) {
+    const [_, response] = await handleError(
+      ApiService.put<any>({
+        resource: '/builder/state',
+        host: AI_API_URL,
+        data: {
+          field_id: fieldId,
+          value: value
+        }
+      })
+    );
+    return response!.data;
+  }
+
+  public static async lock(fieldId: string, lockedBy: string) {
+    const [_, response] = await handleError(
+      ApiService.put<any>({
+        resource: '/builder/state/lock',
+        host: AI_API_URL,
+        data: {
+          field_id: fieldId,
+          locked_by: lockedBy
+        }
+      })
+    );
+    return response!.data;
+  }
+
+  public static async unlock(fieldId: string) {
+    const [_, response] = await handleError(
+      ApiService.put<any>({
+        resource: '/builder/state/unlock',
+        host: AI_API_URL,
+        data: {
+          field_id: fieldId
+        }
+      })
+    );
+    return response!.data;
+  }
 }

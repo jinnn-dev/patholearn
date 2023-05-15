@@ -1,15 +1,25 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { usePresenceChannel } from '../../../composables/ws/usePresenceChannel';
 import MouseCursors from '../../../components/ai/MouseCursors.vue';
 import ContentContainer from '../../../components/containers/ContentContainer.vue';
 import LockableInput from '../../../components/ws/LockableInput.vue';
+import LockableArea from '../../../components/ws/LockableArea.vue';
 import { getTextColor } from '../../../utils/colors';
+import { useService } from '../../../composables/useService';
+import { AiService } from '../../../services/ai.service';
 
-const { channel, me, isConnected, members } = usePresenceChannel('builder', true);
+const { channel, me, isConnected, members, connect } = usePresenceChannel('builder');
+
+const { result: state, loading, run } = useService(AiService.getBuilderState);
+
+onMounted(async () => {
+  await run();
+  connect();
+});
 </script>
 <template>
-  <content-container>
+  <content-container :loading="loading">
     <template #header> Maussynchronisierung </template>
     <template #content>
       <div class="flex flex-col">
@@ -35,8 +45,20 @@ const { channel, me, isConnected, members } = usePresenceChannel('builder', true
           ></mouse-cursors>
         </div>
 
-        <div v-if="channel && me">
-          <lockable-input :channel="channel" :me="me" :members="members"></lockable-input>
+        <div v-if="channel && me && state">
+          <div v-for="field in state.fields">
+            <lockable-input
+              :type="field.type"
+              :initial-value="field.value"
+              :initial-locked-by="field.lockedBy"
+              :id="field.id"
+              :channel="channel"
+              :me="me"
+              :members="members"
+              :label="field.label"
+              :tip="field.tip"
+            ></lockable-input>
+          </div>
         </div>
       </div>
     </template>

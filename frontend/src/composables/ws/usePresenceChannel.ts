@@ -19,7 +19,7 @@ export function usePresenceChannel(channelName: string, autoSubscribe: boolean =
   const members = ref<Member[]>([]);
   const me = ref<Member>();
 
-  const subscribe = () => {
+  const connect = () => {
     channel.value = wsClient.value?.subscribe('presence-' + channelName) as PresenceChannel;
 
     channel.value.bind('pusher:subscription_succeeded', () => {
@@ -46,7 +46,7 @@ export function usePresenceChannel(channelName: string, autoSubscribe: boolean =
 
   onMounted(() => {
     if (autoSubscribe) {
-      subscribe();
+      connect();
     }
   });
 
@@ -54,5 +54,5 @@ export function usePresenceChannel(channelName: string, autoSubscribe: boolean =
     channel.value?.unsubscribe();
   });
 
-  return { channel, isConnected, members, me, subscribe };
+  return { channel, isConnected, members, me, connect };
 }
