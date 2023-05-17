@@ -60,6 +60,14 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('../views/ai/projects/Project.vue')
   },
   {
+    path: '/ai/builder/:id',
+    name: 'Builder',
+    meta: {
+      public: true
+    },
+    component: () => import('../views/ai/builder/Builder.vue')
+  },
+  {
     path: '/ai/tasks/:id',
     name: 'Ai Task',
     meta: {

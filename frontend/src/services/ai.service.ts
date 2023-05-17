@@ -270,4 +270,26 @@ export class AiService {
     );
     return response!.data;
   }
+
+  public static async createBuilderTask(data: { name: string; project_id: string }) {
+    const [_, response] = await handleError(
+      ApiService.post({
+        resource: '/tasks/builder',
+        host: AI_API_URL,
+        data
+      })
+    );
+    return response!.data;
+  }
+
+  public static async getBuilderTask(id: string) {
+    const [_, response] = await handleError(
+      ApiService.get<any>({
+        resource: `/tasks/builder/${id}`,
+        host: AI_API_URL
+      })
+    );
+
+    return response!.data;
+  }
 }

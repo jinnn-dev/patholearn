@@ -1,65 +1,30 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { onMounted } from 'vue';
 import { usePresenceChannel } from '../../../composables/ws/usePresenceChannel';
-import MouseCursors from '../../../components/ai/MouseCursors.vue';
 import ContentContainer from '../../../components/containers/ContentContainer.vue';
-import LockableInput from '../../../components/ws/LockableInput.vue';
-import { getTextColor } from '../../../utils/colors';
+import UserList from '../../../components/ws/UserList.vue';
 import { useService } from '../../../composables/useService';
 import { AiService } from '../../../services/ai.service';
+import { useRoute } from 'vue-router';
 
-const { channel, me, isConnected, members, connect } = usePresenceChannel('builder');
+const route = useRoute();
 
-const { result: state, loading, run } = useService(AiService.getBuilderState);
+const { result: task, loading, run } = useService(AiService.getBuilderTask);
+
+const { me, members, isConnected, connect } = usePresenceChannel();
 
 onMounted(async () => {
-  await run();
-  connect();
+  await run(route.params.id as string);
+  connect('builder-' + task.value!._id);
 });
 </script>
 <template>
   <content-container :loading="loading">
-    <template #header> Live Synchronisierung </template>
+    <template #header> {{ task?.name }} </template>
     <template #content>
-      <div class="flex flex-col">
-        <div class="p-2 flex flex-col">
-          <div class="text-gray-300 font-smibold mb-2">{{ members.length }} Nutzer verbunden</div>
-          <div class="flex gap-2">
-            <div
-              v-for="user in members"
-              :style="`background-color: ${user.info.color}; color: ${getTextColor(user.info.color)}`"
-              class="rounded-full px-2 font-semibold"
-            >
-              <div>{{ user.info.first_name }} {{ user.info.last_name }} {{ user.id === me?.id ? '(Du)' : '' }}</div>
-            </div>
-          </div>
-        </div>
-        <div class="w-full h-96 rounded-2xl overflow-hidden">
-          <mouse-cursors
-            v-if="channel && me"
-            :channel="channel"
-            :members="members"
-            :me="me"
-            :rate-limit="50"
-          ></mouse-cursors>
-        </div>
+      <user-list :members="members" :me="me"></user-list>
 
-        <div v-if="channel && me && state">
-          <div v-for="field in state.fields">
-            <lockable-input
-              :type="field.type"
-              :initial-value="field.value"
-              :initial-locked-by="field.lockedBy"
-              :id="field.id"
-              :channel="channel"
-              :me="me"
-              :members="members"
-              :label="field.label"
-              :tip="field.tip"
-            ></lockable-input>
-          </div>
-        </div>
-      </div>
+      <pre>{{ task }}</pre>
     </template>
   </content-container>
 </template>

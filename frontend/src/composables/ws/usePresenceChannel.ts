@@ -2,7 +2,7 @@ import { PresenceChannel, Members } from 'pusher-js';
 import { wsClient } from '../../services/ws.service';
 import { onMounted, onUnmounted, ref } from 'vue';
 
-interface Member {
+export interface Member {
   id: string;
   info: {
     id: string;
@@ -12,15 +12,22 @@ interface Member {
   };
 }
 
-export function usePresenceChannel(channelName: string, autoSubscribe: boolean = false) {
+export function usePresenceChannel(name?: string, autoSubscribe: boolean = false) {
   const channel = ref<PresenceChannel>();
 
   const isConnected = ref<boolean>();
   const members = ref<Member[]>([]);
   const me = ref<Member>();
 
-  const connect = () => {
-    channel.value = wsClient.value?.subscribe('presence-' + channelName) as PresenceChannel;
+  const connect = (channelName?: string) => {
+    let connectionName = name;
+    if (name === undefined) {
+      connectionName = channelName;
+    }
+    if (connectionName === undefined) {
+      connectionName = '';
+    }
+    channel.value = wsClient.value?.subscribe('presence-' + connectionName) as PresenceChannel;
 
     channel.value.bind('pusher:subscription_succeeded', () => {
       isConnected.value = true;
