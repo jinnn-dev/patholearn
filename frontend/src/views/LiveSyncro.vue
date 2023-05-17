@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
-import { usePresenceChannel } from '../../../composables/ws/usePresenceChannel';
-import MouseCursors from '../../../components/ai/MouseCursors.vue';
-import ContentContainer from '../../../components/containers/ContentContainer.vue';
-import LockableInput from '../../../components/ws/LockableInput.vue';
-import { getTextColor } from '../../../utils/colors';
-import { useService } from '../../../composables/useService';
-import { AiService } from '../../../services/ai.service';
+import { onMounted } from 'vue';
+import { usePresenceChannel } from '../composables/ws/usePresenceChannel';
+import MouseCursors from '../components/ai/MouseCursors.vue';
+import ContentContainer from '../components/containers/ContentContainer.vue';
+import LockableInput from '../components/ws/LockableInput.vue';
+import { getTextColor } from '../utils/colors';
+import { useService } from '../composables/useService';
+import { AiService } from '../services/ai.service';
 
-const { channel, me, isConnected, members, connect } = usePresenceChannel('builder');
+const { channel, me, isConnected, members, connect } = usePresenceChannel('live');
 
 const { result: state, loading, run } = useService(AiService.getBuilderState);
 

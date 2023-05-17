@@ -86,11 +86,11 @@ export const routes: RouteRecordRaw[] = [
     ]
   },
   {
-    path: '/ai/builder',
+    path: '/live',
     meta: {
       public: true
     },
-    component: () => import('../views/ai/builder/Builder.vue')
+    component: () => import('../views/LiveSyncro.vue')
   },
   {
     path: '/status',
