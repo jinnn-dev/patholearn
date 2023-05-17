@@ -43,6 +43,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    restart: unless-stopped
     depends_on:
       supertokens:
         condition: service_healthy
