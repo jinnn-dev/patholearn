@@ -6,25 +6,32 @@ import UserList from '../../../components/ws/UserList.vue';
 import { useService } from '../../../composables/useService';
 import { AiService } from '../../../services/ai.service';
 import { useRoute } from 'vue-router';
-
+import Editor from '../../../components/ai/builder/Editor.vue';
 const route = useRoute();
 
-const { result: task, loading, run } = useService(AiService.getBuilderTask);
+// const { result: task, loading, run } = useService(AiService.getBuilderTask);
 
-const { me, members, isConnected, connect } = usePresenceChannel();
+// const { me, members, isConnected, connect } = usePresenceChannel();
 
 onMounted(async () => {
-  await run(route.params.id as string);
-  connect('builder-' + task.value!._id);
+  // await run(route.params.id as string);
+  // connect('builder-' + task.value!._id);
 });
 </script>
 <template>
-  <content-container :loading="loading">
+  <div class="flex flex-col h-full">
+    <!-- <user-list :members="members" :me="me"></user-list> -->
+
+    <!-- <pre>{{ task }}</pre> -->
+
+    <editor></editor>
+  </div>
+  <!-- <content-container :loading="loading">
     <template #header> {{ task?.name }} </template>
     <template #content>
-      <user-list :members="members" :me="me"></user-list>
-
-      <pre>{{ task }}</pre>
+      <div class="h-full"></div>
     </template>
-  </content-container>
+  </content-container> -->
 </template>
+
+<style></style>

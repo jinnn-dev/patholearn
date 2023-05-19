@@ -66,7 +66,7 @@ watch(
     <div class="flex">
       <app-loading></app-loading>
       <sidebar class="flex-shrink-0" v-if="appState.user && !route.meta.disableNavigation"></sidebar>
-      <main class="w-full">
+      <main class="w-full min-h-screen">
         <router-view />
       </main>
     </div>
@@ -130,6 +130,48 @@ a.router-link-exact-active {
 @font-face {
   font-family: 'Poppins';
   src: url('/Poppins/Poppins-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'JetBrains';
+  src: url('/JetBrainsMono/JetBrainsMono-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'JetBrains';
+  src: url('/JetBrainsMono/JetBrainsMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'JetBrains';
+  src: url('/JetBrainsMono/JetBrainsMono-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'JetBrains';
+  src: url('/JetBrainsMono/JetBrainsMono-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'JetBrains';
+  src: url('/JetBrainsMono/JetBrainsMono-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/JetBrainsMono/JetBrainsMono-ExtraBold.woff2') format('woff2');
   font-weight: 800;
   font-style: normal;
 }
