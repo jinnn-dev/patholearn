@@ -63,7 +63,8 @@ export const routes: RouteRecordRaw[] = [
     path: '/ai/builder/:id',
     name: 'Builder',
     meta: {
-      public: true
+      public: true,
+      disableNavigation: true
     },
     component: () => import('../views/ai/builder/Builder.vue')
   },

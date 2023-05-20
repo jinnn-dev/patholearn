@@ -1,21 +1,13 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { usePresenceChannel } from '../../../composables/ws/usePresenceChannel';
-import ContentContainer from '../../../components/containers/ContentContainer.vue';
-import UserList from '../../../components/ws/UserList.vue';
 import { useService } from '../../../composables/useService';
 import { AiService } from '../../../services/ai.service';
-import { useRoute } from 'vue-router';
-import Editor from '../../../components/ai/builder/Editor.vue';
-const route = useRoute();
+import NodeEditor from '../../../components/ai/builder/components/editor/NodeEditor.vue';
 
-// const { result: task, loading, run } = useService(AiService.getBuilderTask);
-
-// const { me, members, isConnected, connect } = usePresenceChannel();
+const { result: builder, loading, run } = useService(AiService.getBuilderState);
 
 onMounted(async () => {
-  // await run(route.params.id as string);
-  // connect('builder-' + task.value!._id);
+  await run();
 });
 </script>
 <template>
@@ -23,8 +15,12 @@ onMounted(async () => {
     <!-- <user-list :members="members" :me="me"></user-list> -->
 
     <!-- <pre>{{ task }}</pre> -->
-
-    <editor></editor>
+    <div v-if="loading">Loading...</div>
+    <div v-else class="w-full h-full">
+      <node-editor v-if="builder && builder.graph" :graph="builder.graph"></node-editor>
+    </div>
+    <!-- <node-editor v-else :graph="builder.graph"></node-editor>
+     -->
   </div>
   <!-- <content-container :loading="loading">
     <template #header> {{ task?.name }} </template>

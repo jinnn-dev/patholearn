@@ -115,7 +115,7 @@ const outputs = computed(() => {
 });
 </script>
 
-<style scoped>
+<style>
 .node {
   @apply relative;
   @apply bg-gray-700;
@@ -181,5 +181,9 @@ const outputs = computed(() => {
 .control {
   @apply px-2;
   @apply py-2;
+}
+
+.control > input {
+  @apply !bg-gray-800;
 }
 </style>

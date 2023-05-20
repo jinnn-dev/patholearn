@@ -5,6 +5,7 @@ import { Project } from '../model/ai/projects/project';
 import { Dataset } from '../model/ai/datasets/dataset';
 import { Task } from '../model/ai/tasks/task';
 import { LogEntry } from '../model/ai/tasks/log-entry';
+import { IGraph } from '../components/ai/builder/serializable';
 
 export class AiService {
   public static async ping() {
@@ -287,6 +288,18 @@ export class AiService {
       ApiService.get<any>({
         resource: `/tasks/builder/${id}`,
         host: AI_API_URL
+      })
+    );
+
+    return response!.data;
+  }
+
+  public static async updateBuilderGraph(graph: IGraph) {
+    const [_, response] = await handleError(
+      ApiService.put<any>({
+        resource: `/builder/graph`,
+        host: AI_API_URL,
+        data: graph
       })
     );
 

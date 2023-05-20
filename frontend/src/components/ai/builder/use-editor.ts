@@ -7,13 +7,15 @@ import { AutoArrangePlugin, Presets as ArrangePresets, ArrangeAppliers } from 'r
 import CustomNodeVue from './CustomNode.vue';
 import CustomConnectionVue from './CustomConnection.vue';
 import CustomSocketVue from './CustomSocket.vue';
-import { DatasetNode } from './components/dataset-node';
+import { DatasetNode, IDatasetNode } from './components/dataset-node';
 import { DropdownControl } from './components/dataset/dropdown-control';
 import CustomDropdownVue from './components/dataset/CustomDropdown.vue';
-import { Conv2DNode } from './components/conv2d-node';
+import { Conv2DNode, IConv2DNode } from './components/conv2d-node';
 import { NumberControl } from './components/number-control/number-control';
 import NumberControlVue from './components/number-control/NumberControl.vue';
 import { Ref, ref } from 'vue';
+import { IConnection, IGraph, INode } from './serializable';
+import { addCustomBackground } from './custom-background';
 
 // type Schemes = GetSchemes<
 //   ClassicPreset.Node,
@@ -56,6 +58,7 @@ export function useEditor() {
       duration: 300,
       timingFunction: (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
     });
+    addCustomBackground(area.value);
 
     AreaExtensions.selectableNodes(area.value, AreaExtensions.selector(), {
       accumulating: AreaExtensions.accumulateOnCtrl()
@@ -105,27 +108,33 @@ export function useEditor() {
     AreaExtensions.simpleNodesOrder(area.value);
 
     const dataset = new DatasetNode(socket.value);
+    dataset.addDefault();
     await editor.value.addNode(dataset);
 
     const convLayer = new Conv2DNode(socket.value);
+    convLayer.addDefault();
     await editor.value.addNode(convLayer);
 
     const convLayer2 = new Conv2DNode(socket.value);
+    convLayer2.addDefault();
     await editor.value.addNode(convLayer2);
 
     const convLayer3 = new Conv2DNode(socket.value);
+    convLayer3.addDefault();
     await editor.value.addNode(convLayer3);
 
     const convLayer4 = new Conv2DNode(socket.value);
+    convLayer4.addDefault();
     await editor.value.addNode(convLayer4);
 
-    await editor.value.addConnection(new ClassicPreset.Connection(dataset, 'dataset', convLayer, 'in'));
-    await editor.value.addConnection(new ClassicPreset.Connection(convLayer, 'out', convLayer2, 'in'));
-    await editor.value.addConnection(new ClassicPreset.Connection(convLayer, 'out', convLayer3, 'in'));
-    await editor.value.addConnection(new ClassicPreset.Connection(convLayer, 'out', convLayer4, 'in'));
+    await editor.value.addConnection(new Connection(dataset, 'dataset', convLayer, 'in'));
+    await editor.value.addConnection(new Connection(convLayer, 'out', convLayer2, 'in'));
+    await editor.value.addConnection(new Connection(convLayer, 'out', convLayer3, 'in'));
+    await editor.value.addConnection(new Connection(convLayer, 'out', convLayer4, 'in'));
 
     await arrangeLayout();
-    await AreaExtensions.zoomAt(area.value, editor.value.getNodes());
+    await zoomAt();
+
     loading.value = false;
   };
 
@@ -140,6 +149,7 @@ export function useEditor() {
       return;
     }
     const layer = new Conv2DNode(socket.value);
+    layer.addDefault();
     await editor.value.addNode(layer);
   };
 
@@ -150,20 +160,80 @@ export function useEditor() {
     await AreaExtensions.zoomAt(area.value, editor.value.getNodes());
   };
 
-  const download = () => {
-    const data: { nodes: any[] } = { nodes: [] };
+  const download = (): IGraph => {
+    const nodeData: INode[] = [];
     const nodes = editor.value?.getNodes();
+
     for (const node of nodes || []) {
-      data.nodes.push({
-        id: node.id,
-        label: node.label,
-        inputs: node.inputs,
-        controls: node.controls,
-        outputs: node.outputs
-      });
+      const serializedNode = node.serialize();
+      nodeData.push(serializedNode);
     }
-    return JSON.stringify(data);
+
+    const connectionsData: IConnection[] = [];
+    const connections = editor.value?.getConnections();
+
+    for (const connection of connections || []) {
+      const conData: IConnection = {
+        id: connection.id,
+        source: connection.source,
+        sourceOutput: connection.sourceOutput,
+        target: connection.target,
+        targetInput: connection.targetInput
+      };
+      connectionsData.push(conData);
+    }
+
+    const graphData: IGraph = {
+      nodes: nodeData,
+      connections: connectionsData
+    };
+
+    return graphData;
   };
 
-  return { editor, loading, arrangeLayout, zoomAt, download, init, addNode, destroy: () => area.value?.destroy() };
+  const importGraph = async (graph: IGraph) => {
+    loading.value = true;
+    await editor.value?.clear();
+
+    for (const nodeData of graph.nodes) {
+      let node;
+
+      if (nodeData._type === Conv2DNode.name) {
+        node = Conv2DNode.parse(nodeData as IConv2DNode);
+      } else if (nodeData._type === DatasetNode.name) {
+        node = DatasetNode.parse(nodeData as IDatasetNode);
+      } else {
+        node = new Presets.classic.Node();
+      }
+      node.id = nodeData.id;
+
+      await editor.value?.addNode(node);
+    }
+
+    for (const connectionData of graph.connections) {
+      const sourceNode = editor.value!.getNode(connectionData.source);
+      const sourceOutput = connectionData.sourceOutput;
+
+      const targetNode = editor.value?.getNode(connectionData.target);
+      const targetInput = connectionData.targetInput;
+
+      const connection = new Connection(sourceNode, sourceOutput, targetNode, targetInput);
+      await editor.value?.addConnection(connection);
+    }
+    await arrangeLayout();
+    await zoomAt();
+    loading.value = false;
+  };
+
+  return {
+    editor,
+    loading,
+    arrangeLayout,
+    zoomAt,
+    download,
+    importGraph,
+    init,
+    addNode,
+    destroy: () => area.value?.destroy()
+  };
 }
