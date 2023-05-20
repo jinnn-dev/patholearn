@@ -37,6 +37,7 @@ class FormField(BaseModel):
 class BuilderState(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
     fields: List[FormField] = Field(...)
+    graph: Optional[dict] = Field(...)
 
     class Config:
         allow_population_by_field_name = True
@@ -138,4 +139,20 @@ async def updateState(
         array_filters=[{"elem.lockedBy": {"$eq": body["user_id"]}}],
         upsert=False,
     )
+    return "Ok"
+
+
+@router.put("/graph", response_model=str)
+async def updateBuilderGraph(
+    body: dict = Body(...), s: SessionContainer = Depends(verify_session())
+):
+    print("UPDATING GRAPH STATE")
+    await builder_collection.update_one(
+        {
+            "_id": ObjectId("6462829563d1dfdd7fae0846"),
+        },
+        {"$set": {"graph": body}},
+        upsert=False,
+    )
+
     return "Ok"

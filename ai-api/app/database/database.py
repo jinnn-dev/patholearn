@@ -7,3 +7,4 @@ database: Database = client.ai
 
 test_collection: Collection = database.get_collection("test")
 builder_collection: Collection = database.get_collection("builder")
+task_collection: Collection = database.get_collection("task")
