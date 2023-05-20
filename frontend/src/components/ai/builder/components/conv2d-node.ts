@@ -1,7 +1,8 @@
 import { ClassicPreset } from 'rete';
-import { NumberControl } from './number-control/number-control';
-import { NodeType } from './types';
+import { INumberControl, NumberControl } from './number-control/number-control';
+import { LayerType, NodeType } from './types';
 import { IInputControl, INode, Serializable, serializeControl, serializePort } from '../serializable';
+import { DimensionControl, IDimensionControl } from './dimension-control/dimension-control';
 
 export interface IConv2DNode extends INode {
   socket: string;
@@ -12,9 +13,9 @@ export class Conv2DNode
     { in: ClassicPreset.Socket },
     { out: ClassicPreset.Socket },
     {
-      filters: ClassicPreset.InputControl<'number'>;
-      kernel: ClassicPreset.InputControl<'number'>;
-      stride: ClassicPreset.InputControl<'number'>;
+      filters: NumberControl;
+      kernel: DimensionControl;
+      stride: DimensionControl;
     }
   >
   implements Serializable<Conv2DNode, IConv2DNode>
@@ -23,7 +24,7 @@ export class Conv2DNode
   height = 230;
 
   private socket: ClassicPreset.Socket;
-  constructor(socket: ClassicPreset.Socket, public type: NodeType = 'Layer') {
+  constructor(socket: ClassicPreset.Socket, public type: NodeType = 'Layer', public layerType: LayerType = 'Conv2D') {
     super('Conv2D');
     this.socket = socket;
   }
@@ -35,9 +36,15 @@ export class Conv2DNode
     // this.addControl('kernel', new NumberControl(1, 1, 128, 'Kernel'));
     // this.addControl('stride', new NumberControl(1, 1, 128, 'Stride'));
 
-    this.addControl('filters', new ClassicPreset.InputControl('number'));
-    this.addControl('kernel', new ClassicPreset.InputControl('number'));
-    this.addControl('stride', new ClassicPreset.InputControl('number'));
+    this.addControl('filters', new NumberControl(0, 128, 'Filters'));
+    this.addControl(
+      'kernel',
+      new DimensionControl('Kernel', { min: 0, max: 128, placeholder: 'x' }, { min: 0, max: 128, placeholder: 'y' })
+    );
+    this.addControl(
+      'stride',
+      new DimensionControl('Stride', { min: 0, max: 128, placeholder: 'x' }, { min: 0, max: 128, placeholder: 'y' })
+    );
   }
 
   public static parse(data: IConv2DNode): Conv2DNode {
@@ -51,13 +58,15 @@ export class Conv2DNode
     }
 
     for (const control of data.controls) {
-      const controlData = control as IInputControl;
-      node.addControl(
-        controlData.key as 'filters' | 'kernel' | 'stride',
-        new ClassicPreset.InputControl(controlData.type as 'number', {
-          initial: controlData.value
-        })
-      );
+      let controlInstance: DimensionControl | NumberControl;
+      if ('xOptions' in control) {
+        let data = control as IDimensionControl;
+        controlInstance = DimensionControl.parse(data);
+      } else {
+        let data = control as INumberControl;
+        controlInstance = NumberControl.parse(data);
+      }
+      node.addControl(control.key as 'filters' | 'kernel' | 'stride', controlInstance);
     }
 
     return node;
@@ -66,7 +75,7 @@ export class Conv2DNode
   public serialize(): IConv2DNode {
     const inputs = Object.entries(this.inputs).map(([key, input]) => serializePort(key, input));
     const outputs = Object.entries(this.outputs).map(([key, input]) => serializePort(key, input));
-    const controls = Object.entries(this.controls).map(([key, input]) => serializeControl(key, input));
+    const controls = Object.entries(this.controls).map(([key, input]) => input.serialize(key));
 
     return {
       id: this.id,

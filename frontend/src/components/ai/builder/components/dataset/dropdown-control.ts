@@ -7,17 +7,21 @@ export interface IDrowndownControl extends IControl {
 }
 
 export class DropdownControl extends ClassicPreset.Control implements Serializable<DropdownControl, IDrowndownControl> {
-  constructor(public values: any[], public label: string) {
+  constructor(public values: any[], public label: string, public value?: any) {
     super();
   }
 
-  public parse(data: IDrowndownControl): DropdownControl {
-    return new DropdownControl(data.values, data.label);
+  public setValue(value: any) {
+    this.value = value;
+  }
+
+  static parse(data: IDrowndownControl): DropdownControl {
+    return new DropdownControl(data.values, data.label, data.value);
   }
   public serialize(): IDrowndownControl {
     return {
       key: 'dataset',
-      value: this.values[0],
+      value: this.value,
       _type: DropdownControl.name,
       id: this.id,
       values: this.values,

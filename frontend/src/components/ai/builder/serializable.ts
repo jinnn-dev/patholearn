@@ -43,7 +43,7 @@ export interface INode extends ISerializable {
 }
 
 export abstract class Serializable<T, C extends ISerializable> {
-  public abstract serialize(): C;
+  public abstract serialize(key?: string): C;
 }
 
 export function serializePort(

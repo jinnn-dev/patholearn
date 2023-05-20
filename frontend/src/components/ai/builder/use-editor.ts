@@ -13,9 +13,12 @@ import CustomDropdownVue from './components/dataset/CustomDropdown.vue';
 import { Conv2DNode, IConv2DNode } from './components/conv2d-node';
 import { NumberControl } from './components/number-control/number-control';
 import NumberControlVue from './components/number-control/NumberControl.vue';
+import DimensionControlVue from './components/dimension-control/DimensionControl.vue';
 import { Ref, ref } from 'vue';
 import { IConnection, IGraph, INode } from './serializable';
 import { addCustomBackground } from './custom-background';
+import { LayerType } from './components/types';
+import { DimensionControl } from './components/dimension-control/dimension-control';
 
 // type Schemes = GetSchemes<
 //   ClassicPreset.Node,
@@ -87,6 +90,9 @@ export function useEditor() {
           if (data.payload instanceof NumberControl) {
             return NumberControlVue;
           }
+          if (data.payload instanceof DimensionControl) {
+            return DimensionControlVue;
+          }
           if (data.payload instanceof ClassicPreset.InputControl) {
             return Presets.classic.Control;
           }
@@ -144,12 +150,19 @@ export function useEditor() {
     });
   };
 
-  const addNode = async () => {
+  const addNode = async (layerType: LayerType) => {
     if (!socket.value || !editor.value) {
       return;
     }
-    const layer = new Conv2DNode(socket.value);
-    layer.addDefault();
+    let layer;
+    if (layerType === 'Conv2D') {
+      layer = new Conv2DNode(socket.value);
+      layer.addDefault();
+    } else {
+      layer = new DatasetNode(socket.value);
+      layer.addDefault();
+    }
+
     await editor.value.addNode(layer);
   };
 
@@ -222,6 +235,7 @@ export function useEditor() {
     }
     await arrangeLayout();
     await zoomAt();
+
     loading.value = false;
   };
 

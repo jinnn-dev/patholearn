@@ -8,7 +8,7 @@ import { useEditor } from '../../use-editor';
 import PrimaryButton from '../../../../general/PrimaryButton.vue';
 import EditorTools from './EditorTools.vue';
 import Spinner from '../../../../general/Spinner.vue';
-
+import { LayerType } from '../types';
 import { EventName } from './events';
 
 const props = defineProps({
@@ -44,6 +44,10 @@ const itemClicked = async (event: EventName) => {
   if (event === 'center') {
     loadingText.value = 'Centering';
     await zoomAt();
+  }
+
+  if (event === 'Conv2D' || event === 'Dataset') {
+    await addNode(event);
   }
 
   loading.value = false;

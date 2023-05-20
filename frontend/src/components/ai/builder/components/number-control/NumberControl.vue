@@ -6,7 +6,7 @@ interface DataInterface {
   min: number;
   placeholder: string;
   value: number;
-  onChange: Function;
+  setValue: Function;
 }
 
 const props = defineProps({
@@ -15,8 +15,8 @@ const props = defineProps({
 
 const selectedNumber = ref(props.data?.value);
 
-const onChanged = (e: Event) => {
-  props.data!.onChange(+(e.currentTarget as any).value);
+const change = (e: any) => {
+  props.data!.setValue(+e.target!.value);
 };
 </script>
 <template>
@@ -28,8 +28,22 @@ const onChanged = (e: Event) => {
       :placeholder="data?.placeholder"
       type="number"
       :value="selectedNumber"
-      class="bg-gray-900 py-1 px-2 disabled:bg-gray-500 bg-opacity-50 disabled:bg-opacity-50 placeholder-gray-400 rounded-lg w-full focus:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-highlight-400 focus:border-transparent"
-      @input.stop="onChanged"
+      class="bg-gray-900 py-0.5 px-2 disabled:bg-gray-500 bg-opacity-50 disabled:bg-opacity-50 placeholder-gray-400 rounded-lg w-full focus:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-highlight-400 focus:border-transparent"
+      @change="change"
+      @pointerdown.stop=""
     />
   </div>
 </template>
+
+<style scoped>
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+</style>

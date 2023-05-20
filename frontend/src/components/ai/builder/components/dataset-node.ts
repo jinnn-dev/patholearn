@@ -1,6 +1,6 @@
 import { ClassicPreset } from 'rete';
 import { DropdownControl, IDrowndownControl } from './dataset/dropdown-control';
-import { NodeType } from './types';
+import { LayerType, NodeType } from './types';
 import { INode, ISerializable, Serializable, serializePort } from '../serializable';
 
 export interface IDatasetNode extends INode {
@@ -20,7 +20,7 @@ export class DatasetNode
 
   private socket: ClassicPreset.Socket;
 
-  constructor(socket: ClassicPreset.Socket, public type: NodeType = 'Input') {
+  constructor(socket: ClassicPreset.Socket, public type: NodeType = 'Input', public layerType: LayerType = 'Dataset') {
     super('Input');
     this.socket = socket;
   }
@@ -39,7 +39,7 @@ export class DatasetNode
 
     for (const control of data.controls) {
       const controlData = control as IDrowndownControl;
-      node.addControl(control.key as 'dataset', new DropdownControl(controlData.values, controlData.label));
+      node.addControl(control.key as 'dataset', DropdownControl.parse(controlData));
     }
 
     return node;

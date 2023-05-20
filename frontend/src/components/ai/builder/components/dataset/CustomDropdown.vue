@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import CustomSelect from '../../../../form/CustomSelect.vue';
 
-defineProps({
+const props = defineProps({
   data: Object
 });
+
+const valueChanged = (change: any) => {
+  props.data!.setValue(change);
+};
 </script>
 <template>
   <custom-select
@@ -13,6 +17,7 @@ defineProps({
     :is-searchable="false"
     :label="data?.label"
     empty-string="(Empty)"
-    :initial-data="data?.values[0]"
+    :initial-data="data?.value || data?.values[0]"
+    @value-changed="valueChanged"
   ></custom-select>
 </template>

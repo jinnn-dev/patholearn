@@ -1,33 +1,31 @@
 import { ClassicPreset } from 'rete';
-import { ISerializable, Serializable } from '../../serializable';
+import { IControl, ISerializable, Serializable } from '../../serializable';
 
-export interface INumberControl extends ISerializable {
-  value: number;
+export interface INumberControl extends IControl {
   min: number;
   max: number;
   placeholder: string;
 }
 
 export class NumberControl extends ClassicPreset.Control implements Serializable<NumberControl, INumberControl> {
-  constructor(
-    public value: number,
-    public min: number,
-    public max: number,
-    public placeholder: string,
-    public onChange = (value: number) => {
-      this.value = value;
-    }
-  ) {
+  private value?: number;
+  constructor(public min: number, public max: number, public placeholder: string, public initialValue?: number) {
     super();
+    this.value = initialValue;
   }
 
-  parse(data: INumberControl) {
-    return new NumberControl(data.value, data.min, data.max, data.placeholder);
+  public setValue(value: number) {
+    this.value = value;
   }
 
-  serialize(): INumberControl {
+  static parse(data: INumberControl) {
+    return new NumberControl(data.min, data.max, data.placeholder, data.value);
+  }
+
+  serialize(key: string): INumberControl {
     return {
       _type: NumberControl.name,
+      key: key,
       id: this.id,
       value: this.value,
       min: this.min,
