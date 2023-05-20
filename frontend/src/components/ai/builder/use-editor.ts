@@ -19,6 +19,7 @@ import { IConnection, IGraph, INode } from './serializable';
 import { addCustomBackground } from './custom-background';
 import { LayerType } from './components/types';
 import { DimensionControl } from './components/dimension-control/dimension-control';
+import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } from 'rete-context-menu-plugin';
 
 // type Schemes = GetSchemes<
 //   ClassicPreset.Node,
@@ -32,7 +33,7 @@ class Connection<A extends NodeProps, B extends NodeProps> extends ClassicPreset
 type ConnProps = Connection<DatasetNode, Conv2DNode> | Connection<Conv2DNode, Conv2DNode>;
 type Schemes = GetSchemes<NodeProps, ConnProps>;
 
-type AreaExtra = VueArea2D<Schemes>;
+type AreaExtra = VueArea2D<Schemes> | ContextMenuExtra;
 
 export function useEditor() {
   const socket: Ref<ClassicPreset.Socket | undefined> = ref();
@@ -40,6 +41,7 @@ export function useEditor() {
   const connection: Ref<ConnectionPlugin<Schemes, AreaExtra> | undefined> = ref();
   const render: Ref<VueRenderPlugin<Schemes> | undefined> = ref();
   const editor: Ref<NodeEditor<Schemes> | undefined> = ref();
+  const contextMenu: Ref<ContextMenuPlugin<Schemes> | undefined> = ref();
 
   const arrange: Ref<AutoArrangePlugin<Schemes> | undefined> = ref();
   const animationApplier: Ref<ArrangeAppliers.TransitionApplier<Schemes, never> | undefined> = ref();
@@ -54,7 +56,9 @@ export function useEditor() {
     area.value = new AreaPlugin<Schemes, AreaExtra>(container);
     connection.value = new ConnectionPlugin<Schemes, AreaExtra>();
     render.value = new VueRenderPlugin<Schemes>();
-
+    contextMenu.value = new ContextMenuPlugin<Schemes>({
+      items: ContextMenuPresets.classic.setup([])
+    });
     arrange.value = new AutoArrangePlugin<Schemes>();
 
     animationApplier.value = new ArrangeAppliers.TransitionApplier<Schemes, never>({
@@ -102,7 +106,8 @@ export function useEditor() {
 
     // @ts-ignore
     render.value.addPreset(presets);
-
+    // @ts-ignore
+    render.value.addPreset(Presets.contextMenu.setup());
     connection.value.addPreset(ConnectionPresets.classic.setup());
     arrange.value.addPreset(ArrangePresets.classic.setup());
 
@@ -110,6 +115,7 @@ export function useEditor() {
     area.value.use(connection.value);
     area.value.use(render.value);
     area.value.use(arrange.value);
+    area.value.use(contextMenu.value);
 
     AreaExtensions.simpleNodesOrder(area.value);
 

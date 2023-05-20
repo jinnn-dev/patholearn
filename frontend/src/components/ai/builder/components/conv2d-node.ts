@@ -54,7 +54,7 @@ export class Conv2DNode
       node.addInput(input.key as 'in', new ClassicPreset.Input(socket, 'in'));
     }
     for (const output of data.outputs) {
-      node.addOutput(output.key as 'out', new ClassicPreset.Input(socket, 'out'));
+      node.addOutput(output.key as 'out', new ClassicPreset.Output(socket, 'out'));
     }
 
     for (const control of data.controls) {
