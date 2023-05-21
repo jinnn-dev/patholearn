@@ -4,9 +4,7 @@ import { LayerType, NodeType } from './types';
 import { IInputControl, INode, Serializable, serializeControl, serializePort } from '../serializable';
 import { DimensionControl, IDimensionControl } from './dimension-control/dimension-control';
 
-export interface IConv2DNode extends INode {
-  socket: string;
-}
+export interface IConv2DNode extends INode {}
 
 export class Conv2DNode
   extends ClassicPreset.Node<

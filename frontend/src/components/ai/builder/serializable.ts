@@ -40,6 +40,7 @@ export interface INode extends ISerializable {
   inputs: IPort[];
   outputs: IPort[];
   controls: IControl[];
+  socket: string;
 }
 
 export abstract class Serializable<T, C extends ISerializable> {

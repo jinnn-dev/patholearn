@@ -3,9 +3,7 @@ import { DropdownControl, IDrowndownControl } from './dataset/dropdown-control';
 import { LayerType, NodeType } from './types';
 import { INode, ISerializable, Serializable, serializePort } from '../serializable';
 
-export interface IDatasetNode extends INode {
-  socket: string;
-}
+export interface IDatasetNode extends INode {}
 
 export class DatasetNode
   extends ClassicPreset.Node<
