@@ -19,7 +19,7 @@ export class DatasetNode
   private socket: ClassicPreset.Socket;
 
   constructor(socket: ClassicPreset.Socket, public type: NodeType = 'Input', public layerType: LayerType = 'Dataset') {
-    super('Input');
+    super('Dataset');
     this.socket = socket;
   }
 
