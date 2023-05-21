@@ -8,8 +8,6 @@ export function debounce(delay: number, cb: () => void) {
       }
     },
     call() {
-      console.log(delay);
-
       this.timeout = window.setTimeout(() => {
         cb();
       }, delay);

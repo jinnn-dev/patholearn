@@ -3,7 +3,7 @@ import { RenderPreset } from 'rete-vue-render-plugin';
 import { ContextMenuRender } from 'rete-vue-render-plugin/_types/presets/context-menu/types';
 import ContextMenu from './components/context-menu/ContextMenu.vue';
 
-export function setup<Schemes extends BaseSchemes, K extends ContextMenuRender>(props?: {
+export function setupContext<Schemes extends BaseSchemes, K extends ContextMenuRender>(props?: {
   delay?: number;
 }): RenderPreset<Schemes, K> {
   const delay = typeof props?.delay === 'undefined' ? 1000 : props.delay;

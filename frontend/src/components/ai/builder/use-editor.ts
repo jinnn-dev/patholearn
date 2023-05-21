@@ -19,8 +19,9 @@ import { addCustomBackground } from './custom-background';
 import { LayerType } from './components/types';
 import { DimensionControl } from './components/dimension-control/dimension-control';
 import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } from 'rete-context-menu-plugin';
-import { setup } from './context-menu';
+import { setupContext } from './context-menu';
 import { ILinearNode, LinearNode } from './components/linear-node';
+import { arrangeSetup } from './arrange-nodes';
 // type Schemes = GetSchemes<
 //   ClassicPreset.Node,
 //   ClassicPreset.Connection<ClassicPreset.Node, ClassicPreset.Node> | ClassicPreset.Connection<DatasetNode, Conv2DNode>
@@ -110,9 +111,9 @@ export function useEditor() {
     // @ts-ignore
     render.value.addPreset(presets);
     // @ts-ignore
-    render.value.addPreset(setup({ delay: 3000 }));
+    render.value.addPreset(setupContext({ delay: 3000 }));
     connection.value.addPreset(ConnectionPresets.classic.setup());
-    arrange.value.addPreset(ArrangePresets.classic.setup());
+    arrange.value.addPreset(arrangeSetup({ distance: 20 }));
 
     editor.value.use(area.value);
     area.value.use(connection.value);
