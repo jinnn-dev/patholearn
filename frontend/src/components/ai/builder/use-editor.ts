@@ -22,12 +22,13 @@ import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } fr
 import { setupContext } from './context-menu';
 import { ILinearNode, LinearNode } from './components/linear-node';
 import { arrangeSetup } from './arrange-nodes';
+import { DropoutNode, IDropoutNode } from './dropout-node';
 // type Schemes = GetSchemes<
 //   ClassicPreset.Node,
 //   ClassicPreset.Connection<ClassicPreset.Node, ClassicPreset.Node> | ClassicPreset.Connection<DatasetNode, Conv2DNode>
 // >;
 
-type NodeProps = DatasetNode | Conv2DNode | LinearNode;
+type NodeProps = DatasetNode | Conv2DNode | LinearNode | DropoutNode;
 
 class Connection<A extends NodeProps, B extends NodeProps> extends ClassicPreset.Connection<A, B> {}
 
@@ -60,7 +61,14 @@ export function useEditor() {
     contextMenu.value = new ContextMenuPlugin<Schemes>({
       items: ContextMenuPresets.classic.setup([
         ['Input', [['Dataset', () => DatasetNode.create(socket.value!)]]],
-        ['Layer', [['Conv2D', () => Conv2DNode.create(socket.value!)]]]
+        [
+          'Layer',
+          [
+            ['Conv2D', () => Conv2DNode.create(socket.value!)],
+            ['Linear', () => LinearNode.create(socket.value!)]
+          ]
+        ],
+        ['Transform', [['Dropout', () => DropoutNode.create(socket.value!)]]]
       ])
     });
     arrange.value = new AutoArrangePlugin<Schemes>();
@@ -176,6 +184,9 @@ export function useEditor() {
     } else if (layerType === 'Linear') {
       layer = new LinearNode(socket.value);
       layer.addDefault();
+    } else if (layerType == 'Dropout') {
+      layer = new DropoutNode(socket.value);
+      layer.addDefault();
     } else {
       layer = new DatasetNode(socket.value);
       layer.addDefault();
@@ -235,6 +246,8 @@ export function useEditor() {
         node = DatasetNode.parse(nodeData as IDatasetNode);
       } else if (nodeData._type === LinearNode.name) {
         node = LinearNode.parse(nodeData as ILinearNode);
+      } else if (nodeData._type === DropoutNode.name) {
+        node = DropoutNode.parse(nodeData as IDropoutNode);
       } else {
         node = new Presets.classic.Node();
       }

@@ -40,7 +40,7 @@ export class Conv2DNode
     this.addInput('in', new ClassicPreset.Input(this.socket, 'in'));
     this.addOutput('out', new ClassicPreset.Output(this.socket, 'out'));
 
-    this.addControl('filters', new NumberControl(0, 128, 'Filters'));
+    this.addControl('filters', new NumberControl(0, 128, 'Filters', 'Filters'));
     this.addControl(
       'kernel',
       new DimensionControl('Kernel', { min: 0, max: 128, placeholder: 'x' }, { min: 0, max: 128, placeholder: 'y' })

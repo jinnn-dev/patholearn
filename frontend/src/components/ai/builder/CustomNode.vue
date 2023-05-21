@@ -95,7 +95,16 @@ function onRef(element: any, key: any, entity: any, type: any) {
   }
 }
 const titleClasses = computed(() => {
-  return props.data?.type == 'Input' ? 'bg-teal-800' : 'bg-sky-800';
+  switch (props.data?.type) {
+    case 'Input':
+      return 'bg-teal-800';
+    case 'Layer':
+      return 'bg-sky-800';
+    case 'Transform':
+      return 'bg-purple-800';
+    default:
+      break;
+  }
 });
 
 const nodeStyles = computed(() => {

@@ -26,6 +26,13 @@ export class LinearNode
     super('Linear');
     this.socket = socket;
   }
+
+  static create(socket: ClassicPreset.Socket) {
+    const layer = new LinearNode(socket);
+    layer.addDefault();
+    return layer;
+  }
+
   public addDefault() {
     this.addInput('in', new ClassicPreset.Input(this.socket, 'in'));
     this.addOutput('out', new ClassicPreset.Output(this.socket, 'out'));

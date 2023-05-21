@@ -4,12 +4,19 @@ import { IControl, ISerializable, Serializable } from '../../serializable';
 export interface INumberControl extends IControl {
   min: number;
   max: number;
+  label: string;
   placeholder: string;
 }
 
 export class NumberControl extends ClassicPreset.Control implements Serializable<NumberControl, INumberControl> {
   private value?: number;
-  constructor(public min: number, public max: number, public placeholder: string, public initialValue?: number) {
+  constructor(
+    public min: number,
+    public max: number,
+    public label: string,
+    public placeholder: string,
+    public initialValue?: number
+  ) {
     super();
     this.value = initialValue;
   }
@@ -19,7 +26,7 @@ export class NumberControl extends ClassicPreset.Control implements Serializable
   }
 
   static parse(data: INumberControl) {
-    return new NumberControl(data.min, data.max, data.placeholder, data.value);
+    return new NumberControl(data.min, data.max, data.label, data.placeholder, data.value);
   }
 
   serialize(key: string): INumberControl {
@@ -30,7 +37,8 @@ export class NumberControl extends ClassicPreset.Control implements Serializable
       value: this.value,
       min: this.min,
       max: this.max,
-      placeholder: this.placeholder
+      placeholder: this.placeholder,
+      label: this.label
     };
   }
 }

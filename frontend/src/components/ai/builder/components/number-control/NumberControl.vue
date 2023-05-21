@@ -4,6 +4,7 @@ import { PropType, ref } from 'vue';
 interface DataInterface {
   max: number;
   min: number;
+  label: string;
   placeholder: string;
   value: number;
   setValue: Function;
@@ -19,7 +20,7 @@ const change = (e: any) => {
 </script>
 <template>
   <div class="flex items-center gap-2 justify-start">
-    <div class="text-right">{{ data?.placeholder }}:</div>
+    <div class="text-right">{{ data?.label }}:</div>
     <input
       :min="data?.min"
       :max="data?.max"
