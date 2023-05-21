@@ -35,6 +35,7 @@ const emit = defineEmits<{ (e: 'selected', value: EventName): void }>();
           <div class="w-full h-[1px] bg-gray-700"></div>
           <tool-item icon="images" label="Dataset" @click="emit('selected', 'Dataset')"></tool-item>
           <tool-item icon="stack" label="Conv2D" @click="emit('selected', 'Conv2D')"></tool-item>
+          <tool-item icon="cards" label="Linear" @click="emit('selected', 'Linear')"></tool-item>
         </div>
       </div>
     </transition>

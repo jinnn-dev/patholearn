@@ -6,7 +6,6 @@ import { AutoArrangePlugin, Presets as ArrangePresets, ArrangeAppliers } from 'r
 
 import CustomNodeVue from './CustomNode.vue';
 import CustomConnectionVue from './CustomConnection.vue';
-import CustomSocketVue from './CustomSocket.vue';
 import { DatasetNode, IDatasetNode } from './components/dataset-node';
 import { DropdownControl } from './components/dataset/dropdown-control';
 import CustomDropdownVue from './components/dataset/CustomDropdown.vue';
@@ -21,12 +20,13 @@ import { LayerType } from './components/types';
 import { DimensionControl } from './components/dimension-control/dimension-control';
 import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } from 'rete-context-menu-plugin';
 import { setup } from './context-menu';
+import { ILinearNode, LinearNode } from './components/linear-node';
 // type Schemes = GetSchemes<
 //   ClassicPreset.Node,
 //   ClassicPreset.Connection<ClassicPreset.Node, ClassicPreset.Node> | ClassicPreset.Connection<DatasetNode, Conv2DNode>
 // >;
 
-type NodeProps = DatasetNode | Conv2DNode;
+type NodeProps = DatasetNode | Conv2DNode | LinearNode;
 
 class Connection<A extends NodeProps, B extends NodeProps> extends ClassicPreset.Connection<A, B> {}
 
@@ -171,6 +171,10 @@ export function useEditor() {
     if (layerType === 'Conv2D') {
       layer = new Conv2DNode(socket.value);
       layer.addDefault();
+    }
+    if (layerType === 'Linear') {
+      layer = new LinearNode(socket.value);
+      layer.addDefault();
     } else {
       layer = new DatasetNode(socket.value);
       layer.addDefault();
@@ -228,6 +232,8 @@ export function useEditor() {
         node = Conv2DNode.parse(nodeData as IConv2DNode);
       } else if (nodeData._type === DatasetNode.name) {
         node = DatasetNode.parse(nodeData as IDatasetNode);
+      } else if (nodeData._type === LinearNode.name) {
+        node = LinearNode.parse(nodeData as ILinearNode);
       } else {
         node = new Presets.classic.Node();
       }
@@ -243,6 +249,7 @@ export function useEditor() {
       const targetNode = editor.value?.getNode(connectionData.target);
       const targetInput = connectionData.targetInput;
 
+      // @ts-ignore
       const connection = new Connection(sourceNode, sourceOutput, targetNode, targetInput);
       await editor.value?.addConnection(connection);
     }
