@@ -25,6 +25,12 @@ export class DatasetNode
     this.socket = socket;
   }
 
+  static create(socket: ClassicPreset.Socket) {
+    const node = new DatasetNode(socket);
+    node.addDefault();
+    return node;
+  }
+
   public addDefault() {
     this.addControl('dataset', new DropdownControl(['MNIST', 'BHI'], 'Dataset'));
     this.addOutput('dataset', new ClassicPreset.Output(this.socket, 'Dataset'));

@@ -29,6 +29,12 @@ export class Conv2DNode
     this.socket = socket;
   }
 
+  static create(socket: ClassicPreset.Socket) {
+    const layer = new Conv2DNode(socket);
+    layer.addDefault();
+    return layer;
+  }
+
   public addDefault() {
     this.addInput('in', new ClassicPreset.Input(this.socket, 'in'));
     this.addOutput('out', new ClassicPreset.Output(this.socket, 'out'));

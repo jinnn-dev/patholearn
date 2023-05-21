@@ -20,7 +20,7 @@ import { addCustomBackground } from './custom-background';
 import { LayerType } from './components/types';
 import { DimensionControl } from './components/dimension-control/dimension-control';
 import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } from 'rete-context-menu-plugin';
-
+import { setup } from './context-menu';
 // type Schemes = GetSchemes<
 //   ClassicPreset.Node,
 //   ClassicPreset.Connection<ClassicPreset.Node, ClassicPreset.Node> | ClassicPreset.Connection<DatasetNode, Conv2DNode>
@@ -57,7 +57,10 @@ export function useEditor() {
     connection.value = new ConnectionPlugin<Schemes, AreaExtra>();
     render.value = new VueRenderPlugin<Schemes>();
     contextMenu.value = new ContextMenuPlugin<Schemes>({
-      items: ContextMenuPresets.classic.setup([])
+      items: ContextMenuPresets.classic.setup([
+        ['Input', [['Dataset', () => DatasetNode.create(socket.value!)]]],
+        ['Layer', [['Conv2D', () => Conv2DNode.create(socket.value!)]]]
+      ])
     });
     arrange.value = new AutoArrangePlugin<Schemes>();
 
@@ -107,7 +110,7 @@ export function useEditor() {
     // @ts-ignore
     render.value.addPreset(presets);
     // @ts-ignore
-    render.value.addPreset(Presets.contextMenu.setup());
+    render.value.addPreset(setup({ delay: 3000 }));
     connection.value.addPreset(ConnectionPresets.classic.setup());
     arrange.value.addPreset(ArrangePresets.classic.setup());
 
@@ -146,6 +149,10 @@ export function useEditor() {
 
     await arrangeLayout();
     await zoomAt();
+
+    // Hacky way to disable double click zooming
+    // @ts-ignore
+    area.value.area.zoomHandler.container.removeEventListener('dblclick', area.value.area.zoomHandler.dblclick);
 
     loading.value = false;
   };
@@ -239,6 +246,7 @@ export function useEditor() {
       const connection = new Connection(sourceNode, sourceOutput, targetNode, targetInput);
       await editor.value?.addConnection(connection);
     }
+
     await arrangeLayout();
     await zoomAt();
 
