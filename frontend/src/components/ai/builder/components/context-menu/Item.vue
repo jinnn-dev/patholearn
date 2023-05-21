@@ -24,7 +24,7 @@ function hideSubitems() {
 </script>
 <template>
   <block
-    class="item cursor-pointer hover:bg-gray-500"
+    class="relative p-1 rounded-lg bg-gray-800 cursor-pointer w-full hover:ring-1 hover:ring-gray-500 hover:bg-gray-600"
     :class="{ hasSubitems: subitems }"
     @click.stop="
       $emit('select', $event);
@@ -40,7 +40,7 @@ function hideSubitems() {
     data-testid="context-menu-item"
   >
     <slot></slot>
-    <div class="subitems" v-if="subitems && visibleSubitems">
+    <div class="absolute top-0 left-full w-fit-content px-2" v-if="subitems && visibleSubitems">
       <item
         v-for="item of subitems"
         :key="item.key"
@@ -60,12 +60,5 @@ function hideSubitems() {
   opacity: 0.6;
   right: 5px;
   top: 5px;
-}
-
-.subitems {
-  position: absolute;
-  top: 0;
-  left: 100%;
-  width: fit-content;
 }
 </style>
