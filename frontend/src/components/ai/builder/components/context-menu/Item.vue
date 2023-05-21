@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { debounce } from './debounce';
 import Block from './Block.vue';
-import { PropType, ref } from 'vue';
+import { PropType, onMounted, ref } from 'vue';
 
 const props = defineProps({
   subitems: {
@@ -12,6 +12,8 @@ const props = defineProps({
     default: 200
   }
 });
+
+defineEmits(['select', 'hide']);
 
 const visibleSubitems = ref();
 const hide = debounce(props.delay, hideSubitems);
@@ -38,12 +40,12 @@ function hideSubitems() {
     data-testid="context-menu-item"
   >
     <slot></slot>
-    <div class="subitems" v-if="subitems &amp;&amp; visibleSubitems">
+    <div class="subitems" v-if="subitems && visibleSubitems">
       <item
         v-for="item of subitems"
         :key="item.key"
         @select="item.handler($event)"
-        :delay="delay"
+        :delay="0"
         @hide="$emit('hide')"
         :subitems="item.subitems"
         >{{ item.label }}</item

@@ -40,7 +40,7 @@ function getItems() {
       v-for="item of getItems()"
       :key="item.key"
       @select="item.handler($event)"
-      :delay="delay"
+      :delay="0"
       @hide="$emit('hide')"
       :subitems="item.subitems"
       >{{ item.label }}</item
