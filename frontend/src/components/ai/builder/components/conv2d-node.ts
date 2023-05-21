@@ -3,6 +3,8 @@ import { INumberControl, NumberControl } from './number-control/number-control';
 import { LayerType, NodeType } from './types';
 import { IInputControl, INode, Serializable, serializeControl, serializePort } from '../serializable';
 import { DimensionControl, IDimensionControl } from './dimension-control/dimension-control';
+import { DropdownControl, IDropdownControl } from './dropdown-control/dropdown-control';
+import { ActivationControl } from './activation-control';
 
 export interface IConv2DNode extends INode {}
 
@@ -14,12 +16,13 @@ export class Conv2DNode
       filters: NumberControl;
       kernel: DimensionControl;
       stride: DimensionControl;
+      activation: ActivationControl;
     }
   >
   implements Serializable<Conv2DNode, IConv2DNode>
 {
-  width = 180;
-  height = 230;
+  width = 200;
+  height = 310;
 
   private socket: ClassicPreset.Socket;
   constructor(socket: ClassicPreset.Socket, public type: NodeType = 'Layer', public layerType: LayerType = 'Conv2D') {
@@ -36,9 +39,6 @@ export class Conv2DNode
   public addDefault() {
     this.addInput('in', new ClassicPreset.Input(this.socket, 'in'));
     this.addOutput('out', new ClassicPreset.Output(this.socket, 'out'));
-    // this.addControl('filters', new NumberControl(1, 1, 128, 'Filter'));
-    // this.addControl('kernel', new NumberControl(1, 1, 128, 'Kernel'));
-    // this.addControl('stride', new NumberControl(1, 1, 128, 'Stride'));
 
     this.addControl('filters', new NumberControl(0, 128, 'Filters'));
     this.addControl(
@@ -49,6 +49,7 @@ export class Conv2DNode
       'stride',
       new DimensionControl('Stride', { min: 0, max: 128, placeholder: 'x' }, { min: 0, max: 128, placeholder: 'y' })
     );
+    this.addControl('activation', new ActivationControl());
   }
 
   public static parse(data: IConv2DNode): Conv2DNode {
@@ -62,15 +63,18 @@ export class Conv2DNode
     }
 
     for (const control of data.controls) {
-      let controlInstance: DimensionControl | NumberControl;
+      let controlInstance: DimensionControl | NumberControl | ActivationControl;
+
       if ('xOptions' in control) {
         let data = control as IDimensionControl;
         controlInstance = DimensionControl.parse(data);
+      } else if (control._type === ActivationControl.name) {
+        controlInstance = ActivationControl.parse(control as IDropdownControl);
       } else {
         let data = control as INumberControl;
         controlInstance = NumberControl.parse(data);
       }
-      node.addControl(control.key as 'filters' | 'kernel' | 'stride', controlInstance);
+      node.addControl(control.key as 'filters' | 'kernel' | 'stride' | 'activation', controlInstance);
     }
 
     return node;

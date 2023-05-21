@@ -32,7 +32,7 @@ const changeY = (e: any) => {
       :max="data?.xOptions.max"
       :placeholder="data?.xOptions.placeholder"
       type="number"
-      :value="data?.value?.x || data?.xOptions.placeholder"
+      :value="data?.value?.x"
       class="text-center bg-gray-900 py-0.5 px-2 disabled:bg-gray-500 bg-opacity-50 disabled:bg-opacity-50 placeholder-gray-400 rounded-lg w-full focus:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-highlight-400 focus:border-transparent"
       @change="changeX"
       @pointerdown.stop=""

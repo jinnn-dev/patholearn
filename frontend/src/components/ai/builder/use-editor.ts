@@ -7,8 +7,8 @@ import { AutoArrangePlugin, Presets as ArrangePresets, ArrangeAppliers } from 'r
 import CustomNodeVue from './CustomNode.vue';
 import CustomConnectionVue from './CustomConnection.vue';
 import { DatasetNode, IDatasetNode } from './components/dataset-node';
-import { DropdownControl } from './components/dataset/dropdown-control';
-import CustomDropdownVue from './components/dataset/CustomDropdown.vue';
+import { DropdownControl } from './components/dropdown-control/dropdown-control';
+import CustomDropdownVue from './components/dropdown-control/CustomDropdown.vue';
 import { Conv2DNode, IConv2DNode } from './components/conv2d-node';
 import { NumberControl } from './components/number-control/number-control';
 import NumberControlVue from './components/number-control/NumberControl.vue';
@@ -168,11 +168,11 @@ export function useEditor() {
       return;
     }
     let layer;
+
     if (layerType === 'Conv2D') {
       layer = new Conv2DNode(socket.value);
       layer.addDefault();
-    }
-    if (layerType === 'Linear') {
+    } else if (layerType === 'Linear') {
       layer = new LinearNode(socket.value);
       layer.addDefault();
     } else {

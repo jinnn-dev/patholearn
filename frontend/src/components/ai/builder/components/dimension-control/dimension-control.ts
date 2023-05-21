@@ -32,6 +32,8 @@ export class DimensionControl
   }
 
   public setValue(xValue?: number, yValue?: number) {
+    console.log(xValue, yValue);
+
     this.value = {
       x: xValue,
       y: yValue

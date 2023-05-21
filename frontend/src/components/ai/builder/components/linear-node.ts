@@ -2,6 +2,8 @@ import { ClassicPreset } from 'rete';
 import { INumberControl, NumberControl } from './number-control/number-control';
 import { INode, Serializable, serializePort } from '../serializable';
 import { LayerType, NodeType } from './types';
+import { DropdownControl, IDropdownControl } from './dropdown-control/dropdown-control';
+import { ActivationControl } from './activation-control';
 
 export interface ILinearNode extends INode {}
 
@@ -11,12 +13,13 @@ export class LinearNode
     { out: ClassicPreset.Socket },
     {
       neurons: NumberControl;
+      activation: DropdownControl;
     }
   >
   implements Serializable<LinearNode, ILinearNode>
 {
-  width = 180;
-  height = 120;
+  width = 200;
+  height = 220;
 
   private socket: ClassicPreset.Socket;
   constructor(socket: ClassicPreset.Socket, public type: NodeType = 'Layer', public layerType: LayerType = 'Linear') {
@@ -27,6 +30,7 @@ export class LinearNode
     this.addInput('in', new ClassicPreset.Input(this.socket, 'in'));
     this.addOutput('out', new ClassicPreset.Output(this.socket, 'out'));
     this.addControl('neurons', new NumberControl(0, 2048, 'Neurons'));
+    this.addControl('activation', new ActivationControl());
   }
 
   public static parse(data: ILinearNode): LinearNode {
@@ -40,8 +44,14 @@ export class LinearNode
     }
 
     for (const control of data.controls) {
-      let controlInstance = NumberControl.parse(control as INumberControl);
-      node.addControl(control.key as 'neurons', controlInstance);
+      let controlInstance: NumberControl | ActivationControl;
+      if (control._type === ActivationControl.name) {
+        controlInstance = ActivationControl.parse(control as IDropdownControl);
+      } else {
+        controlInstance = NumberControl.parse(control as INumberControl);
+      }
+
+      node.addControl(control.key as 'neurons' | 'activation', controlInstance);
     }
 
     return node;
