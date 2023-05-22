@@ -25,12 +25,13 @@ import { arrangeSetup } from './arrange-nodes';
 import { DropoutNode, IDropoutNode } from './components/dropout-node';
 import { FlattenNode, IFlattenNode } from './components/flatten-node';
 import { BatchNormNode } from './components/batch-norm-node';
+import { IPoolingNode, PoolingNode } from './components/pooling-node';
 // type Schemes = GetSchemes<
 //   ClassicPreset.Node,
 //   ClassicPreset.Connection<ClassicPreset.Node, ClassicPreset.Node> | ClassicPreset.Connection<DatasetNode, Conv2DNode>
 // >;
 
-type NodeProps = DatasetNode | Conv2DNode | LinearNode | DropoutNode | FlattenNode | BatchNormNode;
+type NodeProps = DatasetNode | Conv2DNode | LinearNode | DropoutNode | FlattenNode | BatchNormNode | PoolingNode;
 
 class Connection<A extends NodeProps, B extends NodeProps> extends ClassicPreset.Connection<A, B> {}
 
@@ -67,7 +68,8 @@ export function useEditor() {
           'Layer',
           [
             ['Conv2D', () => Conv2DNode.create(socket.value!)],
-            ['Linear', () => LinearNode.create(socket.value!)]
+            ['Linear', () => LinearNode.create(socket.value!)],
+            ['Pooling', () => PoolingNode.create(socket.value!)]
           ]
         ],
         [
@@ -190,29 +192,27 @@ export function useEditor() {
     switch (layerType) {
       case 'Conv2D':
         layer = new Conv2DNode(socket.value);
-        layer.addDefault();
         break;
       case 'Linear':
         layer = new LinearNode(socket.value);
-        layer.addDefault();
         break;
       case 'Dropout':
         layer = new DropoutNode(socket.value);
-        layer.addDefault();
         break;
       case 'Flatten':
         layer = new FlattenNode(socket.value);
-        layer.addDefault();
         break;
       case 'BatchNorm':
         layer = new BatchNormNode(socket.value);
-        layer.addDefault();
+        break;
+      case 'Pooling':
+        layer = new PoolingNode(socket.value);
         break;
       default:
         layer = new DatasetNode(socket.value);
-        layer.addDefault();
         break;
     }
+    layer.addDefault();
 
     await editor.value.addNode(layer);
   };
@@ -272,6 +272,8 @@ export function useEditor() {
         node = DropoutNode.parse(nodeData as IDropoutNode);
       } else if (nodeData._type === FlattenNode.name) {
         node = FlattenNode.parse(nodeData as IFlattenNode);
+      } else if (nodeData._type === PoolingNode.name) {
+        node = PoolingNode.parse(nodeData as IPoolingNode);
       } else {
         node = new Presets.classic.Node();
       }

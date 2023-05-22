@@ -52,7 +52,8 @@ const itemClicked = async (event: EventName) => {
     event === 'Dataset' ||
     event === 'Dropout' ||
     event === 'Flatten' ||
-    event === 'BatchNorm'
+    event === 'BatchNorm' ||
+    event === 'Pooling'
   ) {
     await addNode(event);
   }

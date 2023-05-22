@@ -2,7 +2,7 @@ import { DropdownControl, IDropdownControl } from './dropdown-control/dropdown-c
 
 export class ActivationControl extends DropdownControl {
   constructor() {
-    super(['None (Linear)', 'sigmoid', 'tanh', 'relu'], 'Activation', 'activation');
+    super(['None (Linear)', 'sigmoid', 'tanh', 'relu', 'softmax', 'log_softmax'], 'Activation', 'activation');
   }
 
   public static parse(data: IDropdownControl): ActivationControl {

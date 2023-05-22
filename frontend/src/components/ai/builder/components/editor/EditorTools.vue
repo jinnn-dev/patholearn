@@ -39,6 +39,7 @@ const emit = defineEmits<{ (e: 'selected', value: EventName): void }>();
           <tool-item icon="drop-half" label="Dropout" @click="emit('selected', 'Dropout')"></tool-item>
           <tool-item icon="dots-three-outline" label="Flatten" @click="emit('selected', 'Flatten')"></tool-item>
           <tool-item icon="equalizer" label="Batch Norm." @click="emit('selected', 'BatchNorm')"></tool-item>
+          <tool-item icon="arrows-in" label="Pooling" @click="emit('selected', 'Pooling')"></tool-item>
         </div>
       </div>
     </transition>
