@@ -22,13 +22,15 @@ import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } fr
 import { setupContext } from './context-menu';
 import { ILinearNode, LinearNode } from './components/linear-node';
 import { arrangeSetup } from './arrange-nodes';
-import { DropoutNode, IDropoutNode } from './dropout-node';
+import { DropoutNode, IDropoutNode } from './components/dropout-node';
+import { FlattenNode, IFlattenNode } from './components/flatten-node';
+import { BatchNormNode } from './components/batch-norm-node';
 // type Schemes = GetSchemes<
 //   ClassicPreset.Node,
 //   ClassicPreset.Connection<ClassicPreset.Node, ClassicPreset.Node> | ClassicPreset.Connection<DatasetNode, Conv2DNode>
 // >;
 
-type NodeProps = DatasetNode | Conv2DNode | LinearNode | DropoutNode;
+type NodeProps = DatasetNode | Conv2DNode | LinearNode | DropoutNode | FlattenNode | BatchNormNode;
 
 class Connection<A extends NodeProps, B extends NodeProps> extends ClassicPreset.Connection<A, B> {}
 
@@ -68,7 +70,14 @@ export function useEditor() {
             ['Linear', () => LinearNode.create(socket.value!)]
           ]
         ],
-        ['Transform', [['Dropout', () => DropoutNode.create(socket.value!)]]]
+        [
+          'Transform',
+          [
+            ['Dropout', () => DropoutNode.create(socket.value!)],
+            ['Flatten', () => FlattenNode.create(socket.value!)],
+            ['Batch Norm.', () => BatchNormNode.create(socket.value!)]
+          ]
+        ]
       ])
     });
     arrange.value = new AutoArrangePlugin<Schemes>();
@@ -178,18 +187,31 @@ export function useEditor() {
     }
     let layer;
 
-    if (layerType === 'Conv2D') {
-      layer = new Conv2DNode(socket.value);
-      layer.addDefault();
-    } else if (layerType === 'Linear') {
-      layer = new LinearNode(socket.value);
-      layer.addDefault();
-    } else if (layerType == 'Dropout') {
-      layer = new DropoutNode(socket.value);
-      layer.addDefault();
-    } else {
-      layer = new DatasetNode(socket.value);
-      layer.addDefault();
+    switch (layerType) {
+      case 'Conv2D':
+        layer = new Conv2DNode(socket.value);
+        layer.addDefault();
+        break;
+      case 'Linear':
+        layer = new LinearNode(socket.value);
+        layer.addDefault();
+        break;
+      case 'Dropout':
+        layer = new DropoutNode(socket.value);
+        layer.addDefault();
+        break;
+      case 'Flatten':
+        layer = new FlattenNode(socket.value);
+        layer.addDefault();
+        break;
+      case 'BatchNorm':
+        layer = new BatchNormNode(socket.value);
+        layer.addDefault();
+        break;
+      default:
+        layer = new DatasetNode(socket.value);
+        layer.addDefault();
+        break;
     }
 
     await editor.value.addNode(layer);
@@ -248,6 +270,8 @@ export function useEditor() {
         node = LinearNode.parse(nodeData as ILinearNode);
       } else if (nodeData._type === DropoutNode.name) {
         node = DropoutNode.parse(nodeData as IDropoutNode);
+      } else if (nodeData._type === FlattenNode.name) {
+        node = FlattenNode.parse(nodeData as IFlattenNode);
       } else {
         node = new Presets.classic.Node();
       }

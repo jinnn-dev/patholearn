@@ -1,15 +1,15 @@
 import { ClassicPreset } from 'rete';
-import { INode, Serializable, serializePort } from './serializable';
-import { INumberControl, NumberControl } from './components/number-control/number-control';
-import { NodeType, TransformType } from './components/types';
+import { INode, Serializable, serializePort } from '../serializable';
+import { INumberControl, NumberControl } from './number-control/number-control';
+import { NodeType, TransformType } from './types';
 
-export interface IDropoutNode extends INode {}
+export interface IBatchNormNode extends INode {}
 
-export class DropoutNode
-  extends ClassicPreset.Node<{ in: ClassicPreset.Socket }, { out: ClassicPreset.Socket }, { amount: NumberControl }>
-  implements Serializable<DropoutNode, IDropoutNode>
+export class BatchNormNode
+  extends ClassicPreset.Node<{ in: ClassicPreset.Socket }, { out: ClassicPreset.Socket }, { momentum: NumberControl }>
+  implements Serializable<BatchNormNode, IBatchNormNode>
 {
-  width = 180;
+  width = 240;
   height = 120;
 
   private socket: ClassicPreset.Socket;
@@ -19,12 +19,12 @@ export class DropoutNode
     public type: NodeType = 'Transform',
     public transformType: TransformType = 'Dropout'
   ) {
-    super('Dropout');
+    super('Batch Normalization');
     this.socket = socket;
   }
 
   static create(socket: ClassicPreset.Socket) {
-    const node = new DropoutNode(socket);
+    const node = new BatchNormNode(socket);
     node.addDefault();
     return node;
   }
@@ -32,12 +32,12 @@ export class DropoutNode
   public addDefault() {
     this.addInput('in', new ClassicPreset.Input(this.socket, 'in'));
     this.addOutput('out', new ClassicPreset.Output(this.socket, 'out'));
-    this.addControl('amount', new NumberControl(0, 100, 'Percentage', '%'));
+    this.addControl('momentum', new NumberControl(0, 1, 'Momentum', 'momentum'));
   }
 
-  public static parse(data: IDropoutNode): DropoutNode {
+  public static parse(data: IBatchNormNode): BatchNormNode {
     const socket = new ClassicPreset.Socket(data.socket);
-    const node = new DropoutNode(socket);
+    const node = new BatchNormNode(socket);
     for (const input of data.inputs) {
       node.addInput(input.key as 'in', new ClassicPreset.Input(socket, input.label));
     }
@@ -47,22 +47,20 @@ export class DropoutNode
 
     for (const control of data.controls) {
       const controlData = control as INumberControl;
-      console.log(controlData);
-
-      node.addControl(control.key as 'amount', NumberControl.parse(controlData));
+      node.addControl(control.key as 'momentum', NumberControl.parse(controlData));
     }
 
     return node;
   }
 
-  public serialize(key?: string | undefined): IDropoutNode {
+  public serialize(key?: string | undefined): IBatchNormNode {
     const inputs = Object.entries(this.inputs).map(([key, input]) => serializePort(key, input));
     const outputs = Object.entries(this.outputs).map(([key, input]) => serializePort(key, input));
     const controls = Object.entries(this.controls).map(([key, input]) => input.serialize(key));
 
     return {
       id: this.id,
-      _type: DropoutNode.name,
+      _type: BatchNormNode.name,
       label: this.label,
       inputs: inputs,
       outputs: outputs,

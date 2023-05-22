@@ -46,7 +46,14 @@ const itemClicked = async (event: EventName) => {
     await zoomAt();
   }
 
-  if (event === 'Conv2D' || event === 'Linear' || event === 'Dataset' || event === 'Dropout') {
+  if (
+    event === 'Conv2D' ||
+    event === 'Linear' ||
+    event === 'Dataset' ||
+    event === 'Dropout' ||
+    event === 'Flatten' ||
+    event === 'BatchNorm'
+  ) {
     await addNode(event);
   }
 

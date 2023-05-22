@@ -37,6 +37,8 @@ const emit = defineEmits<{ (e: 'selected', value: EventName): void }>();
           <tool-item icon="stack" label="Conv2D" @click="emit('selected', 'Conv2D')"></tool-item>
           <tool-item icon="cards" label="Linear" @click="emit('selected', 'Linear')"></tool-item>
           <tool-item icon="drop-half" label="Dropout" @click="emit('selected', 'Dropout')"></tool-item>
+          <tool-item icon="dots-three-outline" label="Flatten" @click="emit('selected', 'Flatten')"></tool-item>
+          <tool-item icon="equalizer" label="Batch Norm." @click="emit('selected', 'BatchNorm')"></tool-item>
         </div>
       </div>
     </transition>

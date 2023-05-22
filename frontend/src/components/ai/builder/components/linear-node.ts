@@ -36,7 +36,7 @@ export class LinearNode
   public addDefault() {
     this.addInput('in', new ClassicPreset.Input(this.socket, 'in'));
     this.addOutput('out', new ClassicPreset.Output(this.socket, 'out'));
-    this.addControl('neurons', new NumberControl(0, 2048, 'Neurons'));
+    this.addControl('neurons', new NumberControl(0, 2048, 'Neurons', 'neurons'));
     this.addControl('activation', new ActivationControl());
   }
 
