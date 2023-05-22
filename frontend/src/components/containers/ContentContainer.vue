@@ -39,7 +39,7 @@ defineProps({
     </div>
 
     <div class="flex flex-1 justify-center h-full" :class="margin">
-      <div class="w-11/12 mb-8 flex flex-1 flex-col">
+      <div class="w-11/12 mb-8 flex flex-col">
         <slot name="content"></slot>
       </div>
     </div>
