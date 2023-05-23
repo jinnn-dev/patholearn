@@ -6,4 +6,6 @@ export abstract class Control<S extends ISerializable>
   implements Serializable<S extends ISerializable ? any : any>
 {
   public abstract serialize(key?: string | undefined): S extends ISerializable ? any : any;
+  public abstract setValue(...args: any): void;
+  public static parse<T>(nodeData: T extends ISerializable ? any : any) {}
 }

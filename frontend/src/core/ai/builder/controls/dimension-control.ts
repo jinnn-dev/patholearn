@@ -1,5 +1,6 @@
 import { ClassicPreset } from 'rete';
 import { IControl, ISerializable, Serializable } from '../serializable';
+import { Control } from './control';
 
 export interface IDimensionControl extends IControl {
   value: {
@@ -18,10 +19,7 @@ export interface DimensionOption {
   initialValue?: number;
 }
 
-export class DimensionControl
-  extends ClassicPreset.Control
-  implements Serializable<DimensionControl, IDimensionControl>
-{
+export class DimensionControl extends Control<IDimensionControl> {
   constructor(
     public label: string,
     public xOptions: DimensionOption,
@@ -38,14 +36,14 @@ export class DimensionControl
     };
   }
 
-  static parse(data: IDimensionControl) {
+  public static parse(data: IDimensionControl) {
     const control = new DimensionControl(data.label, data.xOptions, data.yOptions);
 
     control.setValue(data.value?.x, data.value?.y);
     return control;
   }
 
-  serialize(key: string): IDimensionControl {
+  public serialize(key: string): IDimensionControl {
     return {
       _type: DimensionControl.name,
       key: key,

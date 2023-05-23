@@ -25,7 +25,7 @@ export class NumberControl extends Control<INumberControl> {
     this.value = value;
   }
 
-  static parse(data: INumberControl) {
+  public static parse(data: INumberControl) {
     return new NumberControl(data.min, data.max, data.label, data.placeholder, data.value);
   }
 

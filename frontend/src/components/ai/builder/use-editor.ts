@@ -2,36 +2,32 @@ import { NodeEditor, GetSchemes, ClassicPreset } from 'rete';
 import { AreaPlugin, AreaExtensions } from 'rete-area-plugin';
 import { ConnectionPlugin, Presets as ConnectionPresets } from 'rete-connection-plugin';
 import { VueRenderPlugin, Presets, VueArea2D } from 'rete-vue-render-plugin';
-import { AutoArrangePlugin, Presets as ArrangePresets, ArrangeAppliers } from 'rete-auto-arrange-plugin';
+import { AutoArrangePlugin, ArrangeAppliers } from 'rete-auto-arrange-plugin';
 
 import CustomNodeVue from './CustomNode.vue';
 import CustomConnectionVue from './CustomConnection.vue';
-import { DatasetNode, IDatasetNode } from '../../../core/ai/builder/nodes/dataset-node';
+import { DatasetNode } from '../../../core/ai/builder/nodes/input/dataset-node';
 import { DropdownControl } from '../../../core/ai/builder/controls/dropdown-control';
 import CustomDropdownVue from './components/dropdown-control/CustomDropdown.vue';
-import { Conv2DNode, IConv2DNode } from '../../../core/ai/builder/nodes/conv2d-node';
+import { Conv2DNode } from '../../../core/ai/builder/nodes/layer/conv2d-node';
 import { NumberControl } from '../../../core/ai/builder/controls/number-control';
 import NumberControlVue from './components/number-control/NumberControl.vue';
 import DimensionControlVue from './components/dimension-control/DimensionControl.vue';
 import { Ref, ref } from 'vue';
 import { IConnection, IGraph, INode, INodePositions } from '../../../core/ai/builder/serializable';
 import { addCustomBackground } from './custom-background';
-import { LayerType } from '../../../core/ai/builder/types';
+import { NodeType } from '../../../core/ai/builder/nodes/types';
 import { DimensionControl } from '../../../core/ai/builder/controls/dimension-control';
 import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } from 'rete-context-menu-plugin';
 import { setupContext } from './context-menu';
-import { LinearNode, ILinearNode } from '../../../core/ai/builder/nodes/linear-node';
+import { LinearNode } from '../../../core/ai/builder/nodes/layer/linear-node';
 import { arrangeSetup } from './arrange-nodes';
-import { DropoutNode, IDropoutNode } from '../../../core/ai/builder/nodes/dropout-node';
-import { FlattenNode, IFlattenNode } from '../../../core/ai/builder/nodes/flatten-node';
-import { BatchNormNode, IBatchNormNode } from '../../../core/ai/builder/nodes/batch-norm-node';
-import { IPoolingNode, PoolingNode } from '../../../core/ai/builder/nodes/pooling-node';
+import { DropoutNode } from '../../../core/ai/builder/nodes/transform/dropout-node';
+import { FlattenNode } from '../../../core/ai/builder/nodes/transform/flatten-node';
+import { BatchNormNode } from '../../../core/ai/builder/nodes/transform/batch-norm-node';
+import { PoolingNode } from '../../../core/ai/builder/nodes/layer/pooling-node';
 import { SyncPlugin } from './sync-plugin';
-import { parseNode } from '../../../core/ai/builder/node-factory';
-// type Schemes = GetSchemes<
-//   ClassicPreset.Node,
-//   ClassicPreset.Connection<ClassicPreset.Node, ClassicPreset.Node> | ClassicPreset.Connection<DatasetNode, Conv2DNode>
-// >;
+import { createNodeInstance, parseNode } from '../../../core/ai/builder/node-factory';
 
 type NodeProps = DatasetNode | Conv2DNode | LinearNode | DropoutNode | FlattenNode | BatchNormNode | PoolingNode;
 
@@ -69,21 +65,21 @@ export function useEditor() {
 
     contextMenu.value = new ContextMenuPlugin<Schemes>({
       items: ContextMenuPresets.classic.setup([
-        ['Input', [['Dataset', () => DatasetNode.create(socket.value!)]]],
+        ['Input', [['Dataset', () => createNodeInstance('DatasetNode', socket.value!) as NodeProps]]],
         [
           'Layer',
           [
-            ['Conv2D', () => Conv2DNode.create(socket.value!)],
-            ['Linear', () => LinearNode.create(socket.value!)],
-            ['Pooling', () => PoolingNode.create(socket.value!)]
+            ['Conv2D', () => createNodeInstance('Conv2DNode', socket.value!) as NodeProps],
+            ['Linear', () => createNodeInstance('LinearNode', socket.value!) as NodeProps],
+            ['Pooling', () => createNodeInstance('PoolingNode', socket.value!) as NodeProps]
           ]
         ],
         [
           'Transform',
           [
-            ['Dropout', () => DropoutNode.create(socket.value!)],
-            ['Flatten', () => FlattenNode.create(socket.value!)],
-            ['Batch Norm.', () => BatchNormNode.create(socket.value!)]
+            ['Dropout', () => createNodeInstance('DropoutNode', socket.value!) as NodeProps],
+            ['Flatten', () => createNodeInstance('FlattenNode', socket.value!) as NodeProps],
+            ['Batch Norm.', () => createNodeInstance('BatchNormNode', socket.value!) as NodeProps]
           ]
         ]
       ])
@@ -154,31 +150,6 @@ export function useEditor() {
 
     AreaExtensions.simpleNodesOrder(area.value);
 
-    const dataset = new DatasetNode(socket.value);
-    dataset.addDefault();
-    await editor.value.addNode(dataset);
-
-    const convLayer = new Conv2DNode(socket.value);
-    convLayer.addDefault();
-    await editor.value.addNode(convLayer);
-
-    const convLayer2 = new Conv2DNode(socket.value);
-    convLayer2.addDefault();
-    await editor.value.addNode(convLayer2);
-
-    const convLayer3 = new Conv2DNode(socket.value);
-    convLayer3.addDefault();
-    await editor.value.addNode(convLayer3);
-
-    const convLayer4 = new Conv2DNode(socket.value);
-    convLayer4.addDefault();
-    await editor.value.addNode(convLayer4);
-
-    await editor.value.addConnection(new Connection(dataset, 'dataset', convLayer, 'in'));
-    await editor.value.addConnection(new Connection(convLayer, 'out', convLayer2, 'in'));
-    await editor.value.addConnection(new Connection(convLayer, 'out', convLayer3, 'in'));
-    await editor.value.addConnection(new Connection(convLayer, 'out', convLayer4, 'in'));
-
     await arrangeLayout();
     await zoomAt();
 
@@ -195,37 +166,15 @@ export function useEditor() {
     });
   };
 
-  const addNode = async (layerType: LayerType) => {
+  const addNode = async (layerType: NodeType) => {
     if (!socket.value || !editor.value) {
       return;
     }
-    let layer;
-
-    switch (layerType) {
-      case 'Conv2D':
-        layer = new Conv2DNode(socket.value);
-        break;
-      case 'Linear':
-        layer = new LinearNode(socket.value);
-        break;
-      case 'Dropout':
-        layer = new DropoutNode(socket.value);
-        break;
-      case 'Flatten':
-        layer = new FlattenNode(socket.value);
-        break;
-      case 'BatchNorm':
-        layer = new BatchNormNode(socket.value);
-        break;
-      case 'Pooling':
-        layer = new PoolingNode(socket.value);
-        break;
-      default:
-        layer = new DatasetNode(socket.value);
-        break;
+    let layer = createNodeInstance(layerType, socket.value);
+    if (!layer) {
+      return;
     }
-    layer.addDefault();
-
+    layer.addElements();
     await editor.value.addNode(layer);
   };
 

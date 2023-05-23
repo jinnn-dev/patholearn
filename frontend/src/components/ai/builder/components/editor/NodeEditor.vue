@@ -1,14 +1,11 @@
 <script setup lang="ts">
 import { PropType, onMounted, ref } from 'vue';
-import { IGraph } from '../../../../../core/ai/builder/serializable';
 import { useService } from '../../../../../composables/useService';
 import { AiService } from '../../../../../services/ai.service';
 import { useEditor } from '../../use-editor';
 
-import PrimaryButton from '../../../../general/PrimaryButton.vue';
 import EditorTools from './EditorTools.vue';
 import Spinner from '../../../../general/Spinner.vue';
-import { LayerType } from '../../../../../core/ai/builder/types';
 import { EventName } from './events';
 import { TaskVersion } from '../../../../../model/ai/tasks/task';
 
