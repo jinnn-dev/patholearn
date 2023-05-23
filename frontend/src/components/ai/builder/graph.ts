@@ -1,4 +1,4 @@
-import { IGraph, INode } from './serializable';
+import { IGraph, INode } from '../../../core/ai/builder/serializable';
 
 export const DEFAULT_GRAPH: IGraph = {
   nodes: [

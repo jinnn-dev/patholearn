@@ -5,7 +5,7 @@ import { Project } from '../model/ai/projects/project';
 import { Dataset } from '../model/ai/datasets/dataset';
 import { CreateTask, Task } from '../model/ai/tasks/task';
 import { LogEntry } from '../model/ai/tasks/log-entry';
-import { IGraph } from '../components/ai/builder/serializable';
+import { IGraph } from '../core/ai/builder/serializable';
 
 export class AiService {
   public static async ping() {

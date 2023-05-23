@@ -1,5 +1,5 @@
-import { ClassicPreset } from 'rete';
-import { IControl, ISerializable, Serializable } from '../../serializable';
+import { IControl } from '../serializable';
+import { Control } from './control';
 
 export interface INumberControl extends IControl {
   min: number;
@@ -8,7 +8,7 @@ export interface INumberControl extends IControl {
   placeholder: string;
 }
 
-export class NumberControl extends ClassicPreset.Control implements Serializable<NumberControl, INumberControl> {
+export class NumberControl extends Control<INumberControl> {
   private value?: number;
   constructor(
     public min: number,
@@ -29,7 +29,7 @@ export class NumberControl extends ClassicPreset.Control implements Serializable
     return new NumberControl(data.min, data.max, data.label, data.placeholder, data.value);
   }
 
-  serialize(key: string): INumberControl {
+  public serialize(key: string): INumberControl {
     return {
       _type: NumberControl.name,
       key: key,

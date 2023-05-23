@@ -1,4 +1,4 @@
-import { DropdownControl, IDropdownControl } from './dropdown-control/dropdown-control';
+import { DropdownControl, IDropdownControl } from './dropdown-control';
 
 export class ActivationControl extends DropdownControl {
   constructor() {

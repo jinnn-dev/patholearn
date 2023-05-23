@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { PropType, onMounted, ref } from 'vue';
-import { DimensionOption } from './dimension-control';
+import { DimensionOption } from '../../../../../core/ai/builder/controls/dimension-control';
 
 interface DataInterface {
   value?: {

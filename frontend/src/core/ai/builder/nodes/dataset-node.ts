@@ -1,26 +1,22 @@
 import { ClassicPreset } from 'rete';
-import { DropdownControl, IDropdownControl } from './dropdown-control/dropdown-control';
-import { LayerType, NodeType } from './types';
-import { INode, ISerializable, Serializable, serializePort } from '../serializable';
+import { DropdownControl, IDropdownControl } from '../controls/dropdown-control';
+import { LayerType, NodeType } from '../types';
+import { INode } from '../../../../core/ai/builder/serializable';
+import { Node } from './node';
 
 export interface IDatasetNode extends INode {}
 
-export class DatasetNode
-  extends ClassicPreset.Node<
-    { dataset: ClassicPreset.Socket },
-    { dataset: ClassicPreset.Socket },
-    { dataset: DropdownControl }
-  >
-  implements Serializable<DatasetNode, IDatasetNode>
-{
+export class DatasetNode extends Node<
+  IDatasetNode,
+  { dataset: ClassicPreset.Socket },
+  { dataset: ClassicPreset.Socket },
+  { dataset: DropdownControl }
+> {
   width = 180;
   height = 180;
 
-  private socket: ClassicPreset.Socket;
-
   constructor(socket: ClassicPreset.Socket, public type: NodeType = 'Input', public layerType: LayerType = 'Dataset') {
-    super('Dataset');
-    this.socket = socket;
+    super('Dataset', socket);
   }
 
   static create(socket: ClassicPreset.Socket) {
@@ -47,20 +43,5 @@ export class DatasetNode
     }
 
     return node;
-  }
-  public serialize(): IDatasetNode {
-    const inputs = Object.entries(this.inputs).map(([key, input]) => serializePort(key, input));
-    const outputs = Object.entries(this.outputs).map(([key, input]) => serializePort(key, input));
-    const controls = Object.entries(this.controls).map(([key, input]) => input.serialize());
-
-    return {
-      id: this.id,
-      _type: DatasetNode.name,
-      label: this.label,
-      inputs: inputs,
-      outputs: outputs,
-      controls: controls,
-      socket: this.socket.name
-    };
   }
 }

@@ -1,33 +1,30 @@
 import { ClassicPreset } from 'rete';
-import { INumberControl, NumberControl } from './number-control/number-control';
-import { LayerType, NodeType } from './types';
-import { IInputControl, INode, Serializable, serializeControl, serializePort } from '../serializable';
-import { DimensionControl, IDimensionControl } from './dimension-control/dimension-control';
-import { DropdownControl, IDropdownControl } from './dropdown-control/dropdown-control';
-import { ActivationControl } from './activation-control';
+import { INumberControl, NumberControl } from '../controls/number-control';
+import { LayerType, NodeType } from '../types';
+import { INode } from '../../../../core/ai/builder/serializable';
+import { DimensionControl, IDimensionControl } from '../controls/dimension-control';
+import { IDropdownControl } from '../controls/dropdown-control';
+import { ActivationControl } from '../controls/activation-control';
+import { Node } from './node';
 
 export interface IConv2DNode extends INode {}
 
-export class Conv2DNode
-  extends ClassicPreset.Node<
-    { in: ClassicPreset.Socket },
-    { out: ClassicPreset.Socket },
-    {
-      filters: NumberControl;
-      kernel: DimensionControl;
-      stride: DimensionControl;
-      activation: ActivationControl;
-    }
-  >
-  implements Serializable<Conv2DNode, IConv2DNode>
-{
+export class Conv2DNode extends Node<
+  IConv2DNode,
+  { in: ClassicPreset.Socket },
+  { out: ClassicPreset.Socket },
+  {
+    filters: NumberControl;
+    kernel: DimensionControl;
+    stride: DimensionControl;
+    activation: ActivationControl;
+  }
+> {
   width = 200;
   height = 310;
 
-  private socket: ClassicPreset.Socket;
   constructor(socket: ClassicPreset.Socket, public type: NodeType = 'Layer', public layerType: LayerType = 'Conv2D') {
-    super('Conv2D');
-    this.socket = socket;
+    super('Conv2D', socket);
   }
 
   static create(socket: ClassicPreset.Socket) {
@@ -78,21 +75,5 @@ export class Conv2DNode
     }
 
     return node;
-  }
-
-  public serialize(): IConv2DNode {
-    const inputs = Object.entries(this.inputs).map(([key, input]) => serializePort(key, input));
-    const outputs = Object.entries(this.outputs).map(([key, input]) => serializePort(key, input));
-    const controls = Object.entries(this.controls).map(([key, input]) => input.serialize(key));
-
-    return {
-      id: this.id,
-      _type: Conv2DNode.name,
-      label: this.label,
-      inputs: inputs,
-      outputs: outputs,
-      controls: controls,
-      socket: this.socket.name
-    };
   }
 }

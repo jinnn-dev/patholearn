@@ -1,25 +1,20 @@
 import { ClassicPreset } from 'rete';
-import { INode, Serializable, serializePort } from '../serializable';
-import { NodeType, TransformType } from './types';
+import { INode } from '../../../../core/ai/builder/serializable';
+import { NodeType, TransformType } from '../types';
+import { Node } from './node';
 
 export interface IFlattenNode extends INode {}
 
-export class FlattenNode
-  extends ClassicPreset.Node<{ in: ClassicPreset.Socket }, { out: ClassicPreset.Socket }, {}>
-  implements Serializable<FlattenNode, IFlattenNode>
-{
+export class FlattenNode extends Node<IFlattenNode, { in: ClassicPreset.Socket }, { out: ClassicPreset.Socket }, {}> {
   width = 180;
   height = 80;
-
-  private socket: ClassicPreset.Socket;
 
   constructor(
     socket: ClassicPreset.Socket,
     public type: NodeType = 'Transform',
     public transformType: TransformType = 'Flatten'
   ) {
-    super('Flatten');
-    this.socket = socket;
+    super('Flatten', socket);
   }
 
   static create(socket: ClassicPreset.Socket) {
@@ -44,20 +39,5 @@ export class FlattenNode
     }
 
     return node;
-  }
-
-  public serialize(key?: string | undefined): IFlattenNode {
-    const inputs = Object.entries(this.inputs).map(([key, input]) => serializePort(key, input));
-    const outputs = Object.entries(this.outputs).map(([key, input]) => serializePort(key, input));
-
-    return {
-      id: this.id,
-      _type: FlattenNode.name,
-      label: this.label,
-      inputs: inputs,
-      outputs: outputs,
-      controls: [],
-      socket: this.socket.name
-    };
   }
 }

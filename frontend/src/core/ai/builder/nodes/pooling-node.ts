@@ -1,35 +1,32 @@
 import { ClassicPreset } from 'rete';
-import { INumberControl, NumberControl } from './number-control/number-control';
-import { LayerType, NodeType } from './types';
-import { IInputControl, INode, Serializable, serializeControl, serializePort } from '../serializable';
-import { DimensionControl, IDimensionControl } from './dimension-control/dimension-control';
-import { DropdownControl, IDropdownControl } from './dropdown-control/dropdown-control';
+import { NumberControl } from '../controls/number-control';
+import { LayerType, NodeType } from '../types';
+import { INode } from '../../../../core/ai/builder/serializable';
+import { DimensionControl, IDimensionControl } from '../controls/dimension-control';
+import { DropdownControl, IDropdownControl } from '../controls/dropdown-control';
+import { Node } from './node';
 
 export interface IPoolingNode extends INode {}
 
-export class PoolingNode
-  extends ClassicPreset.Node<
-    { in: ClassicPreset.Socket },
-    { out: ClassicPreset.Socket },
-    {
-      kernel: DimensionControl;
-      stride: DimensionControl;
-      type: DropdownControl;
-    }
-  >
-  implements Serializable<PoolingNode, IPoolingNode>
-{
+export class PoolingNode extends Node<
+  IPoolingNode,
+  { in: ClassicPreset.Socket },
+  { out: ClassicPreset.Socket },
+  {
+    kernel: DimensionControl;
+    stride: DimensionControl;
+    type: DropdownControl;
+  }
+> {
   width = 200;
   height = 265;
 
-  private socket: ClassicPreset.Socket;
   constructor(
     socket: ClassicPreset.Socket,
     public type: NodeType = 'Transform',
     public layerType: LayerType = 'Pooling'
   ) {
-    super('Pooling');
-    this.socket = socket;
+    super('Pooling', socket);
   }
 
   static create(socket: ClassicPreset.Socket) {
@@ -76,21 +73,5 @@ export class PoolingNode
     }
 
     return node;
-  }
-
-  public serialize(): IPoolingNode {
-    const inputs = Object.entries(this.inputs).map(([key, input]) => serializePort(key, input));
-    const outputs = Object.entries(this.outputs).map(([key, input]) => serializePort(key, input));
-    const controls = Object.entries(this.controls).map(([key, input]) => input.serialize(key));
-
-    return {
-      id: this.id,
-      _type: PoolingNode.name,
-      label: this.label,
-      inputs: inputs,
-      outputs: outputs,
-      controls: controls,
-      socket: this.socket.name
-    };
   }
 }

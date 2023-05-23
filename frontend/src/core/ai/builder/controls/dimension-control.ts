@@ -1,5 +1,5 @@
 import { ClassicPreset } from 'rete';
-import { IControl, ISerializable, Serializable } from '../../serializable';
+import { IControl, ISerializable, Serializable } from '../serializable';
 
 export interface IDimensionControl extends IControl {
   value: {

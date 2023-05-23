@@ -1,6 +1,6 @@
 .fill-area {
   display: table;
-  z-index: -1;
+  z-index: -2;
   position: absolute;
   top: -320000px;
   left: -320000px;

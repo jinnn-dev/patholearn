@@ -1,30 +1,27 @@
 import { ClassicPreset } from 'rete';
-import { INumberControl, NumberControl } from './number-control/number-control';
-import { INode, Serializable, serializePort } from '../serializable';
-import { LayerType, NodeType } from './types';
-import { DropdownControl, IDropdownControl } from './dropdown-control/dropdown-control';
-import { ActivationControl } from './activation-control';
+import { INumberControl, NumberControl } from '../controls/number-control';
+import { INode } from '../../../../core/ai/builder/serializable';
+import { LayerType, NodeType } from '../types';
+import { DropdownControl, IDropdownControl } from '../controls/dropdown-control';
+import { ActivationControl } from '../controls/activation-control';
+import { Node } from './node';
 
 export interface ILinearNode extends INode {}
 
-export class LinearNode
-  extends ClassicPreset.Node<
-    { in: ClassicPreset.Socket },
-    { out: ClassicPreset.Socket },
-    {
-      neurons: NumberControl;
-      activation: DropdownControl;
-    }
-  >
-  implements Serializable<LinearNode, ILinearNode>
-{
+export class LinearNode extends Node<
+  ILinearNode,
+  { in: ClassicPreset.Socket },
+  { out: ClassicPreset.Socket },
+  {
+    neurons: NumberControl;
+    activation: DropdownControl;
+  }
+> {
   width = 200;
   height = 220;
 
-  private socket: ClassicPreset.Socket;
   constructor(socket: ClassicPreset.Socket, public type: NodeType = 'Layer', public layerType: LayerType = 'Linear') {
-    super('Linear');
-    this.socket = socket;
+    super('Linear', socket);
   }
 
   static create(socket: ClassicPreset.Socket) {
@@ -47,6 +44,8 @@ export class LinearNode
       node.addInput(input.key as 'in', new ClassicPreset.Input(socket, 'in'));
     }
     for (const output of data.outputs) {
+      console.log(Object.keys(ClassicPreset));
+
       node.addOutput(output.key as 'out', new ClassicPreset.Output(socket, 'out'));
     }
 
@@ -64,19 +63,19 @@ export class LinearNode
     return node;
   }
 
-  public serialize(key?: string | undefined): ILinearNode {
-    const inputs = Object.entries(this.inputs).map(([key, input]) => serializePort(key, input));
-    const outputs = Object.entries(this.outputs).map(([key, input]) => serializePort(key, input));
-    const controls = Object.entries(this.controls).map(([key, input]) => input.serialize(key));
+  // public serialize(key?: string | undefined): ILinearNode {
+  //   const inputs = Object.entries(this.inputs).map(([key, input]) => serializePort(key, input));
+  //   const outputs = Object.entries(this.outputs).map(([key, input]) => serializePort(key, input));
+  //   const controls = Object.entries(this.controls).map(([key, input]) => input.serialize(key));
 
-    return {
-      id: this.id,
-      _type: LinearNode.name,
-      label: this.label,
-      inputs: inputs,
-      outputs: outputs,
-      controls: controls,
-      socket: this.socket.name
-    };
-  }
+  //   return {
+  //     id: this.id,
+  //     _type: LinearNode.name,
+  //     label: this.label,
+  //     inputs: inputs,
+  //     outputs: outputs,
+  //     controls: controls,
+  //     socket: this.socket.name
+  //   };
+  // }
 }

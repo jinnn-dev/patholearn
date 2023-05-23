@@ -1,12 +1,12 @@
 import { ClassicPreset } from 'rete';
-import { IControl, ISerializable, Serializable } from '../../serializable';
+import { IControl, ISerializable, Serializable } from '../serializable';
 
 export interface IDropdownControl extends IControl {
   values: any[];
   label: string;
 }
 
-export class DropdownControl extends ClassicPreset.Control implements Serializable<DropdownControl, IDropdownControl> {
+export class DropdownControl extends ClassicPreset.Control implements Serializable<IDropdownControl> {
   constructor(public values: any[], public label: string, public key: string, public value?: any) {
     super();
   }

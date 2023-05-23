@@ -36,7 +36,7 @@
 
 <script lang="ts" setup>
 import { PropType, computed, onMounted } from 'vue';
-import { NodeType } from './components/types';
+import { NodeType } from '../../../core/ai/builder/types';
 
 function sortByIndex(entries: any) {
   entries.sort((a: any, b: any) => {

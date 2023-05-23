@@ -50,7 +50,7 @@ export interface INodePositions {
   y: number;
 }
 
-export abstract class Serializable<T, C extends ISerializable> {
+export abstract class Serializable<C extends ISerializable> {
   public abstract serialize(key?: string): C;
 }
 

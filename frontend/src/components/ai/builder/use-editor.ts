@@ -6,26 +6,28 @@ import { AutoArrangePlugin, Presets as ArrangePresets, ArrangeAppliers } from 'r
 
 import CustomNodeVue from './CustomNode.vue';
 import CustomConnectionVue from './CustomConnection.vue';
-import { DatasetNode, IDatasetNode } from './components/dataset-node';
-import { DropdownControl } from './components/dropdown-control/dropdown-control';
+import { DatasetNode, IDatasetNode } from '../../../core/ai/builder/nodes/dataset-node';
+import { DropdownControl } from '../../../core/ai/builder/controls/dropdown-control';
 import CustomDropdownVue from './components/dropdown-control/CustomDropdown.vue';
-import { Conv2DNode, IConv2DNode } from './components/conv2d-node';
-import { NumberControl } from './components/number-control/number-control';
+import { Conv2DNode, IConv2DNode } from '../../../core/ai/builder/nodes/conv2d-node';
+import { NumberControl } from '../../../core/ai/builder/controls/number-control';
 import NumberControlVue from './components/number-control/NumberControl.vue';
 import DimensionControlVue from './components/dimension-control/DimensionControl.vue';
 import { Ref, ref } from 'vue';
-import { IConnection, IGraph, INode, INodePositions } from './serializable';
+import { IConnection, IGraph, INode, INodePositions } from '../../../core/ai/builder/serializable';
 import { addCustomBackground } from './custom-background';
-import { LayerType } from './components/types';
-import { DimensionControl } from './components/dimension-control/dimension-control';
+import { LayerType } from '../../../core/ai/builder/types';
+import { DimensionControl } from '../../../core/ai/builder/controls/dimension-control';
 import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } from 'rete-context-menu-plugin';
 import { setupContext } from './context-menu';
-import { ILinearNode, LinearNode } from './components/linear-node';
+import { LinearNode, ILinearNode } from '../../../core/ai/builder/nodes/linear-node';
 import { arrangeSetup } from './arrange-nodes';
-import { DropoutNode, IDropoutNode } from './components/dropout-node';
-import { FlattenNode, IFlattenNode } from './components/flatten-node';
-import { BatchNormNode, IBatchNormNode } from './components/batch-norm-node';
-import { IPoolingNode, PoolingNode } from './components/pooling-node';
+import { DropoutNode, IDropoutNode } from '../../../core/ai/builder/nodes/dropout-node';
+import { FlattenNode, IFlattenNode } from '../../../core/ai/builder/nodes/flatten-node';
+import { BatchNormNode, IBatchNormNode } from '../../../core/ai/builder/nodes/batch-norm-node';
+import { IPoolingNode, PoolingNode } from '../../../core/ai/builder/nodes/pooling-node';
+import { SyncPlugin } from './sync-plugin';
+import { parseNode } from '../../../core/ai/builder/node-factory';
 // type Schemes = GetSchemes<
 //   ClassicPreset.Node,
 //   ClassicPreset.Connection<ClassicPreset.Node, ClassicPreset.Node> | ClassicPreset.Connection<DatasetNode, Conv2DNode>
@@ -47,6 +49,7 @@ export function useEditor() {
   const render: Ref<VueRenderPlugin<Schemes> | undefined> = ref();
   const editor: Ref<NodeEditor<Schemes> | undefined> = ref();
   const contextMenu: Ref<ContextMenuPlugin<Schemes> | undefined> = ref();
+  const sync: Ref<SyncPlugin<Schemes> | undefined> = ref();
 
   const arrange: Ref<AutoArrangePlugin<Schemes> | undefined> = ref();
   const animationApplier: Ref<ArrangeAppliers.TransitionApplier<Schemes, never> | undefined> = ref();
@@ -61,6 +64,9 @@ export function useEditor() {
     area.value = new AreaPlugin<Schemes, AreaExtra>(container);
     connection.value = new ConnectionPlugin<Schemes, AreaExtra>();
     render.value = new VueRenderPlugin<Schemes>();
+
+    sync.value = new SyncPlugin();
+
     contextMenu.value = new ContextMenuPlugin<Schemes>({
       items: ContextMenuPresets.classic.setup([
         ['Input', [['Dataset', () => DatasetNode.create(socket.value!)]]],
@@ -135,10 +141,16 @@ export function useEditor() {
     arrange.value.addPreset(arrangeSetup({ distance: 20 }));
 
     editor.value.use(area.value);
+    editor.value.use(sync.value.root);
+
     area.value.use(connection.value);
     area.value.use(render.value);
     area.value.use(arrange.value);
     area.value.use(contextMenu.value);
+    area.value.use(sync.value.area);
+
+    // @ts-ignore
+    connection.value.use(sync.value.connection);
 
     AreaExtensions.simpleNodesOrder(area.value);
 
@@ -270,27 +282,26 @@ export function useEditor() {
     await editor.value?.clear();
 
     for (const nodeData of graph.nodes) {
-      let node;
-
-      if (nodeData._type === Conv2DNode.name) {
-        node = Conv2DNode.parse(nodeData as IConv2DNode);
-      } else if (nodeData._type === DatasetNode.name) {
-        node = DatasetNode.parse(nodeData as IDatasetNode);
-      } else if (nodeData._type === LinearNode.name) {
-        node = LinearNode.parse(nodeData as ILinearNode);
-      } else if (nodeData._type === DropoutNode.name) {
-        node = DropoutNode.parse(nodeData as IDropoutNode);
-      } else if (nodeData._type === FlattenNode.name) {
-        node = FlattenNode.parse(nodeData as IFlattenNode);
-      } else if (nodeData._type === BatchNormNode.name) {
-        node = BatchNormNode.parse(nodeData as IBatchNormNode);
-      } else if (nodeData._type === PoolingNode.name) {
-        node = PoolingNode.parse(nodeData as IPoolingNode);
-      } else {
-        node = new Presets.classic.Node();
-      }
-      node.id = nodeData.id;
-
+      let node = parseNode(nodeData);
+      // if (nodeData._type === Conv2DNode.name) {
+      //   node = Conv2DNode.parse(nodeData as IConv2DNode);
+      // } else if (nodeData._type === DatasetNode.name) {
+      //   node = DatasetNode.parse(nodeData as IDatasetNode);
+      // } else if (nodeData._type === LinearNode.name) {
+      //   node = LinearNode.parse(nodeData as ILinearNode);
+      // } else if (nodeData._type === DropoutNode.name) {
+      //   node = DropoutNode.parse(nodeData as IDropoutNode);
+      // } else if (nodeData._type === FlattenNode.name) {
+      //   node = FlattenNode.parse(nodeData as IFlattenNode);
+      // } else if (nodeData._type === BatchNormNode.name) {
+      //   node = BatchNormNode.parse(nodeData as IBatchNormNode);
+      // } else if (nodeData._type === PoolingNode.name) {
+      //   node = PoolingNode.parse(nodeData as IPoolingNode);
+      // } else {
+      //   node = new Presets.classic.Node();
+      // }
+      // node.id = nodeData.id;
+      // parseNode(nodeData);
       await editor.value?.addNode(node);
     }
 

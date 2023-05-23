@@ -1,26 +1,26 @@
 import { ClassicPreset } from 'rete';
-import { INode, Serializable, serializePort } from '../serializable';
-import { INumberControl, NumberControl } from './number-control/number-control';
-import { NodeType, TransformType } from './types';
+import { INode } from '../serializable';
+import { INumberControl, NumberControl } from '../controls/number-control';
+import { NodeType, TransformType } from '../types';
+import { Node } from './node';
 
 export interface IBatchNormNode extends INode {}
 
-export class BatchNormNode
-  extends ClassicPreset.Node<{ in: ClassicPreset.Socket }, { out: ClassicPreset.Socket }, { momentum: NumberControl }>
-  implements Serializable<BatchNormNode, IBatchNormNode>
-{
+export class BatchNormNode extends Node<
+  IBatchNormNode,
+  { in: ClassicPreset.Socket },
+  { out: ClassicPreset.Socket },
+  { momentum: NumberControl }
+> {
   width = 240;
   height = 120;
-
-  private socket: ClassicPreset.Socket;
 
   constructor(
     socket: ClassicPreset.Socket,
     public type: NodeType = 'Transform',
     public transformType: TransformType = 'Dropout'
   ) {
-    super('Batch Normalization');
-    this.socket = socket;
+    super('Batch Normalization', socket);
   }
 
   static create(socket: ClassicPreset.Socket) {
@@ -51,21 +51,5 @@ export class BatchNormNode
     }
 
     return node;
-  }
-
-  public serialize(key?: string | undefined): IBatchNormNode {
-    const inputs = Object.entries(this.inputs).map(([key, input]) => serializePort(key, input));
-    const outputs = Object.entries(this.outputs).map(([key, input]) => serializePort(key, input));
-    const controls = Object.entries(this.controls).map(([key, input]) => input.serialize(key));
-
-    return {
-      id: this.id,
-      _type: BatchNormNode.name,
-      label: this.label,
-      inputs: inputs,
-      outputs: outputs,
-      controls: controls,
-      socket: this.socket.name
-    };
   }
 }
