@@ -1,3 +1,1 @@
-import { LayerType } from '../../../../../core/ai/builder/types';
-
-export type EventName = 'arrange' | 'center' | 'save' | LayerType;
+import { NodeType } from '../../../../../core/ai/builder/nodes/types';

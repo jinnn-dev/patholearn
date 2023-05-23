@@ -6,8 +6,9 @@ import { useEditor } from '../../use-editor';
 
 import EditorTools from './EditorTools.vue';
 import Spinner from '../../../../general/Spinner.vue';
-import { EventName } from './events';
 import { TaskVersion } from '../../../../../model/ai/tasks/task';
+import { NodeType, isNode } from '../../../../../core/ai/builder/nodes/types';
+import { EventName } from '../../../../../core/ai/builder/events';
 
 const props = defineProps({
   taskId: {
@@ -48,16 +49,8 @@ const itemClicked = async (event: EventName) => {
     await zoomAt();
   }
 
-  if (
-    event === 'Conv2D' ||
-    event === 'Linear' ||
-    event === 'Dataset' ||
-    event === 'Dropout' ||
-    event === 'Flatten' ||
-    event === 'BatchNorm' ||
-    event === 'Pooling'
-  ) {
-    await addNode(event);
+  if (isNode(event)) {
+    await addNode(event as NodeType);
   }
 
   loading.value = false;

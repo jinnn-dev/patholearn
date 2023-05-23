@@ -171,10 +171,11 @@ export function useEditor() {
       return;
     }
     let layer = createNodeInstance(layerType, socket.value);
+
     if (!layer) {
       return;
     }
-    layer.addElements();
+
     await editor.value.addNode(layer);
   };
 

@@ -2,8 +2,7 @@
 import { ref } from 'vue';
 import Icon from '../../../../general/Icon.vue';
 import ToolItem from './ToolItem.vue';
-import { EventName } from './events';
-
+import { eventSettings, EventName } from '../../../../../core/ai/builder/events';
 const toolsOpen = ref(true);
 
 const emit = defineEmits<{ (e: 'selected', value: EventName): void }>();
@@ -29,17 +28,23 @@ const emit = defineEmits<{ (e: 'selected', value: EventName): void }>();
           </div>
         </div>
         <div class="flex flex-col gap-1 mt-4 px-2">
-          <tool-item icon="floppy-disk" label="Save" @click="emit('selected', 'save')"></tool-item>
+          <tool-item
+            v-for="[key, item] in Object.entries(eventSettings)"
+            :icon="item.icon"
+            :label="item.label"
+            @click="emit('selected', key as EventName)"
+          ></tool-item>
+          <!-- <tool-item icon="floppy-disk" label="Save" @click="emit('selected', 'save')"></tool-item>
           <tool-item icon="layout" label="Arrange" @click="emit('selected', 'arrange')"></tool-item>
           <tool-item icon="arrow-counter-clockwise" label="Center" @click="emit('selected', 'center')"></tool-item>
           <div class="w-full h-[1px] bg-gray-700"></div>
-          <tool-item icon="images" label="Dataset" @click="emit('selected', 'Dataset')"></tool-item>
-          <tool-item icon="stack" label="Conv2D" @click="emit('selected', 'Conv2D')"></tool-item>
-          <tool-item icon="cards" label="Linear" @click="emit('selected', 'Linear')"></tool-item>
-          <tool-item icon="drop-half" label="Dropout" @click="emit('selected', 'Dropout')"></tool-item>
-          <tool-item icon="dots-three-outline" label="Flatten" @click="emit('selected', 'Flatten')"></tool-item>
-          <tool-item icon="equalizer" label="Batch Norm." @click="emit('selected', 'BatchNorm')"></tool-item>
-          <tool-item icon="arrows-in" label="Pooling" @click="emit('selected', 'Pooling')"></tool-item>
+          <tool-item icon="images" label="Dataset" @click="emit('selected', 'DatasetNode')"></tool-item>
+          <tool-item icon="stack" label="Conv2D" @click="emit('selected', 'Conv2DNode')"></tool-item>
+          <tool-item icon="cards" label="Linear" @click="emit('selected', 'LinearNode')"></tool-item>
+          <tool-item icon="drop-half" label="Dropout" @click="emit('selected', 'DropoutNode')"></tool-item>
+          <tool-item icon="dots-three-outline" label="Flatten" @click="emit('selected', 'FlattenNode')"></tool-item>
+          <tool-item icon="equalizer" label="Batch Norm." @click="emit('selected', 'BatchNormNode')"></tool-item>
+          <tool-item icon="arrows-in" label="Pooling" @click="emit('selected', 'PoolingNode')"></tool-item> -->
         </div>
       </div>
     </transition>
