@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { PropType, onMounted, ref } from 'vue';
-import { useService } from '../../../../../composables/useService';
-import { AiService } from '../../../../../services/ai.service';
-import { useEditor } from '../../use-editor';
+import { useService } from '../../../../composables/useService';
+import { AiService } from '../../../../services/ai.service';
+import { useEditor } from '../../../../core/ai/builder/use-editor';
 
 import EditorTools from './EditorTools.vue';
-import Spinner from '../../../../general/Spinner.vue';
-import { TaskVersion } from '../../../../../model/ai/tasks/task';
-import { NodeType, isNode } from '../../../../../core/ai/builder/nodes/types';
-import { EventName } from '../../../../../core/ai/builder/events';
+import Spinner from '../../../general/Spinner.vue';
+import { TaskVersion } from '../../../../model/ai/tasks/task';
+import { NodeType, isNode } from '../../../../core/ai/builder/nodes/types';
+import { EventName } from '../../../../core/ai/builder/events';
 
 const props = defineProps({
   taskId: {

@@ -4,30 +4,31 @@ import { ConnectionPlugin, Presets as ConnectionPresets } from 'rete-connection-
 import { VueRenderPlugin, Presets, VueArea2D } from 'rete-vue-render-plugin';
 import { AutoArrangePlugin, ArrangeAppliers } from 'rete-auto-arrange-plugin';
 
-import CustomNodeVue from './CustomNode.vue';
-import CustomConnectionVue from './CustomConnection.vue';
-import { DatasetNode } from '../../../core/ai/builder/nodes/input/dataset-node';
-import { DropdownControl } from '../../../core/ai/builder/controls/dropdown-control';
-import CustomDropdownVue from './components/dropdown-control/CustomDropdown.vue';
-import { Conv2DNode } from '../../../core/ai/builder/nodes/layer/conv2d-node';
-import { NumberControl } from '../../../core/ai/builder/controls/number-control';
-import NumberControlVue from './components/number-control/NumberControl.vue';
-import DimensionControlVue from './components/dimension-control/DimensionControl.vue';
+import CustomNodeVue from '../../../components/ai/builder/CustomNode.vue';
+import CustomConnectionVue from '../../../components/ai/builder/CustomConnection.vue';
+import DimensionControlVue from '../../../components/ai/builder/controls/DimensionControl.vue';
+import NumberControlVue from '../../../components/ai/builder/controls/NumberControl.vue';
+import DropdownControlVue from '../../../components/ai/builder/controls/DropdownControl.vue';
+
+import { DatasetNode } from './nodes/input/dataset-node';
+import { DropdownControl } from './controls/dropdown-control';
+import { Conv2DNode } from './nodes/layer/conv2d-node';
+import { NumberControl } from './controls/number-control';
 import { Ref, ref } from 'vue';
-import { IConnection, IGraph, INode, INodePositions } from '../../../core/ai/builder/serializable';
-import { addCustomBackground } from './custom-background';
-import { NodeType } from '../../../core/ai/builder/nodes/types';
-import { DimensionControl } from '../../../core/ai/builder/controls/dimension-control';
+import { IConnection, IGraph, INode, INodePositions } from './serializable';
+import { addCustomBackground } from './plugins/custom-background';
+import { NodeType } from './nodes/types';
+import { DimensionControl } from './controls/dimension-control';
 import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } from 'rete-context-menu-plugin';
-import { setupContext } from './context-menu';
-import { LinearNode } from '../../../core/ai/builder/nodes/layer/linear-node';
-import { arrangeSetup } from './arrange-nodes';
-import { DropoutNode } from '../../../core/ai/builder/nodes/transform/dropout-node';
-import { FlattenNode } from '../../../core/ai/builder/nodes/transform/flatten-node';
-import { BatchNormNode } from '../../../core/ai/builder/nodes/transform/batch-norm-node';
-import { PoolingNode } from '../../../core/ai/builder/nodes/layer/pooling-node';
-import { SyncPlugin } from './sync-plugin';
-import { createNodeInstance, parseNode } from '../../../core/ai/builder/node-factory';
+import { setupContext } from './plugins/context-menu';
+import { LinearNode } from './nodes/layer/linear-node';
+import { arrangeSetup } from './plugins/arrange-nodes';
+import { DropoutNode } from './nodes/transform/dropout-node';
+import { FlattenNode } from './nodes/transform/flatten-node';
+import { BatchNormNode } from './nodes/transform/batch-norm-node';
+import { PoolingNode } from './nodes/layer/pooling-node';
+import { SyncPlugin } from './plugins/sync-plugin';
+import { createNodeInstance, parseNode } from './node-factory';
 
 type NodeProps = DatasetNode | Conv2DNode | LinearNode | DropoutNode | FlattenNode | BatchNormNode | PoolingNode;
 
@@ -114,7 +115,7 @@ export function useEditor() {
         // @ts-ignore
         control(data) {
           if (data.payload instanceof DropdownControl) {
-            return CustomDropdownVue;
+            return DropdownControlVue;
           }
           if (data.payload instanceof NumberControl) {
             return NumberControlVue;

@@ -1,7 +1,7 @@
 import { BaseSchemes } from 'rete';
 import { RenderPreset } from 'rete-vue-render-plugin';
 import { ContextMenuRender } from 'rete-vue-render-plugin/_types/presets/context-menu/types';
-import ContextMenu from './components/context-menu/ContextMenu.vue';
+import ContextMenu from '../../../../components/ai/builder/context-menu/ContextMenu.vue';
 
 export function setupContext<Schemes extends BaseSchemes, K extends ContextMenuRender>(props?: {
   delay?: number;

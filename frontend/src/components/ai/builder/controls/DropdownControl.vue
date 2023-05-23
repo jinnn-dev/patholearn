@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import CustomSelect from '../../../../form/CustomSelect.vue';
+import CustomSelect from '../../../form/CustomSelect.vue';
 
 const props = defineProps({
   data: Object

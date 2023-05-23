@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import Icon from '../../../../general/Icon.vue';
+import Icon from '../../../general/Icon.vue';
 import ToolItem from './ToolItem.vue';
-import { eventSettings, EventName } from '../../../../../core/ai/builder/events';
+import { eventSettings, EventName } from '../../../../core/ai/builder/events';
 const toolsOpen = ref(true);
 
 const emit = defineEmits<{ (e: 'selected', value: EventName): void }>();

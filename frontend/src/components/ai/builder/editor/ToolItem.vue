@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { PropType } from 'vue';
-import Icon from '../../../../general/Icon.vue';
-import { IconNames } from '../../../../../../icons';
-import { EventName } from './events';
+import Icon from '../../../general/Icon.vue';
+import { IconNames } from '../../../../../icons';
 
 defineProps({
   icon: {

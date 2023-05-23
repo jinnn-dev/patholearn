@@ -2,7 +2,7 @@
 import { useRoute } from 'vue-router';
 import { useService } from '../../../composables/useService';
 import { AiService } from '../../../services/ai.service';
-import NodeEditor from '../../../components/ai/builder/components/editor/NodeEditor.vue';
+import NodeEditor from '../../../components/ai/builder/editor/NodeEditor.vue';
 import { usePresenceChannel } from '../../../composables/ws/usePresenceChannel';
 import { onMounted } from 'vue';
 const route = useRoute();
