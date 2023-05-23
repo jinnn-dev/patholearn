@@ -126,12 +126,23 @@ export class AiService {
     return response?.data;
   }
 
-  public static async createTask(data: {
-    task_name: string;
-    project_id: string;
-    model_name: string;
-    dataset_id: string;
-  }) {
+  // public static async createTask(data: {
+  //   task_name: string;
+  //   project_id: string;
+  //   model_name: string;
+  //   dataset_id: string;
+  // }) {
+  //   const [_, response] = await handleError(
+  //     ApiService.post<Task>({
+  //       resource: `/tasks`,
+  //       data: data,
+  //       host: AI_API_URL
+  //     })
+  //   );
+  //   return response!.data;
+  // }
+
+  public static async createTask(data: { name: string; project_id: string; description?: string }) {
     const [_, response] = await handleError(
       ApiService.post<Task>({
         resource: `/tasks`,
