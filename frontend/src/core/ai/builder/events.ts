@@ -20,5 +20,6 @@ export const eventSettings: EventSetting = {
   DropoutNode: { icon: 'drop-half', label: 'Dropout' },
   FlattenNode: { icon: 'dots-three-outline', label: 'Flatten' },
   BatchNormNode: { icon: 'equalizer', label: 'BatchNorm' },
-  PoolingNode: { icon: 'arrows-in', label: 'Pooling' }
+  PoolingNode: { icon: 'arrows-in', label: 'Pooling' },
+  OutputNode: { icon: 'flag', label: 'Output' }
 };

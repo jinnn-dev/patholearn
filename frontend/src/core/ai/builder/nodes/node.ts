@@ -34,6 +34,8 @@ export abstract class Node<
     }
 
     for (const control of data.controls) {
+      console.log(control);
+
       this.addControl(control.key, parseControl(control) as any);
     }
   }

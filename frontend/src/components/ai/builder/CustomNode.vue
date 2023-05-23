@@ -36,7 +36,13 @@
 
 <script lang="ts" setup>
 import { PropType, computed, onMounted } from 'vue';
-import { isLayerType, isInputType, isTransformType, NodeType } from '../../../core/ai/builder/nodes/types';
+import {
+  isLayerType,
+  isInputType,
+  isTransformType,
+  NodeType,
+  isOutputTpye
+} from '../../../core/ai/builder/nodes/types';
 
 function sortByIndex(entries: any) {
   entries.sort((a: any, b: any) => {
@@ -103,6 +109,10 @@ const titleClasses = computed(() => {
   }
   if (isInputType(props.data!.type)) {
     return 'bg-teal-800';
+  }
+
+  if (isOutputTpye(props.data!.type)) {
+    return 'bg-rose-800';
   }
 });
 

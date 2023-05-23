@@ -20,7 +20,7 @@ const change = (e: any) => {
 </script>
 <template>
   <div class="flex items-center gap-2 justify-start">
-    <div class="text-right">{{ data?.label }}:</div>
+    <div class="text-right shrink-0">{{ data?.label }}:</div>
     <input
       :min="data?.min"
       :max="data?.max"

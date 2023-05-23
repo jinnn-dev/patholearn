@@ -17,6 +17,7 @@ function getNodeClass(nodeType: NodeType) {
 
 export function parseNode(nodeData: INode) {
   const nodeClass = getNodeClass(nodeData._type as NodeType);
+
   let node;
   if (nodeClass) {
     const socket = new ClassicPreset.Socket(nodeData.socket);
@@ -27,6 +28,7 @@ export function parseNode(nodeData: INode) {
 
   node.id = nodeData.id;
   node.parse(nodeData);
+
   return node;
 }
 
