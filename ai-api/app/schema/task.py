@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import List, Optional
+from app.schema.base_mongo_model import BaseMongoModel
 
 from bson import ObjectId
 from app.schema.py_object_id import PyObjectId
@@ -24,7 +25,7 @@ class BuilderState(BaseModel):
 
 
 class TaskVersion(BaseModel):
-    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    id: PyObjectId = Field(default_factory=PyObjectId, alias="id")
     builder: BuilderState = Field(...)
     clearml_id: Optional[str] = None
     creation_date: datetime = Field(...)
@@ -42,8 +43,8 @@ class TaskVersion(BaseModel):
         }
 
 
-class Task(BaseModel):
-    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+class Task(BaseMongoModel):
+    id: PyObjectId = Field(default_factory=PyObjectId, alias="id")
     creator_id: str = Field(...)
     project_id: str = Field(...)
     creation_date: datetime = Field(...)
