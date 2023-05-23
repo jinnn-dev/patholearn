@@ -10,6 +10,7 @@ import CustomSelect from '../../form/CustomSelect.vue';
 
 import { useService } from '../../../composables/useService';
 import { AiService } from '../../../services/ai.service';
+import { CreateTask } from '../../../model/ai/tasks/task';
 
 const props = defineProps({
   projectId: {
@@ -20,9 +21,9 @@ const props = defineProps({
 
 const showCreate = ref<boolean>(false);
 
-const createTaskData = reactive<{ name: string; description: string; project_id: string }>({
+const createTaskData = reactive<CreateTask>({
   name: '',
-  description: '',
+  description: undefined,
   project_id: props.projectId
 });
 
