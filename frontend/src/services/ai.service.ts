@@ -44,30 +44,6 @@ export class AiService {
     return response!.data;
   }
 
-  public static async ping() {
-    const [_, response] = await handleError(
-      ApiService.get({
-        resource: '/ping',
-        host: AI_API_URL
-      }),
-      'Status (AI) konnte nicht geladen werden'
-    );
-
-    return response!.data;
-  }
-
-  public static async pingClearml() {
-    const [_, response] = await handleError(
-      ApiService.get({
-        resource: '/ping/clearml',
-        host: AI_API_URL
-      }),
-      'Status (ClearMl) konnte nicht geladen werden'
-    );
-
-    return response!.data;
-  }
-
   public static async getDatasets() {
     const [_, response] = await handleError(
       ApiService.get<Dataset[]>({
