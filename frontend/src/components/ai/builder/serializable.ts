@@ -3,6 +3,7 @@ import { ClassicPreset } from 'rete';
 export interface IGraph {
   nodes: INode[];
   connections: IConnection[];
+  positions: INodePositions[];
 }
 
 export interface IConnection {
@@ -41,6 +42,12 @@ export interface INode extends ISerializable {
   outputs: IPort[];
   controls: IControl[];
   socket: string;
+}
+
+export interface INodePositions {
+  id: string;
+  x: number;
+  y: number;
 }
 
 export abstract class Serializable<T, C extends ISerializable> {

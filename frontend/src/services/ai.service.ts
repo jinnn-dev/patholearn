@@ -173,6 +173,20 @@ export class AiService {
     return response!.data;
   }
 
+  public static async updateTaskVersion(taskId: string, taskVersionId: string, graph: IGraph) {
+    const [_, response] = await handleError(
+      ApiService.put<Task>({
+        resource: `/tasks/${taskId}/version`,
+        host: AI_API_URL,
+        data: {
+          id: taskVersionId,
+          builder: graph
+        }
+      })
+    );
+    return response!.data;
+  }
+
   public static async getTaskLog(taskId: string) {
     const [_, response] = await handleError(
       ApiService.get<LogEntry[]>({

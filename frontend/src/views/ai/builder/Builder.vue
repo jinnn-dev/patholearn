@@ -17,7 +17,7 @@ onMounted(async () => {
     <!-- <pre>{{ task }}</pre> -->
     <div v-if="loading">Loading...</div>
     <div v-else class="w-full h-full">
-      <node-editor v-if="builder && builder.graph" :graph="builder.graph"></node-editor>
+      <!-- <node-editor v-if="builder && builder.graph" :graph="builder.graph"></node-editor> -->
     </div>
     <!-- <node-editor v-else :graph="builder.graph"></node-editor>
      -->

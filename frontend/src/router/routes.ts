@@ -32,7 +32,7 @@ export const routes: RouteRecordRaw[] = [
         meta: {
           public: true
         },
-        component: () => import('../views/ai/tasks/TaskConsole.vue')
+        component: () => import('../views/ai/tasks/ClearTaskConsole.vue')
       },
       {
         path: 'images',
@@ -59,6 +59,7 @@ export const routes: RouteRecordRaw[] = [
     },
     component: () => import('../views/ai/projects/Project.vue')
   },
+
   {
     path: '/ai/builder/:id',
     name: 'Builder',
@@ -68,13 +69,24 @@ export const routes: RouteRecordRaw[] = [
     },
     component: () => import('../views/ai/builder/Builder.vue')
   },
+
   {
     path: '/ai/tasks/:id',
     name: 'Ai Task',
     meta: {
+      public: true,
+      disableNavigation: true
+    },
+    component: () => import('../views/ai/tasks/Task.vue')
+  },
+
+  {
+    path: '/ai/clear_tasks/:id',
+    name: 'ClearML Ai Task',
+    meta: {
       public: true
     },
-    component: () => import('../views/ai/tasks/Task.vue'),
+    component: () => import('../views/ai/tasks/ClearTask.vue'),
     children: [
       {
         path: '',
@@ -82,7 +94,7 @@ export const routes: RouteRecordRaw[] = [
         meta: {
           public: true
         },
-        component: () => import('../views/ai/tasks/TaskConsole.vue')
+        component: () => import('../views/ai/tasks/ClearTaskConsole.vue')
       },
       {
         path: 'metrics',
@@ -90,7 +102,7 @@ export const routes: RouteRecordRaw[] = [
         meta: {
           public: true
         },
-        component: () => import('../views/ai/tasks/TaskMetrics.vue')
+        component: () => import('../views/ai/tasks/ClearTaskMetrics.vue')
       }
     ]
   },

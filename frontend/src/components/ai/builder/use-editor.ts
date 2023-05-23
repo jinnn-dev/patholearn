@@ -14,7 +14,7 @@ import { NumberControl } from './components/number-control/number-control';
 import NumberControlVue from './components/number-control/NumberControl.vue';
 import DimensionControlVue from './components/dimension-control/DimensionControl.vue';
 import { Ref, ref } from 'vue';
-import { IConnection, IGraph, INode } from './serializable';
+import { IConnection, IGraph, INode, INodePositions } from './serializable';
 import { addCustomBackground } from './custom-background';
 import { LayerType } from './components/types';
 import { DimensionControl } from './components/dimension-control/dimension-control';
@@ -24,7 +24,7 @@ import { ILinearNode, LinearNode } from './components/linear-node';
 import { arrangeSetup } from './arrange-nodes';
 import { DropoutNode, IDropoutNode } from './components/dropout-node';
 import { FlattenNode, IFlattenNode } from './components/flatten-node';
-import { BatchNormNode } from './components/batch-norm-node';
+import { BatchNormNode, IBatchNormNode } from './components/batch-norm-node';
 import { IPoolingNode, PoolingNode } from './components/pooling-node';
 // type Schemes = GetSchemes<
 //   ClassicPreset.Node,
@@ -226,11 +226,20 @@ export function useEditor() {
 
   const download = (): IGraph => {
     const nodeData: INode[] = [];
-    const nodes = editor.value?.getNodes();
+    const nodePositions: INodePositions[] = [];
 
+    const nodes = editor.value?.getNodes();
     for (const node of nodes || []) {
       const serializedNode = node.serialize();
       nodeData.push(serializedNode);
+      const position = area.value?.nodeViews.get(serializedNode.id)?.position;
+      if (position) {
+        nodePositions.push({
+          id: serializedNode.id,
+          x: position.x,
+          y: position.y
+        });
+      }
     }
 
     const connectionsData: IConnection[] = [];
@@ -249,7 +258,8 @@ export function useEditor() {
 
     const graphData: IGraph = {
       nodes: nodeData,
-      connections: connectionsData
+      connections: connectionsData,
+      positions: nodePositions
     };
 
     return graphData;
@@ -272,6 +282,8 @@ export function useEditor() {
         node = DropoutNode.parse(nodeData as IDropoutNode);
       } else if (nodeData._type === FlattenNode.name) {
         node = FlattenNode.parse(nodeData as IFlattenNode);
+      } else if (nodeData._type === BatchNormNode.name) {
+        node = BatchNormNode.parse(nodeData as IBatchNormNode);
       } else if (nodeData._type === PoolingNode.name) {
         node = PoolingNode.parse(nodeData as IPoolingNode);
       } else {
@@ -294,7 +306,11 @@ export function useEditor() {
       await editor.value?.addConnection(connection);
     }
 
-    await arrangeLayout();
+    for (const position of graph.positions) {
+      await area.value?.translate(position.id, { x: position.x, y: position.y });
+    }
+
+    // await arrangeLayout();
     await zoomAt();
 
     loading.value = false;

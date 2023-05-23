@@ -10,16 +10,21 @@ import EditorTools from './EditorTools.vue';
 import Spinner from '../../../../general/Spinner.vue';
 import { LayerType } from '../types';
 import { EventName } from './events';
+import { TaskVersion } from '../../../../../model/ai/tasks/task';
 
 const props = defineProps({
-  graph: {
-    type: Object as PropType<IGraph>,
+  taskId: {
+    type: String,
+    required: true
+  },
+  taskVersion: {
+    type: Object as PropType<TaskVersion>,
     required: true
   }
 });
 
 const { arrangeLayout, loading: editorLoading, zoomAt, init, addNode, download, importGraph } = useEditor();
-const { run: updateGraph } = useService(AiService.updateBuilderGraph);
+const { run: updateGraph } = useService(AiService.updateTaskVersion);
 
 const rete = ref();
 
@@ -27,7 +32,7 @@ const loading = ref(false);
 const loadingText = ref('Loading');
 onMounted(async () => {
   await init(rete.value);
-  await importGraph(props.graph);
+  await importGraph(props.taskVersion.builder);
 });
 
 const itemClicked = async (event: EventName) => {
@@ -38,7 +43,7 @@ const itemClicked = async (event: EventName) => {
   }
   if (event === 'save') {
     loadingText.value = 'Saving';
-    await updateGraph(download());
+    await updateGraph(props.taskId, props.taskVersion.id, download());
   }
 
   if (event === 'center') {
