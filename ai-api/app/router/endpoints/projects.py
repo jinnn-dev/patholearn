@@ -1,8 +1,12 @@
+from time import time
+from typing import List
 from fastapi import APIRouter, Depends
 from supertokens_python.recipe import session
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
 import app.clearml_wrapper.clearml_wrapper as clearml_wrapper
+from app.database.database import task_collection
+from app.schema.task import Task
 
 router = APIRouter()
 
@@ -37,8 +41,21 @@ async def delete_project(
     return clearml_wrapper.delete_project(project_id)
 
 
-@router.get("/{project_id}/tasks")
+@router.get("/{project_id}/tasks", response_model=List[Task])
 async def get_project_tasks(
-    project_id: str, s: SessionContainer = Depends(verify_session())
+    project_id: str, _: SessionContainer = Depends(verify_session())
 ):
-    return clearml_wrapper.get_tasks_to_project(project_id)
+    start_time = time()
+    tasks_cursor = task_collection.find({"project_id": project_id}).sort("name")
+    tasks = []
+    for task in await tasks_cursor.to_list(1000):
+        tasks.append(task)
+    print(f"{time() - start_time}")
+    return tasks
+
+
+# @router.get("/{project_id}/tasks")
+# async def get_project_tasks(
+#     project_id: str, s: SessionContainer = Depends(verify_session())
+# ):
+#     return clearml_wrapper.get_tasks_to_project(project_id)
