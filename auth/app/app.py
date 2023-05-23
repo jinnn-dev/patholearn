@@ -12,7 +12,7 @@ from supertokens_python.recipe.usermetadata.asyncio import (
 )
 
 import sentry_sdk
-
+import httpx
 import app.config as config
 
 init(
@@ -31,6 +31,13 @@ sentry_sdk.init(
 
 app = FastAPI(title="Patholearn Authentication ")
 app.add_middleware(get_middleware())
+
+
+@app.get("/ping")
+async def ping():
+    with httpx.Client() as client:
+        response = client.get("http://supertokens:3567")
+    return "Ok" if response.status_code == 200 else "Error"
 
 
 @app.get("/sessioninfo")

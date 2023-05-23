@@ -49,7 +49,8 @@ const props = defineProps({
   dropdownTopDistance: {
     type: [String, Number],
     default: '80'
-  }
+  },
+  emptyString: String
 });
 
 const target = ref(null);
@@ -130,7 +131,7 @@ const isObject = (value: object | string): boolean => {
         class="h-10 bg-gray-500 hover:bg-gray-400 hover:ring-2 ring-highlight-800 rounded-lg flex items-center p-4 cursor-pointer justify-between"
         @click="isFocus = !isFocus"
       >
-        {{ searchString || 'Keine Klasse' }}
+        {{ searchString || emptyString || 'Keine Klasse' }}
         <div class="ml-3">
           <Icon v-if="isFocus" name="caret-up" strokeWidth="32" width="12" />
           <Icon v-else name="caret-down" strokeWidth="32" width="12" />

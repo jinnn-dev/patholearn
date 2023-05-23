@@ -10,7 +10,6 @@ const { result: metrics, loading } = useService(AiService.getTaskMetrics, true, 
 
 const processData = (series: any) => {
   const keys = Object.keys(series);
-  console.log(keys);
 
   let result_series: any[] = [];
   for (const key of keys) {

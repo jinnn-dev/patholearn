@@ -3,43 +3,46 @@ import { AI_API_URL } from '../config';
 import { handleError } from './error-handler';
 import { Project } from '../model/ai/projects/project';
 import { Dataset } from '../model/ai/datasets/dataset';
-import { Task } from '../model/ai/tasks/task';
+import { CreateTask, Task } from '../model/ai/tasks/task';
 import { LogEntry } from '../model/ai/tasks/log-entry';
+import { IGraph } from '../core/ai/builder/serializable';
 
 export class AiService {
-  // public static async ping() {
-  //   const [_, response] = await handleError(
-  //     axios.post(
-  //       AI_API_URL + '/debug.ping',
-  //       {},
-  //       {
-  //         headers: {
-  //           Authorization:
-  //             'Bearer ' +
-  //             'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbnYiOiI8dW5rbm93bj4iLCJpYXQiOjE2ODE0ODU3MDUsImF1dGhfdHlwZSI6IkJlYXJlciIsImlkZW50aXR5Ijp7InJvbGUiOiJzeXN0ZW0iLCJjb21wYW55X25hbWUiOiJjbGVhcm1sIiwiY29tcGFueSI6ImQxYmQ5MmEzYjAzOTQwMGNiYWZjNjBhN2E1YjFlNTJiIiwidXNlciI6Il9fd2Vic2VydmVyX18iLCJ1c2VyX25hbWUiOiJ3ZWJzZXJ2ZXIifSwiYXBpX3ZlcnNpb24iOiIyLjIzIiwic2VydmVyX3ZlcnNpb24iOiIxLjkuMiIsInNlcnZlcl9idWlsZCI6IjMxNyIsImZlYXR1cmVfc2V0IjoiYmFzaWMifQ.mH4PA52I6nxq7n_RkRY_wCyZ6KQ6uFPjN7Mfs06Z4dc'
-  //         }
-  //       }
-  //     )
-  //   );
-  //   return response!.data;
-  // }
-  // public static async getProjects() {
-  //   const [_, response] = await handleError(
-  //     axios.post(
-  //       AI_API_URL + '/tasks.get_all',
-  //       {},
-  //       {
-  //         headers: {
-  //           Authorization:
-  //             'Bearer ' +
-  //             'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbnYiOiI8dW5rbm93bj4iLCJpYXQiOjE2ODE0ODU3MDUsImF1dGhfdHlwZSI6IkJlYXJlciIsImlkZW50aXR5Ijp7InJvbGUiOiJzeXN0ZW0iLCJjb21wYW55X25hbWUiOiJjbGVhcm1sIiwiY29tcGFueSI6ImQxYmQ5MmEzYjAzOTQwMGNiYWZjNjBhN2E1YjFlNTJiIiwidXNlciI6Il9fd2Vic2VydmVyX18iLCJ1c2VyX25hbWUiOiJ3ZWJzZXJ2ZXIifSwiYXBpX3ZlcnNpb24iOiIyLjIzIiwic2VydmVyX3ZlcnNpb24iOiIxLjkuMiIsInNlcnZlcl9idWlsZCI6IjMxNyIsImZlYXR1cmVfc2V0IjoiYmFzaWMifQ.mH4PA52I6nxq7n_RkRY_wCyZ6KQ6uFPjN7Mfs06Z4dc'
-  //         }
-  //       }
-  //     ),
-  //     'AI Tasks could not be loaded'
-  //   );
-  //   return response!.data;
-  // }
+  public static async ping() {
+    const [_, response] = await handleError(
+      ApiService.get({
+        resource: '/ping',
+        host: AI_API_URL
+      }),
+      'Status (AI) konnte nicht geladen werden'
+    );
+
+    return response!.data;
+  }
+
+  public static async pingClearml() {
+    const [_, response] = await handleError(
+      ApiService.get({
+        resource: '/ping/clearml',
+        host: AI_API_URL
+      }),
+      'Status (ClearMl) konnte nicht geladen werden'
+    );
+
+    return response!.data;
+  }
+
+  public static async wsLogin(body: any) {
+    const [_, response] = await handleError(
+      ApiService.post<any>({
+        resource: '/auth',
+        data: body,
+        host: AI_API_URL
+      }),
+      'WS login fehlgeschlagen'
+    );
+    return response!.data;
+  }
 
   public static async ping() {
     const [_, response] = await handleError(
@@ -114,6 +117,18 @@ export class AiService {
     return response!.data;
   }
 
+  public static async deleteProject(projectId: string) {
+    const [_, response] = await handleError(
+      ApiService.delete({
+        resource: `/projects/${projectId}`,
+        host: AI_API_URL
+      }),
+      'Projekt konnte nicht gelöscht werden'
+    );
+
+    return response!.data;
+  }
+
   public static async getProjects() {
     const [_, response] = await handleError(
       ApiService.get<Project[]>({
@@ -135,12 +150,23 @@ export class AiService {
     return response?.data;
   }
 
-  public static async createTask(data: {
-    task_name: string;
-    project_id: string;
-    model_name: string;
-    dataset_id: string;
-  }) {
+  // public static async createTask(data: {
+  //   task_name: string;
+  //   project_id: string;
+  //   model_name: string;
+  //   dataset_id: string;
+  // }) {
+  //   const [_, response] = await handleError(
+  //     ApiService.post<Task>({
+  //       resource: `/tasks`,
+  //       data: data,
+  //       host: AI_API_URL
+  //     })
+  //   );
+  //   return response!.data;
+  // }
+
+  public static async createTask(data: CreateTask) {
     const [_, response] = await handleError(
       ApiService.post<Task>({
         resource: `/tasks`,
@@ -166,6 +192,20 @@ export class AiService {
       ApiService.get<Task>({
         resource: `/tasks/${taskId}`,
         host: AI_API_URL
+      })
+    );
+    return response!.data;
+  }
+
+  public static async updateTaskVersion(taskId: string, taskVersionId: string, graph: IGraph) {
+    const [_, response] = await handleError(
+      ApiService.put<Task>({
+        resource: `/tasks/${taskId}/version`,
+        host: AI_API_URL,
+        data: {
+          id: taskVersionId,
+          builder: graph
+        }
       })
     );
     return response!.data;
@@ -211,6 +251,104 @@ export class AiService {
           user_id: user_id,
           metadata: metadata
         }
+      })
+    );
+
+    return response!.data;
+  }
+
+  public static async getBuilderState() {
+    const [_, response] = await handleError(
+      ApiService.get<any>({
+        resource: '/builder/state',
+        host: AI_API_URL
+      })
+    );
+    return response!.data;
+  }
+
+  public static async updateBuilderState(fieldId: string, value?: string) {
+    const [_, response] = await handleError(
+      ApiService.put<any>({
+        resource: '/builder/state',
+        host: AI_API_URL,
+        data: {
+          field_id: fieldId,
+          value: value
+        }
+      })
+    );
+    return response!.data;
+  }
+
+  public static async lock(fieldId: string, lockedBy: string) {
+    const [_, response] = await handleError(
+      ApiService.put<any>({
+        resource: '/builder/state/lock',
+        host: AI_API_URL,
+        data: {
+          field_id: fieldId,
+          locked_by: lockedBy
+        }
+      })
+    );
+    return response!.data;
+  }
+
+  public static async unlock(fieldId: string) {
+    const [_, response] = await handleError(
+      ApiService.put<any>({
+        resource: '/builder/state/unlock',
+        host: AI_API_URL,
+        data: {
+          field_id: fieldId
+        }
+      })
+    );
+    return response!.data;
+  }
+
+  public static async unlockToUser(userId: string) {
+    const [_, response] = await handleError(
+      ApiService.put<any>({
+        resource: '/builder/state/unlock/user',
+        host: AI_API_URL,
+        data: {
+          user_id: userId
+        }
+      })
+    );
+    return response!.data;
+  }
+
+  public static async createBuilderTask(data: { name: string; project_id: string }) {
+    const [_, response] = await handleError(
+      ApiService.post({
+        resource: '/tasks/builder',
+        host: AI_API_URL,
+        data
+      })
+    );
+    return response!.data;
+  }
+
+  public static async getBuilderTask(id: string) {
+    const [_, response] = await handleError(
+      ApiService.get<any>({
+        resource: `/tasks/builder/${id}`,
+        host: AI_API_URL
+      })
+    );
+
+    return response!.data;
+  }
+
+  public static async updateBuilderGraph(graph: IGraph) {
+    const [_, response] = await handleError(
+      ApiService.put<any>({
+        resource: `/builder/graph`,
+        host: AI_API_URL,
+        data: graph
       })
     );
 

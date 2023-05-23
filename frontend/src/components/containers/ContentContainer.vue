@@ -18,7 +18,7 @@ defineProps({
 });
 </script>
 <template>
-  <div>
+  <div class="flex flex-col">
     <div class="relative flex flex-col items-start gap-4 p-8">
       <div v-if="loading" class="w-full flex justify-center items-center">
         <div class="animate-skeleton w-96 h-14 bg-gray-700 rounded-lg"></div>
@@ -38,8 +38,8 @@ defineProps({
       </div>
     </div>
 
-    <div class="flex justify-center" :class="margin">
-      <div class="w-11/12 mb-8">
+    <div class="flex flex-1 justify-center h-full" :class="margin">
+      <div class="w-11/12 mb-8 flex flex-col">
         <slot name="content"></slot>
       </div>
     </div>

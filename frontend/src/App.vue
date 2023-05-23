@@ -1,11 +1,13 @@
 <script lang="ts" setup>
 import { getEnv } from './config';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { detect } from 'detect-browser';
 import NotificationBar from './components/general/NotificationBar.vue';
 import { useRoute } from 'vue-router';
 import Sidebar from './components/menu/Sidebar.vue';
 import AppLoading from './components/AppLoading.vue';
+import { appState } from './utils/app.state';
+import { initWebsocket, registerConnectionEvents } from './services/ws.service';
 
 const route = useRoute();
 
@@ -40,10 +42,19 @@ if (detectedBrowser) {
       break;
   }
 }
+
+watch(
+  () => route.path,
+  async () => {
+    if (route.path !== '/login' && route.path !== '/register') {
+      if (initWebsocket()) {
+        registerConnectionEvents();
+      }
+    }
+  }
+);
 </script>
 <template>
-  <!--  <div-->
-  <!--    class='hidden backdrop-blur backdrop-blur-0 backdrop-blur-sm backdrop-blur-md backdrop-blur-lg backdrop-blur-xl backdrop-blur-2xl backdrop-blur-3xl'></div>-->
   <div class="w-full bg-gray-800 text-gray-100 min-h-screen">
     <div
       v-if="showBrowserWarning"
@@ -53,10 +64,9 @@ if (detectedBrowser) {
       <p class="text-sm text-gray-200">Bitte wechsel zu einem Chromium-basierten Browser wie Chrome oder Edge</p>
     </div>
     <div class="flex">
-      <sidebar class="flex-shrink-0" v-if="!route.meta.disableNavigation"></sidebar>
-      <app-loading v-if="route.path !== '/login' && route.path !== '/register'"></app-loading>
-
-      <main class="w-full">
+      <app-loading></app-loading>
+      <sidebar class="flex-shrink-0" v-if="appState.user && !route.meta.disableNavigation"></sidebar>
+      <main class="w-full min-h-screen">
         <router-view />
       </main>
     </div>
@@ -120,6 +130,48 @@ a.router-link-exact-active {
 @font-face {
   font-family: 'Poppins';
   src: url('/Poppins/Poppins-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'JetBrains';
+  src: url('/JetBrainsMono/JetBrainsMono-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'JetBrains';
+  src: url('/JetBrainsMono/JetBrainsMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'JetBrains';
+  src: url('/JetBrainsMono/JetBrainsMono-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'JetBrains';
+  src: url('/JetBrainsMono/JetBrainsMono-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'JetBrains';
+  src: url('/JetBrainsMono/JetBrainsMono-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/JetBrainsMono/JetBrainsMono-ExtraBold.woff2') format('woff2');
   font-weight: 800;
   font-style: normal;
 }

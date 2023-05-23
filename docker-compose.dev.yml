@@ -8,6 +8,7 @@ services:
         - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
         - MYSQL_HOST=${DATABASE_IP}
         - MYSQL_DATABASE=${DATABASE_DB}
+    restart: unless-stopped
     networks:
       - auth_auth-network
       - patholearn-network
@@ -62,6 +63,7 @@ services:
     image: ${DOCKER_PREFIX}/${DOCKER_APPLICATION_TITLE}-slide_api:dev
     networks:
       - patholearn-network
+    restart: unless-stopped
     ports:
       - '8001:8000'
     command: uvicorn app.app:app --reload --host 0.0.0.0 --port 8000 --no-server-header
@@ -82,6 +84,7 @@ services:
 
   slide_worker:
     image: ${DOCKER_PREFIX}/${DOCKER_APPLICATION_TITLE}-slide_api:dev
+    restart: unless-stopped
     networks:
       - patholearn-network
     depends_on:
@@ -100,6 +103,7 @@ services:
 
   slide_db:
     image: mongo:latest
+    restart: unless-stopped
     networks:
       - patholearn-network
     environment:
@@ -112,6 +116,7 @@ services:
 
   minio:
     image: minio/minio
+    restart: unless-stopped
     networks:
       - patholearn-network
     ports:
@@ -126,6 +131,7 @@ services:
 
   rabbit:
     image: rabbitmq:latest
+    restart: unless-stopped
     networks:
       - patholearn-network
     ports:
@@ -135,9 +141,11 @@ services:
     build:
       context: ./ai-api/.
       dockerfile: dockerfile
+    restart: unless-stopped
     networks:
       - auth_auth-network
       - patholearn-network
+      - ws_ws-network
     volumes:
       - ./ai-api/app:/app
     environment:
@@ -147,6 +155,13 @@ services:
       - CLEARML_API_ACCESS_KEY=${CLEARML_API_ACCESS_KEY}
       - CLEARML_API_SECRET_KEY=${CLEARML_API_SECRET_KEY}
       - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
+      - WEBSOCKET_APP_ID=${WEBSOCKET_APP_ID}
+      - WEBSOCKET_APP_KEY=${WEBSOCKET_APP_KEY}
+      - WEBSOCKET_APP_SECRET=${WEBSOCKET_APP_SECRET}
+      - WEBSOCKET_HOST=${WEBSOCKET_HOST}
+      - WEBSOCKET_PORT=${WEBSOCKET_PORT}
+      - WEBSOCKET_SSL=${WEBSOCKET_SSL}
+      - DATABASE_URL=${MONGO_AI_DRIVER}://${MONGO_AI_USER}:${MONGO_AI_PASSWORD}@${MONGO_AI_IP}:${MONGO_AI_PORT} 
     ports:
       - '8888:8000'
 
@@ -154,6 +169,7 @@ services:
     build:
       context: ./ai-worker/.
       dockerfile: dockerfile
+    restart: unless-stopped
     networks:
       - auth_auth-network
       - patholearn-network
@@ -163,8 +179,23 @@ services:
     environment:
       - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
 
+  ai_db:
+    image: mongo:latest
+    restart: unless-stopped
+    networks:
+      - patholearn-network
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_AI_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_AI_INITDB_ROOT_PASSWORD}
+    ports:
+      - '27018:${MONGO_AI_PORT}'
+    volumes:
+      - ai_db_data:/mongodb
+
 networks:
   auth_auth-network:
+    external: true
+  ws_ws-network:
     external: true
   patholearn-network:
     external: false
@@ -172,3 +203,4 @@ networks:
 volumes:
   my-db:
   mongodb_data:
+  ai_db_data:

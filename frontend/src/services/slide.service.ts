@@ -6,6 +6,17 @@ import { ApiService } from './api.service';
 import { handleError } from './error-handler';
 
 export class SlideService {
+  public static async ping() {
+    const [_, response] = await handleError(
+      ApiService.get<{
+        Hello: 'World';
+      }>({
+        resource: '/',
+        host: SLIDE_API_URL
+      })
+    );
+    return response?.data;
+  }
   /**
    * Returns all wsi slides available
    *

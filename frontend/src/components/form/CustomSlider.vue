@@ -5,7 +5,7 @@ import FormField from './FormField.vue';
 
 type Direction = 'ltr' | 'rtl';
 
-defineEmits(['valueChanged', 'isReleased']);
+defineEmits(['valueChanged', 'isReleased', 'focus', 'blur']);
 
 const props = defineProps({
   label: String,
@@ -24,7 +24,9 @@ const props = defineProps({
   direction: {
     type: String as PropType<Direction>,
     default: 'ltr'
-  }
+  },
+  lockedBy: String,
+  lockedColor: String
 });
 
 const sliderPosition = ref(props.initialPosition);
@@ -37,7 +39,7 @@ watch(
 );
 </script>
 <template>
-  <form-field :label="label">
+  <form-field :label="label" :locked-by="lockedBy" :locked-color="lockedColor">
     <Slider
       v-model="sliderPosition"
       :direction="direction"
@@ -46,9 +48,11 @@ watch(
       :orientation="orientation"
       :step="step"
       :tooltips="tooltips"
+      :disabled="lockedBy !== undefined"
       class="w-full"
-      @change="$emit('isReleased', $event)"
-      @update="$emit('valueChanged', $event)"
+      @change="$emit('isReleased', $event), $emit('blur')"
+      @update="$emit('valueChanged', $event), $emit('focus')"
+      @start="$emit('focus')"
     ></Slider>
   </form-field>
 </template>

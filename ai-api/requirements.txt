@@ -6,3 +6,5 @@ supertokens-python==0.12.8
 clearml==1.10.3
 urllib3==1.26.15
 celery==5.2.7
+pusher==3.3.2
+motor==3.1.2

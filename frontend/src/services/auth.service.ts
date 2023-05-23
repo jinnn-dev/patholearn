@@ -27,6 +27,16 @@ export enum AuthError {
 }
 
 export class AuthService {
+  public static async ping() {
+    const [_, response] = await handleError(
+      ApiService.get<string>({
+        resource: '/ping',
+        host: AUTH_API_URL
+      })
+    );
+    return response?.data;
+  }
+
   /**
    * Checks wether the given email already exists
    */

@@ -111,6 +111,16 @@ def create_project(project_name: str, description: str = None):
     return response.json()["data"]
 
 
+def delete_project(project_id: str):
+    with httpx.Client() as client:
+        response = client.post(
+            f"{Config.CLEARML_API}/projects.delete",
+            json={"delete_contents": True, "project": project_id},
+            auth=(Config.CLEARML_API_ACCESS_KEY, Config.CLEARML_API_SECRET_KEY),
+        )
+    return response.json()["data"]
+
+
 def get_projects():
     response = httpx.post(
         f"{Config.CLEARML_API}/projects.get_all_ex",

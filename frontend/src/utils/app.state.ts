@@ -10,3 +10,8 @@ export const appState = reactive<{
 export const isSuperUser = (): boolean => appState.user?.is_superuser || false;
 
 export const appLoading = ref<boolean>(true);
+
+export const isLogin = ref<boolean>(false);
+
+export const websocketLoading = ref<boolean>(false);
+export const wsIsConnected = ref<boolean>(false);

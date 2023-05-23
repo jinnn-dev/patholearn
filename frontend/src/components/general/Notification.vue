@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed, onMounted, PropType } from 'vue';
-import { Notification, NotificationLevel } from '../../model/notification';
+import { Notification } from '../../model/notification';
 import Icon from './Icon.vue';
 
 const props = defineProps({
@@ -35,11 +35,11 @@ const getDate = computed(() =>
 
 const colorClasses = computed(() => {
   switch (props.notification.level) {
-    case NotificationLevel.ERROR:
+    case 'error':
       return 'bg-red-500/70 ring-rose-500 text-red-100';
-    case NotificationLevel.INFO:
+    case 'info':
       return 'bg-cyan-500/70 ring-cyan-500 text-cyan-100';
-    case NotificationLevel.WARNING:
+    case 'warning':
       return 'bg-amber-500/70 ring-amber-500 text-amber-100';
     default:
       return 'bg-emerald-500/70 ring-emerald-500 text-emerald-100';

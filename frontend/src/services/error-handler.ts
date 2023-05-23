@@ -1,5 +1,3 @@
-import { NotificationLevel } from '../model/notification';
-import { ref } from 'vue';
 import { addNotification } from '../utils/notification-state';
 
 export interface CustomError {
@@ -18,7 +16,7 @@ export async function handleError<T>(p: Promise<T>, errorMessage?: string): Prom
 
 export function showError(err: any, errorMessage?: string) {
   addNotification({
-    level: NotificationLevel.ERROR,
+    level: 'error',
     header: errorMessage || 'Fehler',
     showDate: true,
     detail: err.response !== undefined ? err.response.data.detail : err.message,

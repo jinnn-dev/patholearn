@@ -10,6 +10,10 @@ module.exports = {
     }
   ],
   theme: {
+    fontFamily: {
+      sans: ['Poppins', 'sans-serif'],
+      mono: ['JetBrains']
+    },
     extend: {
       animation: {
         skeleton: 'pulse 1.5s ease-in-out infinite'

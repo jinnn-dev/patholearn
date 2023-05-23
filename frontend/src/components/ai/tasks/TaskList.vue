@@ -2,8 +2,8 @@
 import { AiService } from '../../../services/ai.service';
 import { useService } from '../../../composables/useService';
 import SkeletonCard from '../../../components/containers/SkeletonCard.vue';
-import { notifications } from '../../../utils/notification-state';
-import { NotificationLevel } from '../../../model/notification';
+import { addNotification } from '../../../utils/notification-state';
+
 import TaskCard from './TaskCard.vue';
 import TaskCreate from './TaskCreate.vue';
 import NoContent from '../../general/NoContent.vue';
@@ -17,9 +17,8 @@ const props = defineProps({
 const { result: tasks, loading, run } = useService(AiService.getTasksToProject, true, props.projectId);
 
 const createNotification = () => {
-  notifications.value.push({
-    id: props.projectId,
-    level: NotificationLevel.INFO,
+  addNotification({
+    level: 'info',
     showDate: true,
     header: 'Aufgabe wird erstellt',
     detail: 'Aktualisiere die Seite',

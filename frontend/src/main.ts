@@ -11,6 +11,7 @@ import { TokenService } from './services/token.service';
 import * as Sentry from '@sentry/vue';
 import { BrowserTracing } from '@sentry/tracing';
 import SuperTokens from 'supertokens-web-js';
+import Pusher from 'pusher-js';
 
 import { getEnv } from './config';
 import { SuperTokensWebJSConfig } from './supertoken-config';
