@@ -3,7 +3,7 @@ import { AI_API_URL } from '../config';
 import { handleError } from './error-handler';
 import { Project } from '../model/ai/projects/project';
 import { Dataset } from '../model/ai/datasets/dataset';
-import { Task } from '../model/ai/tasks/task';
+import { CreateTask, Task } from '../model/ai/tasks/task';
 import { LogEntry } from '../model/ai/tasks/log-entry';
 import { IGraph } from '../components/ai/builder/serializable';
 
@@ -142,7 +142,7 @@ export class AiService {
   //   return response!.data;
   // }
 
-  public static async createTask(data: { name: string; project_id: string; description?: string }) {
+  public static async createTask(data: CreateTask) {
     const [_, response] = await handleError(
       ApiService.post<Task>({
         resource: `/tasks`,

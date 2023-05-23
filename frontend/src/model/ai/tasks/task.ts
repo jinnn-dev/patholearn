@@ -1,18 +1,28 @@
+export interface BuilderState {
+  nodes: any[];
+  connections: any[];
+  positions: any[];
+}
+
+export interface TaskVersion {
+  id: string;
+  builder: BuilderState;
+  clearml_id?: string;
+  creation_date: string;
+}
+
 export interface Task {
   id: string;
+  creator_id: string;
+  project_id: string;
+  creation_date: string;
   name: string;
-  type: string;
-  status: string;
-  status_reason: string;
-  status_message: string;
-  status_changed: string;
-  created: string;
-  started: string;
-  last_update: string;
-  last_change: string;
-  last_changed_by: string;
-  last_worker: string;
-  project: {
-    id: string;
-  };
+  description?: string;
+  versions: TaskVersion[];
+}
+
+export interface CreateTask {
+  name: string;
+  description?: string;
+  project_id: string;
 }
