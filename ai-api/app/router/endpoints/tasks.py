@@ -31,6 +31,7 @@ async def create_task(
             "creation_date": creation_date,
             "versions": [
                 {
+                    "id": ObjectId(),
                     "builder": {"nodes": [], "connections": [], "positions": []},
                     "clearml_id": None,
                     "creation_date": creation_date,
