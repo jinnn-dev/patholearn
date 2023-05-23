@@ -107,6 +107,7 @@ export const routes: RouteRecordRaw[] = [
     ]
   },
   {
+
     path: '/live',
     meta: {
       public: true
@@ -120,6 +121,7 @@ export const routes: RouteRecordRaw[] = [
       public: true
     },
     component: () => import('../views/ServerStatus.vue')
+
   },
   {
     path: '/login',

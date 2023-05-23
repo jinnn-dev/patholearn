@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 import { SlideService } from '../../services/slide.service';
 import { useService } from '../../composables/useService';
 import { AiService } from '../../services/ai.service';

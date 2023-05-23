@@ -5,6 +5,7 @@ import time
 import uuid
 import random
 
+
 from fastapi import FastAPI, Depends
 from fastapi_socketio import SocketManager
 from starlette.middleware.cors import CORSMiddleware
@@ -61,6 +62,7 @@ app.add_middleware(
 sio = SocketManager(app=app, cors_allowed_origins=[], logger=True)
 
 
+
 @app.get("/")
 async def root():
     start_time = time.time()
@@ -87,6 +89,7 @@ async def ping():
 @app.get("/ping/clearml")
 async def ping_clearml():
     return clearml_wrapper.ping()
+
 
 
 @app.post("/auth")
@@ -119,7 +122,6 @@ async def ws_login(body: dict, s: SessionContainer = Depends(verify_session())):
         )
     return auth
 
-
 @app.get("/sessioninfo")
 async def secure_api(
     s: SessionContainer = Depends(verify_session()),
@@ -129,3 +131,75 @@ async def secure_api(
         "userId": s.get_user_id(),
         "accessTokenPayload": s.get_access_token_payload(),
     }
+
+
+@app.get("/datasets")
+async def login(s: SessionContainer = Depends(verify_session())):
+    return clearml_wrapper.get_datasets()
+
+
+@app.get("/datasets/{dataset_id}/images")
+async def get_dataset_images(
+    dataset_id: str, _: SessionContainer = Depends(verify_session())
+):
+    return clearml_wrapper.get_datatset_debug_images(dataset_id)
+
+
+@app.get("/datasets/{dataset_project_id}")
+async def get_specific_dataset(
+    dataset_project_id: str, s: SessionContainer = Depends(verify_session())
+):
+    return clearml_wrapper.get_specific_dataset(dataset_project_id)
+
+
+@app.post("/projects")
+async def create_project(
+    create_body: dict, s: SessionContainer = Depends(verify_session())
+):
+    return clearml_wrapper.create_project(
+        project_name=create_body["project_name"], description=create_body["description"]
+    )
+
+
+@app.get("/projects")
+async def get_projects(s: SessionContainer = Depends(verify_session())):
+    return clearml_wrapper.get_projects()
+
+
+@app.get("/projects/{project_id}")
+async def get_project(project_id: str, _: SessionContainer = Depends(verify_session())):
+    return clearml_wrapper.get_project(project_id)
+
+
+@app.get("/projects/{project_id}/tasks")
+async def get_tasks_to_projects(
+    project_id: str, s: SessionContainer = Depends(verify_session())
+):
+    return clearml_wrapper.get_tasks_to_project(project_id)
+
+
+@app.post("/tasks")
+async def create_task(data: dict, _: SessionContainer = Depends(verify_session())):
+    return clearml_wrapper.create_task_and_enque(data)
+
+
+@app.get("/tasks/{task_id}")
+async def get_task(task_id: str, _: SessionContainer = Depends(verify_session())):
+    return clearml_wrapper.get_task(task_id)
+
+
+@app.get("/tasks/{task_id}/log")
+async def get_task_log(task_id: str, _: SessionContainer = Depends(verify_session())):
+    return clearml_wrapper.get_task_log(task_id)
+
+
+@app.get("/tasks/{task_id}/metrics")
+async def get_task_log(task_id: str, _: SessionContainer = Depends(verify_session())):
+    return clearml_wrapper.get_task_metrics(task_id)
+
+
+@app.post
+@app.get("/")
+def root():
+    return {"Hello": "World"}
+
