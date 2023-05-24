@@ -22,7 +22,7 @@ const emit = defineEmits<{ (e: 'selected', value: EventName): void }>();
     <transition name="slide-fade">
       <div
         v-if="toolsOpen"
-        class="relative h-full w-52 bg-gray-800/80 backdrop-blur-lg ring-2 rounded-lg ring-gray-700 shadow-lg shadow-gray-900 overflow-auto"
+        class="relative h-full w-52 bg-gray-800/80 backdrop-blur-lg ring-[1px] rounded-lg ring-gray-700 shadow-lg shadow-gray-900 overflow-auto"
       >
         <div class="flex p-2 justify-between items-center gap-4">
           <div class="flex-shrink-0 text-lg">Toolbox</div>
