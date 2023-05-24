@@ -1,5 +1,5 @@
-import { IControl } from './serializable';
-import * as Controls from './controls';
+import { IControl } from '../serializable';
+import * as Controls from '../controls';
 import { ClassicPreset } from 'rete';
 
 export function parseControl<T>(controlData: T extends IControl ? any : any) {

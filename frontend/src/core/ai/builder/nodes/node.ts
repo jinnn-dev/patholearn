@@ -1,7 +1,7 @@
 import { ClassicPreset } from 'rete';
 import { INode, IPort, ISerializable, Serializable, serializePort } from '../serializable';
 import { Control } from '../controls/control';
-import { parseControl } from '../control-factory';
+import { parseControl } from '../factories/control-factory';
 import { NodeType } from './types';
 
 export abstract class Node<

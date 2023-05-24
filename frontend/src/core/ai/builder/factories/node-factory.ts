@@ -1,10 +1,10 @@
-import { INode } from './serializable';
+import { INode } from '../serializable';
 
-import * as Nodes from './nodes';
+import * as Nodes from '../nodes';
 import { Presets } from 'rete-vue-render-plugin';
 import { ClassicPreset } from 'rete';
-import { Node } from './nodes/node';
-import { NodeType } from './nodes/types';
+import { Node } from '../nodes/node';
+import { NodeType } from '../nodes/types';
 
 function getNodeClass(nodeType: NodeType) {
   const nodes = Object.entries(Nodes);

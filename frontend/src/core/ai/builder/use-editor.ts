@@ -28,7 +28,7 @@ import { FlattenNode } from './nodes/transform/flatten-node';
 import { BatchNormNode } from './nodes/transform/batch-norm-node';
 import { PoolingNode } from './nodes/layer/pooling-node';
 import { SyncPlugin } from './plugins/sync-plugin';
-import { createNodeInstance, parseNode } from './node-factory';
+import { createNodeInstance, parseNode } from './factories/node-factory';
 
 type NodeProps = DatasetNode | Conv2DNode | LinearNode | DropoutNode | FlattenNode | BatchNormNode | PoolingNode;
 
