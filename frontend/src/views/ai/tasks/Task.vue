@@ -6,6 +6,7 @@ import NodeEditor from '../../../components/ai/builder/editor/NodeEditor.vue';
 import { usePresenceChannel } from '../../../composables/ws/usePresenceChannel';
 import { onMounted } from 'vue';
 import Icon from '../../../components/general/Icon.vue';
+import UserListIndicator from '../../../components/ws/UserListIndicator.vue';
 
 const route = useRoute();
 
@@ -36,5 +37,8 @@ onMounted(async () => {
       </div>
     </div>
     <node-editor v-if="task" :task-id="task.id" :task-version="task.versions[0]"></node-editor>
+  </div>
+  <div class="fixed z-10 bottom-4 left-1/2 -translate-x-1/2 bg-gray-800 rounded-xl">
+    <user-list-indicator :connected="isConnected" :members="members" :me="me"></user-list-indicator>
   </div>
 </template>
