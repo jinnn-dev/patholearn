@@ -41,10 +41,10 @@ const remainingUsers = computed(() => membersNoMe.value.length - props.maxVisibl
       <span class="relative inline-flex rounded-full h-3 w-3" :class="connected ? 'bg-green-400' : 'bg-red-400'"></span>
     </span>
     <div v-if="!connected" class="text-red-400 p-1">Nicht verbunden</div>
-    <div v-else class="flex p-2 gap-2 justify-center items-center">
+    <div v-else class="flex gap-2 justify-center items-center w-full p-2">
       <user-icon v-if="me" :user="me"></user-icon>
 
-      <div class="flex" :class="remainingUsers > 0 ? '-space-x-3' : 'gap-1'">
+      <div v-if="membersNoMe.length > 0" class="flex" :class="remainingUsers > 0 ? '-space-x-3' : 'gap-1'">
         <div v-for="user in membersNoMe.slice(0, maxVisible)">
           <user-icon v-if="user" :user="user"></user-icon>
         </div>
@@ -70,7 +70,7 @@ const remainingUsers = computed(() => membersNoMe.value.length - props.maxVisibl
     </div>
     <div v-if="me" class="flex flex-col gap-3">
       <div class="text-gray-300 font-semibold text-sm">Du</div>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 justify-center">
         <user-icon :user="me"></user-icon>
         <div>{{ me?.info.first_name }} {{ me?.info.last_name }}</div>
       </div>
