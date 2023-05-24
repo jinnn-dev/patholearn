@@ -1,7 +1,7 @@
 import { BaseSchemes, Root, Scope, ClassicPreset } from 'rete';
 import { Area2D } from 'rete-area-plugin';
 import { Connection } from 'rete-connection-plugin';
-
+import { builderState } from '../state';
 export class SyncPlugin<Schemes extends BaseSchemes> {
   root = new Scope<never, [Root<Schemes>]>('readonly');
   area = new Scope<never, [Area2D<Schemes>, Root<Schemes>]>('readonly');
@@ -11,11 +11,28 @@ export class SyncPlugin<Schemes extends BaseSchemes> {
 
   constructor() {
     this.root.addPipe((context) => {
-      // console.log(context);
-
+      if (
+        builderState.builderLoaded &&
+        builderState.initialGraphLoaded &&
+        (context.type === 'nodecreated' ||
+          context.type === 'noderemoved' ||
+          context.type === 'connectioncreated' ||
+          context.type === 'connectionremoved')
+      ) {
+        builderState.shouldSaveEditor = true;
+      }
       return context;
     });
     this.area.addPipe((context) => {
+      // console.log(context);
+      if (context.type === 'pointermove') {
+      }
+
+      if (builderState.builderLoaded && builderState.initialGraphLoaded && context.type === 'nodedragged') {
+        // console.log(builderState.initialGraphLoaded);
+
+        builderState.shouldSaveEditor = true;
+      }
       return context;
     });
     this.connection.addPipe((context) => {

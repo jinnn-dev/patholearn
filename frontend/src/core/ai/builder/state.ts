@@ -1,9 +1,13 @@
 import { reactive } from 'vue';
 
-interface State {
+interface BuilderState {
   builderLoaded: boolean;
+  initialGraphLoaded: boolean;
+  shouldSaveEditor: boolean;
 }
 
-export const state = reactive<State>({
-  builderLoaded: false
+export const builderState = reactive<BuilderState>({
+  builderLoaded: false,
+  initialGraphLoaded: false,
+  shouldSaveEditor: false
 });

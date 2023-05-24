@@ -29,6 +29,7 @@ import { BatchNormNode } from './nodes/transform/batch-norm-node';
 import { PoolingNode } from './nodes/layer/pooling-node';
 import { SyncPlugin } from './plugins/sync-plugin';
 import { createNodeInstance, parseNode } from './factories/node-factory';
+import { builderState } from './state';
 
 type NodeProps = DatasetNode | Conv2DNode | LinearNode | DropoutNode | FlattenNode | BatchNormNode | PoolingNode;
 
@@ -54,7 +55,7 @@ export function useEditor() {
   const loading = ref(false);
 
   const init = async (container: HTMLElement) => {
-    loading.value = true;
+    builderState.builderLoaded = false;
 
     socket.value = new ClassicPreset.Socket('socket');
     editor.value = new NodeEditor<Schemes>();
@@ -158,7 +159,7 @@ export function useEditor() {
     // @ts-ignore
     area.value.area.zoomHandler.container.removeEventListener('dblclick', area.value.area.zoomHandler.dblclick);
 
-    loading.value = false;
+    builderState.builderLoaded = true;
   };
 
   const arrangeLayout = async () => {
@@ -229,7 +230,7 @@ export function useEditor() {
   };
 
   const importGraph = async (graph: IGraph) => {
-    loading.value = true;
+    builderState.initialGraphLoaded = false;
     await editor.value?.clear();
 
     for (const nodeData of graph.nodes) {
@@ -275,7 +276,7 @@ export function useEditor() {
     // await arrangeLayout();
     await zoomAt();
 
-    loading.value = false;
+    builderState.initialGraphLoaded = true;
   };
 
   const clear = async () => {

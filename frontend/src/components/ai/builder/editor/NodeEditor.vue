@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PropType, onMounted, ref } from 'vue';
+import { PropType, onMounted, ref, watch } from 'vue';
 import { useService } from '../../../../composables/useService';
 import { AiService } from '../../../../services/ai.service';
 import { useEditor } from '../../../../core/ai/builder/use-editor';
@@ -9,6 +9,7 @@ import Spinner from '../../../general/Spinner.vue';
 import { TaskVersion } from '../../../../model/ai/tasks/task';
 import { NodeType, isNode } from '../../../../core/ai/builder/nodes/types';
 import { EventName } from '../../../../core/ai/builder/events';
+import { builderState } from '../../../../core/ai/builder/state';
 
 const props = defineProps({
   taskId: {
@@ -21,7 +22,7 @@ const props = defineProps({
   }
 });
 
-const { arrangeLayout, loading: editorLoading, zoomAt, init, addNode, download, importGraph, clear } = useEditor();
+const { arrangeLayout, zoomAt, init, addNode, download, importGraph, clear } = useEditor();
 const { run: updateGraph } = useService(AiService.updateTaskVersion);
 
 const rete = ref();
@@ -33,9 +34,19 @@ onMounted(async () => {
   await importGraph(props.taskVersion.builder);
 });
 
+watch(
+  () => builderState.shouldSaveEditor,
+  async () => {
+    if (builderState.shouldSaveEditor) {
+      await saveBuilder();
+    }
+  }
+);
+
 const saveBuilder = async () => {
   loadingText.value = 'Saving';
   await updateGraph(props.taskId, props.taskVersion.id, download());
+  builderState.shouldSaveEditor = false;
 };
 
 const itemClicked = async (event: EventName) => {
@@ -86,7 +97,7 @@ const itemClicked = async (event: EventName) => {
     </div>
     <transition name="fade">
       <div
-        v-if="editorLoading"
+        v-if="!builderState.builderLoaded && !builderState.initialGraphLoaded"
         class="absolute select-none flex flex-col gap-4 justify-center items-center w-full h-full bg-gray-900/80 backdrop-blur-sm z-20 top-0"
       >
         <!-- <img alt="Viewer is loading" class="w-1/5 h-1/4" src="/blocks_loading.svg" /> -->
