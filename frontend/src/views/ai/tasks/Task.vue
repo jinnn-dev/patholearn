@@ -38,7 +38,9 @@ onMounted(async () => {
     </div>
     <node-editor v-if="task" :task-id="task.id" :task-version="task.versions[0]"></node-editor>
   </div>
-  <div class="fixed z-10 bottom-4 left-1/2 -translate-x-1/2 bg-gray-800 rounded-xl">
+  <div
+    class="fixed z-10 flex justify-center items-center bottom-4 left-1/2 -translate-x-1/2 bg-gray-800/80 backdrop-blur-lg rounded-xl"
+  >
     <user-list-indicator :connected="isConnected" :members="members" :me="me"></user-list-indicator>
   </div>
 </template>
