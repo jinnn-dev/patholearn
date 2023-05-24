@@ -6,7 +6,7 @@ import { eventSettings, EventName } from '../../../../core/ai/builder/events';
 import { getNodeColor } from '../../../../core/ai/builder/node-colors';
 import { NodeType, getNodeGroup } from '../../../../core/ai/builder/nodes/types';
 
-const toolsOpen = ref(true);
+const toolsOpen = ref(false);
 
 const emit = defineEmits<{ (e: 'selected', value: EventName): void }>();
 </script>
@@ -14,7 +14,7 @@ const emit = defineEmits<{ (e: 'selected', value: EventName): void }>();
   <div class="absolute z-10 h-screen p-4 right-0 bottom-0">
     <div
       v-if="!toolsOpen"
-      class="fixed bottom-4 right-4 cursor-pointer bg-gray-700 hover:bg-gray-500 p-2 rounded-lg shadow-lg shadow-gray-900"
+      class="fixed bottom-4 right-4 cursor-pointer bg-gray-800 hover:bg-gray-500 p-2 rounded-lg shadow-lg shadow-gray-900"
       @click="toolsOpen = !toolsOpen"
     >
       <icon name="toolbox" stroke-width="0" size="32"></icon>
