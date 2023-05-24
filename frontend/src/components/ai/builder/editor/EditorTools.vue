@@ -27,24 +27,11 @@ const emit = defineEmits<{ (e: 'selected', value: EventName): void }>();
             <icon name="x" size="18"></icon>
           </div>
         </div>
-        <div class="flex flex-col gap-1 mt-4 px-2">
-          <tool-item
-            v-for="[key, item] in Object.entries(eventSettings)"
-            :icon="item.icon"
-            :label="item.label"
-            @click="emit('selected', key as EventName)"
-          ></tool-item>
-          <!-- <tool-item icon="floppy-disk" label="Save" @click="emit('selected', 'save')"></tool-item>
-          <tool-item icon="layout" label="Arrange" @click="emit('selected', 'arrange')"></tool-item>
-          <tool-item icon="arrow-counter-clockwise" label="Center" @click="emit('selected', 'center')"></tool-item>
-          <div class="w-full h-[1px] bg-gray-700"></div>
-          <tool-item icon="images" label="Dataset" @click="emit('selected', 'DatasetNode')"></tool-item>
-          <tool-item icon="stack" label="Conv2D" @click="emit('selected', 'Conv2DNode')"></tool-item>
-          <tool-item icon="cards" label="Linear" @click="emit('selected', 'LinearNode')"></tool-item>
-          <tool-item icon="drop-half" label="Dropout" @click="emit('selected', 'DropoutNode')"></tool-item>
-          <tool-item icon="dots-three-outline" label="Flatten" @click="emit('selected', 'FlattenNode')"></tool-item>
-          <tool-item icon="equalizer" label="Batch Norm." @click="emit('selected', 'BatchNormNode')"></tool-item>
-          <tool-item icon="arrows-in" label="Pooling" @click="emit('selected', 'PoolingNode')"></tool-item> -->
+        <div class="flex flex-col mt-4 px-2">
+          <div v-for="[key, item] in Object.entries(eventSettings)">
+            <tool-item :icon="item.icon" :label="item.label" @click="emit('selected', key as EventName)"></tool-item>
+            <div v-if="item.divider" class="w-full h-[1px] bg-gray-700 my-2"></div>
+          </div>
         </div>
       </div>
     </transition>
