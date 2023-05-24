@@ -11,6 +11,8 @@ export type OutputType = keyof typeof Outputs;
 
 export type NodeType = LayerType | InputType | TransformType | OutputType;
 
+export type NodeGroupType = 'Input' | 'Layer' | 'Transform' | 'Output';
+
 export function isNode(value: string) {
   return Object.keys(Nodes).includes(value);
 }
@@ -29,4 +31,20 @@ export function isTransformType(value: string) {
 
 export function isOutputTpye(value: string) {
   return Object.keys(Outputs).includes(value);
+}
+
+export function getNodeGroup(nodeType: NodeType): NodeGroupType | undefined {
+  if (isInputType(nodeType)) {
+    return 'Input';
+  }
+  if (isLayerType(nodeType)) {
+    return 'Layer';
+  }
+  if (isTransformType(nodeType)) {
+    return 'Transform';
+  }
+
+  if (isOutputTpye(nodeType)) {
+    return 'Output';
+  }
 }

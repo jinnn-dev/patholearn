@@ -36,13 +36,8 @@
 
 <script lang="ts" setup>
 import { PropType, computed, onMounted } from 'vue';
-import {
-  isLayerType,
-  isInputType,
-  isTransformType,
-  NodeType,
-  isOutputTpye
-} from '../../../core/ai/builder/nodes/types';
+import { NodeType } from '../../../core/ai/builder/nodes/types';
+import { getNodeColor } from '../../../core/ai/builder/node-colors';
 
 function sortByIndex(entries: any) {
   entries.sort((a: any, b: any) => {
@@ -101,19 +96,7 @@ function onRef(element: any, key: any, entity: any, type: any) {
   }
 }
 const titleClasses = computed(() => {
-  if (isLayerType(props.data!.type)) {
-    return 'bg-sky-800';
-  }
-  if (isTransformType(props.data!.type)) {
-    return 'bg-purple-800';
-  }
-  if (isInputType(props.data!.type)) {
-    return 'bg-teal-800';
-  }
-
-  if (isOutputTpye(props.data!.type)) {
-    return 'bg-rose-800';
-  }
+  return 'bg-' + getNodeColor(props.data!.type);
 });
 
 const nodeStyles = computed(() => {

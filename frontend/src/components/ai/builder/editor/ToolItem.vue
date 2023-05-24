@@ -2,7 +2,6 @@
 import { PropType } from 'vue';
 import Icon from '../../../general/Icon.vue';
 import { IconNames } from '../../../../../icons';
-
 defineProps({
   icon: {
     type: String as PropType<IconNames>,
