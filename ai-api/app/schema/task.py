@@ -43,6 +43,15 @@ class TaskVersion(BaseModel):
         }
 
 
+class TaskVersionNoBuilder(TaskVersion):
+    builder: Optional[BuilderState] = None
+
+
+class UpdateTaskVersion(BaseModel):
+    id: PyObjectId
+    builder: Optional[BuilderState]
+
+
 class Task(BaseMongoModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="id")
     creator_id: str = Field(...)
@@ -67,6 +76,10 @@ class Task(BaseMongoModel):
                 "versions": [],
             }
         }
+
+
+class TaskNoBuilder(Task):
+    versions: List[TaskVersionNoBuilder]
 
 
 class CreateTask(BaseModel):
