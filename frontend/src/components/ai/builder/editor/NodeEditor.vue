@@ -21,7 +21,7 @@ const props = defineProps({
   }
 });
 
-const { arrangeLayout, loading: editorLoading, zoomAt, init, addNode, download, importGraph } = useEditor();
+const { arrangeLayout, loading: editorLoading, zoomAt, init, addNode, download, importGraph, clear } = useEditor();
 const { run: updateGraph } = useService(AiService.updateTaskVersion);
 
 const rete = ref();
@@ -33,6 +33,11 @@ onMounted(async () => {
   await importGraph(props.taskVersion.builder);
 });
 
+const saveBuilder = async () => {
+  loadingText.value = 'Saving';
+  await updateGraph(props.taskId, props.taskVersion.id, download());
+};
+
 const itemClicked = async (event: EventName) => {
   loading.value = true;
   if (event === 'arrange') {
@@ -40,13 +45,18 @@ const itemClicked = async (event: EventName) => {
     await arrangeLayout();
   }
   if (event === 'save') {
-    loadingText.value = 'Saving';
-    await updateGraph(props.taskId, props.taskVersion.id, download());
+    await saveBuilder();
   }
 
   if (event === 'center') {
     loadingText.value = 'Centering';
     await zoomAt();
+  }
+
+  if (event === 'clear') {
+    loadingText.value = 'Clearing';
+    await clear();
+    await saveBuilder();
   }
 
   if (isNode(event)) {

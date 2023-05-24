@@ -278,6 +278,11 @@ export function useEditor() {
     loading.value = false;
   };
 
+  const clear = async () => {
+    await editor.value?.clear();
+    await zoomAt();
+  };
+
   return {
     editor,
     loading,
@@ -286,6 +291,7 @@ export function useEditor() {
     download,
     importGraph,
     init,
+    clear,
     addNode,
     destroy: () => area.value?.destroy()
   };
