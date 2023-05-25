@@ -1,3 +1,4 @@
+import { useRateLimit } from '../../../composables/useRateLimit';
 import { Channel } from 'pusher-js';
 
 export interface MouseMoveEvent {
@@ -7,21 +8,14 @@ export interface MouseMoveEvent {
   scale: number;
 }
 
-let rateLimitData: MouseMoveEvent | null;
+export const pushMouseEvent = useRateLimit(mouseEvent);
 
-export function pushMouseEvent(channel: Channel, data: MouseMoveEvent, rateLimitTimout: number = 50) {
-  if (rateLimitData !== null && rateLimitData) {
-    rateLimitData.x = data.x;
-    rateLimitData.y = data.y;
-    rateLimitData.scale = data.scale;
-    return;
-  }
+function mouseEvent(channel: Channel, data: MouseMoveEvent) {
+  channel.trigger('client-mouse-moved', data);
+}
 
-  rateLimitData = data;
+export const pushNodeTranslatedEvent = useRateLimit(nodeTranslatedEvent);
 
-  setTimeout(function () {
-    channel.trigger('client-mouse-moved', rateLimitData);
-
-    rateLimitData = null;
-  }, rateLimitTimout);
+export function nodeTranslatedEvent(channel: Channel, data: any) {
+  channel.trigger('client-node-translated', data);
 }

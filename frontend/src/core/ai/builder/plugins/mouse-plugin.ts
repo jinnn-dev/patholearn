@@ -41,16 +41,12 @@ export class MousePlugin<Schemes extends BaseSchemes> extends Scope<never, [Requ
 
       if (context.type === 'pointermove') {
         if (builderState.isConnected && builderState.channel && builderState.me) {
-          pushMouseEvent(
-            builderState.channel as Channel,
-            {
-              id: builderState.me.id,
-              x: area.area.pointer.x,
-              y: area.area.pointer.y,
-              scale: builderState.areaZoom
-            },
-            100
-          );
+          pushMouseEvent(50, builderState.channel as Channel, {
+            id: builderState.me.id,
+            x: area.area.pointer.x,
+            y: area.area.pointer.y,
+            scale: builderState.areaZoom
+          });
         }
       }
 
