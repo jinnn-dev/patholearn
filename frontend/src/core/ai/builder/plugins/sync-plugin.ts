@@ -24,13 +24,10 @@ export class SyncPlugin<Schemes extends BaseSchemes> {
       return context;
     });
     this.area.addPipe((context) => {
-      // console.log(context);
       if (context.type === 'pointermove') {
       }
 
       if (builderState.builderLoaded && builderState.initialGraphLoaded && context.type === 'nodedragged') {
-        // console.log(builderState.initialGraphLoaded);
-
         builderState.shouldSaveEditor = true;
       }
       return context;

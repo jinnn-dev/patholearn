@@ -4,9 +4,10 @@ import { useService } from '../../../composables/useService';
 import { AiService } from '../../../services/ai.service';
 import NodeEditor from '../../../components/ai/builder/editor/NodeEditor.vue';
 import { usePresenceChannel } from '../../../composables/ws/usePresenceChannel';
-import { onMounted } from 'vue';
+import { onMounted, watch } from 'vue';
 import Icon from '../../../components/general/Icon.vue';
 import UserListIndicator from '../../../components/ws/UserListIndicator.vue';
+import { builderState } from '../../../core/ai/builder/state';
 
 const route = useRoute();
 
@@ -17,7 +18,32 @@ const { channel, me, isConnected, members, connect } = usePresenceChannel();
 onMounted(async () => {
   await run(route.params.id as string);
   connect(`task-${task.value!.id}`);
+
+  builderState.channel = channel.value;
+
+  builderState.isConnected = isConnected.value;
+  builderState.me = me.value;
+  builderState.members = members.value;
 });
+
+watch(
+  () => me.value,
+  () => {
+    builderState.me = me.value;
+  }
+);
+watch(
+  () => isConnected.value,
+  () => {
+    builderState.isConnected = isConnected.value;
+  }
+);
+watch(
+  () => members.value,
+  () => {
+    builderState.members = members.value;
+  }
+);
 </script>
 <template>
   <router-link

@@ -30,15 +30,16 @@ import { PoolingNode } from './nodes/layer/pooling-node';
 import { SyncPlugin } from './plugins/sync-plugin';
 import { createNodeInstance, parseNode } from './factories/node-factory';
 import { builderState } from './state';
+import { MousePlugin, setupMousePlugin } from './plugins/mouse-plugin';
 
-type NodeProps = DatasetNode | Conv2DNode | LinearNode | DropoutNode | FlattenNode | BatchNormNode | PoolingNode;
+export type NodeProps = DatasetNode | Conv2DNode | LinearNode | DropoutNode | FlattenNode | BatchNormNode | PoolingNode;
 
-class Connection<A extends NodeProps, B extends NodeProps> extends ClassicPreset.Connection<A, B> {}
+export class Connection<A extends NodeProps, B extends NodeProps> extends ClassicPreset.Connection<A, B> {}
 
-type ConnProps = Connection<DatasetNode, Conv2DNode> | Connection<Conv2DNode, Conv2DNode>;
-type Schemes = GetSchemes<NodeProps, ConnProps>;
+export type ConnProps = Connection<DatasetNode, Conv2DNode> | Connection<Conv2DNode, Conv2DNode>;
+export type Schemes = GetSchemes<NodeProps, ConnProps>;
 
-type AreaExtra = VueArea2D<Schemes> | ContextMenuExtra;
+export type AreaExtra = VueArea2D<Schemes> | ContextMenuExtra;
 
 export function useEditor() {
   const socket: Ref<ClassicPreset.Socket | undefined> = ref();
@@ -48,7 +49,7 @@ export function useEditor() {
   const editor: Ref<NodeEditor<Schemes> | undefined> = ref();
   const contextMenu: Ref<ContextMenuPlugin<Schemes> | undefined> = ref();
   const sync: Ref<SyncPlugin<Schemes> | undefined> = ref();
-
+  const mousePlugin: Ref<MousePlugin<Schemes> | undefined> = ref();
   const arrange: Ref<AutoArrangePlugin<Schemes> | undefined> = ref();
   const animationApplier: Ref<ArrangeAppliers.TransitionApplier<Schemes, never> | undefined> = ref();
 
@@ -86,6 +87,9 @@ export function useEditor() {
         ]
       ])
     });
+
+    mousePlugin.value = new MousePlugin();
+
     arrange.value = new AutoArrangePlugin<Schemes>();
 
     animationApplier.value = new ArrangeAppliers.TransitionApplier<Schemes, never>({
@@ -135,6 +139,9 @@ export function useEditor() {
     render.value.addPreset(presets);
     // @ts-ignore
     render.value.addPreset(setupContext({ delay: 3000 }));
+
+    render.value.addPreset(setupMousePlugin({ delay: 300 }));
+
     connection.value.addPreset(ConnectionPresets.classic.setup());
     arrange.value.addPreset(arrangeSetup({ distance: 20 }));
 
@@ -145,6 +152,7 @@ export function useEditor() {
     area.value.use(render.value);
     area.value.use(arrange.value);
     area.value.use(contextMenu.value);
+    area.value.use(mousePlugin.value);
     area.value.use(sync.value.area);
 
     // @ts-ignore
@@ -294,6 +302,7 @@ export function useEditor() {
     init,
     clear,
     addNode,
+    area,
     destroy: () => area.value?.destroy()
   };
 }

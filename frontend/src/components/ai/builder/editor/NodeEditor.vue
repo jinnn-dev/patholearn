@@ -22,7 +22,7 @@ const props = defineProps({
   }
 });
 
-const { arrangeLayout, zoomAt, init, addNode, download, importGraph, clear } = useEditor();
+const { arrangeLayout, zoomAt, init, addNode, download, importGraph, clear, area } = useEditor();
 const { run: updateGraph } = useService(AiService.updateTaskVersion);
 
 const rete = ref();
@@ -32,6 +32,8 @@ const loadingText = ref('Loading');
 onMounted(async () => {
   await init(rete.value);
   await importGraph(props.taskVersion.builder);
+
+  builderState.area = area.value;
 });
 
 watch(
@@ -86,7 +88,7 @@ const itemClicked = async (event: EventName) => {
 
       <editor-tools @selected="itemClicked"></editor-tools>
       <div
-        v-if="loading"
+        v-if="loading || builderState.shouldSaveEditor"
         class="absolute z-10 flex gap-1 bottom-4 left-4 bg-gray-800 py-1 px-2 ring-1 ring-gray-700 rounded-lg shadow-lg shadow-gray-900"
       >
         <div>{{ loadingText }}</div>

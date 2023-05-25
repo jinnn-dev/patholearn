@@ -27,6 +27,10 @@ export function usePresenceChannel(name?: string, autoSubscribe: boolean = false
     if (connectionName === undefined) {
       connectionName = '';
     }
+
+    if (channel.value) {
+      return;
+    }
     channel.value = wsClient.value?.subscribe('presence-' + connectionName) as PresenceChannel;
 
     channel.value.bind('pusher:subscription_succeeded', () => {
@@ -37,6 +41,7 @@ export function usePresenceChannel(name?: string, autoSubscribe: boolean = false
 
     channel.value.bind('pusher:subscription_error', () => {
       isConnected.value = false;
+      me.value = undefined;
     });
 
     channel.value.bind('pusher:member_added', (member: any) => {
@@ -52,9 +57,7 @@ export function usePresenceChannel(name?: string, autoSubscribe: boolean = false
   };
 
   onMounted(() => {
-    if (autoSubscribe) {
-      connect();
-    }
+    connect();
   });
 
   onUnmounted(() => {
