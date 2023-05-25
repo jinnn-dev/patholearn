@@ -42,13 +42,15 @@ export type Schemes = GetSchemes<NodeProps, ConnProps>;
 export type AreaExtra = VueArea2D<Schemes> | ContextMenuExtra;
 
 export function useEditor() {
+  const eventsRegisterd = ref(false);
+
   const socket: Ref<ClassicPreset.Socket | undefined> = ref();
   const area: Ref<AreaPlugin<Schemes, AreaExtra> | undefined> = ref();
   const connection: Ref<ConnectionPlugin<Schemes, AreaExtra> | undefined> = ref();
   const render: Ref<VueRenderPlugin<Schemes> | undefined> = ref();
   const editor: Ref<NodeEditor<Schemes> | undefined> = ref();
   const contextMenu: Ref<ContextMenuPlugin<Schemes> | undefined> = ref();
-  const sync: Ref<SyncPlugin<Schemes> | undefined> = ref();
+  const sync: Ref<SyncPlugin | undefined> = ref();
   const mousePlugin: Ref<MousePlugin<Schemes> | undefined> = ref();
   const arrange: Ref<AutoArrangePlugin<Schemes> | undefined> = ref();
   const animationApplier: Ref<ArrangeAppliers.TransitionApplier<Schemes, never> | undefined> = ref();
@@ -292,6 +294,15 @@ export function useEditor() {
     await zoomAt();
   };
 
+  const registerEvents = () => {
+    if (eventsRegisterd.value) {
+      return;
+    }
+
+    sync.value?.registerEvents();
+    eventsRegisterd.value = true;
+  };
+
   return {
     editor,
     loading,
@@ -303,6 +314,7 @@ export function useEditor() {
     clear,
     addNode,
     area,
+    registerEvents,
     destroy: () => area.value?.destroy()
   };
 }

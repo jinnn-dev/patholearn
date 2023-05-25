@@ -1,7 +1,7 @@
-export function useRateLimit(rateFunction: (...data: any[]) => any) {
+export function useRateLimit<T, A extends unknown[]>(rateFunction: (...data: A) => T) {
   let rateLimitData: any | undefined;
 
-  return (rateLimitTime: number, ...data: any[]) => {
+  return (rateLimitTime: number, ...data: A) => {
     if (rateLimitData) {
       rateLimitData = data;
       return;

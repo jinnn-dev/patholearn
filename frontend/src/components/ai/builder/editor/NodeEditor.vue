@@ -22,7 +22,7 @@ const props = defineProps({
   }
 });
 
-const { arrangeLayout, zoomAt, init, addNode, download, importGraph, clear, area } = useEditor();
+const { arrangeLayout, zoomAt, init, addNode, download, importGraph, clear, area, registerEvents } = useEditor();
 const { run: updateGraph } = useService(AiService.updateTaskVersion);
 
 const rete = ref();
@@ -35,6 +35,15 @@ onMounted(async () => {
 
   builderState.area = area.value;
 });
+
+watch(
+  () => [builderState.isConnected, builderState.builderLoaded],
+  () => {
+    if (builderState.isConnected && builderState.builderLoaded) {
+      registerEvents();
+    }
+  }
+);
 
 watch(
   () => builderState.shouldSaveEditor,

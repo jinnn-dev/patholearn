@@ -8,6 +8,19 @@ export interface MouseMoveEvent {
   scale: number;
 }
 
+export interface NodeTranslatedEvent {
+  userId: string;
+  nodeId: string;
+  position: {
+    x: number;
+    y: number;
+  };
+  previous: {
+    x: number;
+    y: number;
+  };
+}
+
 export const pushMouseEvent = useRateLimit(mouseEvent);
 
 function mouseEvent(channel: Channel, data: MouseMoveEvent) {
@@ -16,6 +29,6 @@ function mouseEvent(channel: Channel, data: MouseMoveEvent) {
 
 export const pushNodeTranslatedEvent = useRateLimit(nodeTranslatedEvent);
 
-export function nodeTranslatedEvent(channel: Channel, data: any) {
-  channel.trigger('client-node-translated', data);
+export function nodeTranslatedEvent(channel: Channel, data: NodeTranslatedEvent) {
+  channel.trigger('client-node-dragged', data);
 }

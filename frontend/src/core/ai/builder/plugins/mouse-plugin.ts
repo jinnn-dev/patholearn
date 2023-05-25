@@ -52,7 +52,6 @@ export class MousePlugin<Schemes extends BaseSchemes> extends Scope<never, [Requ
 
       if (context.type === 'zoomed') {
         const transform = builderState.area?.area.content.holder.style.transform;
-
         const scaleMatch = transform?.match(scaleRegex);
         if (scaleMatch) {
           // The scale property is captured in the first group of the match
