@@ -39,6 +39,7 @@ watch(
     class="absolute z-20 w-fit-content"
     :id="user.id"
     v-for="user in builderState.members"
+    style="transition: left 50ms ease-in-out, top 50ms ease-in-out"
     :style="`color: ${user.info.color}; transform: scale(${1 / builderState.areaZoom}); left: ${
       userMap.get(user.id)?.x
     }px; top: ${userMap.get(user.id)?.y}px`"

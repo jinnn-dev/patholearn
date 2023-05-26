@@ -276,6 +276,7 @@ export function useEditor() {
 
       // @ts-ignore
       const connection = new Connection(sourceNode, sourceOutput, targetNode, targetInput);
+      connection.id = connectionData.id;
       await editor.value?.addConnection(connection);
     }
 

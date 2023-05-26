@@ -17,7 +17,7 @@ const { channel, me, isConnected, members, connect } = usePresenceChannel();
 
 onMounted(async () => {
   await run(route.params.id as string);
-  connect(`task-${task.value!.id}`);
+  connect(`task-${route.params.id}`);
 
   builderState.channel = channel.value;
 
