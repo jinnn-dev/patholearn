@@ -1,6 +1,7 @@
 from datetime import datetime
 from bson import ObjectId
 from fastapi import APIRouter, Body, Depends
+from pydantic import parse_obj_as
 from supertokens_python.recipe import session
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
@@ -8,12 +9,14 @@ import app.clearml_wrapper.clearml_wrapper as clearml_wrapper
 from app.schema.builder_task import CreateBuilderTask, BuilderTask
 from app.database.database import task_collection
 from app.schema.task import (
-    BuilderState,
+    Graph,
     CreateTask,
     Task,
     TaskVersion,
     UpdateTaskVersion,
 )
+from app.core.parse_graph import parse_graph
+from app.utils.logger import logger
 
 router = APIRouter()
 
@@ -38,7 +41,7 @@ async def create_task(
             "versions": [
                 {
                     "id": ObjectId(),
-                    "builder": {"nodes": [], "connections": [], "positions": []},
+                    "graph": {"nodes": [], "connections": [], "positions": []},
                     "clearml_id": None,
                     "creation_date": creation_date,
                 }
@@ -93,6 +96,23 @@ async def update_task_version(
         upsert=False,
     )
     return "Ok"
+
+
+@router.get("/{task_id}/version/{version_id}/parse")
+async def parse_builder_state(
+    task_id: str, version_id: str, s: SessionContainer = Depends(verify_session())
+):
+    task = await task_collection.find_one(
+        {
+            "_id": ObjectId(task_id),
+            "versions": {"$elemMatch": {"id": ObjectId(version_id)}},
+        },
+    )
+    if task is None:
+        return
+    task_version = parse_obj_as(Graph, task["versions"][0]["graph"])
+
+    parse_graph(task_version)
 
 
 @router.post("/builder", response_model=BuilderTask, status_code=201)

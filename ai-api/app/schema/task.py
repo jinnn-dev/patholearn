@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Any, List, Optional, TypeVar, Union
 from app.schema.base_mongo_model import BaseMongoModel
 
 from bson import ObjectId
@@ -7,10 +7,88 @@ from app.schema.py_object_id import PyObjectId
 from pydantic import BaseModel, Field
 
 
-class BuilderState(BaseModel):
-    nodes: List[dict] = Field(...)
-    connections: List[dict] = Field(...)
-    positions: List[dict] = Field(...)
+class ISerializable(BaseModel):
+    type: str
+    id: str
+
+
+class IPort(ISerializable):
+    label: Optional[str]
+    key: str
+    socket: dict = {"name": str}
+
+
+class IControl(ISerializable):
+    key: str
+    value: Any
+
+
+class IInputControl(IControl):
+    inputType: Union[float, str]
+
+
+class IConnection(BaseModel):
+    id: str
+    source: str
+    sourceOutput: str
+    target: str
+    targetInput: str
+
+
+class INodePosition(BaseModel):
+    id: str
+    x: float
+    y: float
+
+
+class DimensionOption(BaseModel):
+    min: int
+    max: int
+    placeholder: str
+    initialValue: Optional[int]
+
+
+class IDimensionControl(IControl):
+    value: dict = {"x": Optional[int], "y": Optional[int]}
+    label: str
+    xOptions: DimensionOption
+    yOptions: DimensionOption
+
+
+class IDropdownControl(IControl):
+    values: List[Any]
+    label: str
+
+
+class INumberControl(IControl):
+    min: int
+    max: int
+    label: str
+    placeholder: str
+
+
+ControlType = TypeVar(
+    "ControlType",
+    IDropdownControl,
+    IDimensionControl,
+    INumberControl,
+    IInputControl,
+    IControl,
+)
+
+
+class INode(ISerializable):
+    label: str
+    inputs: List[IPort]
+    outputs: List[IPort]
+    controls: List[ControlType]
+    socket: str
+
+
+class Graph(BaseModel):
+    nodes: List[INode] = Field(...)
+    connections: List[IConnection] = Field(...)
+    positions: List[INodePosition] = Field(...)
 
     class Config:
         allow_population_by_field_name = True
@@ -26,7 +104,7 @@ class BuilderState(BaseModel):
 
 class TaskVersion(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="id")
-    builder: BuilderState = Field(...)
+    graph: Graph = Field(...)
     clearml_id: Optional[str] = None
     creation_date: datetime = Field(...)
 
@@ -43,13 +121,13 @@ class TaskVersion(BaseModel):
         }
 
 
-class TaskVersionNoBuilder(TaskVersion):
-    builder: Optional[BuilderState] = None
+class TaskVersionNoGraph(TaskVersion):
+    graph: Optional[Graph] = None
 
 
 class UpdateTaskVersion(BaseModel):
     id: PyObjectId
-    builder: Optional[BuilderState]
+    graph: Optional[Graph]
 
 
 class Task(BaseMongoModel):
@@ -78,8 +156,8 @@ class Task(BaseMongoModel):
         }
 
 
-class TaskNoBuilder(Task):
-    versions: List[TaskVersionNoBuilder]
+class TaskNoGraph(Task):
+    versions: List[TaskVersionNoGraph]
 
 
 class CreateTask(BaseModel):

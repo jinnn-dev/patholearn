@@ -6,7 +6,7 @@ from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
 import app.clearml_wrapper.clearml_wrapper as clearml_wrapper
 from app.database.database import task_collection
-from app.schema.task import Task, TaskNoBuilder
+from app.schema.task import Task, TaskNoGraph
 
 router = APIRouter()
 
@@ -41,7 +41,7 @@ async def delete_project(
     return clearml_wrapper.delete_project(project_id)
 
 
-@router.get("/{project_id}/tasks", response_model=List[TaskNoBuilder])
+@router.get("/{project_id}/tasks", response_model=List[TaskNoGraph])
 async def get_project_tasks(
     project_id: str, _: SessionContainer = Depends(verify_session())
 ):
