@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 from bson import ObjectId
 from fastapi import APIRouter, Body, Depends
 from pydantic import parse_obj_as
@@ -14,6 +15,7 @@ from app.schema.task import (
     LockElement,
     Task,
     TaskVersion,
+    UnlockElements,
     UpdateTaskVersion,
 )
 from app.core.parse_graph import parse_graph
@@ -167,6 +169,26 @@ async def unlock_element(
             },
             {"$unset": {f"lockStatus.{data.element_id}": ""}},
         )
+
+
+@router.delete("/unlock")
+async def unlock_elements(
+    data: UnlockElements = Body(...), s: SessionContainer = Depends(verify_session())
+):
+    # await task_collection.update_many(
+    #     {"_id": ObjectId(data.task_id), "lockStatus": data.user_ids},
+    #     {"$unset": {f"lockStatus.{data.element_id}": ""}},
+    # )
+
+    update_query = {"$unset": {}}
+    for key in data.element_ids:
+        update_query["$unset"]["lockStatus." + key] = ""
+    await task_collection.find_one_and_update(
+        {
+            "_id": ObjectId(data.task_id),
+        },
+        update_query,
+    )
 
 
 @router.get("/{task_id}/version/{version_id}/parse")

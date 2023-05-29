@@ -213,3 +213,8 @@ class LockElement(BaseModel):
     task_id: str
     element_id: str
     user_id: str
+
+
+class UnlockElements(BaseModel):
+    task_id: str
+    element_ids: List[str]
