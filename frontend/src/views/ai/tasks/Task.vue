@@ -13,7 +13,8 @@ const route = useRoute();
 
 const { loading, result: task, run } = useService(AiService.getTask);
 
-const { channel, me, isConnected, members, connect } = usePresenceChannel();
+const { channel, me, isConnected, members, connect, memberAddedCallbacks, memberRemovedCallbacks } =
+  usePresenceChannel();
 
 onMounted(async () => {
   await run(route.params.id as string);
@@ -25,6 +26,8 @@ onMounted(async () => {
   builderState.me = me.value;
   builderState.members = members.value;
   builderState.task = task.value;
+  builderState.memberAddedCallbacks = memberAddedCallbacks.value;
+  builderState.memberRemovedCallbacks = memberRemovedCallbacks.value;
 });
 
 watch(

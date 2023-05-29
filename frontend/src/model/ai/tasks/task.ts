@@ -1,3 +1,4 @@
+import { LockStatus } from '../../../core/ai/builder/sync';
 import { IConnection, INode, INodePositions } from '../../../core/ai/builder/serializable';
 
 export interface Graph {
@@ -21,7 +22,9 @@ export interface Task {
   name: string;
   description?: string;
   versions: TaskVersion[];
-  lockStatus: any;
+  lockStatus: {
+    [key: string]: string;
+  };
 }
 
 export interface CreateTask {

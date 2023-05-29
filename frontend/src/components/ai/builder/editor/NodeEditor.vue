@@ -36,6 +36,8 @@ onMounted(async () => {
 
   await init(rete.value);
 
+  await checkLockStatus();
+
   await importGraph(props.taskVersion.graph);
   builderState.area = area.value;
 });
@@ -57,6 +59,33 @@ watch(
     }
   }
 );
+
+const checkLockStatus = async () => {
+  if (!builderState.task?.lockStatus || Object.keys(builderState.task.lockStatus).length === 0) {
+    return;
+  }
+
+  const statusValues = Object.values(builderState.task.lockStatus);
+
+  const memberIds = builderState.members.map((member) => member.id);
+
+  const memberIdsToDelete = [];
+
+  for (const val of statusValues) {
+    if (!memberIds.includes(val)) {
+      memberIdsToDelete.push(val);
+    }
+  }
+
+  let keys: Set<string> = new Set();
+  for (const [key, val] of Object.entries(builderState.task.lockStatus)) {
+    if (memberIdsToDelete.includes(val)) {
+      keys.add(key);
+    }
+  }
+
+  await AiService.unlockElements(builderState.task.id, Array.from(keys));
+};
 
 const saveBuilder = async () => {
   loadingText.value = 'Saving';

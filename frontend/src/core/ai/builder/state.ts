@@ -14,6 +14,8 @@ interface BuilderState {
   channel?: PresenceChannel;
   me?: Member;
   members: Member[];
+  memberAddedCallbacks: ((addedMember: Member) => void)[];
+  memberRemovedCallbacks: ((removedMember: Member) => void)[];
   isConnected?: boolean;
   area?: AreaPlugin<Schemes, AreaExtra>;
   areaZoom: number;
@@ -26,7 +28,9 @@ export const builderState = reactive<BuilderState>({
   members: [],
   isConnected: false,
   areaZoom: 1,
-  versionId: ''
+  versionId: '',
+  memberAddedCallbacks: [],
+  memberRemovedCallbacks: []
 });
 
 export function getLockedBy(elementId: string): Member | undefined {

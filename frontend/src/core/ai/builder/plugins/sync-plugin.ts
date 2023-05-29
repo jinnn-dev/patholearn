@@ -11,13 +11,15 @@ import {
   pushNodeLockedEvent,
   pushNodeRemovedEvent,
   pushNodeTranslatedEvent,
-  pushNodeUnlockedEvent
+  pushNodeUnlockedEvent,
+  unlockElement
 } from '../sync';
 import { Channel, PresenceChannel } from 'pusher-js';
 import { AreaExtra, ConnProps, Schemes } from '../use-editor';
 import { INode } from '../serializable';
 import { parseNode } from '../factories/node-factory';
 import { Produces } from 'rete-vue-render-plugin';
+import { Member } from 'composables/ws/usePresenceChannel';
 
 export class SyncPlugin {
   root = new Scope<never, [Root<Schemes>]>('sync');
@@ -155,6 +157,20 @@ export class SyncPlugin {
     }
     const editor = this.root.parent as NodeEditor<Schemes>;
 
+    builderState.memberRemovedCallbacks.push((leftMember: Member) => {
+      if (!builderState.task?.lockStatus) {
+        return;
+      }
+      for (const [key, value] of Object.entries(builderState.task.lockStatus)) {
+        if (value === leftMember.id) {
+          delete builderState.task.lockStatus[key];
+          const node = editor.getNode(key);
+          node.lockStatus = undefined;
+          this.areaPlugin.update('node', key);
+        }
+      }
+    });
+
     builderState.channel.bind('client-node-dragged', (data: NodeTranslatedEvent) => {
       console.log('NODE DRAGGED EVENT');
 
@@ -183,6 +199,17 @@ export class SyncPlugin {
       this.editor.getNode(data.nodeId).lockStatus = {
         lockedBy: builderState.channel?.members.get(data.userId)
       };
+      if (builderState.task) {
+        if (builderState.task.lockStatus) {
+          builderState.task.lockStatus[data.nodeId] = data.userId;
+        } else {
+          builderState.task.lockStatus = {
+            [data.nodeId]: data.userId
+          };
+        }
+      }
+
+      console.log(builderState.task?.lockStatus);
 
       this.areaPlugin.update('node', data.nodeId);
       this.externalPicked = true;
@@ -190,8 +217,10 @@ export class SyncPlugin {
 
     builderState.channel.bind('client-node-unlocked', (nodeId: string) => {
       console.log('CLIENT NODE UNLOCKED');
+      delete builderState.task?.lockStatus[nodeId];
       this.editor.getNode(nodeId).lockStatus = undefined;
       this.areaPlugin.update('node', nodeId);
+      console.log(builderState.task?.lockStatus);
     });
 
     builderState.channel.bind('client-connection-created', (connectionData: ConnProps) => {

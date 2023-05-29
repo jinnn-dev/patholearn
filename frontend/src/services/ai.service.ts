@@ -228,6 +228,20 @@ export class AiService {
     return response!.data;
   }
 
+  public static async unlockElements(taskId: string, elementIds: string[]) {
+    const [_, response] = await handleError(
+      ApiService.delete<Task>({
+        resource: `/tasks/unlock`,
+        host: AI_API_URL,
+        data: {
+          task_id: taskId,
+          element_ids: elementIds
+        }
+      })
+    );
+    return response!.data;
+  }
+
   public static async getTaskLog(taskId: string) {
     const [_, response] = await handleError(
       ApiService.get<LogEntry[]>({
