@@ -25,14 +25,18 @@ const props = defineProps({
 const { arrangeLayout, zoomAt, init, addNode, download, importGraph, clear, area, registerEvents } = useEditor();
 const { run: updateGraph } = useService(AiService.updateTaskVersion);
 
+const { run: parseGraph } = useService(AiService.parseTaskVersion);
+
 const rete = ref();
 
 const loading = ref(false);
 const loadingText = ref('Loading');
 onMounted(async () => {
-  await init(rete.value);
-  await importGraph(props.taskVersion.builder);
+  builderState.versionId = props.taskVersion.id;
 
+  await init(rete.value);
+
+  await importGraph(props.taskVersion.graph);
   builderState.area = area.value;
 });
 
@@ -60,6 +64,10 @@ const saveBuilder = async () => {
   builderState.shouldSaveEditor = false;
 };
 
+const parseBuilder = async () => {
+  await parseGraph(props.taskId, props.taskVersion.id);
+};
+
 const itemClicked = async (event: EventName) => {
   loading.value = true;
   if (event === 'arrange') {
@@ -79,6 +87,11 @@ const itemClicked = async (event: EventName) => {
     loadingText.value = 'Clearing';
     await clear();
     await saveBuilder();
+  }
+
+  if (event === 'parse') {
+    loadingText.value = 'Parsing';
+    await parseBuilder();
   }
 
   if (isNode(event)) {
