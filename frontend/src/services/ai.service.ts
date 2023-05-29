@@ -6,6 +6,7 @@ import { Dataset } from '../model/ai/datasets/dataset';
 import { CreateTask, Task } from '../model/ai/tasks/task';
 import { LogEntry } from '../model/ai/tasks/log-entry';
 import { IGraph } from '../core/ai/builder/serializable';
+import { Member } from '../composables/ws/usePresenceChannel';
 
 export class AiService {
   public static async ping() {
@@ -180,7 +181,47 @@ export class AiService {
         host: AI_API_URL,
         data: {
           id: taskVersionId,
-          builder: graph
+          graph: graph
+        }
+      })
+    );
+    return response!.data;
+  }
+
+  public static async parseTaskVersion(taskId: string, versionId: string) {
+    const [_, response] = await handleError(
+      ApiService.get<Task>({
+        resource: `/tasks/${taskId}/version/${versionId}/parse`,
+        host: AI_API_URL
+      })
+    );
+    return response!.data;
+  }
+
+  public static async lockElement(taskId: string, elementId: string, userId: string) {
+    const [_, response] = await handleError(
+      ApiService.put<Task>({
+        resource: `/tasks/lock`,
+        host: AI_API_URL,
+        data: {
+          task_id: taskId,
+          element_id: elementId,
+          user_id: userId
+        }
+      })
+    );
+    return response!.data;
+  }
+
+  public static async unlockElement(taskId: string, elementId: string, userId: string) {
+    const [_, response] = await handleError(
+      ApiService.put<Task>({
+        resource: `/tasks/unlock`,
+        host: AI_API_URL,
+        data: {
+          task_id: taskId,
+          element_id: elementId,
+          user_id: userId
         }
       })
     );

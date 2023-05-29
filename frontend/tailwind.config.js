@@ -9,8 +9,7 @@ module.exports = {
       pattern: /^backdrop-blur-/
     },
     { pattern: /^text-/ },
-    { pattern: /^bg-/ },
-    { pattern: /^hover:bg-/ }
+    { pattern: /^bg-/ }
   ],
   theme: {
     fontFamily: {

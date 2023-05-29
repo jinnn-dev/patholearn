@@ -5,6 +5,7 @@ import { Presets } from 'rete-vue-render-plugin';
 import { ClassicPreset } from 'rete';
 import { Node } from '../nodes/node';
 import { NodeType } from '../nodes/types';
+import { builderState, getLockedBy } from '../state';
 
 function getNodeClass(nodeType: NodeType) {
   const nodes = Object.entries(Nodes);
@@ -16,7 +17,7 @@ function getNodeClass(nodeType: NodeType) {
 }
 
 export function parseNode(nodeData: INode) {
-  const nodeClass = getNodeClass(nodeData._type as NodeType);
+  const nodeClass = getNodeClass(nodeData.type as NodeType);
 
   let node;
   if (nodeClass) {
@@ -27,6 +28,13 @@ export function parseNode(nodeData: INode) {
   }
 
   node.id = nodeData.id;
+  const lockedBy = getLockedBy(node.id);
+
+  if (lockedBy) {
+    node.lockStatus = {
+      lockedBy: lockedBy
+    };
+  }
   node.parse(nodeData);
 
   return node;

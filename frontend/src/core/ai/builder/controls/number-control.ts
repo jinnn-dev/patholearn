@@ -31,7 +31,7 @@ export class NumberControl extends Control<INumberControl> {
 
   public serialize(key: string): INumberControl {
     return {
-      _type: NumberControl.name,
+      type: NumberControl.name,
       key: key,
       id: this.id,
       value: this.value,

@@ -3,6 +3,7 @@ import { INode, IPort, ISerializable, Serializable, serializePort } from '../ser
 import { Control } from '../controls/control';
 import { parseControl } from '../factories/control-factory';
 import { NodeType } from './types';
+import { LockStatus } from '../sync';
 
 export abstract class Node<
     T extends INode,
@@ -16,7 +17,7 @@ export abstract class Node<
   protected socket;
 
   public type: NodeType;
-  constructor(label: string, socket: ClassicPreset.Socket) {
+  constructor(label: string, socket: ClassicPreset.Socket, public lockStatus?: LockStatus) {
     super(label);
     this.socket = socket;
     this.type = this.constructor.name as NodeType;
@@ -50,7 +51,7 @@ export abstract class Node<
   public serializeObject(inputs: IPort[], outputs: IPort[], controls: any): T {
     return {
       id: this.id,
-      _type: this.constructor.name,
+      type: this.constructor.name,
       label: this.label,
       inputs: inputs,
       outputs: outputs,

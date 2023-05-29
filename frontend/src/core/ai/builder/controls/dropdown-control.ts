@@ -24,7 +24,7 @@ export class DropdownControl extends Control<IDropdownControl> {
     return {
       key: this.key,
       value: this.value,
-      _type: DropdownControl.name,
+      type: DropdownControl.name,
       id: this.id,
       values: this.values,
       label: this.label

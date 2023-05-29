@@ -44,7 +44,7 @@ export class DimensionControl extends Control<IDimensionControl> {
 
   public serialize(key: string): IDimensionControl {
     return {
-      _type: DimensionControl.name,
+      type: DimensionControl.name,
       key: key,
       id: this.id,
       label: this.label,

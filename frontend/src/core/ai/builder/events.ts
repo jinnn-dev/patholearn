@@ -1,7 +1,7 @@
 import { IconNames } from '../../../../icons';
 import { NodeType } from './nodes/types';
 
-export type EventName = 'arrange' | 'center' | 'save' | 'clear' | NodeType;
+export type EventName = 'arrange' | 'center' | 'save' | 'clear' | 'parse' | NodeType;
 
 interface EventSettingItem {
   icon: IconNames;
@@ -13,6 +13,7 @@ type EventSetting = Record<EventName, EventSettingItem>;
 
 export const eventSettings: EventSetting = {
   arrange: { icon: 'layout', label: 'Arrange', divider: true },
+  parse: { icon: 'brain', label: 'parse' },
   center: { icon: 'arrow-counter-clockwise', label: 'Center' },
   save: { icon: 'floppy-disk', label: 'Save' },
   clear: { icon: 'broom', label: 'Clear' },

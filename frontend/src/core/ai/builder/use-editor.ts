@@ -31,7 +31,7 @@ import { SyncPlugin } from './plugins/sync-plugin';
 import { createNodeInstance, parseNode } from './factories/node-factory';
 import { builderState } from './state';
 import { MousePlugin, setupMousePlugin } from './plugins/mouse-plugin';
-
+import { trackedSelector, selectableNodes, selector } from './trackedSelector';
 export type NodeProps = DatasetNode | Conv2DNode | LinearNode | DropoutNode | FlattenNode | BatchNormNode | PoolingNode;
 
 export class Connection<A extends NodeProps, B extends NodeProps> extends ClassicPreset.Connection<A, B> {}
@@ -57,6 +57,19 @@ export function useEditor() {
 
   const loading = ref(false);
 
+  // EDITOR SOCKET TYPE CHECK
+  // editor.addPipe((context) => {
+  //   if (context.type === "connectioncreate") {
+  //     const source = editor.getNode(context.data.source);
+  //     const sourceSocket = source.outputs[context.data.sourceOutput]?.socket;
+  //     const target = editor.getNode(context.data.target);
+  //     const targetSocket = (target.inputs as any)[context.data.targetInput]
+  //       ?.socket;
+
+  //     if (sourceSocket !== targetSocket) return; // prevent 'connectioncreate' if the ports have different sockets
+  //   }
+  //   return context;
+
   const init = async (container: HTMLElement) => {
     builderState.builderLoaded = false;
 
@@ -65,7 +78,6 @@ export function useEditor() {
     area.value = new AreaPlugin<Schemes, AreaExtra>(container);
     connection.value = new ConnectionPlugin<Schemes, AreaExtra>();
     render.value = new VueRenderPlugin<Schemes>();
-
     sync.value = new SyncPlugin();
 
     contextMenu.value = new ContextMenuPlugin<Schemes>({
@@ -99,10 +111,7 @@ export function useEditor() {
       timingFunction: (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
     });
     addCustomBackground(area.value);
-
-    AreaExtensions.selectableNodes(area.value, AreaExtensions.selector(), {
-      accumulating: AreaExtensions.accumulateOnCtrl()
-    });
+    selectableNodes(area.value, selector(), { accumulating: AreaExtensions.accumulateOnCtrl() });
 
     const presets = Presets.classic.setup({
       area,
@@ -137,12 +146,19 @@ export function useEditor() {
       }
     });
 
-    // @ts-ignore
+    // render.value.addPipe((context) => {
+    //   console.log(context);
+
+    //   return context;
+    // });
+
     render.value.addPreset(presets);
     // @ts-ignore
     render.value.addPreset(setupContext({ delay: 3000 }));
 
     render.value.addPreset(setupMousePlugin({ delay: 300 }));
+
+    // render.value.use(sync.value.render);
 
     connection.value.addPreset(ConnectionPresets.classic.setup());
     arrange.value.addPreset(arrangeSetup({ distance: 20 }));
@@ -155,9 +171,13 @@ export function useEditor() {
     area.value.use(arrange.value);
     area.value.use(contextMenu.value);
     area.value.use(mousePlugin.value);
+
     area.value.use(sync.value.area);
 
+    // sync.value.area.use(render.value);
+
     // @ts-ignore
+
     connection.value.use(sync.value.connection);
 
     AreaExtensions.simpleNodesOrder(area.value);
@@ -244,7 +264,6 @@ export function useEditor() {
     await editor.value?.clear();
 
     for (const nodeData of graph.nodes) {
-      let node = parseNode(nodeData);
       // if (nodeData._type === Conv2DNode.name) {
       //   node = Conv2DNode.parse(nodeData as IConv2DNode);
       // } else if (nodeData._type === DatasetNode.name) {
@@ -263,7 +282,7 @@ export function useEditor() {
       //   node = new Presets.classic.Node();
       // }
       // node.id = nodeData.id;
-      // parseNode(nodeData);
+      const node = parseNode(nodeData);
       await editor.value?.addNode(node);
     }
 

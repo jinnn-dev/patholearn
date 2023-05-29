@@ -13,7 +13,7 @@ export class ActivationControl extends DropdownControl {
 
   public serialize(): IDropdownControl {
     const serialized = super.serialize();
-    serialized._type = ActivationControl.name;
+    serialized.type = ActivationControl.name;
 
     return serialized;
   }

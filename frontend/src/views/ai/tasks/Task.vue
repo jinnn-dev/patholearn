@@ -24,6 +24,7 @@ onMounted(async () => {
   builderState.isConnected = isConnected.value;
   builderState.me = me.value;
   builderState.members = members.value;
+  builderState.task = task.value;
 });
 
 watch(
@@ -62,7 +63,11 @@ watch(
         <div class="hover:ring-1 cursor-pointer ring-gray-500 hover:bg-gray-700 px-4 py-1 rounded-lg">Konsole</div>
       </div>
     </div>
-    <node-editor v-if="task" :task-id="task.id" :task-version="task.versions[0]"></node-editor>
+    <node-editor
+      v-if="task && builderState.members.length !== 0"
+      :task-id="task.id"
+      :task-version="task.versions[0]"
+    ></node-editor>
   </div>
   <div
     class="fixed z-10 flex justify-center items-center bottom-4 left-1/2 -translate-x-1/2 bg-gray-800/70 backdrop-blur-lg ring-[1px] ring-gray-700 shadow-xl shadow-gray-900 rounded-xl"

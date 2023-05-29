@@ -1,12 +1,14 @@
-export interface BuilderState {
-  nodes: any[];
-  connections: any[];
-  positions: any[];
+import { IConnection, INode, INodePositions } from '../../../core/ai/builder/serializable';
+
+export interface Graph {
+  nodes: INode[];
+  connections: IConnection[];
+  positions: INodePositions[];
 }
 
 export interface TaskVersion {
   id: string;
-  builder: BuilderState;
+  graph: Graph;
   clearml_id?: string;
   creation_date: string;
 }
@@ -19,6 +21,7 @@ export interface Task {
   name: string;
   description?: string;
   versions: TaskVersion[];
+  lockStatus: any;
 }
 
 export interface CreateTask {
