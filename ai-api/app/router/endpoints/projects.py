@@ -46,7 +46,7 @@ async def get_project_tasks(
     project_id: str, _: SessionContainer = Depends(verify_session())
 ):
     tasks_cursor = task_collection.find(
-        {"project_id": project_id}, projection={"versions.builder": False}
+        {"project_id": project_id}, projection={"versions.graph": False}
     ).sort("name")
     tasks = []
     for task in await tasks_cursor.to_list(1000):

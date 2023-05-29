@@ -6,9 +6,29 @@ from bson import ObjectId
 from app.schema.py_object_id import PyObjectId
 from pydantic import BaseModel, Field
 
+from enum import Enum
+
+
+class NodeType(Enum):
+    Conv2DNode = "Conv2DNode"
+    LinearNode = "LinearNode"
+    PoolingNode = "PoolingNode"
+    DatasetNode = "DatasetNode"
+    FlattenNode = "FlattenNode"
+    DropoutNode = "DropoutNode"
+    BatchNormNode = "BatchNormNode"
+    OutputNode = "OutputNode"
+
+
+class ControlType(Enum):
+    ActivationControl = "ActivationControl"
+    DimensionControl = "DimensionControl"
+    DropdownControl = "DropdownControl"
+    NumberControl = "NumberControl"
+
 
 class ISerializable(BaseModel):
-    type: str
+    type: Any
     id: str
 
 
@@ -19,8 +39,12 @@ class IPort(ISerializable):
 
 
 class IControl(ISerializable):
+    type: ControlType
     key: str
     value: Any
+
+    class Config:
+        use_enum_values = True
 
 
 class IInputControl(IControl):
@@ -78,11 +102,16 @@ ControlType = TypeVar(
 
 
 class INode(ISerializable):
+    type: NodeType
     label: str
     inputs: List[IPort]
     outputs: List[IPort]
     controls: List[ControlType]
     socket: str
+    lockStatus: Optional[Any]
+
+    class Config:
+        use_enum_values = True
 
 
 class Graph(BaseModel):
@@ -93,6 +122,7 @@ class Graph(BaseModel):
     class Config:
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
+        use_enum_values = True
         schema_extra = {
             "example": {
                 "nodes": [],
@@ -138,6 +168,7 @@ class Task(BaseMongoModel):
     name: str = Field(...)
     description: Optional[str] = Field(...)
     versions: List[TaskVersion] = Field(...)
+    lockStatus: Optional[dict] = None
 
     class Config:
         allow_population_by_field_name = True
@@ -164,3 +195,21 @@ class CreateTask(BaseModel):
     name: str
     description: Optional[str]
     project_id: str
+
+
+class Info(BaseModel):
+    id: str
+    first_name: str
+    last_name: str
+    color: str
+
+
+class Member(BaseModel):
+    id: str
+    info: Info
+
+
+class LockElement(BaseModel):
+    task_id: str
+    element_id: str
+    user_id: str

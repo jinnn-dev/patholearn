@@ -11,6 +11,7 @@ from app.database.database import task_collection
 from app.schema.task import (
     Graph,
     CreateTask,
+    LockElement,
     Task,
     TaskVersion,
     UpdateTaskVersion,
@@ -96,6 +97,76 @@ async def update_task_version(
         upsert=False,
     )
     return "Ok"
+
+
+@router.put("/lock")
+async def lock_element(
+    data: LockElement = Body(...), s: SessionContainer = Depends(verify_session())
+):
+    # element = await task_collection.find_one(
+    #     {
+    #         "_id": ObjectId(data.task_id),
+    #         "versions": {"$elemMatch": {"id": ObjectId(data.version_id)}},
+    #     }
+    # )
+
+    element = await task_collection.find_one(
+        {
+            "_id": ObjectId(data.task_id),
+            "versions.graph.nodes.id": data.element_id,
+        }
+    )
+
+    if element is not None:
+        if element["lockStatus"] is None:
+            set_command = {"$set": {"lockStatus": {data.element_id: data.user_id}}}
+        else:
+            set_command = {"$set": {f"lockStatus.{data.element_id}": data.user_id}}
+        await task_collection.find_one_and_update(
+            {
+                "_id": ObjectId(data.task_id),
+            },
+            set_command,
+        )
+
+    # element = task_collection.aggregate(
+    #     [
+    #         {
+    #             "$match": {
+    #                 "_id": ObjectId(data.task_id),
+    #                 "versions.id": ObjectId(data.version_id),
+    #                 "versions.graph.nodes.id": data.element_id,
+    #             },
+    #         }
+    #     ]
+    # )
+    # if element is not None:
+
+
+@router.put("/unlock")
+async def unlock_element(
+    data: LockElement = Body(...), s: SessionContainer = Depends(verify_session())
+):
+    # element = await task_collection.find_one(
+    #     {
+    #         "_id": ObjectId(data.task_id),
+    #         "versions": {"$elemMatch": {"id": ObjectId(data.version_id)}},
+    #     }
+    # )
+
+    element: Task = await task_collection.find_one(
+        {
+            "_id": ObjectId(data.task_id),
+            "versions.graph.nodes.id": data.element_id,
+        }
+    )
+    if element is not None:
+        await task_collection.find_one_and_update(
+            {
+                "_id": ObjectId(data.task_id),
+            },
+            {"$unset": {f"lockStatus.{data.element_id}": ""}},
+        )
 
 
 @router.get("/{task_id}/version/{version_id}/parse")
