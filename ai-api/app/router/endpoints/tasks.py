@@ -115,7 +115,6 @@ async def lock_element(
     element = await task_collection.find_one(
         {
             "_id": ObjectId(data.task_id),
-            "versions.graph.nodes.id": data.element_id,
         }
     )
 
@@ -159,7 +158,6 @@ async def unlock_element(
     element: Task = await task_collection.find_one(
         {
             "_id": ObjectId(data.task_id),
-            "versions.graph.nodes.id": data.element_id,
         }
     )
     if element is not None:
