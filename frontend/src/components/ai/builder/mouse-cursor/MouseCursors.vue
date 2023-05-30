@@ -2,7 +2,7 @@
 import { onMounted, ref, watch } from 'vue';
 import Icon from '../../../general/Icon.vue';
 import { builderState } from '../../../../core/ai/builder/state';
-import { MouseMoveEvent } from 'core/ai/builder/sync';
+import { MouseMoveEvent } from '../../../../core/ai/builder/sync';
 
 const isSubscribed = ref(false);
 

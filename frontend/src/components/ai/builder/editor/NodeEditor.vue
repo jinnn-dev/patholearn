@@ -33,6 +33,7 @@ const loading = ref(false);
 const loadingText = ref('Loading');
 onMounted(async () => {
   builderState.versionId = props.taskVersion.id;
+  loading.value = true;
 
   await init(rete.value);
 
@@ -40,6 +41,7 @@ onMounted(async () => {
 
   await importGraph(props.taskVersion.graph);
   builderState.area = area.value;
+  loading.value = false;
 });
 
 watch(
