@@ -4,22 +4,19 @@ import { Connection, ConnectionPlugin } from 'rete-connection-plugin';
 import { builderState, getLockedBy } from '../state';
 import {
   NodeTranslatedEvent,
-  lockElement,
   pushConnectionCreatedEvent,
   pushConnectionRemovedEvent,
   pushNodeCreatedEvent,
-  pushNodeLockedEvent,
   pushNodeRemovedEvent,
-  pushNodeTranslatedEvent,
-  pushNodeUnlockedEvent,
-  unlockElement
+  pushNodeTranslatedEvent
 } from '../sync';
 import { Channel, PresenceChannel } from 'pusher-js';
 import { AreaExtra, ConnProps, Schemes } from '../use-editor';
 import { INode } from '../serializable';
 import { parseNode } from '../factories/node-factory';
 import { Produces } from 'rete-vue-render-plugin';
-import { Member } from 'composables/ws/usePresenceChannel';
+import { Member } from '../../../../composables/ws/usePresenceChannel';
+import { animateBetweenTwoPoints, calculatePointsBetween } from '../../../../utils/animate';
 
 export class SyncPlugin {
   root = new Scope<never, [Root<Schemes>]>('sync');
@@ -182,14 +179,28 @@ export class SyncPlugin {
       }
     });
 
-    builderState.channel.bind('client-node-dragged', (data: NodeTranslatedEvent) => {
+    builderState.channel.bind('client-node-dragged', async (data: NodeTranslatedEvent) => {
       console.log('NODE DRAGGED EVENT');
 
       const area = this.area.parent as AreaPlugin<Schemes, AreaExtra>;
       const node = area.nodeViews.get(data.nodeId);
       if (node) {
         this.externalDrag = true;
+        // node.translate(data.position.x, data.position.y);
+        const translate = async (x: number, y: number) => {
+          // console.log(x, y);
+
+          await node.translate(x, y);
+          node.position = { x: x, y: y };
+          // console.log(node.position);
+        };
+
+        // await animateBetweenTwoPoints(node.position, { x: data.position.x, y: data.position.y }, 0.05, translate);
         node.translate(data.position.x, data.position.y);
+        // const points = calculatePointsBetween(node.position, data.position, 100);
+        // for (const point of points) {
+        //   node.translate(point.x, point.y);
+        // }
       }
     });
 
@@ -208,11 +219,15 @@ export class SyncPlugin {
 
     builderState.channel.bind('client-node-locked', (data: { nodeId: string; userId: string }) => {
       console.log('CLIENT NODE LOCKED');
-
-      this.editor.getNode(data.nodeId).lock({
+      const node = this.editor.getNode(data.nodeId);
+      node.lock({
         lockedBy: builderState.channel?.members.get(data.userId),
         externalLock: true
       });
+      // const nodeView = this.areaPlugin.nodeViews.get(data.nodeId);
+      // if (nodeView?.element) {
+      //   nodeView.element.style.transition = 'transform 50ms ease-in-out';
+      // }
       if (builderState.task) {
         if (builderState.task.lockStatus) {
           builderState.task.lockStatus[data.nodeId] = data.userId;
@@ -231,6 +246,10 @@ export class SyncPlugin {
       console.log('CLIENT NODE UNLOCKED');
       delete builderState.task?.lockStatus[nodeId];
       this.editor.getNode(nodeId).unlock();
+      // const nodeView = this.areaPlugin.nodeViews.get(nodeId);
+      // if (nodeView?.element) {
+      //   nodeView.element.style.transition = '';
+      // }
       this.areaPlugin.update('node', nodeId);
     });
 
