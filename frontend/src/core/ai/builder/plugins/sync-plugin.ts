@@ -99,8 +99,6 @@ export class SyncPlugin {
       return context;
     });
     this.area.addPipe((context) => {
-      // console.log(context);
-
       if (builderState.builderLoaded && builderState.initialGraphLoaded) {
         // if (context.type === 'nodepicked' && builderState.channel && !this.externalPicked) {
         //   const node = this.editor.getNode(context.data.id);
@@ -137,10 +135,12 @@ export class SyncPlugin {
           return context;
         }
 
-        if (context.type === 'nodedragged') {
-          builderState.shouldSaveEditor = true;
-          return context;
-        }
+        // if (context.type === 'nodedragged') {
+        //   console.log(context.data);
+
+        //   builderState.shouldSaveEditor = true;
+        //   return context;
+        // }
 
         // if (context.type === 'pointerdown' || context.type === 'pointerup') {
         //   console.log(context);
