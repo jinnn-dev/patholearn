@@ -73,6 +73,17 @@ const nodeStyles = computed(() => {
   };
 });
 
+const nodeClasses = computed(() => {
+  let classes = [];
+  if (props.data?.selected) {
+    classes.push('selected');
+  }
+  if (!props.data?.lockStatus?.externalLock) {
+    classes.push('cursor-pointer');
+  }
+  return classes.join(' ');
+});
+
 const inputs = computed(() => {
   return sortByIndex(Object.entries(props.data?.inputs));
 });
@@ -85,7 +96,7 @@ const outputs = computed(() => {
 </script>
 
 <template>
-  <div class="node" :class="{ selected: data?.selected }" :style="nodeStyles" data-testid="node">
+  <div class="node" :class="nodeClasses" :style="nodeStyles" data-testid="node">
     <div class="overflow-hidden rounded-t-lg">
       <div class="title" data-testid="title" :class="titleClasses">
         {{ data?.label }}
@@ -138,7 +149,6 @@ const outputs = computed(() => {
   @apply relative;
   @apply bg-gray-700;
   @apply rounded-lg;
-  @apply cursor-pointer;
   @apply box-border;
   @apply min-w-[200px];
   @apply h-auto;
