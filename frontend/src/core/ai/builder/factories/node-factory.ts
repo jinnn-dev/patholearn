@@ -29,12 +29,13 @@ export function parseNode(nodeData: INode) {
 
   node.id = nodeData.id;
   const lockedBy = getLockedBy(node.id);
-
+  const externalLock = lockedBy?.id !== builderState.me?.id;
   node.parse(nodeData);
 
   if (lockedBy) {
     node.lock({
-      lockedBy: lockedBy
+      lockedBy: lockedBy,
+      externalLock: externalLock
     });
   }
 

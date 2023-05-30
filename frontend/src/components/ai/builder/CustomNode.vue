@@ -1,10 +1,9 @@
 <script lang="ts" setup>
-import { PropType, computed, watch } from 'vue';
+import { PropType, computed } from 'vue';
 import { NodeType } from '../../../core/ai/builder/nodes/types';
 import { getNodeColor } from '../../../core/ai/builder/node-colors';
 import { LockStatus } from '../../../core/ai/builder/sync';
 import { getTextColor } from '../../../utils/colors';
-import { builderState } from '../../../core/ai/builder/state';
 function sortByIndex(entries: any) {
   entries.sort((a: any, b: any) => {
     const ai = (a[1] && a[1].index) || 0;
@@ -34,25 +33,6 @@ const props = defineProps({
     type: Function,
     required: true
   }
-});
-
-// watch(
-//   () => props.data,
-//   () => {
-//     console.log(props.data);
-//   }
-// );
-
-const isLocked = computed(() => {
-  if (!props.data?.lockStatus) {
-    return false;
-  }
-
-  if (props.data.lockStatus?.lockedBy?.id === builderState.me?.id) {
-    return false;
-  }
-
-  return true;
 });
 
 function onRef(element: any, key: any, entity: any, type: any) {
@@ -87,7 +67,7 @@ const titleClasses = computed(() => {
 
 const nodeStyles = computed(() => {
   return {
-    '--tw-ring-color': isLocked.value ? props.data?.lockStatus.lockedBy?.info.color : '',
+    '--tw-ring-color': props.data?.lockStatus?.externalLock ? props.data?.lockStatus.lockedBy?.info.color : '',
     width: Number.isFinite(props.data?.width) ? `${props.data?.width}px` : '',
     height: Number.isFinite(props.data?.height) ? `${props.data?.height}px` : ''
   };
@@ -143,7 +123,7 @@ const outputs = computed(() => {
     ></div>
 
     <span
-      v-if="isLocked && data?.lockStatus && data.lockStatus.lockedBy"
+      v-if="data?.lockStatus?.externalLock"
       class="absolute rounded-b-lg top-full left-2 px-2"
       :style="`background-color: ${data.lockStatus?.lockedBy?.info.color}; color: ${getTextColor(
         data.lockStatus.lockedBy.info.color

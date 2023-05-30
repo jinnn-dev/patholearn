@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { builderState } from '../../../../core/ai/builder/state';
 import { LockStatus } from '../../../../core/ai/builder/sync';
-import { PropType, computed, ref } from 'vue';
+import { PropType } from 'vue';
 
 interface DataInterface {
   max: number;
@@ -20,18 +19,6 @@ const props = defineProps({
 const change = (e: any) => {
   props.data!.setValue(+e.target!.value);
 };
-
-const isLocked = computed(() => {
-  if (!props.data?.lockStatus) {
-    return false;
-  }
-
-  if (props.data.lockStatus?.lockedBy?.id === builderState.me?.id) {
-    return false;
-  }
-
-  return true;
-});
 </script>
 <template>
   <div class="flex items-center gap-2 justify-start">
@@ -41,7 +28,7 @@ const isLocked = computed(() => {
       :max="data?.max"
       :placeholder="data?.placeholder"
       type="number"
-      :disabled="isLocked"
+      :disabled="data?.lockStatus?.externalLock"
       :value="props.data?.value"
       class="bg-gray-900 py-0.5 px-2 disabled:bg-gray-500 bg-opacity-50 disabled:bg-opacity-50 placeholder-gray-400 rounded-lg w-full focus:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-highlight-400 focus:border-transparent"
       @change="change"

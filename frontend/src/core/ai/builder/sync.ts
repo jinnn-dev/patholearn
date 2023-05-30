@@ -27,6 +27,7 @@ export interface NodeTranslatedEvent {
 
 export interface LockStatus {
   lockedBy: Member;
+  externalLock?: boolean;
 }
 
 export const pushMouseEvent = useRateLimit(mouseEvent, 50);

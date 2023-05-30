@@ -116,7 +116,7 @@ export class SyncPlugin {
             return context;
           }
           const node = this.editor.getNode(context.data.id);
-          if (node.lockStatus?.lockedBy.id === builderState.me?.id) {
+          if (!node.lockStatus?.externalLock) {
             return context;
           }
           return;
@@ -210,7 +210,8 @@ export class SyncPlugin {
       console.log('CLIENT NODE LOCKED');
 
       this.editor.getNode(data.nodeId).lock({
-        lockedBy: builderState.channel?.members.get(data.userId)
+        lockedBy: builderState.channel?.members.get(data.userId),
+        externalLock: true
       });
       if (builderState.task) {
         if (builderState.task.lockStatus) {
