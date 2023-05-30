@@ -111,6 +111,17 @@ export class SyncPlugin {
         //   return;
         // }
 
+        if (context.type === 'nodetranslate') {
+          if (this.externalDrag) {
+            return context;
+          }
+          const node = this.editor.getNode(context.data.id);
+          if (node.lockStatus?.lockedBy.id === builderState.me?.id) {
+            return context;
+          }
+          return;
+        }
+
         if (context.type === 'nodetranslated') {
           if (builderState.channel && !this.externalDrag && !this.externalAdd) {
             pushNodeTranslatedEvent(builderState.channel as PresenceChannel, {
