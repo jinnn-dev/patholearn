@@ -21,6 +21,13 @@ const applyMouseMove = (event: MouseMoveEvent) => {
   });
 };
 
+onMounted(() => {
+  builderState.channel?.bind('client-mouse-moved', (event: MouseMoveEvent) => {
+    applyMouseMove(event);
+  });
+  isSubscribed.value = true;
+});
+
 watch(
   () => builderState.isConnected,
   () => {
