@@ -41,6 +41,24 @@ export abstract class Node<
 
   public abstract addElements(): void;
 
+  public lock(lockStatus: LockStatus) {
+    this.lockStatus = lockStatus;
+    for (const control of Object.values(this.controls)) {
+      if (control) {
+        control.lockStatus = lockStatus;
+      }
+    }
+  }
+
+  public unlock() {
+    this.lockStatus = undefined;
+    for (const control of Object.values(this.controls)) {
+      if (control) {
+        control.lockStatus = undefined;
+      }
+    }
+  }
+
   public serialize(key?: string | undefined): T {
     const inputs = Object.entries(this.inputs).map(([key, input]) => serializePort(key, input));
     const outputs = Object.entries(this.outputs).map(([key, input]) => serializePort(key, input));

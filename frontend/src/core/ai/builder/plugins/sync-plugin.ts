@@ -165,7 +165,7 @@ export class SyncPlugin {
         if (value === leftMember.id) {
           delete builderState.task.lockStatus[key];
           const node = editor.getNode(key);
-          node.lockStatus = undefined;
+          node.unlock();
           this.areaPlugin.update('node', key);
         }
       }
@@ -196,9 +196,11 @@ export class SyncPlugin {
     });
 
     builderState.channel.bind('client-node-locked', (data: { nodeId: string; userId: string }) => {
-      this.editor.getNode(data.nodeId).lockStatus = {
+      console.log('CLIENT NODE LOCKED');
+
+      this.editor.getNode(data.nodeId).lock({
         lockedBy: builderState.channel?.members.get(data.userId)
-      };
+      });
       if (builderState.task) {
         if (builderState.task.lockStatus) {
           builderState.task.lockStatus[data.nodeId] = data.userId;
@@ -209,8 +211,6 @@ export class SyncPlugin {
         }
       }
 
-      console.log(builderState.task?.lockStatus);
-
       this.areaPlugin.update('node', data.nodeId);
       this.externalPicked = true;
     });
@@ -218,9 +218,8 @@ export class SyncPlugin {
     builderState.channel.bind('client-node-unlocked', (nodeId: string) => {
       console.log('CLIENT NODE UNLOCKED');
       delete builderState.task?.lockStatus[nodeId];
-      this.editor.getNode(nodeId).lockStatus = undefined;
+      this.editor.getNode(nodeId).unlock();
       this.areaPlugin.update('node', nodeId);
-      console.log(builderState.task?.lockStatus);
     });
 
     builderState.channel.bind('client-connection-created', (connectionData: ConnProps) => {

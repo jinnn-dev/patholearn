@@ -1,4 +1,5 @@
 import { IControl } from '../serializable';
+import { LockStatus } from '../sync';
 import { Control } from './control';
 
 export interface INumberControl extends IControl {

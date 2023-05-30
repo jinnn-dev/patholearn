@@ -30,12 +30,13 @@ export function parseNode(nodeData: INode) {
   node.id = nodeData.id;
   const lockedBy = getLockedBy(node.id);
 
-  if (lockedBy) {
-    node.lockStatus = {
-      lockedBy: lockedBy
-    };
-  }
   node.parse(nodeData);
+
+  if (lockedBy) {
+    node.lock({
+      lockedBy: lockedBy
+    });
+  }
 
   return node;
 }
