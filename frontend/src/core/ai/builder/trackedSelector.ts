@@ -87,7 +87,7 @@ export function selectableNodes<T>(
   let unselect = false;
 
   function selectNode(node: Schemes['Node']) {
-    if (node.selected && node.lockStatus) {
+    if (node.selected || node.lockStatus) {
       return;
     }
     pushNodeLockedEvent(builderState.channel as PresenceChannel, node.id);
