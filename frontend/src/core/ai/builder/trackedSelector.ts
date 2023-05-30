@@ -113,6 +113,7 @@ export function selectableNodes<T>(
     node.lockStatus = undefined;
     node.selected = false;
     area.update('node', node.id);
+    builderState.shouldSaveEditor = true;
   }
 
   // eslint-disable-next-line max-statements, complexity

@@ -182,14 +182,15 @@ export class SyncPlugin {
   unselectControl(controlId: string) {
     pushControlUnlock(builderState.channel as PresenceChannel, controlId);
     unlockElement(builderState.task!.id, controlId, builderState.me!.id);
+    builderState.shouldSaveEditor = true;
   }
 
-  controlChanged(controlId: string, value: any) {
+  controlChanged(controlId: string, ...value: any) {
     const node = builderState.controlToNode.get(controlId);
     if (!node) {
       return;
     }
-    pushControlChanged(builderState.channel as PresenceChannel, node.id, controlId, value);
+    pushControlChanged(builderState.channel as PresenceChannel, node.id, controlId, ...value);
   }
 
   registerEvents() {
@@ -332,7 +333,7 @@ export class SyncPlugin {
       }
       const control = node.getControl(data.controlId);
       if (control) {
-        control.setValue(data.value);
+        control.setValue(...data.value);
       }
     });
   }

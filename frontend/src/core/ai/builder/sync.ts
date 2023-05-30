@@ -86,7 +86,7 @@ export function pushControlUnlock(channel: PresenceChannel, controlId: string) {
   channel.trigger('client-control-unlocked', controlId);
 }
 
-export function pushControlChanged(channel: PresenceChannel, nodeId: string, controlId: string, value: any) {
+export function pushControlChanged(channel: PresenceChannel, nodeId: string, controlId: string, ...value: any) {
   channel.trigger('client-control-changed', {
     nodeId: nodeId,
     controlId: controlId,

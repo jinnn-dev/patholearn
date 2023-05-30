@@ -81,6 +81,11 @@ const nodeClasses = computed(() => {
   if (!props.data?.lockStatus?.externalLock) {
     classes.push('cursor-pointer');
   }
+  if (props.data?.lockStatus?.externalLock) {
+    classes.push('ring-4');
+  } else {
+    classes.push('ring-2');
+  }
   return classes.join(' ');
 });
 
@@ -154,7 +159,6 @@ const outputs = computed(() => {
   @apply h-auto;
   @apply pb-5;
   @apply select-none;
-  @apply ring-2;
   @apply ring-gray-400;
 }
 .node.selected {
