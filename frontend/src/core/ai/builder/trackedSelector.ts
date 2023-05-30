@@ -87,30 +87,32 @@ export function selectableNodes<T>(
   let unselect = false;
 
   function selectNode(node: Schemes['Node']) {
-    if (!node.selected && !node.lockStatus) {
-      pushNodeLockedEvent(builderState.channel as PresenceChannel, node.id);
-      lockElement(builderState.task!.id, node.id, builderState.me!.id);
-      const lockStatus = {
-        lockedBy: builderState.me!
-      };
-      node.lockStatus = lockStatus;
-      for (const control of Object.values(node.controls)) {
-        control.lockStatus = lockStatus;
-      }
-
-      node.selected = true;
-      area.update('node', node.id);
+    if (node.selected && node.lockStatus) {
+      return;
     }
+    pushNodeLockedEvent(builderState.channel as PresenceChannel, node.id);
+    lockElement(builderState.task!.id, node.id, builderState.me!.id);
+    const lockStatus = {
+      lockedBy: builderState.me!
+    };
+    node.lockStatus = lockStatus;
+    for (const control of Object.values(node.controls)) {
+      control.lockStatus = lockStatus;
+    }
+
+    node.selected = true;
+    area.update('node', node.id);
   }
 
   function unselectNode(node: Schemes['Node']) {
-    if (node.selected) {
-      pushNodeUnlockedEvent(builderState.channel as PresenceChannel, node.id);
-      unlockElement(builderState.task!.id, node.id, builderState.me!.id);
-      node.lockStatus = undefined;
-      node.selected = false;
-      area.update('node', node.id);
+    if (!node.selected) {
+      return;
     }
+    pushNodeUnlockedEvent(builderState.channel as PresenceChannel, node.id);
+    unlockElement(builderState.task!.id, node.id, builderState.me!.id);
+    node.lockStatus = undefined;
+    node.selected = false;
+    area.update('node', node.id);
   }
 
   // eslint-disable-next-line max-statements, complexity
@@ -123,7 +125,7 @@ export function selectableNodes<T>(
       const accumulate = options.accumulating.active();
       const node = getEditor().getNode(pickedId);
 
-      if (!node) return;
+      if (!node || node.selected) return;
 
       core.pick({ id: pickedId, label: 'node' });
 
