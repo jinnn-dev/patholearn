@@ -6,6 +6,7 @@ import { ClassicPreset } from 'rete';
 import { Node } from '../nodes/node';
 import { NodeType } from '../nodes/types';
 import { builderState, getLockedBy } from '../state';
+import { NodeProps } from '../use-editor';
 
 function getNodeClass(nodeType: NodeType) {
   const nodes = Object.entries(Nodes);
@@ -30,12 +31,22 @@ export function parseNode(nodeData: INode) {
   node.id = nodeData.id;
   const lockedBy = getLockedBy(node.id);
   const externalLock = lockedBy?.id !== builderState.me?.id;
+  let lockedControl = undefined;
+  for (const elementId of Object.keys(builderState.task!.lockStatus)) {
+    const control = node.getControl(elementId);
+    if (control) {
+      lockedControl = control.id;
+    }
+  }
   node.parse(nodeData);
+
+  cacheControlsMapping(node);
 
   if (lockedBy) {
     node.lock({
       lockedBy: lockedBy,
-      externalLock: externalLock
+      externalLock: externalLock,
+      controlId: lockedControl
     });
   }
 
@@ -49,5 +60,14 @@ export function createNodeInstance(node: NodeType, socket: ClassicPreset.Socket)
   }
   const instance = new nodeClass(socket);
   instance.addElements();
+  cacheControlsMapping(instance);
   return instance;
+}
+
+export function cacheControlsMapping(node: NodeProps) {
+  for (const control of Object.values(node.controls)) {
+    if (control) {
+      builderState.controlToNode.set((control as any).id, node);
+    }
+  }
 }

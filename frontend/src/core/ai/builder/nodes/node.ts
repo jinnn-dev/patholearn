@@ -77,4 +77,15 @@ export abstract class Node<
       socket: this.socket.name
     } as T;
   }
+
+  public getControl(controlId: string) {
+    let foundControl: Control<any> | undefined;
+    for (const control of Object.values(this.controls)) {
+      if (control && control.id === controlId) {
+        foundControl = control;
+        break;
+      }
+    }
+    return foundControl;
+  }
 }

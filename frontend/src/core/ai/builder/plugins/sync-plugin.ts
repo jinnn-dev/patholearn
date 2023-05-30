@@ -4,14 +4,19 @@ import { Connection, ConnectionPlugin } from 'rete-connection-plugin';
 import { builderState, getLockedBy } from '../state';
 import {
   NodeTranslatedEvent,
+  lockElement,
   pushConnectionCreatedEvent,
   pushConnectionRemovedEvent,
+  pushControlChanged,
+  pushControlLock,
+  pushControlUnlock,
   pushNodeCreatedEvent,
   pushNodeRemovedEvent,
-  pushNodeTranslatedEvent
+  pushNodeTranslatedEvent,
+  unlockElement
 } from '../sync';
 import { Channel, PresenceChannel } from 'pusher-js';
-import { AreaExtra, ConnProps, Schemes } from '../use-editor';
+import { AreaExtra, ConnProps, NodeProps, Schemes } from '../use-editor';
 import { INode } from '../serializable';
 import { parseNode } from '../factories/node-factory';
 import { Produces } from 'rete-vue-render-plugin';
@@ -159,6 +164,34 @@ export class SyncPlugin {
     });
   }
 
+  selectControl(controlId: string) {
+    const nodeToSelect = builderState.controlToNode.get(controlId);
+    const control = nodeToSelect?.getControl(controlId);
+
+    this.areaPlugin.emit({
+      type: 'nodepicked',
+      data: {
+        id: nodeToSelect!.id
+      }
+    });
+
+    pushControlLock(builderState.channel as PresenceChannel, controlId);
+    lockElement(builderState.task!.id, controlId, builderState.me!.id);
+  }
+
+  unselectControl(controlId: string) {
+    pushControlUnlock(builderState.channel as PresenceChannel, controlId);
+    unlockElement(builderState.task!.id, controlId, builderState.me!.id);
+  }
+
+  controlChanged(controlId: string, value: any) {
+    const node = builderState.controlToNode.get(controlId);
+    if (!node) {
+      return;
+    }
+    pushControlChanged(builderState.channel as PresenceChannel, node.id, controlId, value);
+  }
+
   registerEvents() {
     if (this.eventsRegistered || !builderState.channel) {
       return;
@@ -264,6 +297,43 @@ export class SyncPlugin {
 
       this.externalConnectionRemoved = true;
       editor.removeConnection(connectionId);
+    });
+
+    builderState.channel.bind('client-control-locked', (controlId: string) => {
+      console.log('CONTROL LOCKED EVENT');
+
+      const node = builderState.controlToNode.get(controlId);
+      const control = node?.getControl(controlId);
+      if (node && node.lockStatus && control && control.lockStatus) {
+        node.lockStatus.lockedControlId = controlId;
+        control.lockStatus.lockedControlId = controlId;
+        this.areaPlugin.update('control', controlId);
+        this.areaPlugin.update('node', node.id);
+      }
+    });
+
+    builderState.channel.bind('client-control-unlocked', (controlId: string) => {
+      console.log('CONTROL UNLOCKED EVENT');
+
+      const node = builderState.controlToNode.get(controlId);
+      const control = node?.getControl(controlId);
+      if (node && node.lockStatus && control && control.lockStatus) {
+        node.lockStatus.lockedControlId = undefined;
+        control.lockStatus.lockedControlId = undefined;
+        this.areaPlugin.update('control', controlId);
+        this.areaPlugin.update('node', node.id);
+      }
+    });
+
+    builderState.channel.bind('client-control-changed', (data: { nodeId: string; controlId: string; value: any }) => {
+      const node = builderState.controlToNode.get(data.controlId);
+      if (!node) {
+        return;
+      }
+      const control = node.getControl(data.controlId);
+      if (control) {
+        control.setValue(data.value);
+      }
     });
   }
 }

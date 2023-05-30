@@ -1,5 +1,5 @@
 import { useRateLimit } from '../../../composables/useRateLimit';
-import { PresenceChannel } from 'pusher-js';
+import { Channel, PresenceChannel } from 'pusher-js';
 import { INode } from './serializable';
 import { ConnProps } from './use-editor';
 import { Member } from '../../../composables/ws/usePresenceChannel';
@@ -28,6 +28,7 @@ export interface NodeTranslatedEvent {
 export interface LockStatus {
   lockedBy: Member;
   externalLock?: boolean;
+  lockedControlId?: string;
 }
 
 export const pushMouseEvent = useRateLimit(mouseEvent, 50);
@@ -75,4 +76,20 @@ export function lockElement(taskId: string, elementId: string, userId: string) {
 
 export function unlockElement(taskId: string, elementId: string, userId: string) {
   AiService.unlockElement(taskId, elementId, userId);
+}
+
+export function pushControlLock(channel: PresenceChannel, controlId: string) {
+  channel.trigger('client-control-locked', controlId);
+}
+
+export function pushControlUnlock(channel: PresenceChannel, controlId: string) {
+  channel.trigger('client-control-unlocked', controlId);
+}
+
+export function pushControlChanged(channel: PresenceChannel, nodeId: string, controlId: string, value: any) {
+  channel.trigger('client-control-changed', {
+    nodeId: nodeId,
+    controlId: controlId,
+    value: value
+  });
 }

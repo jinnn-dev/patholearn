@@ -80,6 +80,8 @@ export function useEditor() {
     render.value = new VueRenderPlugin<Schemes>();
     sync.value = new SyncPlugin();
 
+    builderState.syncPlugin = sync.value;
+
     contextMenu.value = new ContextMenuPlugin<Schemes>({
       items: ContextMenuPresets.classic.setup([
         ['Input', [['Dataset', () => createNodeInstance('DatasetNode', socket.value!) as NodeProps]]],

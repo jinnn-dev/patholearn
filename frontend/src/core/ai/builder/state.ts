@@ -1,10 +1,11 @@
 import { Member } from '../../../composables/ws/usePresenceChannel';
 import { PresenceChannel } from 'pusher-js';
 import { reactive } from 'vue';
-import { AreaExtra, Schemes } from './use-editor';
+import { AreaExtra, NodeProps, Schemes } from './use-editor';
 import { AreaPlugin } from 'rete-area-plugin';
 import { Task } from '../../../model/ai/tasks/task';
-
+import { SyncPlugin } from './plugins/sync-plugin';
+import { Node } from './nodes/node';
 interface BuilderState {
   builderLoaded: boolean;
   initialGraphLoaded: boolean;
@@ -18,7 +19,9 @@ interface BuilderState {
   memberRemovedCallbacks: ((removedMember: Member) => void)[];
   isConnected?: boolean;
   area?: AreaPlugin<Schemes, AreaExtra>;
+  syncPlugin?: SyncPlugin;
   areaZoom: number;
+  controlToNode: Map<string, NodeProps>;
 }
 
 export const builderState = reactive<BuilderState>({
@@ -30,7 +33,8 @@ export const builderState = reactive<BuilderState>({
   areaZoom: 1,
   versionId: '',
   memberAddedCallbacks: [],
-  memberRemovedCallbacks: []
+  memberRemovedCallbacks: [],
+  controlToNode: new Map()
 });
 
 export function getLockedBy(elementId: string): Member | undefined {
