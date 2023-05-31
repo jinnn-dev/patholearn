@@ -2,18 +2,18 @@ import { ClassicPreset } from 'rete';
 import { INode } from '../../serializable';
 import { Node } from '../node';
 
-export interface ICombineNode extends INode {}
+export interface IConcatenateNode extends INode {}
 
-export class CombineNode extends Node<
-  ICombineNode,
+export class ConcatenateNode extends Node<
+  IConcatenateNode,
   { first: ClassicPreset.Socket; second: ClassicPreset.Socket },
   { out: ClassicPreset.Socket },
   {}
 > {
   width = 180;
-  height = 80;
+  height = 115;
   constructor(socket: ClassicPreset.Socket) {
-    super('Combine', socket);
+    super('Concatenate', socket);
   }
 
   public addElements(): void {

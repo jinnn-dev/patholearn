@@ -1,2 +1,2 @@
 export * from './add-node';
-export * from './combine-node';
+export * from './concatenate-node';

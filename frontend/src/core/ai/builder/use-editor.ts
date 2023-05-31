@@ -105,7 +105,7 @@ export function useEditor() {
           'Cobine',
           [
             ['Add', () => createNodeInstance('AddNode', socket.value!) as NodeProps],
-            ['Combine', () => createNodeInstance('CombineNode', socket.value!) as NodeProps]
+            ['Concatenate', () => createNodeInstance('ConcatenateNode', socket.value!) as NodeProps]
           ]
         ],
         ['Output', () => createNodeInstance('OutputNode', socket.value!) as NodeProps]
