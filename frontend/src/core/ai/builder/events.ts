@@ -24,5 +24,7 @@ export const eventSettings: EventSetting = {
   DropoutNode: { icon: 'drop-half', label: 'Dropout', divider: true },
   FlattenNode: { icon: 'dots-three-outline', label: 'Flatten' },
   BatchNormNode: { icon: 'equalizer', label: 'BatchNorm' },
+  AddNode: { icon: 'arrows-merge', label: 'Add', divider: true },
+  CombineNode: { icon: 'plus-circle-new', label: 'Combine' },
   OutputNode: { icon: 'flag', label: 'Output', divider: true }
 };

@@ -100,7 +100,15 @@ export function useEditor() {
             ['Flatten', () => createNodeInstance('FlattenNode', socket.value!) as NodeProps],
             ['Batch Norm.', () => createNodeInstance('BatchNormNode', socket.value!) as NodeProps]
           ]
-        ]
+        ],
+        [
+          'Cobine',
+          [
+            ['Add', () => createNodeInstance('AddNode', socket.value!) as NodeProps],
+            ['Combine', () => createNodeInstance('CombineNode', socket.value!) as NodeProps]
+          ]
+        ],
+        ['Output', () => createNodeInstance('OutputNode', socket.value!) as NodeProps]
       ])
     });
 

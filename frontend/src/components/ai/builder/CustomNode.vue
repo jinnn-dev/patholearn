@@ -110,17 +110,24 @@ const outputs = computed(() => {
 
     <div class="flex">
       <!-- Inputs-->
-      <div class="input shrink-0" v-for="[key, input] in inputs" :key="key" :data-testid="'input-' + key">
-        <div class="input-socket" :ref="(el) => onRef(el, key, input, 'input')" data-testid="input-socket"></div>
-        <div class="input-title" v-show="!input.control || !input.showControl" data-testid="input-title">
-          {{ input.label }}
-        </div>
+      <div class="flex flex-col">
         <div
-          class="input-control"
-          v-show="input.control && input.showControl"
-          :ref="(el) => onRef(el, key, input.control, 'control')"
-          data-testid="input-control"
-        ></div>
+          class="flex items-center input shrink-0"
+          v-for="[key, input] in inputs"
+          :key="key"
+          :data-testid="'input-' + key"
+        >
+          <div class="input-socket" :ref="(el) => onRef(el, key, input, 'input')" data-testid="input-socket"></div>
+          <div class="input-title" v-show="!input.control || !input.showControl" data-testid="input-title">
+            {{ input.label }}
+          </div>
+          <div
+            class="input-control"
+            v-show="input.control && input.showControl"
+            :ref="(el) => onRef(el, key, input.control, 'control')"
+            data-testid="input-control"
+          ></div>
+        </div>
       </div>
       <div class="w-full"></div>
       <!-- Outputs-->
