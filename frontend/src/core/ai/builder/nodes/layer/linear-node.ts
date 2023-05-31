@@ -17,7 +17,7 @@ export class LinearNode extends Node<
   }
 > {
   width = 200;
-  height = 220;
+  height = 190;
 
   constructor(socket: ClassicPreset.Socket) {
     super('Linear', socket);

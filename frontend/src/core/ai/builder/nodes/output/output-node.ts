@@ -18,7 +18,7 @@ export class OutputNode extends Node<
   }
 > {
   width = 250;
-  height = 405;
+  height = 350;
 
   constructor(socket: ClassicPreset.Socket) {
     super('Output', socket);

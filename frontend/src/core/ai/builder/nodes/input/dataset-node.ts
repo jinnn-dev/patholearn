@@ -12,7 +12,7 @@ export class DatasetNode extends Node<
   { dataset: DropdownControl }
 > {
   width = 180;
-  height = 173;
+  height = 147;
 
   constructor(socket: ClassicPreset.Socket) {
     super('Dataset', socket);

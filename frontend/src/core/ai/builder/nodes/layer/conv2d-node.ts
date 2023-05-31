@@ -19,7 +19,7 @@ export class Conv2DNode extends Node<
   }
 > {
   width = 200;
-  height = 310;
+  height = 280;
 
   constructor(socket: ClassicPreset.Socket) {
     super('Conv2D', socket);

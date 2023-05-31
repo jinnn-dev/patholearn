@@ -17,7 +17,7 @@ export class PoolingNode extends Node<
   }
 > {
   width = 200;
-  height = 265;
+  height = 235;
 
   constructor(socket: ClassicPreset.Socket) {
     super('Pooling', socket);
