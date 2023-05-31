@@ -18,10 +18,11 @@ const { channel, me, isConnected, members, connect, memberAddedCallbacks, member
 
 onMounted(async () => {
   await run(route.params.id as string);
+  console.log('MOUNTING');
+
   connect(`task-${route.params.id}`);
 
   builderState.channel = channel.value;
-
   builderState.isConnected = isConnected.value;
   builderState.me = me.value;
   builderState.members = members.value;
