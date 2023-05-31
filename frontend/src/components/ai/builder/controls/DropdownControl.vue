@@ -31,8 +31,6 @@ const onFocusOut = () => {
 };
 
 const onFocus = () => {
-  console.log(props.data?.lockStatus);
-
   if (isDisbaled.value) {
     container.value?.blur();
 
