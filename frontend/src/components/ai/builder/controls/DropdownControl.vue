@@ -97,15 +97,4 @@ const computedClasses = computed(() => {
       </div>
     </div>
   </div>
-
-  <!-- <custom-select
-    @pointerdown.stop=""
-    :values="data?.values"
-    display-type="small"
-    :is-searchable="false"
-    :label="data?.label"
-    empty-string="(Empty)"
-    :initial-data="data?.value || data?.values[0]"
-    @value-changed="valueChanged"
-  ></custom-select> -->
 </template>
