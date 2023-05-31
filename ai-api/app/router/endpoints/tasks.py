@@ -119,7 +119,7 @@ async def lock_element(
     )
 
     if element is not None:
-        if element["lockStatus"] is None:
+        if "lockStatus" not in element or element["lockStatus"] is None:
             set_command = {"$set": {"lockStatus": {data.element_id: data.user_id}}}
         else:
             set_command = {"$set": {f"lockStatus.{data.element_id}": data.user_id}}
