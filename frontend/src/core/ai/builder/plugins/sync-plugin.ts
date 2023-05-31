@@ -167,16 +167,17 @@ export class SyncPlugin {
   selectControl(controlId: string) {
     const nodeToSelect = builderState.controlToNode.get(controlId);
     const control = nodeToSelect?.getControl(controlId);
+    if (!control?.lockStatus?.lockedControlId) {
+      this.areaPlugin.emit({
+        type: 'nodepicked',
+        data: {
+          id: nodeToSelect!.id
+        }
+      });
 
-    this.areaPlugin.emit({
-      type: 'nodepicked',
-      data: {
-        id: nodeToSelect!.id
-      }
-    });
-
-    pushControlLock(builderState.channel as PresenceChannel, controlId);
-    lockElement(builderState.task!.id, controlId, builderState.me!.id);
+      pushControlLock(builderState.channel as PresenceChannel, controlId);
+      lockElement(builderState.task!.id, controlId, builderState.me!.id);
+    }
   }
 
   unselectControl(controlId: string) {
