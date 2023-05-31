@@ -61,7 +61,7 @@ const computedClasses = computed(() => {
   }
 
   if (isDisbaled.value) {
-    classes.push('text-gray-200/50');
+    classes.push('text-gray-200 bg-gray-500/50 ring-gray-500');
   }
   return classes.join(' ');
 });
@@ -76,7 +76,7 @@ const computedClasses = computed(() => {
     @focus="onFocus"
   >
     <div
-      class="flex transition-all duration-75 justify-between ring-gray-400 w-full py-0.5 items-center px-2 bg-gray-500 rounded-lg focus:ring-highlight-500 focus:ring-2 focus:outline-none"
+      class="flex justify-between ring-gray-400 w-full bg-gray-500 py-0.5 items-center px-2 rounded-lg focus:ring-highlight-500 focus:ring-2 focus:outline-none"
       :style="
         data?.lockStatus?.lockedControlId === data?.id
           ? `--tw-ring-color: ${data?.lockStatus.lockedBy.info.color};`
