@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PropType, onMounted, ref, watch } from 'vue';
+import { PropType, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useService } from '../../../../composables/useService';
 import { AiService } from '../../../../services/ai.service';
 import { useEditor } from '../../../../core/ai/builder/use-editor';
@@ -9,7 +9,7 @@ import Spinner from '../../../general/Spinner.vue';
 import { TaskVersion } from '../../../../model/ai/tasks/task';
 import { NodeType, isNode } from '../../../../core/ai/builder/nodes/types';
 import { EventName } from '../../../../core/ai/builder/events';
-import { builderState } from '../../../../core/ai/builder/state';
+import { builderState, resetBuilderState } from '../../../../core/ai/builder/state';
 
 const props = defineProps({
   taskId: {
@@ -131,6 +131,12 @@ const itemClicked = async (event: EventName) => {
 
   loading.value = false;
 };
+
+onUnmounted(() => {
+  console.log('RESETTING');
+
+  resetBuilderState();
+});
 </script>
 <template>
   <div class="relative h-full overflow-hidden">

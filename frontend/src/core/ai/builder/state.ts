@@ -24,7 +24,7 @@ interface BuilderState {
   controlToNode: Map<string, NodeProps>;
 }
 
-export const builderState = reactive<BuilderState>({
+export const initialState: BuilderState = {
   builderLoaded: false,
   initialGraphLoaded: false,
   shouldSaveEditor: false,
@@ -35,7 +35,22 @@ export const builderState = reactive<BuilderState>({
   memberAddedCallbacks: [],
   memberRemovedCallbacks: [],
   controlToNode: new Map()
-});
+};
+
+export const builderState = reactive<BuilderState>(initialState);
+
+export function resetBuilderState() {
+  builderState.builderLoaded = false;
+  builderState.initialGraphLoaded = false;
+  builderState.shouldSaveEditor = false;
+  builderState.members = [];
+  builderState.isConnected = false;
+  builderState.areaZoom = 1;
+  builderState.versionId = '';
+  builderState.memberAddedCallbacks = [];
+  builderState.memberRemovedCallbacks = [];
+  builderState.controlToNode = new Map();
+}
 
 export function getLockedBy(elementId: string): Member | undefined {
   if (!builderState.task?.lockStatus) {
