@@ -5,7 +5,7 @@ import MouseCursors from '../../../../components/ai/builder/mouse-cursor/MouseCu
 import ContextMenu from '../../../../components/ai/builder/context-menu/ContextMenu.vue';
 import { pushMouseEvent } from '../sync';
 import { builderState } from '../state';
-import { Channel } from 'pusher-js';
+import { Channel, PresenceChannel } from 'pusher-js';
 
 type Requires<Schemes extends BaseSchemes> =
   | { type: 'mount'; data: { context: 'root' | Schemes['Node'] | Schemes['Connection'] } }
@@ -26,6 +26,9 @@ export class MousePlugin<Schemes extends BaseSchemes> extends Scope<never, [Requ
     const area = this.parentScope<BaseAreaPlugin<Schemes, BaseArea<Schemes>>>(BaseAreaPlugin);
     const container = (area as any).area.content;
     const element = document.createElement('div');
+    element.style.width = '100%';
+    element.style.height = '100%';
+    element.style.position = 'absolute';
     container.add(element);
 
     this.parentScope().emit({
@@ -41,7 +44,7 @@ export class MousePlugin<Schemes extends BaseSchemes> extends Scope<never, [Requ
 
       if (context.type === 'pointermove') {
         if (builderState.isConnected && builderState.channel && builderState.me) {
-          pushMouseEvent(builderState.channel as Channel, {
+          pushMouseEvent(builderState.channel as PresenceChannel, {
             id: builderState.me.id,
             x: area.area.pointer.x,
             y: area.area.pointer.y,

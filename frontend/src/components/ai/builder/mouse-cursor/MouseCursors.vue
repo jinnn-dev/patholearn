@@ -43,7 +43,7 @@ watch(
 </script>
 <template>
   <div
-    class="absolute z-20 w-fit-content"
+    class="absolute z-40 w-auto pointer-events-none select-none"
     :id="user.id"
     v-for="user in builderState.members"
     style="transition: left 50ms ease-in-out, top 50ms ease-in-out"
@@ -51,7 +51,7 @@ watch(
       userMap.get(user.id)?.x
     }px; top: ${userMap.get(user.id)?.y}px`"
   >
-    <div v-if="user.id !== builderState.me?.id">
+    <div v-if="user.id !== builderState.me?.id" class="relative w-full whitespace-nowrap">
       <icon name="cursor" stroke-width="0"></icon>
       <div class="ml-6 -mt-2 font-semibold">{{ user.info.first_name.at(0) }}. {{ user.info.last_name }}</div>
     </div>
