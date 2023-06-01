@@ -23,6 +23,17 @@ export class LinearNode extends Node<
     super('Linear', socket);
   }
 
+  public duplicate(): LinearNode {
+    const node = new LinearNode(this.socket);
+    for (const [key, control] of Object.entries(this.controls)) {
+      // @ts-ignore
+      node.controls[key] = control.clone();
+    }
+    node.addInput('in', new ClassicPreset.Input(node.socket, 'in'));
+    node.addOutput('out', new ClassicPreset.Output(node.socket, 'out'));
+    return node;
+  }
+
   public addElements() {
     this.addInput('in', new ClassicPreset.Input(this.socket, 'in'));
     this.addOutput('out', new ClassicPreset.Output(this.socket, 'out'));
