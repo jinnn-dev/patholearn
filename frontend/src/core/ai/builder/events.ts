@@ -25,6 +25,6 @@ export const eventSettings: EventSetting = {
   FlattenNode: { icon: 'dots-three-outline', label: 'Flatten' },
   BatchNormNode: { icon: 'equalizer', label: 'BatchNorm' },
   AddNode: { icon: 'arrows-merge', label: 'Add', divider: true },
-  CombineNode: { icon: 'plus-circle-new', label: 'Combine' },
+  ConcatenateNode: { icon: 'plus-circle-new', label: 'Concatenate' },
   OutputNode: { icon: 'flag', label: 'Output', divider: true }
 };
