@@ -47,13 +47,13 @@ watch(
     :id="user.id"
     v-for="user in builderState.members"
     style="transition: left 50ms ease-in-out, top 50ms ease-in-out"
-    :style="`color: ${user.info.color}; transform: scale(${1 / builderState.areaZoom}); left: ${
-      userMap.get(user.id)?.x
-    }px; top: ${userMap.get(user.id)?.y}px`"
+    :style="`color: ${user.info.color}; left: ${userMap.get(user.id)?.x}px; top: ${userMap.get(user.id)?.y || 0}px`"
   >
     <div v-if="user.id !== builderState.me?.id" class="relative w-full whitespace-nowrap">
-      <icon name="cursor" stroke-width="0"></icon>
-      <div class="ml-6 -mt-2 font-semibold">{{ user.info.first_name.at(0) }}. {{ user.info.last_name }}</div>
+      <icon name="cursor" stroke-width="0" class="drop-shadow-lg"></icon>
+      <div class="ml-6 -mt-2 font-semibold drop-shadow-[0px_1px_2px_rgba(0,0,0,0.50)]">
+        {{ user.info.first_name.at(0) }}. {{ user.info.last_name }}
+      </div>
     </div>
   </div>
   <!-- <div
