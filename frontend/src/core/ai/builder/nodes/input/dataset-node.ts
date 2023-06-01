@@ -19,7 +19,7 @@ export class DatasetNode extends Node<
   }
 
   public addElements() {
-    this.addControl('dataset', new DropdownControl(['MNIST', 'BHI'], 'dataset', 'Dataset'));
+    this.addControl('dataset', new DropdownControl(['MNIST', 'BHI'], 'Dataset', 'dataset'));
     this.addOutput('dataset', new ClassicPreset.Output(this.socket, 'Dataset'));
   }
 }
