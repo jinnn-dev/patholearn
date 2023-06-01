@@ -18,7 +18,7 @@ class NodeType(Enum):
     DropoutNode = "DropoutNode"
     BatchNormNode = "BatchNormNode"
     AddNode = "AddNode"
-    CombineNode = "CombineNode"
+    ConcatenateNode = "ConcatenateNode"
     OutputNode = "OutputNode"
 
 
