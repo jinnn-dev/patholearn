@@ -29,14 +29,24 @@ export class Conv2DNode extends Node<
     this.addInput('in', new ClassicPreset.Input(this.socket, 'in'));
     this.addOutput('out', new ClassicPreset.Output(this.socket, 'out'));
 
-    this.addControl('filters', new NumberControl(0, 128, 'Filters', 'Filters'));
+    this.addControl('filters', new NumberControl(0, 128, 'Filters', 'Filters', 16));
     this.addControl(
       'kernel',
-      new DimensionControl('Kernel', { min: 0, max: 128, placeholder: 'x' }, { min: 0, max: 128, placeholder: 'y' })
+      new DimensionControl(
+        'Kernel',
+        { min: 0, max: 128, placeholder: 'x' },
+        { min: 0, max: 128, placeholder: 'y' },
+        { x: 3, y: 3 }
+      )
     );
     this.addControl(
       'stride',
-      new DimensionControl('Stride', { min: 0, max: 128, placeholder: 'x' }, { min: 0, max: 128, placeholder: 'y' })
+      new DimensionControl(
+        'Stride',
+        { min: 0, max: 128, placeholder: 'x' },
+        { min: 0, max: 128, placeholder: 'y' },
+        { x: 1, y: 1 }
+      )
     );
     this.addControl('activation', new ActivationControl());
   }

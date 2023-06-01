@@ -26,10 +26,18 @@ export class OutputNode extends Node<
 
   public addElements(): void {
     this.addInput('in', new ClassicPreset.Input(this.socket, 'in'));
-    this.addControl('optimizer', new DropdownControl(['SGD', 'RMSprop', 'Adagrad', 'Adam'], 'Optimizer', 'optimizer'));
+    this.addControl(
+      'optimizer',
+      new DropdownControl(['SGD', 'RMSprop', 'Adagrad', 'Adam'], 'Optimizer', 'optimizer', 'Adam')
+    );
     this.addControl(
       'loss',
-      new DropdownControl(['Cross-Entropy', 'MAE (L1)', 'MSE', 'Hinge', 'Adam', 'NLL'], 'Loss Function', 'loss')
+      new DropdownControl(
+        ['Cross-Entropy', 'MAE (L1)', 'MSE', 'Hinge', 'Adam', 'NLL'],
+        'Loss Function',
+        'loss',
+        'Cross-Entropy'
+      )
     );
     this.addControl('learningRate', new NumberControl(0, 10, 'Learning Rate', '0,00', 0.01));
     this.addControl('epochs', new NumberControl(0, 10000, 'Epochs', '10', 10));

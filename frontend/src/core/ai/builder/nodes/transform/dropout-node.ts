@@ -22,6 +22,6 @@ export class DropoutNode extends Node<
   public addElements() {
     this.addInput('in', new ClassicPreset.Input(this.socket, 'in'));
     this.addOutput('out', new ClassicPreset.Output(this.socket, 'out'));
-    this.addControl('amount', new NumberControl(0, 100, 'Percentage', '%'));
+    this.addControl('amount', new NumberControl(0, 100, 'Percentage', '%', 50));
   }
 }

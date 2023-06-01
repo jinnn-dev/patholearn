@@ -26,7 +26,7 @@ export class LinearNode extends Node<
   public addElements() {
     this.addInput('in', new ClassicPreset.Input(this.socket, 'in'));
     this.addOutput('out', new ClassicPreset.Output(this.socket, 'out'));
-    this.addControl('neurons', new NumberControl(0, 2048, 'Neurons', 'neurons'));
+    this.addControl('neurons', new NumberControl(0, 2048, 'Neurons', 'neurons', 64));
     this.addControl('activation', new ActivationControl());
   }
 }

@@ -29,11 +29,21 @@ export class PoolingNode extends Node<
 
     this.addControl(
       'kernel',
-      new DimensionControl('Kernel', { min: 0, max: 128, placeholder: 'x' }, { min: 0, max: 128, placeholder: 'y' })
+      new DimensionControl(
+        'Kernel',
+        { min: 0, max: 128, placeholder: 'x' },
+        { min: 0, max: 128, placeholder: 'y' },
+        { x: 3, y: 3 }
+      )
     );
     this.addControl(
       'stride',
-      new DimensionControl('Stride', { min: 0, max: 128, placeholder: 'x' }, { min: 0, max: 128, placeholder: 'y' })
+      new DimensionControl(
+        'Stride',
+        { min: 0, max: 128, placeholder: 'x' },
+        { min: 0, max: 128, placeholder: 'y' },
+        { x: 3, y: 3 }
+      )
     );
     this.addControl('type', new DropdownControl(['max', 'average'], 'Type', 'type'));
   }

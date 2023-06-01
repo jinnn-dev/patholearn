@@ -21,6 +21,6 @@ export class BatchNormNode extends Node<
   public addElements() {
     this.addInput('in', new ClassicPreset.Input(this.socket, 'in'));
     this.addOutput('out', new ClassicPreset.Output(this.socket, 'out'));
-    this.addControl('momentum', new NumberControl(0, 1, 'Momentum', 'momentum'));
+    this.addControl('momentum', new NumberControl(0, 1, 'Momentum', 'momentum', 0.1));
   }
 }
