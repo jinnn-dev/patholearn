@@ -18,7 +18,7 @@ import {
 import { Channel, PresenceChannel } from 'pusher-js';
 import { AreaExtra, ConnProps, NodeProps, Schemes } from '../use-editor';
 import { INode } from '../serializable';
-import { parseNode } from '../factories/node-factory';
+import { createNodeInstance, parseNode } from '../factories/node-factory';
 import { Produces } from 'rete-vue-render-plugin';
 import { Member } from '../../../../composables/ws/usePresenceChannel';
 import { animateBetweenTwoPoints, calculatePointsBetween } from '../../../../utils/animate';
@@ -162,6 +162,17 @@ export class SyncPlugin {
     this.connection.addPipe((context) => {
       return context;
     });
+  }
+
+  cloneNode(nodeId: string) {
+    const node = this.editor.getNode(nodeId);
+    this.editor.addNode(node.duplicate());
+  }
+
+  async removeNode(nodeId: string) {
+    await this.editor.removeNode(nodeId);
+    pushNodeRemovedEvent(builderState.channel as PresenceChannel, nodeId);
+    builderState.shouldSaveEditor = true;
   }
 
   selectControl(controlId: string) {

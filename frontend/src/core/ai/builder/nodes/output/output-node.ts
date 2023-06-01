@@ -24,6 +24,16 @@ export class OutputNode extends Node<
     super('Output', socket);
   }
 
+  public duplicate(): OutputNode {
+    const node = new OutputNode(this.socket);
+    for (const [key, control] of Object.entries(this.controls)) {
+      // @ts-ignore
+      node.controls[key] = control.duplicate();
+    }
+    node.addInput('in', new ClassicPreset.Input(node.socket, 'in'));
+    return node;
+  }
+
   public addElements(): void {
     this.addInput('in', new ClassicPreset.Input(this.socket, 'in'));
     this.addControl(

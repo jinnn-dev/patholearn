@@ -60,7 +60,7 @@ export function createNodeInstance(node: NodeType, socket: ClassicPreset.Socket)
   }
   const instance = new nodeClass(socket);
   instance.addElements();
-  cacheControlsMapping(instance);
+  cacheControlsMapping(instance as NodeProps);
   return instance;
 }
 

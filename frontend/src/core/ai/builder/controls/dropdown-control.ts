@@ -20,6 +20,12 @@ export class DropdownControl extends Control<IDropdownControl> {
     return new DropdownControl(data.values, data.label, data.key, data.value);
   }
 
+  public duplicate(): DropdownControl {
+    const control = new DropdownControl(this.values, this.label, this.key, this.value);
+    control.setValue(this.value);
+    return control;
+  }
+
   public serialize(): IDropdownControl {
     return {
       key: this.key,

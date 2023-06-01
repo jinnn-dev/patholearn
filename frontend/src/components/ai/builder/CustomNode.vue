@@ -4,6 +4,9 @@ import { NodeType } from '../../../core/ai/builder/nodes/types';
 import { getNodeColor } from '../../../core/ai/builder/node-colors';
 import { LockStatus } from '../../../core/ai/builder/sync';
 import { getTextColor } from '../../../utils/colors';
+import Icon from '../../general/Icon.vue';
+import { builderState } from '../../../core/ai/builder/state';
+
 function sortByIndex(entries: any) {
   entries.sort((a: any, b: any) => {
     const ai = (a[1] && a[1].index) || 0;
@@ -102,6 +105,15 @@ const outputs = computed(() => {
 
 <template>
   <div class="node" :class="nodeClasses" :style="nodeStyles" data-testid="node">
+    <div v-if="data?.selected && data?.id" class="absolute flex -top-12 rounded-lg left-0 overflow-hidden bg-gray-700">
+      <div class="hover:bg-gray-500 p-1" @click.stop="builderState.syncPlugin?.cloneNode(data.id)">
+        <icon name="copy" size="28" stroke-width="0"></icon>
+      </div>
+      <div class="hover:bg-gray-500 p-1">
+        <icon name="trash" size="28" @click.stop="builderState.syncPlugin?.removeNode(data.id)"></icon>
+      </div>
+    </div>
+
     <div class="overflow-hidden rounded-t-lg">
       <div class="title" data-testid="title" :class="titleClasses">
         {{ data?.label }}

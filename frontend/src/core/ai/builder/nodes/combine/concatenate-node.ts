@@ -16,6 +16,12 @@ export class ConcatenateNode extends Node<
     super('Concatenate', socket);
   }
 
+  public duplicate() {
+    const node = new ConcatenateNode(this.socket);
+    node.addElements();
+    return node;
+  }
+
   public addElements(): void {
     this.addInput('first', new ClassicPreset.Input(this.socket, 'first'));
     this.addInput('second', new ClassicPreset.Input(this.socket, 'second'));

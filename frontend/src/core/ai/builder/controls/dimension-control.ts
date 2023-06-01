@@ -42,6 +42,12 @@ export class DimensionControl extends Control<IDimensionControl> {
     return control;
   }
 
+  public duplicate(): DimensionControl {
+    const control = new DimensionControl(this.label, this.xOptions, this.yOptions);
+    control.setValue(this.value?.x, this.value?.y);
+    return control;
+  }
+
   public serialize(key: string): IDimensionControl {
     return {
       type: DimensionControl.name,

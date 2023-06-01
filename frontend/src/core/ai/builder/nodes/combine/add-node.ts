@@ -16,6 +16,12 @@ export class AddNode extends Node<
     super('Add', socket);
   }
 
+  public duplicate() {
+    const node = new AddNode(this.socket);
+    node.addElements();
+    return node;
+  }
+
   public addElements(): void {
     this.addInput('first', new ClassicPreset.Input(this.socket, 'first'));
     this.addInput('second', new ClassicPreset.Input(this.socket, 'second'));

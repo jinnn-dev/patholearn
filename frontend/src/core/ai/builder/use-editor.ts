@@ -218,7 +218,7 @@ export function useEditor() {
       return;
     }
 
-    await editor.value.addNode(layer);
+    await editor.value.addNode(layer as NodeProps);
   };
 
   const zoomAt = async () => {

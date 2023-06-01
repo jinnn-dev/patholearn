@@ -41,6 +41,8 @@ export abstract class Node<
 
   public abstract addElements(): void;
 
+  public abstract duplicate(): Node<any, any, any, any>;
+
   public lock(lockStatus: LockStatus) {
     this.lockStatus = lockStatus;
     for (const control of Object.values(this.controls)) {

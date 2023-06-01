@@ -12,4 +12,5 @@ export abstract class Control<S extends ISerializable>
   public abstract serialize(key?: string | undefined): S extends ISerializable ? any : any;
   public abstract setValue(...args: any): void;
   public static parse<T>(nodeData: T extends ISerializable ? any : any) {}
+  public abstract duplicate<T>(): Control<T extends ISerializable ? any : any>;
 }
