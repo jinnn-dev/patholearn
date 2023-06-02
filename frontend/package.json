@@ -3,7 +3,7 @@
   "version": "0.4.5",
   "scripts": {
     "dev": "vite --force --host=0.0.0.0 --port=5174",
-    "build": "vite build",
+    "build": "vite build --mode production",
     "serve": "vite preview",
     "test": "jest test --coverage",
     "dev-build": "vite build --mode development",
