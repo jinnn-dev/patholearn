@@ -15,7 +15,7 @@ export interface IConnection {
 }
 
 export interface ISerializable {
-  _type: string;
+  type: string;
   id: string;
 }
 
@@ -33,7 +33,7 @@ export interface IControl extends ISerializable {
 }
 
 export interface IInputControl extends IControl {
-  type: 'number' | 'text';
+  inputType: 'number' | 'string';
 }
 
 export interface INode extends ISerializable {
@@ -59,7 +59,7 @@ export function serializePort(
   port: ClassicPreset.Input<ClassicPreset.Socket> | ClassicPreset.Output<ClassicPreset.Socket>
 ): IPort {
   return {
-    _type: port instanceof ClassicPreset.Input<ClassicPreset.Socket> ? 'ClassicPreset.Input' : 'ClassicPreset.Output',
+    type: port instanceof ClassicPreset.Input<ClassicPreset.Socket> ? 'ClassicPreset.Input' : 'ClassicPreset.Output',
     key: key,
     id: port.id,
     label: port.label,
@@ -71,10 +71,10 @@ export function serializePort(
 
 export function serializeControl(key: string, control: ClassicPreset.InputControl<'number'>): IControl {
   const controlData: IInputControl = {
-    _type: ClassicPreset.InputControl.name,
+    type: ClassicPreset.InputControl.name,
     id: control.id,
     key: key,
-    type: control.type,
+    inputType: control.type,
     value: control.value
   };
   return controlData;

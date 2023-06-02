@@ -17,10 +17,21 @@ export class PoolingNode extends Node<
   }
 > {
   width = 200;
-  height = 265;
+  height = 235;
 
   constructor(socket: ClassicPreset.Socket) {
     super('Pooling', socket);
+  }
+
+  public duplicate(): PoolingNode {
+    const node = new PoolingNode(this.socket);
+    for (const [key, control] of Object.entries(this.controls)) {
+      // @ts-ignore
+      node.controls[key] = control.duplicate();
+    }
+    node.addInput('in', new ClassicPreset.Input(node.socket, 'in'));
+    node.addOutput('out', new ClassicPreset.Output(node.socket, 'out'));
+    return node;
   }
 
   public addElements() {
@@ -29,11 +40,21 @@ export class PoolingNode extends Node<
 
     this.addControl(
       'kernel',
-      new DimensionControl('Kernel', { min: 0, max: 128, placeholder: 'x' }, { min: 0, max: 128, placeholder: 'y' })
+      new DimensionControl(
+        'Kernel',
+        { min: 0, max: 128, placeholder: 'x' },
+        { min: 0, max: 128, placeholder: 'y' },
+        { x: 3, y: 3 }
+      )
     );
     this.addControl(
       'stride',
-      new DimensionControl('Stride', { min: 0, max: 128, placeholder: 'x' }, { min: 0, max: 128, placeholder: 'y' })
+      new DimensionControl(
+        'Stride',
+        { min: 0, max: 128, placeholder: 'x' },
+        { min: 0, max: 128, placeholder: 'y' },
+        { x: 3, y: 3 }
+      )
     );
     this.addControl('type', new DropdownControl(['max', 'average'], 'Type', 'type'));
   }

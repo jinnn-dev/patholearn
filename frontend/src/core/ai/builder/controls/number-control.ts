@@ -1,4 +1,5 @@
-import { IControl } from '../serializable';
+import { IControl, ISerializable } from '../serializable';
+import { LockStatus } from '../sync';
 import { Control } from './control';
 
 export interface INumberControl extends IControl {
@@ -29,9 +30,15 @@ export class NumberControl extends Control<INumberControl> {
     return new NumberControl(data.min, data.max, data.label, data.placeholder, data.value);
   }
 
+  public duplicate(): NumberControl {
+    const control = new NumberControl(this.min, this.max, this.label, this.placeholder, this.value);
+    control.setValue(this.value || 0);
+    return control;
+  }
+
   public serialize(key: string): INumberControl {
     return {
-      _type: NumberControl.name,
+      type: NumberControl.name,
       key: key,
       id: this.id,
       value: this.value,

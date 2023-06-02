@@ -1,8 +1,9 @@
 import { ClassicPreset } from 'rete';
 import { INode, IPort, ISerializable, Serializable, serializePort } from '../serializable';
 import { Control } from '../controls/control';
-import { parseControl } from '../control-factory';
+import { parseControl } from '../factories/control-factory';
 import { NodeType } from './types';
+import { LockStatus } from '../sync';
 
 export abstract class Node<
     T extends INode,
@@ -16,7 +17,7 @@ export abstract class Node<
   protected socket;
 
   public type: NodeType;
-  constructor(label: string, socket: ClassicPreset.Socket) {
+  constructor(label: string, socket: ClassicPreset.Socket, public lockStatus?: LockStatus) {
     super(label);
     this.socket = socket;
     this.type = this.constructor.name as NodeType;
@@ -40,6 +41,26 @@ export abstract class Node<
 
   public abstract addElements(): void;
 
+  public abstract duplicate(): Node<any, any, any, any>;
+
+  public lock(lockStatus: LockStatus) {
+    this.lockStatus = lockStatus;
+    for (const control of Object.values(this.controls)) {
+      if (control) {
+        control.lockStatus = lockStatus;
+      }
+    }
+  }
+
+  public unlock() {
+    this.lockStatus = undefined;
+    for (const control of Object.values(this.controls)) {
+      if (control) {
+        control.lockStatus = undefined;
+      }
+    }
+  }
+
   public serialize(key?: string | undefined): T {
     const inputs = Object.entries(this.inputs).map(([key, input]) => serializePort(key, input));
     const outputs = Object.entries(this.outputs).map(([key, input]) => serializePort(key, input));
@@ -50,12 +71,23 @@ export abstract class Node<
   public serializeObject(inputs: IPort[], outputs: IPort[], controls: any): T {
     return {
       id: this.id,
-      _type: this.constructor.name,
+      type: this.constructor.name,
       label: this.label,
       inputs: inputs,
       outputs: outputs,
       controls: controls,
       socket: this.socket.name
     } as T;
+  }
+
+  public getControl(controlId: string) {
+    let foundControl: Control<any> | undefined;
+    for (const control of Object.values(this.controls)) {
+      if (control && control.id === controlId) {
+        foundControl = control;
+        break;
+      }
+    }
+    return foundControl;
   }
 }

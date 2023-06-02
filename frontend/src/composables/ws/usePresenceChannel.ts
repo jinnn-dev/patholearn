@@ -19,14 +19,20 @@ export function usePresenceChannel(name?: string, autoSubscribe: boolean = false
   const members = ref<Member[]>([]);
   const me = ref<Member>();
 
+  const memberAddedCallbacks = ref<((addedMember: Member) => void)[]>([]);
+  const memberRemovedCallbacks = ref<((leftMember: Member) => void)[]>([]);
+
   const connect = (channelName?: string) => {
     let connectionName = name;
-    if (name === undefined) {
+
+    if (connectionName === undefined) {
       connectionName = channelName;
     }
-    if (connectionName === undefined) {
-      connectionName = '';
+
+    if (channel.value) {
+      return;
     }
+
     channel.value = wsClient.value?.subscribe('presence-' + connectionName) as PresenceChannel;
 
     channel.value.bind('pusher:subscription_succeeded', () => {
@@ -37,10 +43,14 @@ export function usePresenceChannel(name?: string, autoSubscribe: boolean = false
 
     channel.value.bind('pusher:subscription_error', () => {
       isConnected.value = false;
+      me.value = undefined;
     });
 
     channel.value.bind('pusher:member_added', (member: any) => {
       members.value?.push(member);
+      for (const callback of memberAddedCallbacks.value) {
+        callback(member);
+      }
     });
 
     channel.value.bind('pusher:member_removed', (leftMember: any) => {
@@ -48,18 +58,21 @@ export function usePresenceChannel(name?: string, autoSubscribe: boolean = false
       if (index !== undefined && index > -1) {
         members.value?.splice(index, 1);
       }
+      for (const callback of memberRemovedCallbacks.value) {
+        callback(leftMember);
+      }
     });
   };
 
-  onMounted(() => {
-    if (autoSubscribe) {
+  if (autoSubscribe) {
+    onMounted(() => {
       connect();
-    }
-  });
+    });
+  }
 
   onUnmounted(() => {
     channel.value?.unsubscribe();
   });
 
-  return { channel, isConnected, members, me, connect };
+  return { channel, isConnected, members, me, connect, memberAddedCallbacks, memberRemovedCallbacks };
 }

@@ -1,5 +1,4 @@
-import { ClassicPreset } from 'rete';
-import { IControl, ISerializable, Serializable } from '../serializable';
+import { IControl } from '../serializable';
 import { Control } from './control';
 
 export interface IDimensionControl extends IControl {
@@ -43,9 +42,15 @@ export class DimensionControl extends Control<IDimensionControl> {
     return control;
   }
 
+  public duplicate(): DimensionControl {
+    const control = new DimensionControl(this.label, this.xOptions, this.yOptions);
+    control.setValue(this.value?.x, this.value?.y);
+    return control;
+  }
+
   public serialize(key: string): IDimensionControl {
     return {
-      _type: DimensionControl.name,
+      type: DimensionControl.name,
       key: key,
       id: this.id,
       label: this.label,

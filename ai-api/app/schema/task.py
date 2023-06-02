@@ -1,20 +1,130 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Any, List, Optional, TypeVar, Union
 from app.schema.base_mongo_model import BaseMongoModel
 
 from bson import ObjectId
 from app.schema.py_object_id import PyObjectId
 from pydantic import BaseModel, Field
 
+from enum import Enum
 
-class BuilderState(BaseModel):
-    nodes: List[dict] = Field(...)
-    connections: List[dict] = Field(...)
-    positions: List[dict] = Field(...)
+
+class NodeType(Enum):
+    Conv2DNode = "Conv2DNode"
+    LinearNode = "LinearNode"
+    PoolingNode = "PoolingNode"
+    DatasetNode = "DatasetNode"
+    FlattenNode = "FlattenNode"
+    DropoutNode = "DropoutNode"
+    BatchNormNode = "BatchNormNode"
+    AddNode = "AddNode"
+    ConcatenateNode = "ConcatenateNode"
+    OutputNode = "OutputNode"
+
+
+class ControlType(Enum):
+    ActivationControl = "ActivationControl"
+    DimensionControl = "DimensionControl"
+    DropdownControl = "DropdownControl"
+    NumberControl = "NumberControl"
+
+
+class ISerializable(BaseModel):
+    type: Any
+    id: str
+
+
+class IPort(ISerializable):
+    label: Optional[str]
+    key: str
+    socket: dict = {"name": str}
+
+
+class IControl(ISerializable):
+    type: ControlType
+    key: str
+    value: Any
+
+    class Config:
+        use_enum_values = True
+
+
+class IInputControl(IControl):
+    inputType: Union[float, str]
+
+
+class IConnection(BaseModel):
+    id: str
+    source: str
+    sourceOutput: str
+    target: str
+    targetInput: str
+
+
+class INodePosition(BaseModel):
+    id: str
+    x: float
+    y: float
+
+
+class DimensionOption(BaseModel):
+    min: int
+    max: int
+    placeholder: str
+    initialValue: Optional[int]
+
+
+class IDimensionControl(IControl):
+    value: dict = {"x": Optional[int], "y": Optional[int]}
+    label: str
+    xOptions: DimensionOption
+    yOptions: DimensionOption
+
+
+class IDropdownControl(IControl):
+    values: List[Any]
+    label: str
+
+
+class INumberControl(IControl):
+    min: int
+    max: int
+    label: str
+    placeholder: str
+
+
+ControlType = TypeVar(
+    "ControlType",
+    IDropdownControl,
+    IDimensionControl,
+    INumberControl,
+    IInputControl,
+    IControl,
+)
+
+
+class INode(ISerializable):
+    type: NodeType
+    label: str
+    inputs: List[IPort]
+    outputs: List[IPort]
+    controls: List[ControlType]
+    socket: str
+    lockStatus: Optional[Any]
+
+    class Config:
+        use_enum_values = True
+
+
+class Graph(BaseModel):
+    nodes: List[INode] = Field(...)
+    connections: List[IConnection] = Field(...)
+    positions: List[INodePosition] = Field(...)
 
     class Config:
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
+        use_enum_values = True
         schema_extra = {
             "example": {
                 "nodes": [],
@@ -26,7 +136,7 @@ class BuilderState(BaseModel):
 
 class TaskVersion(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="id")
-    builder: BuilderState = Field(...)
+    graph: Graph = Field(...)
     clearml_id: Optional[str] = None
     creation_date: datetime = Field(...)
 
@@ -43,6 +153,15 @@ class TaskVersion(BaseModel):
         }
 
 
+class TaskVersionNoGraph(TaskVersion):
+    graph: Optional[Graph] = None
+
+
+class UpdateTaskVersion(BaseModel):
+    id: PyObjectId
+    graph: Optional[Graph]
+
+
 class Task(BaseMongoModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="id")
     creator_id: str = Field(...)
@@ -51,6 +170,7 @@ class Task(BaseMongoModel):
     name: str = Field(...)
     description: Optional[str] = Field(...)
     versions: List[TaskVersion] = Field(...)
+    lockStatus: Optional[dict] = None
 
     class Config:
         allow_population_by_field_name = True
@@ -69,7 +189,34 @@ class Task(BaseMongoModel):
         }
 
 
+class TaskNoGraph(Task):
+    versions: List[TaskVersionNoGraph]
+
+
 class CreateTask(BaseModel):
     name: str
     description: Optional[str]
     project_id: str
+
+
+class Info(BaseModel):
+    id: str
+    first_name: str
+    last_name: str
+    color: str
+
+
+class Member(BaseModel):
+    id: str
+    info: Info
+
+
+class LockElement(BaseModel):
+    task_id: str
+    element_id: str
+    user_id: str
+
+
+class UnlockElements(BaseModel):
+    task_id: str
+    element_ids: List[str]
