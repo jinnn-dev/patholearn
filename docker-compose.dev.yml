@@ -65,7 +65,7 @@ services:
     restart: unless-stopped
     ports:
       - '8001:8000'
-    command: uvicorn app.app:app --reload --host 0.0.0.0 --port 8000 --no-server-header
+    command: uvicorn app.app:app --host 0.0.0.0 --port 8000 --no-server-header
     environment:
       - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
       - DATABASE_URL=${MONGO_DRIVER}://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:${MONGO_PORT}
@@ -88,7 +88,7 @@ services:
       - patholearn-network
     depends_on:
       - slide_api
-    command: watchmedo auto-restart --recursive --directory="./app" --patterns="*.py" -- celery --app worker.celery_app worker --loglevel=info
+    command: celery --app worker.celery_app worker --loglevel=info
     volumes:
       - ./slide-api/app:/app
       - ./slide-api/data:/data

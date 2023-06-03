@@ -13,7 +13,15 @@ class Element(BaseModel):
     forward_call: List[str]
 
 
-def parse_to_pytorch(graph: nx.DiGraph):
-    dataset_node: Dataset = next(iter(graph.nodes(data=True)), None)[1]["data"]
-    dataset = datasets[dataset_node.name]
-    logger.debug(dataset)
+def parse_to_pytorch_graph(graph: nx.DiGraph):
+    nodes = []
+    for node in graph.nodes(data=True):
+        nodes.append(node)
+    edges = []
+    for edge in graph.edges:
+        edges.append(edge)
+    logger.debug(nodes)
+    logger.debug(edges)
+    # dataset_node: Dataset = next(iter(graph.nodes(data=True)), None)[1]["data"]
+    # dataset = datasets[dataset_node.name]
+    # logger.debug(dataset)

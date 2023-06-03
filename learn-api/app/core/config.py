@@ -40,6 +40,7 @@ class Settings(BaseSettings):
         if "MINIO_ROOT_PASSWORD" in os.environ
         else "minioKey1234"
     )
+
     MINIO_URL = os.environ["MINIO_URL"] if "MINIO_URL" in os.environ else "minio:9000"
 
     FIRST_SUPERUSER_EMAIL: EmailStr = os.environ.get("LEARN_API_ADMIN_EMAIL", None)

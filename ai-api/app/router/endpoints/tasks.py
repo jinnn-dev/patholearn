@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import List
-from app.core.parse_to_pytorch import parse_to_pytorch
 from bson import ObjectId
 from fastapi import APIRouter, Body, Depends
 from pydantic import parse_obj_as
@@ -20,6 +19,7 @@ from app.schema.task import (
     UpdateTaskVersion,
 )
 from app.core.parse_graph import parse_graph
+from app.core.parse_to_pytorch import parse_to_pytorch_graph
 from app.utils.logger import logger
 
 router = APIRouter()
@@ -205,7 +205,7 @@ async def parse_builder_state(
     task_version = parse_obj_as(Graph, task["versions"][0]["graph"])
 
     parsed_graph = parse_graph(task_version)
-    parse_to_pytorch(parsed_graph)
+    parse_to_pytorch_graph(parsed_graph)
 
 
 @router.post("/builder", response_model=BuilderTask, status_code=201)
