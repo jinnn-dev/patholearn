@@ -15,7 +15,7 @@ export class DropoutNode extends Node<
   height = 120;
 
   constructor(socket: ClassicPreset.Socket) {
-    super('Dropout', socket);
+    super('Dropout', socket, "DropoutNode");
     this.socket = socket;
   }
 

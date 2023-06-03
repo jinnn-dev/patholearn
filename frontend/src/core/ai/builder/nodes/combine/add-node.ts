@@ -13,7 +13,7 @@ export class AddNode extends Node<
   width = 180;
   height = 115;
   constructor(socket: ClassicPreset.Socket) {
-    super('Add', socket);
+    super('Add', socket, 'AddNode');
   }
 
   public duplicate() {

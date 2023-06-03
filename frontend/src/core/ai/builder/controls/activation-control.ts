@@ -4,7 +4,7 @@ import { DropdownControl, IDropdownControl } from './dropdown-control';
 
 export class ActivationControl extends DropdownControl {
   constructor() {
-    super(['None (Linear)', 'sigmoid', 'tanh', 'relu', 'softmax', 'log_softmax'], 'Activation', 'activation', 'relu');
+    super(['None (Linear)', 'sigmoid', 'tanh', 'relu', 'softmax', 'log_softmax'], 'Activation', 'activation', 'relu', "ActivationControl");
   }
 
   public static parse(data: IDropdownControl): ActivationControl {
@@ -21,7 +21,7 @@ export class ActivationControl extends DropdownControl {
 
   public serialize(): IDropdownControl {
     const serialized = super.serialize();
-    serialized.type = ActivationControl.name;
+    serialized.type = this.type;
 
     return serialized;
   }

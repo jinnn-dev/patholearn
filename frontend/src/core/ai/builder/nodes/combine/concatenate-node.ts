@@ -13,7 +13,7 @@ export class ConcatenateNode extends Node<
   width = 180;
   height = 115;
   constructor(socket: ClassicPreset.Socket) {
-    super('Concatenate', socket);
+    super('Concatenate', socket, "ConcatenateNode");
   }
 
   public duplicate() {

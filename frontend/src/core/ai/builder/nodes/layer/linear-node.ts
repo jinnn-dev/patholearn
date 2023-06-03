@@ -20,7 +20,7 @@ export class LinearNode extends Node<
   height = 190;
 
   constructor(socket: ClassicPreset.Socket) {
-    super('Linear', socket);
+    super('Linear', socket, "LinearNode");
   }
 
   public duplicate(): LinearNode {

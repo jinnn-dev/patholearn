@@ -15,7 +15,7 @@ export class DatasetNode extends Node<
   height = 147;
 
   constructor(socket: ClassicPreset.Socket) {
-    super('Dataset', socket);
+    super('Dataset', socket, "DatasetNode");
   }
 
   public duplicate() {

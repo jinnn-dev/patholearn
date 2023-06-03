@@ -9,7 +9,7 @@ export class FlattenNode extends Node<IFlattenNode, { in: ClassicPreset.Socket }
   height = 80;
 
   constructor(socket: ClassicPreset.Socket) {
-    super('Flatten', socket);
+    super('Flatten', socket, "FlattenNode");
   }
 
   public duplicate(): FlattenNode {
