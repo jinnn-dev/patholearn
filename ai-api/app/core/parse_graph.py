@@ -58,6 +58,10 @@ class Node(BaseModel):
     id: str
 
 
+class FlattenNode(Node):
+    pass
+
+
 class DatasetDimension(BaseModel):
     x: int
     y: int
@@ -67,6 +71,7 @@ class Dataset(Node):
     name: str
     channels: int
     dimension: DatasetDimension
+    classes: int
 
 
 class Optimizer(Enum):
@@ -81,7 +86,6 @@ class LossFunction(Enum):
     Mae = "MAE (L1)"
     Mse = "MSE"
     Hinge = "Hinge"
-    Adam = "Adam"
     Nll = "NLL"
 
 
@@ -163,10 +167,10 @@ def parse_graph(builderState: Graph):
 
     path_graph: nx.DiGraph = graph.subgraph(nodes_between_set)
 
-    for node in path_graph.nodes(data=True):
-        logger.debug(node)
+    dataset_node = path_graph.nodes[start_node_id]["data"]
+    output_node = path_graph.nodes[end_node_id]["data"]
 
-    return path_graph
+    return path_graph, dataset_node, output_node
 
 
 def parse_node(
@@ -184,6 +188,8 @@ def parse_node(
             node_instance = get_linear_node(node)
         elif node.type == NodeType.OutputNode:
             node_instance = get_output_node(node)
+        elif node.type == NodeType.FlattenNode:
+            node_instance = get_flatten_node(node)
         else:
             return
         processed_nodes[node.id] = node_instance
@@ -203,7 +209,11 @@ def get_dataset(node: INode):
 
     if selected_dataset_name == "MNIST":
         return Dataset(
-            id=node.id, name="MNIST", channels=1, dimension=DatasetDimension(x=28, y=28)
+            id=node.id,
+            name="MNIST",
+            channels=1,
+            classes=10,
+            dimension=DatasetDimension(x=28, y=28),
         )
     return None
 
@@ -242,3 +252,7 @@ def get_output_node(node: INode):
         epoch=controls["epochs"],
         batch_size=controls["batchSize"],
     )
+
+
+def get_flatten_node(node: INode):
+    return FlattenNode(id=node.id)

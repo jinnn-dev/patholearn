@@ -204,8 +204,9 @@ async def parse_builder_state(
         return
     task_version = parse_obj_as(Graph, task["versions"][0]["graph"])
 
-    parsed_graph = parse_graph(task_version)
-    parse_to_pytorch_graph(parsed_graph)
+    parsed_graph, dataset_node, output_node = parse_graph(task_version)
+    pytorch_text = parse_to_pytorch_graph(parsed_graph, dataset_node, output_node)
+    return pytorch_text
 
 
 @router.post("/builder", response_model=BuilderTask, status_code=201)
