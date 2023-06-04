@@ -16,7 +16,10 @@ from supertokens_python import (
     SupertokensConfig,
     InputAppInfo,
 )
-from supertokens_python.recipe import session, usermetadata
+from supertokens_python.recipe import (
+    session,
+    usermetadata,
+)
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
 from supertokens_python.recipe.usermetadata.asyncio import get_user_metadata
@@ -40,6 +43,7 @@ init(
         session.init(
             cookie_domain=os.environ.get("COOKIE_DOMAIN", ".localhost"),
             cookie_secure=True,
+            anti_csrf=os.environ.get("ANTI_CSRF", "VIA_TOKEN"),
         ),
         usermetadata.init(),
     ],

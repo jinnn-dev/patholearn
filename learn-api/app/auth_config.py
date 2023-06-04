@@ -13,7 +13,7 @@ from supertokens_python import (
 )
 
 supertokens_config = SupertokensConfig(
-    connection_uri=os.environ.get("SUPERTOKENS_DOMAIN", "http://supertokens:3567")
+    connection_uri=os.environ.get("SUPERTOKENS_DOMAIN", "http://supertokens:3567"),
 )
 
 app_info = InputAppInfo(
@@ -29,7 +29,8 @@ framework = "fastapi"
 recipe_list = [
     emailpassword.init(sign_up_feature=emailpassword.InputSignUpFeature()),
     session.init(
-        cookie_domain=os.environ.get("COOKIE_DOMAIN", ".localhost"), cookie_secure=True
+        cookie_domain=os.environ.get("COOKIE_DOMAIN", ".localhost"),
+        cookie_secure=True,
     ),
     dashboard.init(),
     usermetadata.init(),
