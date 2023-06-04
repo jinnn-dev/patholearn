@@ -44,7 +44,7 @@ class ActivationFunctionString(Enum):
     Tanh = "torch.nn.Tanh()"
     Relu = "torch.nn.ReLU()"
     Softmax = "torch.nn.Softmax()"
-    LogSoftmax = "torch.nn.LogSoftmax()"
+    LogSoftmax = "torch.nn.LogSoftmax(dim=1)"
 
 
 class LossFunctionModule(Enum):
@@ -111,7 +111,8 @@ class MNISTDataModule(pl.LightningDataModule):
                 batch_size=self.batch_size, 
                 num_workers=multiprocessing.cpu_count(),  
                 shuffle=True, 
-                drop_last=True)
+                drop_last=True
+            )
 
     def val_dataloader(self):
         return DataLoader(
@@ -119,7 +120,8 @@ class MNISTDataModule(pl.LightningDataModule):
                 batch_size=self.batch_size, 
                 num_workers=multiprocessing.cpu_count(),  
                 shuffle=False, 
-                drop_last=False)
+                drop_last=False
+            )
 
     def test_dataloader(self):
         return DataLoader(
@@ -127,7 +129,8 @@ class MNISTDataModule(pl.LightningDataModule):
                 batch_size=self.batch_size, 
                 num_workers=multiprocessing.cpu_count(), 
                 shuffle=False, 
-                drop_last=False)
+                drop_last=False
+            )
 
     def predict_dataloader(self):
         return DataLoader(
@@ -135,7 +138,9 @@ class MNISTDataModule(pl.LightningDataModule):
                 batch_size=self.batch_size, 
                 num_workers=multiprocessing.cpu_count(), 
                 shuffle=False, 
-                drop_last=False)"""
+                drop_last=False
+            )
+"""
 
     def get_instance(self, data_dir: str = "./", batch_size: int = 32):
         return f"""MNISTDataModule(data_dir="{data_dir}", batch_size={batch_size})"""
@@ -177,12 +182,7 @@ class ClassificationModel:
         parsed_layers_strings = []
         for index, layer in enumerate(layer_data):
             if isinstance(layer, Conv2dLayer):
-                parsed_layer_string = f"""\t\t\t\t\ttorch.nn.Conv2d(
-                    {in_features},
-                    out_channels={layer.out_features},
-                    kernel_size={layer.kernel_size},
-                    stride={layer.stride},
-                )"""
+                parsed_layer_string = f"""torch.nn.Conv2d(in_channels={in_features}, out_channels={layer.out_features}, kernel_size={layer.kernel_size}, stride={layer.stride})"""
                 parsed_layers_strings.append(parsed_layer_string)
 
                 parsed_layer = torch.nn.Conv2d(
@@ -204,21 +204,18 @@ class ClassificationModel:
                 )
 
                 parsed_layers_strings.append(
-                    "\t\t\t\t\t\t\t"
-                    + ActivationFunctionString._member_map_[
+                    ActivationFunctionString._member_map_[
                         layer.activation_function.name
                     ].value
                 )
 
             if isinstance(layer, FlattenNode):
-                parsed_layers_strings.append("\t\t\t\t\ttorch.nn.Flatten()")
+                parsed_layers_strings.append("torch.nn.Flatten()")
                 parsed_layers.append(torch.nn.Flatten())
 
                 in_features = np.prod(list(layer_data_shape)[1:])
             if isinstance(layer, LinearLayer):
-                parsed_layer_string = f"""\t\t\t\t\ttorch.nn.Linear(
-                    in_features={in_features}, out_features={layer.out_features}
-                )"""
+                parsed_layer_string = f"""torch.nn.Linear(in_features={in_features}, out_features={layer.out_features})"""
                 parsed_layers_strings.append(parsed_layer_string)
 
                 parsed_layer = torch.nn.Linear(
@@ -231,6 +228,13 @@ class ClassificationModel:
                         ].value
                     )()
                 )
+                parsed_layers_strings.append(
+                    (
+                        ActivationFunctionString._member_map_[
+                            layer.activation_function.name
+                        ].value
+                    )
+                )
                 in_features = layer.out_features
                 parsed_layers.append(parsed_layer)
 
@@ -240,17 +244,17 @@ class ClassificationModel:
 
         logger.debug(parsed_layers)
         logger.debug(parsed_layers_strings)
-
-        layers_string = ",\n".join(parsed_layers_strings)
-        sequential = f"""self.model = torch.nn.Sequential(
-    {layers_string}
-    )"""
+        indent = " " * 12
+        layers_string = ",\n".join(indent + line for line in parsed_layers_strings)
+        sequential = f"""self.model = torch.nn.Sequential"""
         logger.debug(sequential)
 
         self.model_class = f"""class ClassificationModel(torch.nn.Module):
     def __init__(self):
         super().__init__()
-        {sequential}
+        {sequential}(
+{layers_string}
+        )
     def forward(self, x):
         logits = self.model(x)
         return logits
@@ -350,16 +354,15 @@ class LightningModel:
 
     def configure_optimizers(self):
         optimizer = {OptimizerString._member_map_[output_node.optimizer.name].value}(self.parameters(),  lr=self.learning_rate)
-        optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
         return optimizer
     """
 
         self.trainer = f"""pl.Trainer(
-        max_epochs={output_node.epoch},
-        accelerator="auto",  # Uses GPUs or TPUs if available
-        devices="auto",  # Uses all available GPUs/TPUs if applicable
-        log_every_n_steps=100
-        )
+    max_epochs={output_node.epoch},
+    accelerator="auto",  # Uses GPUs or TPUs if available
+    devices="auto",  # Uses all available GPUs/TPUs if applicable
+    log_every_n_steps=100
+)
         """
 
     def get_instance(self, model_name: str):
@@ -386,6 +389,7 @@ def parse_to_pytorch_graph(
         "from torch.utils.data import random_split, DataLoader",
         "from torchvision import transforms",
         "import torchmetrics",
+        "from clearml import Task",
     ]
 
     # logger.debug(output_node)
@@ -410,14 +414,18 @@ def parse_to_pytorch_graph(
     )
     lightning_trainer = "trainer = " + lightning_model.trainer
     lightning_train = f"trainer.fit(model=lightning_model, datamodule=data_module)"
+
+    clearml_string = """Task.add_requirements("/clearml.requirements.txt")
+task: Task = Task.init(project_name="Builder Test", task_name="MNIST")
+task.execute_remotely(queue_name="default", clone=False, exit_process=True)"""
     return (
         import_string
         + paragraph
+        + clearml_string
+        + paragraph
         + dataset_class
         + paragraph
-        + paragraph
         + model_class
-        + paragraph
         + paragraph
         + lightning_model_class
         + paragraph

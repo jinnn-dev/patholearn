@@ -14,6 +14,28 @@ celery_app.conf.broker_url = os.environ.get(
 logger = get_task_logger(__name__)
 
 
+@celery_app.task(name="enqueue_builder_task", queue="ai")
+def enqueue_builder_task(file_contents):
+    script_path = "/app/builder_train.py"
+    file = os.open(
+        script_path,
+        flags=(
+            os.O_RDWR
+            | os.O_CREAT  # create if not exists
+            | os.O_TRUNC  # truncate the file to zero
+        ),
+        mode=0o777,
+    )
+    with open(script_path, "w") as file:
+        file.write(file_contents)
+
+    command = ["python", script_path]
+    p = subprocess.Popen(command)
+    exit_code = p.wait()
+    logger.info(exit_code)
+    return exit_code
+
+
 @celery_app.task(name="enqueue_task", queue="ai")
 def enqueue_task(project_name, task_name, dataset_id, model_name):
     script_name = "/app/train.py"

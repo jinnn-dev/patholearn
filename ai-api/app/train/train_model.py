@@ -1,6 +1,7 @@
 import os
 
 from celery import Celery
+from app.utils.logger import logger
 
 celery_app = Celery(__name__)
 celery_app.conf.broker_url = os.environ.get(
@@ -21,3 +22,11 @@ def start_training(data: dict):
         queue="ai",
     )
     print("Result", result)
+
+
+def start_builder_training(file_contents: str):
+    result = celery_app.send_task(
+        name="enqueue_builder_task", args=[file_contents], retries=3, queue="ai"
+    )
+
+    logger.info(f"Celery result: {result}")

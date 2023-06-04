@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import List
+from app.train.train_model import start_builder_training
 from bson import ObjectId
 from fastapi import APIRouter, Body, Depends
 from pydantic import parse_obj_as
@@ -206,6 +207,7 @@ async def parse_builder_state(
 
     parsed_graph, dataset_node, output_node = parse_graph(task_version)
     pytorch_text = parse_to_pytorch_graph(parsed_graph, dataset_node, output_node)
+    start_builder_training(pytorch_text)
     return pytorch_text
 
 
