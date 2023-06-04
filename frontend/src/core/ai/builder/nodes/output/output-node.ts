@@ -43,7 +43,7 @@ export class OutputNode extends Node<
     this.addControl(
       'loss',
       new DropdownControl(
-        ['Cross-Entropy', 'MAE (L1)', 'MSE', 'Hinge', 'Adam', 'NLL'],
+        ['Cross-Entropy', 'MAE (L1)', 'MSE', 'Hinge', 'NLL'],
         'Loss Function',
         'loss',
         'Cross-Entropy'
