@@ -5,6 +5,9 @@ import { AiService } from '../../../../services/ai.service';
 import { useEditor } from '../../../../core/ai/builder/use-editor';
 
 import EditorTools from './EditorTools.vue';
+import ModalDialog from '../../../containers/ModalDialog.vue';
+import CodeHighlight from '../../../containers/CodeHighlight.vue';
+import Icon from '../../../general/Icon.vue';
 import Spinner from '../../../general/Spinner.vue';
 import { TaskVersion } from '../../../../model/ai/tasks/task';
 import { NodeType, isNode } from '../../../../core/ai/builder/nodes/types';
@@ -25,7 +28,7 @@ const props = defineProps({
 const { arrangeLayout, zoomAt, init, addNode, download, importGraph, clear, area, registerEvents } = useEditor();
 const { run: updateGraph } = useService(AiService.updateTaskVersion);
 
-const { run: parseGraph } = useService(AiService.parseTaskVersion);
+const { run: parseGraph, result } = useService(AiService.parseTaskVersion);
 
 const rete = ref();
 
@@ -139,6 +142,16 @@ onUnmounted(() => {
 });
 </script>
 <template>
+  <modal-dialog :show="result !== undefined">
+    <div class="flex justify-end">
+      <div class="hover:bg-gray-500 cursor-pointer rounded-md p-1" @click="result = undefined">
+        <icon name="x" size="18"></icon>
+      </div>
+    </div>
+    <div>
+      <code-highlight>{{ result }}</code-highlight>
+    </div>
+  </modal-dialog>
   <div class="relative h-full overflow-hidden">
     <div class="flex justify-start">
       <!-- <primary-button name="Arrange" @click="arrangeLayout"></primary-button>
