@@ -324,7 +324,8 @@ class LightningModel:
         features, true_labels = batch
         logits = self(features)
         loss = {LossFunctionString._member_map_[output_node.loss_function.name].value}(logits, true_labels)
-        predicted_labels = torch.argmax(logits, dim=1)
+        # predicted_labels = torch.argmax(logits, dim=1)
+        predicted_labels = logits
         return loss, true_labels, predicted_labels
 
     def training_step(self, batch, batch_idx):
