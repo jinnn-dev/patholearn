@@ -14,7 +14,7 @@ const emit = defineEmits<{ (e: 'selected', value: EventName): void }>();
   <div class="absolute z-10 h-screen p-4 right-0 bottom-0">
     <div
       v-if="!toolsOpen"
-      class="fixed bottom-4 right-4 cursor-pointer bg-gray-800 hover:bg-gray-500 p-2 rounded-lg shadow-lg shadow-gray-900"
+      class="fixed bottom-4 right-4 cursor-pointer bg-gray-700 hover:bg-gray-500 p-2 rounded-lg shadow-md shadow-gray-800"
       @click="toolsOpen = !toolsOpen"
     >
       <icon name="toolbox" stroke-width="0" size="32"></icon>
@@ -22,7 +22,7 @@ const emit = defineEmits<{ (e: 'selected', value: EventName): void }>();
     <transition name="slide-fade">
       <div
         v-if="toolsOpen"
-        class="relative h-full w-52 bg-gray-800/80 backdrop-blur-lg ring-[1px] rounded-lg ring-gray-700 shadow-lg shadow-gray-900 overflow-auto"
+        class="relative h-full w-52 bg-gray-700/80 backdrop-blur-lg ring-[1px] rounded-lg ring-gray-500/70 shadow-md shadow-gray-900 overflow-auto"
       >
         <div class="flex p-2 justify-between items-center gap-4">
           <div class="flex-shrink-0 text-lg">Toolbox</div>
