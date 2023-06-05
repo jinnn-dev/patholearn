@@ -12,7 +12,7 @@ import Spinner from '../../../general/Spinner.vue';
 import { TaskVersion } from '../../../../model/ai/tasks/task';
 import { NodeType, isNode } from '../../../../core/ai/builder/nodes/types';
 import { EventName } from '../../../../core/ai/builder/events';
-import { builderState, resetBuilderState } from '../../../../core/ai/builder/state';
+import { builderState, resetBuilderState, resetNodeEditorState } from '../../../../core/ai/builder/state';
 
 const props = defineProps({
   taskId: {
@@ -100,6 +100,7 @@ const saveBuilder = async () => {
 
 const parseBuilder = async () => {
   await parseGraph(props.taskId, props.taskVersion.id);
+  builderState.task!.versions[0].status = 'CREATING';
 };
 
 const itemClicked = async (event: EventName) => {
@@ -136,9 +137,7 @@ const itemClicked = async (event: EventName) => {
 };
 
 onUnmounted(() => {
-  console.log('RESETTING');
-
-  resetBuilderState();
+  resetNodeEditorState();
 });
 </script>
 <template>
@@ -152,6 +151,7 @@ onUnmounted(() => {
       <code-highlight>{{ result }}</code-highlight>
     </div>
   </modal-dialog>
+
   <div class="relative h-full overflow-hidden">
     <div class="flex justify-start">
       <!-- <primary-button name="Arrange" @click="arrangeLayout"></primary-button>
@@ -169,7 +169,12 @@ onUnmounted(() => {
         </div>
       </div>
     </div>
-
+    <div
+      class="absolute z-10 bg-gray-800/40 backdrop-blur-sm w-full h-full flex justify-center items-center"
+      v-if="taskVersion.status === 'CREATING' || taskVersion.status === 'CREATED' || taskVersion.clearml_id"
+    >
+      <div class="text-xl select-none">Das Model wird trainiert</div>
+    </div>
     <div class="rete w-full h-full bg-gray-900" ref="rete"></div>
   </div>
 </template>

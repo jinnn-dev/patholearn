@@ -77,7 +77,33 @@ export const routes: RouteRecordRaw[] = [
       public: true,
       disableNavigation: true
     },
-    component: () => import('../views/ai/tasks/Task.vue')
+    component: () => import('../views/ai/tasks/Task.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Task Builder',
+        meta: {
+          public: true
+        },
+        component: () => import('../views/ai/tasks/TaskBuilder.vue')
+      },
+      {
+        path: 'metrics',
+        name: 'Task Metrics',
+        meta: {
+          public: true
+        },
+        component: () => import('../views/ai/tasks/TaskMetrics.vue')
+      },
+      {
+        path: 'console',
+        name: 'Task Console',
+        meta: {
+          public: true
+        },
+        component: () => import('../views/ai/tasks/TaskConsole.vue')
+      }
+    ]
   },
 
   {
@@ -90,7 +116,7 @@ export const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        name: 'Task Console',
+        name: 'ClearML Task Console',
         meta: {
           public: true
         },
@@ -98,7 +124,7 @@ export const routes: RouteRecordRaw[] = [
       },
       {
         path: 'metrics',
-        name: 'Task Metrics',
+        name: 'ClearML Task Metrics',
         meta: {
           public: true
         },
@@ -107,7 +133,6 @@ export const routes: RouteRecordRaw[] = [
     ]
   },
   {
-
     path: '/live',
     meta: {
       public: true
@@ -121,7 +146,6 @@ export const routes: RouteRecordRaw[] = [
       public: true
     },
     component: () => import('../views/ServerStatus.vue')
-
   },
   {
     path: '/login',

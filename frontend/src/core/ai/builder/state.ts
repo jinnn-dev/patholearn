@@ -11,6 +11,7 @@ interface BuilderState {
   initialGraphLoaded: boolean;
   shouldSaveEditor: boolean;
   task?: Task;
+  taskLoading: boolean;
   versionId: string;
   channel?: PresenceChannel;
   me?: Member;
@@ -30,6 +31,7 @@ export const initialState: BuilderState = {
   shouldSaveEditor: false,
   members: [],
   isConnected: false,
+  taskLoading: true,
   areaZoom: 1,
   versionId: '',
   memberAddedCallbacks: [],
@@ -49,6 +51,14 @@ export function resetBuilderState() {
   builderState.versionId = '';
   builderState.memberAddedCallbacks = [];
   builderState.memberRemovedCallbacks = [];
+  builderState.controlToNode = new Map();
+}
+
+export function resetNodeEditorState() {
+  builderState.builderLoaded = false;
+  builderState.initialGraphLoaded = false;
+  builderState.shouldSaveEditor = false;
+  builderState.areaZoom = 1;
   builderState.controlToNode = new Map();
 }
 
