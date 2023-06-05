@@ -15,7 +15,7 @@ defineProps({
 </script>
 <template>
   <div
-    class="flex justify-start items-center gap-3 py-1 rounded-lg cursor-pointer px-2 select-none hover:ring-1 hover:ring-gray-500 hover:bg-gray-600"
+    class="flex justify-start items-center gap-3 py-1 rounded-lg cursor-pointer px-2 select-none hover:ring-1 hover:ring-gray-500 hover:bg-gray-500/50"
   >
     <icon size="19" :name="icon" stroke-width="0"></icon>
     <div>{{ label }}</div>
