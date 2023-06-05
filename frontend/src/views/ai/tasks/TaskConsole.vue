@@ -5,9 +5,9 @@ import Console from '../../../components/ai/tasks/Console.vue';
 <template>
   <div class="p-8 mt-10 flex justify-center">
     <div v-if="!builderState.task">Loading...</div>
-    <div v-else-if="!builderState.task.versions[0].clearml_id">Training ist noch nicht gestartet</div>
+    <div v-else-if="!builderState.selectedVersion?.clearml_id">Training ist noch nicht gestartet</div>
     <div v-else class="w-full">
-      <Console :clear-ml-task-id="builderState.task.versions[0].clearml_id!"></Console>
+      <Console :clear-ml-task-id="builderState.selectedVersion!.clearml_id!"></Console>
     </div>
   </div>
 </template>

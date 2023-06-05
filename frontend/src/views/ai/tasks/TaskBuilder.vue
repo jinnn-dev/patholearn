@@ -16,9 +16,9 @@ import NodeEditor from '../../../components/ai/builder/editor/NodeEditor.vue';
       </div>
     </transition>
     <node-editor
-      v-if="builderState.task && builderState.members.length !== 0"
+      v-if="builderState.task && builderState.members.length !== 0 && builderState.selectedVersion"
       :task-id="builderState.task.id"
-      :task-version="builderState.task.versions[0]"
+      :task-version="builderState.selectedVersion"
     ></node-editor>
   </div>
 </template>

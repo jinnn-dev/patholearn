@@ -3,7 +3,7 @@ import { PresenceChannel } from 'pusher-js';
 import { reactive } from 'vue';
 import { AreaExtra, NodeProps, Schemes } from './use-editor';
 import { AreaPlugin } from 'rete-area-plugin';
-import { Task } from '../../../model/ai/tasks/task';
+import { Task, TaskVersion } from '../../../model/ai/tasks/task';
 import { SyncPlugin } from './plugins/sync-plugin';
 import { Node } from './nodes/node';
 interface BuilderState {
@@ -23,6 +23,7 @@ interface BuilderState {
   syncPlugin?: SyncPlugin;
   areaZoom: number;
   controlToNode: Map<string, NodeProps>;
+  selectedVersion?: TaskVersion;
 }
 
 export const initialState: BuilderState = {

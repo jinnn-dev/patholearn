@@ -28,6 +28,7 @@ onMounted(async () => {
   builderState.task = task.value;
   builderState.memberAddedCallbacks = memberAddedCallbacks.value;
   builderState.memberRemovedCallbacks = memberRemovedCallbacks.value;
+  builderState.selectedVersion = task.value?.versions[0];
 });
 
 watch(
