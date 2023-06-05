@@ -13,6 +13,7 @@ from app.core.parse_graph import (
     Conv2dLayer,
 )
 from app.utils.logger import logger
+from app.schema.task import Task, TaskVersion
 import torch
 import numpy as np
 
@@ -371,7 +372,11 @@ class LightningModel:
 
 
 def parse_to_pytorch_graph(
-    graph: nx.DiGraph, dataset_node: Dataset, output_node: OutputNode
+    graph: nx.DiGraph,
+    dataset_node: Dataset,
+    output_node: OutputNode,
+    task: Task,
+    version: TaskVersion,
 ):
     nodes = []
     for node in graph.nodes(data=True):
@@ -383,6 +388,7 @@ def parse_to_pytorch_graph(
     # logger.debug(edges)
 
     imports = [
+        "import sys",
         "import multiprocessing",
         "import torch",
         "import pytorch_lightning as pl",
@@ -416,8 +422,8 @@ def parse_to_pytorch_graph(
     lightning_trainer = "trainer = " + lightning_model.trainer
     lightning_train = f"trainer.fit(model=lightning_model, datamodule=data_module)"
 
-    clearml_string = """Task.add_requirements("/clearml.requirements.txt")
-task: Task = Task.init(project_name="Builder Test", task_name="MNIST")
+    clearml_string = f"""Task.add_requirements("/clearml.requirements.txt")
+task: Task = Task.init(project_name="{task.name}", task_name="{version.id}")
 task.execute_remotely(queue_name="default", clone=False, exit_process=True)"""
     return (
         import_string

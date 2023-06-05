@@ -24,9 +24,14 @@ def start_training(data: dict):
     print("Result", result)
 
 
-def start_builder_training(file_contents: str):
+def start_builder_training(
+    file_contents: str, task_id: str, task_name: str, version_id: str
+):
     result = celery_app.send_task(
-        name="enqueue_builder_task", args=[file_contents], retries=3, queue="ai"
+        name="enqueue_builder_task",
+        args=[file_contents, task_id, task_name, version_id],
+        retries=3,
+        queue="ai",
     )
 
     logger.info(f"Celery result: {result}")

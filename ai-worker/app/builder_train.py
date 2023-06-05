@@ -1,3 +1,4 @@
+import sys
 import multiprocessing
 import torch
 import pytorch_lightning as pl
@@ -8,7 +9,7 @@ import torchmetrics
 from clearml import Task
 
 Task.add_requirements("/clearml.requirements.txt")
-task: Task = Task.init(project_name="Builder Test", task_name="MNIST")
+task: Task = Task.init(project_name="MNIST", task_name="647cfaebe195bf460ca97c10")
 task.execute_remotely(queue_name="default", clone=False, exit_process=True)
 
 # Data Module for loading data and setting up data loaders
@@ -78,19 +79,13 @@ class ClassificationModel(torch.nn.Module):
     def __init__(self):
         super().__init__()
         self.model = torch.nn.Sequential(
-            torch.nn.Conv2d(in_channels=1, out_channels=16, kernel_size=(3, 3), stride=(1, 1)),
+            torch.nn.Conv2d(in_channels=1, out_channels=16, kernel_size=(5, 5), stride=(1, 1)),
             torch.nn.ReLU(),
-            torch.nn.Conv2d(in_channels=16, out_channels=32, kernel_size=(3, 3), stride=(1, 1)),
-            torch.nn.ReLU(),
-            torch.nn.Conv2d(in_channels=32, out_channels=64, kernel_size=(3, 3), stride=(1, 1)),
+            torch.nn.Conv2d(in_channels=16, out_channels=32, kernel_size=(5, 5), stride=(1, 1)),
             torch.nn.ReLU(),
             torch.nn.Flatten(),
-            torch.nn.Linear(in_features=30976, out_features=64),
-            torch.nn.ReLU(),
-            torch.nn.Linear(in_features=64, out_features=1024),
-            torch.nn.ReLU(),
-            torch.nn.Linear(in_features=1024, out_features=10),
-            torch.nn.LogSoftmax(dim=1)
+            torch.nn.Linear(in_features=12800, out_features=10),
+            torch.nn.Identity()
         )
     def forward(self, x):
         logits = self.model(x)
@@ -101,7 +96,7 @@ class LightningModel(pl.LightningModule):
     def __init__(self, model):
         super().__init__()
 
-        self.learning_rate = 0.01
+        self.learning_rate = 0.001
         # The inherited PyTorch module
         self.model = model
 
@@ -125,7 +120,8 @@ class LightningModel(pl.LightningModule):
         features, true_labels = batch
         logits = self(features)
         loss = torch.nn.functional.cross_entropy(logits, true_labels)
-        predicted_labels = torch.argmax(logits, dim=1)
+        # predicted_labels = torch.argmax(logits, dim=1)
+        predicted_labels = logits
         return loss, true_labels, predicted_labels
 
     def training_step(self, batch, batch_idx):
@@ -160,12 +156,12 @@ class LightningModel(pl.LightningModule):
 
 model = ClassificationModel()
 
-data_module = MNISTDataModule(data_dir="./", batch_size=64)
+data_module = MNISTDataModule(data_dir="./", batch_size=50)
 
 lightning_model = LightningModel(model)
 
 trainer = pl.Trainer(
-    max_epochs=100,
+    max_epochs=3,
     accelerator="auto",  # Uses GPUs or TPUs if available
     devices="auto",  # Uses all available GPUs/TPUs if applicable
     log_every_n_steps=100

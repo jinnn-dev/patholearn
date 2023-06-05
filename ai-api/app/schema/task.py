@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, List, Optional, TypeVar, Union
+from typing import Any, List, Literal, Optional, TypeVar, Union
 from app.schema.base_mongo_model import BaseMongoModel
 
 from bson import ObjectId
@@ -134,11 +134,16 @@ class Graph(BaseModel):
         }
 
 
+TaskVersionStatus = Literal["NONE", "FAILED", "CREATING", "CREATED"]
+
+
 class TaskVersion(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="id")
     graph: Graph = Field(...)
     clearml_id: Optional[str] = None
     creation_date: datetime = Field(...)
+    status: TaskVersionStatus = "NONE"
+    status_message: Optional[str] = None
 
     class Config:
         allow_population_by_field_name = True
