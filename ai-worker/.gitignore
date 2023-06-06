@@ -1,4 +1,5 @@
 clearml.conf
+./app/builder_train.py
 *.pyc
 *~
 *.swp
