@@ -22,7 +22,7 @@ const emit = defineEmits<{ (e: 'selected', value: EventName): void }>();
     <transition name="slide-fade">
       <div
         v-if="toolsOpen"
-        class="relative h-full w-52 bg-gray-700/80 backdrop-blur-lg ring-[1px] rounded-lg ring-gray-500/70 shadow-md shadow-gray-900 overflow-auto"
+        class="relative h-full w-52 bg-gray-800/80 backdrop-blur-lg ring-[1px] rounded-lg ring-gray-700 shadow-md shadow-gray-900 overflow-auto"
       >
         <div class="flex p-2 justify-between items-center gap-4">
           <div class="flex-shrink-0 text-lg">Toolbox</div>
@@ -30,7 +30,7 @@ const emit = defineEmits<{ (e: 'selected', value: EventName): void }>();
             <icon name="x" size="18"></icon>
           </div>
         </div>
-        <div class="flex flex-col mt-4 px-2">
+        <div class="flex flex-col my-4 px-2">
           <div v-for="[key, item] in Object.entries(eventSettings)">
             <div v-if="item.divider" class="w-full mt-4 mb-2">
               <div class="text-gray-200 font-bold text-sm">
