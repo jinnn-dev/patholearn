@@ -24,12 +24,12 @@ export class DatasetNode extends Node<
       // @ts-ignore
       node.controls[key] = control.duplicate();
     }
-    node.addOutput('dataset', new ClassicPreset.Output(node.socket, 'Dataset'));
+    node.addOutput('dataset', new ClassicPreset.Output(node.socket, 'Dataset', false));
     return node;
   }
 
   public addElements() {
     this.addControl('dataset', new DropdownControl(['MNIST', 'BHI'], 'Dataset', 'dataset', 'MNIST'));
-    this.addOutput('dataset', new ClassicPreset.Output(this.socket, 'Dataset'));
+    this.addOutput('dataset', new ClassicPreset.Output(this.socket, 'Dataset', false));
   }
 }
