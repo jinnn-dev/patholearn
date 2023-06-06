@@ -32,15 +32,15 @@ function getItems() {
 </script>
 <template>
   <div
-    class="bg-gray-800 p-2 w-92 rounded-lg shadow-md shadow-gray-900"
+    class="bg-gray-700 p-2 w-36 rounded-lg shadow-md shadow-gray-900"
     @mouseover="hide.cancel()"
     @mouseleave="hide.call()"
     data-testid="context-menu"
     v-if="items.length !== 0"
   >
-    <block v-if="searchBar">
+    <!-- <block v-if="searchBar">
       <search :text="filter" @change="filter = $event"></search>
-    </block>
+    </block> -->
     <item
       class="my-1"
       v-for="item of getItems()"
