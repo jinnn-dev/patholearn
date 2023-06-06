@@ -156,19 +156,12 @@ export function useEditor() {
       }
     });
 
-    // render.value.addPipe((context) => {
-    //   console.log(context);
-
-    //   return context;
-    // });
-
+    // @ts-ignore
     render.value.addPreset(presets);
     // @ts-ignore
     render.value.addPreset(setupContext({ delay: 3000 }));
-
+    // @ts-ignore
     render.value.addPreset(setupMousePlugin({ delay: 300 }));
-
-    // render.value.use(sync.value.render);
 
     connection.value.addPreset(ConnectionPresets.classic.setup());
     arrange.value.addPreset(arrangeSetup({ distance: 20 }));
@@ -180,6 +173,7 @@ export function useEditor() {
     area.value.use(render.value);
     area.value.use(arrange.value);
     area.value.use(contextMenu.value);
+    // @ts-ignore
     area.value.use(mousePlugin.value);
 
     area.value.use(sync.value.area);
@@ -287,24 +281,6 @@ export function useEditor() {
     await editor.value?.clear();
 
     for (const nodeData of graph.nodes) {
-      // if (nodeData._type === Conv2DNode.name) {
-      //   node = Conv2DNode.parse(nodeData as IConv2DNode);
-      // } else if (nodeData._type === DatasetNode.name) {
-      //   node = DatasetNode.parse(nodeData as IDatasetNode);
-      // } else if (nodeData._type === LinearNode.name) {
-      //   node = LinearNode.parse(nodeData as ILinearNode);
-      // } else if (nodeData._type === DropoutNode.name) {
-      //   node = DropoutNode.parse(nodeData as IDropoutNode);
-      // } else if (nodeData._type === FlattenNode.name) {
-      //   node = FlattenNode.parse(nodeData as IFlattenNode);
-      // } else if (nodeData._type === BatchNormNode.name) {
-      //   node = BatchNormNode.parse(nodeData as IBatchNormNode);
-      // } else if (nodeData._type === PoolingNode.name) {
-      //   node = PoolingNode.parse(nodeData as IPoolingNode);
-      // } else {
-      //   node = new Presets.classic.Node();
-      // }
-      // node.id = nodeData.id;
       const node = parseNode(nodeData);
       await editor.value?.addNode(node);
     }
@@ -326,7 +302,6 @@ export function useEditor() {
       await area.value?.translate(position.id, { x: position.x, y: position.y });
     }
 
-    // await arrangeLayout();
     await zoomAt();
 
     builderState.initialGraphLoaded = true;
