@@ -67,7 +67,10 @@ export class SyncPlugin {
       ) {
         if (context.type === 'nodecreated' && !this.externalAdd) {
           if (!this.externalAdd) {
-            pushNodeCreatedEvent(builderState.channel as PresenceChannel, context.data.serialize());
+            pushNodeCreatedEvent(builderState.channel as PresenceChannel, {
+              node: context.data.serialize(),
+              position: this.areaPlugin.nodeViews.get(context.data.id)?.position
+            });
             builderState.shouldSaveEditor = true;
           }
           this.externalAdd = false;
@@ -164,9 +167,11 @@ export class SyncPlugin {
     });
   }
 
-  cloneNode(nodeId: string) {
+  async cloneNode(nodeId: string) {
     const node = this.editor.getNode(nodeId);
-    this.editor.addNode(node.duplicate());
+    const duplictedNode = node.duplicate();
+    await this.editor.addNode(duplictedNode);
+    this.areaPlugin.translate(duplictedNode.id, this.areaPlugin.area.pointer);
   }
 
   async removeNode(nodeId: string) {
@@ -255,12 +260,18 @@ export class SyncPlugin {
       }
     });
 
-    builderState.channel.bind('client-node-created', async (data: INode) => {
-      console.log('NODE CREATED EVENT');
-      this.externalAdd = true;
-      const node = parseNode(data);
-      this.editor.addNode(node);
-    });
+    builderState.channel.bind(
+      'client-node-created',
+      async (data: { node: INode; position?: { x: number; y: number } }) => {
+        console.log('NODE CREATED EVENT');
+        this.externalAdd = true;
+        const node = parseNode(data.node);
+        await this.editor.addNode(node);
+        if (data.position) {
+          await this.areaPlugin.translate(node.id, data.position);
+        }
+      }
+    );
 
     builderState.channel.bind('client-node-removed', async (nodeId: string) => {
       console.log('NODE REMOVED EVENT');
