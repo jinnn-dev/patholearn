@@ -105,7 +105,10 @@ const outputs = computed(() => {
 
 <template>
   <div class="node" :class="nodeClasses" :style="nodeStyles" data-testid="node">
-    <div v-if="data?.selected && data?.id" class="absolute flex -top-12 rounded-lg left-0 overflow-hidden bg-gray-700">
+    <div
+      v-if="data?.selected && data?.id"
+      class="absolute flex -top-12 rounded-lg left-0 overflow-hidden bg-gray-700 shadow-md shadow-gray-900/50"
+    >
       <div class="hover:bg-gray-500 p-1" @click.stop="builderState.syncPlugin?.cloneNode(data.id)">
         <icon name="copy" size="28" stroke-width="0"></icon>
       </div>
@@ -159,7 +162,7 @@ const outputs = computed(() => {
 
     <span
       v-if="data?.lockStatus?.externalLock"
-      class="absolute rounded-b-lg top-full left-2 px-2"
+      class="absolute rounded-b-lg top-full left-2 px-2 shadow-lg shadow-gray-900/50"
       :style="`background-color: ${data.lockStatus?.lockedBy?.info.color}; color: ${getTextColor(
         data.lockStatus.lockedBy.info.color
       )}`"
@@ -179,6 +182,8 @@ const outputs = computed(() => {
   @apply pb-5;
   @apply select-none;
   @apply ring-gray-400;
+  @apply shadow-lg;
+  @apply shadow-gray-900/50;
 }
 .node.selected {
   @apply ring-gray-200;
