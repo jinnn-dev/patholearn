@@ -170,6 +170,12 @@ export class SyncPlugin {
   }
 
   async removeNode(nodeId: string) {
+    const connections = this.editor.getConnections().filter((c) => {
+      return c.source === nodeId || c.target === nodeId;
+    });
+    for (const connection of connections) {
+      await this.editor.removeConnection(connection.id);
+    }
     await this.editor.removeNode(nodeId);
     pushNodeRemovedEvent(builderState.channel as PresenceChannel, nodeId);
     builderState.shouldSaveEditor = true;
@@ -209,7 +215,6 @@ export class SyncPlugin {
     if (this.eventsRegistered || !builderState.channel) {
       return;
     }
-    const editor = this.root.parent as NodeEditor<Schemes>;
 
     builderState.memberRemovedCallbacks.push((leftMember: Member) => {
       if (!builderState.task?.lockStatus) {
@@ -218,7 +223,7 @@ export class SyncPlugin {
       for (const [key, value] of Object.entries(builderState.task.lockStatus)) {
         if (value === leftMember.id) {
           delete builderState.task.lockStatus[key];
-          const node = editor.getNode(key);
+          const node = this.editor.getNode(key);
           node.unlock();
           this.areaPlugin.update('node', key);
         }
@@ -250,17 +255,23 @@ export class SyncPlugin {
       }
     });
 
-    builderState.channel.bind('client-node-created', (data: INode) => {
+    builderState.channel.bind('client-node-created', async (data: INode) => {
       console.log('NODE CREATED EVENT');
       this.externalAdd = true;
       const node = parseNode(data);
-      editor.addNode(node);
+      this.editor.addNode(node);
     });
 
-    builderState.channel.bind('client-node-removed', (nodeId: string) => {
+    builderState.channel.bind('client-node-removed', async (nodeId: string) => {
       console.log('NODE REMOVED EVENT');
       this.externalRemove = true;
-      editor.removeNode(nodeId);
+      const connections = this.editor.getConnections().filter((c) => {
+        return c.source === nodeId || c.target === nodeId;
+      });
+      for (const connection of connections) {
+        await this.editor.removeConnection(connection.id);
+      }
+      await this.editor.removeNode(nodeId);
     });
 
     builderState.channel.bind('client-node-locked', (data: { nodeId: string; userId: string }) => {
@@ -302,14 +313,14 @@ export class SyncPlugin {
     builderState.channel.bind('client-connection-created', (connectionData: ConnProps) => {
       console.log('CONNECTION CREATED EVENT');
       this.externalConnectionCreated = true;
-      editor.addConnection(connectionData);
+      this.editor.addConnection(connectionData);
     });
 
     builderState.channel.bind('client-connection-removed', (connectionId: string) => {
       console.log('CONNECTION REMOVED EVENT');
 
       this.externalConnectionRemoved = true;
-      editor.removeConnection(connectionId);
+      this.editor.removeConnection(connectionId);
     });
 
     builderState.channel.bind('client-control-locked', (controlId: string) => {
