@@ -38,6 +38,7 @@ export class SyncPlugin {
   externalConnectionCreated = false;
   externalConnectionRemoved = false;
   externalPicked = false;
+  nodeChangedPosition = false;
 
   areaPlugin: AreaPlugin<Schemes, AreaExtra>;
   editor: NodeEditor<Schemes>;
@@ -110,13 +111,19 @@ export class SyncPlugin {
           }
           const node = this.editor.getNode(context.data.id);
           if (!node.lockStatus?.externalLock) {
+            if (
+              context.data.position.x !== context.data.previous.x ||
+              context.data.position.y !== context.data.previous.y
+            ) {
+              this.nodeChangedPosition = true;
+            }
             return context;
           }
           return;
         }
 
         if (context.type === 'nodetranslated') {
-          if (!builderState.omitEvents && !this.externalDrag) {
+          if (!builderState.omitEvents && !this.externalDrag && this.nodeChangedPosition) {
             pushNodeTranslatedEvent(builderState.channel as PresenceChannel, {
               userId: builderState.me!.id,
               nodeId: context.data.id,
@@ -128,12 +135,13 @@ export class SyncPlugin {
           return context;
         }
 
-        // if (context.type === 'nodedragged') {
-        //   console.log(context.data);
-
-        //   builderState.shouldSaveEditor = true;
-        //   return context;
-        // }
+        if (context.type === 'nodedragged') {
+          if (this.nodeChangedPosition) {
+            builderState.shouldSaveEditor = true;
+            this.nodeChangedPosition = false;
+          }
+          return context;
+        }
 
         // if (context.type === 'pointerdown' || context.type === 'pointerup') {
         //   console.log(context);
