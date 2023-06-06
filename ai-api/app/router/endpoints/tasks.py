@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List
-from app.core.parse_to_pytorch import parse_to_pytorch
+from app.train.train_model import start_builder_training
 from bson import ObjectId
 from fastapi import APIRouter, Body, Depends
 from pydantic import parse_obj_as
@@ -20,6 +20,7 @@ from app.schema.task import (
     UpdateTaskVersion,
 )
 from app.core.parse_graph import parse_graph
+from app.core.parse_to_pytorch import parse_to_pytorch_graph
 from app.utils.logger import logger
 
 router = APIRouter()
@@ -194,18 +195,34 @@ async def unlock_elements(
 async def parse_builder_state(
     task_id: str, version_id: str, s: SessionContainer = Depends(verify_session())
 ):
-    task = await task_collection.find_one(
+    db_task = await task_collection.find_one(
         {
             "_id": ObjectId(task_id),
             "versions": {"$elemMatch": {"id": ObjectId(version_id)}},
         },
     )
-    if task is None:
-        return
-    task_version = parse_obj_as(Graph, task["versions"][0]["graph"])
+    if db_task is None:
+        return None
+    task = parse_obj_as(Task, db_task)
 
-    parsed_graph = parse_graph(task_version)
-    parse_to_pytorch(parsed_graph)
+    task_graph = parse_obj_as(Graph, task.versions[0].graph)
+
+    parsed_graph, dataset_node, output_node = parse_graph(task_graph)
+    pytorch_text = parse_to_pytorch_graph(
+        parsed_graph, dataset_node, output_node, task, task.versions[0]
+    )
+    await task_collection.update_one(
+        {
+            "_id": ObjectId(task_id),
+            "versions": {"$elemMatch": {"id": ObjectId(version_id)}},
+        },
+        {"$set": {"versions.$[version].status": "CREATING"}},
+        array_filters=[{"version.id": ObjectId(version_id)}],
+    )
+
+    start_builder_training(pytorch_text, task_id, task.name, version_id)
+
+    return pytorch_text
 
 
 @router.post("/builder", response_model=BuilderTask, status_code=201)

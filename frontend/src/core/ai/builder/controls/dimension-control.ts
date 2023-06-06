@@ -25,7 +25,7 @@ export class DimensionControl extends Control<IDimensionControl> {
     public yOptions: DimensionOption,
     public value?: { x?: number; y?: number }
   ) {
-    super();
+    super("DimensionControl");
   }
 
   public setValue(xValue?: number, yValue?: number) {
@@ -50,7 +50,7 @@ export class DimensionControl extends Control<IDimensionControl> {
 
   public serialize(key: string): IDimensionControl {
     return {
-      type: DimensionControl.name,
+      type: this.type,
       key: key,
       id: this.id,
       label: this.label,

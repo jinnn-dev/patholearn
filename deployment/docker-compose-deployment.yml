@@ -1,0 +1,212 @@
+version: '3.3'
+services:
+  frontend:
+    image: hafen.noxz.dev/patholearn-ai/frontend:${FRONTEND_VERSION}
+    restart: unless-stopped
+    networks:
+      - patholearn-ai-network
+    ports:
+      - "81:80"
+  
+  learn_api:
+    image: hafen.noxz.dev/patholearn-ai/learn-api:${LEARN_API_VERSION}
+    restart: unless-stopped
+    networks:
+      - auth_auth-deployment-network
+      - patholearn-ai-network
+    environment:
+      - DATABASE_URL=${DATABASE_DRIVER}://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_IP}/${DATABASE_DB}?${DATABASE_QUERY_PARAMETERS}
+      - RABBIT_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
+      - SLIDE_URL=${SLIDE_INTERNAL_API_URL}
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_URL=${MINIO_URL}
+      - MINIO_SECURE=${MINIO_SECURE}
+      - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
+      - MYSQL_HOST=${DATABASE_IP}
+      - MYSQL_DATABASE=${DATABASE_DB}
+      - MYSQL_USER=${DATABASE_USER}
+      - MYSQL_PASSWORD=${DATABASE_PASSWORD}
+      - SENTRY_DSN=${SENTRY_LEARN_DSN}
+      - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT}
+      - LEARN_API_ADMIN_EMAIL=${LEARN_API_ADMIN_EMAIL}
+      - LEARN_API_ADMIN_PASSWORD=${LEARN_API_ADMIN_PASSWORD}
+      - LEARN_API_ADMIN_FIRSTNAME=${LEARN_API_ADMIN_FIRSTNAME}
+      - LEARN_API_ADMIN_LASTNAME=${LEARN_API_ADMIN_LASTNAME}
+      - API_DOMAIN=${API_DOMAIN}
+      - WEBSITE_DOMAIN=${WEBSITE_DOMAIN}
+      - SUPERTOKENS_DOMAIN=${SUPERTOKENS_DOMAIN}
+      - COOKIE_DOMAIN=${COOKIE_DOMAIN}
+    ports:
+      - '8011:8000'
+    depends_on:
+      learn_db:
+        condition: service_healthy
+
+  learn_db:
+    image: mysql:latest
+    networks:
+      - patholearn-ai-network
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=${DATABASE_DB}
+      - MYSQL_USER=${DATABASE_USER}
+      - MYSQL_PASSWORD=${DATABASE_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
+    ports:
+      - '3316:${DATABASE_PORT}'
+    volumes:
+      - learn-db:/var/lib/mysql
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      timeout: 20s
+      retries: 10
+
+
+  ai_api:
+    image: hafen.noxz.dev/patholearn-ai/ai-api:${AI_API_VERSION}
+    restart: unless-stopped
+    networks:
+      - patholearn-ai-network
+      - ws_ws-deployment-network
+      - auth_auth-deployment-network
+    environment:
+      - SENTRY_DSN=${SENTRY_AI_DSN}
+      - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT}
+      - CLEARML_API=${CLEARML_API}
+      - CLEARML_API_ACCESS_KEY=${CLEARML_API_ACCESS_KEY}
+      - CLEARML_API_SECRET_KEY=${CLEARML_API_SECRET_KEY}
+      - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
+      - WEBSOCKET_APP_ID=${WEBSOCKET_APP_ID}
+      - WEBSOCKET_APP_KEY=${WEBSOCKET_APP_KEY}
+      - WEBSOCKET_APP_SECRET=${WEBSOCKET_APP_SECRET}
+      - WEBSOCKET_HOST=${WEBSOCKET_HOST}
+      - WEBSOCKET_PORT=${WEBSOCKET_PORT}
+      - WEBSOCKET_SSL=${WEBSOCKET_SSL}
+      - DATABASE_URL=${MONGO_AI_DRIVER}://${MONGO_AI_USER}:${MONGO_AI_PASSWORD}@${MONGO_AI_IP}:${MONGO_AI_PORT} 
+      - API_DOMAIN=${API_DOMAIN}
+      - WEBSITE_DOMAIN=${WEBSITE_DOMAIN}
+      - SUPERTOKENS_DOMAIN=${SUPERTOKENS_DOMAIN}
+      - COOKIE_DOMAIN=${COOKIE_DOMAIN}
+      - ANTI_CSRF=${ANTI_CSRF}
+    ports:
+      - '48888:8000'
+
+  # ai_worker:
+  #   build:
+  #     context: ./ai-worker/.
+  #     dockerfile: dockerfile
+  #   restart: unless-stopped
+  #   networks:
+  #     - auth_auth-network
+  #     - patholearn-network
+  #   volumes:
+  #     - ./ai-worker/app:/app
+  #   command: celery --app worker.celery_app worker --loglevel=info --without-gossip --without-mingle --without-heartbeat -Ofair -Q ai
+  #   environment:
+  #     - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
+
+  ai_db:
+    image: mongo:latest
+    restart: unless-stopped
+    networks:
+      - patholearn-ai-network
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_AI_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_AI_INITDB_ROOT_PASSWORD}
+    ports:
+      - '47018:${MONGO_AI_PORT}'
+    volumes:
+      - ai-db-data:/mongodb
+
+
+  slide_api:
+    image: hafen.noxz.dev/patholearn-ai/slide-api:${SLIDE_API_VERSION}
+    restart: unless-stopped
+    networks:
+      - patholearn-ai-network
+    volumes:
+      - slide-data:/data
+    ports:
+      - '48001:8000'
+    command: uvicorn app.app:app --host 0.0.0.0 --port 8000 --no-server-header
+    environment:
+      - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
+      - DATABASE_URL=${MONGO_DRIVER}://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:${MONGO_PORT}
+      - MONGO_DB=${MONGO_DB}
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_URL=${MINIO_URL}
+      - SENTRY_DSN=${SENTRY_SLIDE_DSN}
+      - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT}
+    depends_on:
+      - slide_db
+
+  slide_worker:
+    image: hafen.noxz.dev/patholearn-ai/slide-api:${SLIDE_API_VERSION}
+    restart: unless-stopped
+    networks:
+      - patholearn-ai-network
+    depends_on:
+      - slide_api
+    command: celery --app worker.celery_app worker --loglevel=info
+    volumes:
+      - slide-data:/data
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_URL=${MINIO_URL}
+      - MONGO_DB=${MONGO_DB}
+      - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
+      - DATABASE_URL=${MONGO_DRIVER}://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:${MONGO_PORT}
+
+  slide_db:
+    image: mongo:latest
+    restart: unless-stopped
+    networks:
+      - patholearn-ai-network
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - slide-data:/data
+    ports:
+      - '47017:${MONGO_PORT}'
+
+
+#   minio:
+#     image: minio/minio
+#     restart: unless-stopped
+#     networks:
+#       - patholearn-network
+#     ports:
+#       - '9000:9000'
+#       - '9001:9001'
+#     volumes:
+#       - ./minio_data:/data
+#     environment:
+#       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+#       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+#     command: server --console-address ":9001" /data
+
+  rabbit:
+    image: rabbitmq:latest
+    restart: unless-stopped
+    networks:
+      - patholearn-ai-network
+    ports:
+      - '45672:5672'
+
+networks:
+  auth_auth-deployment-network:
+    external: true
+  ws_ws-deployment-network:
+    external: true
+  patholearn-ai-network:
+    external: false
+
+volumes:
+  learn-db:
+  slide-db-data:
+  slide-data:
+  ai-db-data:

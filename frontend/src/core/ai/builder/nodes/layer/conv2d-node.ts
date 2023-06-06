@@ -22,7 +22,7 @@ export class Conv2DNode extends Node<
   height = 280;
 
   constructor(socket: ClassicPreset.Socket) {
-    super('Conv2D', socket);
+    super('Conv2D', socket, "Conv2DNode");
   }
 
   public duplicate(): Conv2DNode {

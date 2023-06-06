@@ -18,7 +18,7 @@ export class NumberControl extends Control<INumberControl> {
     public placeholder: string,
     public initialValue?: number
   ) {
-    super();
+    super("NumberControl");
     this.value = initialValue;
   }
 
@@ -38,7 +38,7 @@ export class NumberControl extends Control<INumberControl> {
 
   public serialize(key: string): INumberControl {
     return {
-      type: NumberControl.name,
+      type: this.type,
       key: key,
       id: this.id,
       value: this.value,

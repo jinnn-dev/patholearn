@@ -12,11 +12,12 @@ from supertokens_python import (
 import os
 
 # this is the location of the SuperTokens core.
-supertokens_config = SupertokensConfig(connection_uri="http://supertokens:3567")
-
+supertokens_config = SupertokensConfig(
+    connection_uri=os.environ.get("SUPERTOKENS_DOMAIN", "http://supertokens:3567")
+)
 app_info = InputAppInfo(
     app_name="Patholearn Authentication",
-    api_domain=os.environ.get("API_DOMAIN", "http://localhost:3001"),
+    api_domain=os.environ.get("API_DOMAIN", "http://api:3001"),
     website_domain=os.environ.get("WEBSITE_DOMAIN", "http://localhost:5174"),
 )
 
@@ -26,7 +27,11 @@ framework = "fastapi"
 # use from SuperTokens. See the full list here: https://supertokens.com/docs/guides
 recipe_list = [
     emailpassword.init(sign_up_feature=emailpassword.InputSignUpFeature()),
-    session.init(),
+    session.init(
+        cookie_domain=os.environ.get("COOKIE_DOMAIN", ".localhost"),
+        cookie_secure=True,
+        cookie_same_site="lax",
+    ),
     dashboard.init(),
     usermetadata.init(),
     userroles.init(),

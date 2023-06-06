@@ -15,7 +15,7 @@ export class BatchNormNode extends Node<
   height = 120;
 
   constructor(socket: ClassicPreset.Socket) {
-    super('Batch Normalization', socket);
+    super('Batch Normalization', socket, "BatchNormNode");
   }
 
   public duplicate(): BatchNormNode {

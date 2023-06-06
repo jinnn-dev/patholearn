@@ -36,7 +36,9 @@ app.add_middleware(get_middleware())
 @app.get("/ping")
 async def ping():
     with httpx.Client() as client:
-        response = client.get("http://supertokens:3567")
+        response = client.get(
+            os.environ.get("SUPERTOKENS_DOMAIN", "http://supertokens:3567")
+        )
     return "Ok" if response.status_code == 200 else "Error"
 
 

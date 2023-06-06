@@ -25,6 +25,7 @@ origins = [
     "http://localhost:8001",
     "http://patholearn.de",
     "https://dev.patholearn.de",
+    "https://janeee.de",
 ]
 
 init(
@@ -50,7 +51,7 @@ app.add_middleware(
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"] + get_all_cors_headers(),
+    allow_headers=["Content-Type"] + get_all_cors_headers(),
 )
 
 

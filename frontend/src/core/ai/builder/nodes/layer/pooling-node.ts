@@ -20,7 +20,7 @@ export class PoolingNode extends Node<
   height = 235;
 
   constructor(socket: ClassicPreset.Socket) {
-    super('Pooling', socket);
+    super('Pooling', socket, "PoolingNode");
   }
 
   public duplicate(): PoolingNode {

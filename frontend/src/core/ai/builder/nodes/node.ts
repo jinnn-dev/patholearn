@@ -17,10 +17,10 @@ export abstract class Node<
   protected socket;
 
   public type: NodeType;
-  constructor(label: string, socket: ClassicPreset.Socket, public lockStatus?: LockStatus) {
+  constructor(label: string, socket: ClassicPreset.Socket, type: NodeType, public lockStatus?: LockStatus) {
     super(label);
     this.socket = socket;
-    this.type = this.constructor.name as NodeType;
+    this.type = type
   }
 
   public parse<S>(data: S extends INode ? any : any) {
@@ -71,7 +71,7 @@ export abstract class Node<
   public serializeObject(inputs: IPort[], outputs: IPort[], controls: any): T {
     return {
       id: this.id,
-      type: this.constructor.name,
+      type: this.type,
       label: this.label,
       inputs: inputs,
       outputs: outputs,

@@ -16,7 +16,10 @@ from supertokens_python import (
     SupertokensConfig,
     InputAppInfo,
 )
-from supertokens_python.recipe import session, usermetadata
+from supertokens_python.recipe import (
+    session,
+    usermetadata,
+)
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
 from supertokens_python.recipe.usermetadata.asyncio import get_user_metadata
@@ -26,15 +29,24 @@ from app.ws.client import ws_client
 from app.database.database import client, test_collection
 
 init(
-    supertokens_config=SupertokensConfig(connection_uri="http://supertokens:3567"),
+    supertokens_config=SupertokensConfig(
+        connection_uri=os.environ.get("SUPERTOKENS_DOMAIN", "http://supertokens:3567")
+    ),
     app_info=InputAppInfo(
         app_name="AI Authentication",
-        api_domain="http://api:3001",
-        website_domain="http://localhost:5174",
+        api_domain=os.environ.get("API_DOMAIN", "http://api:3001"),
+        website_domain=os.environ.get("WEBSITE_DOMAIN", "http://localhost:5174"),
     ),
     framework="fastapi",
     mode="asgi",
-    recipe_list=[session.init(anti_csrf="NONE"), usermetadata.init()],
+    recipe_list=[
+        session.init(
+            cookie_domain=os.environ.get("COOKIE_DOMAIN", ".localhost"),
+            cookie_secure=True,
+            anti_csrf=os.environ.get("ANTI_CSRF", "VIA_TOKEN"),
+        ),
+        usermetadata.init(),
+    ],
 )
 
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
@@ -60,7 +72,6 @@ app.add_middleware(
 )
 
 sio = SocketManager(app=app, cors_allowed_origins=[], logger=True)
-
 
 
 @app.get("/")
@@ -89,7 +100,6 @@ async def ping():
 @app.get("/ping/clearml")
 async def ping_clearml():
     return clearml_wrapper.ping()
-
 
 
 @app.post("/auth")
@@ -121,6 +131,7 @@ async def ws_login(body: dict, s: SessionContainer = Depends(verify_session())):
             },
         )
     return auth
+
 
 @app.get("/sessioninfo")
 async def secure_api(
@@ -202,4 +213,3 @@ async def get_task_log(task_id: str, _: SessionContainer = Depends(verify_sessio
 @app.get("/")
 def root():
     return {"Hello": "World"}
-

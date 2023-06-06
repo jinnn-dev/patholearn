@@ -16,3 +16,4 @@ stats.html
 .env
 .VsCodeCounter/
 .env.*
+*.production

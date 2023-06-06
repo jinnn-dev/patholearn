@@ -1,0 +1,68 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:latest
+    container_name: auth_deployment_db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DB}
+    ports:
+      - 4307:3306
+    networks:
+      - auth-deployment-network
+    restart: unless-stopped
+    volumes:
+      - auth-deployment-db:/var/lib/mysql
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      timeout: 20s
+      retries: 10
+
+  supertokens:
+    image: registry.supertokens.io/supertokens/supertokens-mysql:4.6
+    container_name: auth-deployment-supertokens
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - 4567:3567
+    environment:
+      MYSQL_CONNECTION_URI: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DB}
+    networks:
+      - auth-deployment-network
+    restart: unless-stopped
+    healthcheck:
+      test: >
+        bash -c 'exec 3<>/dev/tcp/127.0.0.1/3567 && echo -e "GET /hello HTTP/1.1\r\nhost: 127.0.0.1:3567\r\nConnection: close\r\n\r\n" >&3 && cat <&3 | grep "Hello"'
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    image: hafen.noxz.dev/patholearn-ai/auth:${AUTH_API_VERSION:-latest}
+    container_name: auth_deployment_api
+    restart: unless-stopped
+    depends_on:
+      supertokens:
+        condition: service_healthy
+    networks:
+      - auth-deployment-network
+    environment:
+      SENTRY_DSN: ${SENTRY_DSN}
+      SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT}
+      DASHBOARD_EMAIL: ${DASHBOARD_EMAIL}
+      DASHBOARD_PASSWORD: ${DASHBOARD_PASSWORD}
+      API_DOMAIN: ${API_DOMAIN}
+      WEBSITE_DOMAIN: ${WEBSITE_DOMAIN}
+    ports:
+      - '4001:8000'
+
+volumes:
+  auth-deployment-db:
+
+networks:
+  auth-deployment-network:
+    driver: bridge

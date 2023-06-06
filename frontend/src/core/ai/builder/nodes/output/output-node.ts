@@ -21,7 +21,7 @@ export class OutputNode extends Node<
   height = 350;
 
   constructor(socket: ClassicPreset.Socket) {
-    super('Output', socket);
+    super('Output', socket,  "OutputNode");
   }
 
   public duplicate(): OutputNode {
