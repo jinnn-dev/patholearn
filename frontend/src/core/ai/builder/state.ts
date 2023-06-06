@@ -24,6 +24,7 @@ interface BuilderState {
   areaZoom: number;
   controlToNode: Map<string, NodeProps>;
   selectedVersion?: TaskVersion;
+  omitEvents: boolean;
 }
 
 export const initialState: BuilderState = {
@@ -37,7 +38,8 @@ export const initialState: BuilderState = {
   versionId: '',
   memberAddedCallbacks: [],
   memberRemovedCallbacks: [],
-  controlToNode: new Map()
+  controlToNode: new Map(),
+  omitEvents: false
 };
 
 export const builderState = reactive<BuilderState>(initialState);
@@ -53,6 +55,7 @@ export function resetBuilderState() {
   builderState.memberAddedCallbacks = [];
   builderState.memberRemovedCallbacks = [];
   builderState.controlToNode = new Map();
+  builderState.omitEvents = false;
 }
 
 export function resetNodeEditorState() {
@@ -61,6 +64,7 @@ export function resetNodeEditorState() {
   builderState.shouldSaveEditor = false;
   builderState.areaZoom = 1;
   builderState.controlToNode = new Map();
+  builderState.omitEvents = false;
 }
 
 export function getLockedBy(elementId: string): Member | undefined {

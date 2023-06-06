@@ -22,6 +22,7 @@ import { createNodeInstance, parseNode } from '../factories/node-factory';
 import { Produces } from 'rete-vue-render-plugin';
 import { Member } from '../../../../composables/ws/usePresenceChannel';
 import { animateBetweenTwoPoints, calculatePointsBetween } from '../../../../utils/animate';
+import { addNodeAtPosition, cloneNodeAndAdd, omitReteEvents, removeNodeAndConnections } from '../editor-utils';
 
 export class SyncPlugin {
   root = new Scope<never, [Root<Schemes>]>('sync');
@@ -65,24 +66,13 @@ export class SyncPlugin {
           context.type === 'connectioncreated' ||
           context.type === 'connectionremoved')
       ) {
-        if (context.type === 'nodecreated' && !this.externalAdd) {
-          if (!this.externalAdd) {
-            pushNodeCreatedEvent(builderState.channel as PresenceChannel, {
-              node: context.data.serialize(),
-              position: this.areaPlugin.nodeViews.get(context.data.id)?.position
-            });
-            builderState.shouldSaveEditor = true;
-          }
-          this.externalAdd = false;
-        }
-
-        if (context.type === 'noderemoved') {
-          if (!this.externalRemove) {
-            pushNodeRemovedEvent(builderState.channel as PresenceChannel, context.data.id);
-            builderState.shouldSaveEditor = true;
-          }
-          this.externalRemove = false;
-        }
+        // if (context.type === 'noderemoved') {
+        //   if (!this.externalRemove) {
+        //     pushNodeRemovedEvent(builderState.channel as PresenceChannel, context.data.id);
+        //     builderState.shouldSaveEditor = true;
+        //   }
+        //   this.externalRemove = false;
+        // }
 
         if (context.type === 'connectioncreated') {
           if (!this.externalConnectionCreated) {
@@ -126,7 +116,7 @@ export class SyncPlugin {
         }
 
         if (context.type === 'nodetranslated') {
-          if (builderState.channel && !this.externalDrag && !this.externalAdd) {
+          if (!builderState.omitEvents && !this.externalDrag) {
             pushNodeTranslatedEvent(builderState.channel as PresenceChannel, {
               userId: builderState.me!.id,
               nodeId: context.data.id,
@@ -167,21 +157,29 @@ export class SyncPlugin {
     });
   }
 
+  async createNode(node: NodeProps, position: { x: number; y: number } = { x: 0, y: 0 }) {
+    await this.editor.addNode(node);
+    await this.areaPlugin.translate(node.id, position);
+    const createdNode = this.editor.getNode(node.id);
+    pushNodeCreatedEvent(builderState.channel as PresenceChannel, {
+      node: createdNode.serialize(),
+      position
+    });
+    builderState.shouldSaveEditor = true;
+  }
+
   async cloneNode(nodeId: string) {
-    const node = this.editor.getNode(nodeId);
-    const duplictedNode = node.duplicate();
-    await this.editor.addNode(duplictedNode);
-    this.areaPlugin.translate(duplictedNode.id, this.areaPlugin.area.pointer);
+    const { clonedNode, position } = await omitReteEvents(cloneNodeAndAdd, this.editor, this.areaPlugin, nodeId);
+
+    pushNodeCreatedEvent(builderState.channel as PresenceChannel, {
+      node: clonedNode.serialize(),
+      position: position
+    });
+    builderState.shouldSaveEditor = true;
   }
 
   async removeNode(nodeId: string) {
-    const connections = this.editor.getConnections().filter((c) => {
-      return c.source === nodeId || c.target === nodeId;
-    });
-    for (const connection of connections) {
-      await this.editor.removeConnection(connection.id);
-    }
-    await this.editor.removeNode(nodeId);
+    await removeNodeAndConnections(this.editor, nodeId);
     pushNodeRemovedEvent(builderState.channel as PresenceChannel, nodeId);
     builderState.shouldSaveEditor = true;
   }
@@ -240,6 +238,7 @@ export class SyncPlugin {
 
       const area = this.area.parent as AreaPlugin<Schemes, AreaExtra>;
       const node = area.nodeViews.get(data.nodeId);
+
       if (node) {
         this.externalDrag = true;
         // node.translate(data.position.x, data.position.y);
@@ -254,7 +253,7 @@ export class SyncPlugin {
         // await animateBetweenTwoPoints(node.position, { x: data.position.x, y: data.position.y }, 0.05, translate);
         node.translate(data.position.x, data.position.y);
         // const points = calculatePointsBetween(node.position, data.position, 100);
-        // for (const point of points) {
+        // for (const point of pointss) {
         //   node.translate(point.x, point.y);
         // }
       }
@@ -262,27 +261,15 @@ export class SyncPlugin {
 
     builderState.channel.bind(
       'client-node-created',
-      async (data: { node: INode; position?: { x: number; y: number } }) => {
+      async (data: { node: INode; position: { x: number; y: number } }) => {
         console.log('NODE CREATED EVENT');
-        this.externalAdd = true;
-        const node = parseNode(data.node);
-        await this.editor.addNode(node);
-        if (data.position) {
-          await this.areaPlugin.translate(node.id, data.position);
-        }
+        await omitReteEvents(addNodeAtPosition, this.editor, this.areaPlugin, parseNode(data.node), data.position);
       }
     );
 
     builderState.channel.bind('client-node-removed', async (nodeId: string) => {
       console.log('NODE REMOVED EVENT');
-      this.externalRemove = true;
-      const connections = this.editor.getConnections().filter((c) => {
-        return c.source === nodeId || c.target === nodeId;
-      });
-      for (const connection of connections) {
-        await this.editor.removeConnection(connection.id);
-      }
-      await this.editor.removeNode(nodeId);
+      await removeNodeAndConnections(this.editor, nodeId);
     });
 
     builderState.channel.bind('client-node-locked', (data: { nodeId: string; userId: string }) => {
@@ -348,8 +335,6 @@ export class SyncPlugin {
     });
 
     builderState.channel.bind('client-control-unlocked', (controlId: string) => {
-      console.log('CONTROL UNLOCKED EVENT');
-
       const node = builderState.controlToNode.get(controlId);
       const control = node?.getControl(controlId);
       if (node && node.lockStatus && control && control.lockStatus) {

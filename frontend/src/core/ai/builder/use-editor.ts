@@ -20,7 +20,7 @@ import { addCustomBackground } from './plugins/custom-background';
 import { NodeType } from './nodes/types';
 import { DimensionControl } from './controls/dimension-control';
 import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } from 'rete-context-menu-plugin';
-import { setupContext } from './plugins/context-menu';
+import { setupContext, setupContextItems } from './plugins/context-menu';
 import { LinearNode } from './nodes/layer/linear-node';
 import { arrangeSetup } from './plugins/arrange-nodes';
 import { DropoutNode } from './nodes/transform/dropout-node';
@@ -83,7 +83,7 @@ export function useEditor() {
     builderState.syncPlugin = sync.value;
 
     contextMenu.value = new ContextMenuPlugin<Schemes>({
-      items: ContextMenuPresets.classic.setup([
+      items: setupContextItems([
         ['Input', [['Dataset', () => createNodeInstance('DatasetNode', socket.value!) as NodeProps]]],
         [
           'Layer',
@@ -185,10 +185,10 @@ export function useEditor() {
     area.value.use(sync.value.area);
 
     // sync.value.area.use(render.value);
-
     // @ts-ignore
-
     connection.value.use(sync.value.connection);
+
+    area.value.area.content.holder.style.height = '100%';
 
     AreaExtensions.simpleNodesOrder(area.value);
 
@@ -218,7 +218,20 @@ export function useEditor() {
       return;
     }
 
-    await editor.value.addNode(layer as NodeProps);
+    const container = area.value?.area.content.holder;
+    let position = { x: 0, y: 0 };
+    if (container && area.value) {
+      const [hw, hh] = [container.clientWidth / 2, container.clientHeight / 2];
+      console.log(hw, hh);
+
+      const transform = area.value.area.transform;
+      const center = [(hw - transform.x) / transform.k, (hh - transform.y) / transform.k];
+      console.log(center);
+      position.x = center[0];
+      position.y = center[1];
+    }
+    // await editor.value.addNode(layer as NodeProps);
+    await sync.value?.createNode(layer as NodeProps, position);
   };
 
   const zoomAt = async () => {

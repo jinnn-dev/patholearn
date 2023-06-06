@@ -36,6 +36,7 @@ function getItems() {
     @mouseover="hide.cancel()"
     @mouseleave="hide.call()"
     data-testid="context-menu"
+    v-if="items.length !== 0"
   >
     <block v-if="searchBar">
       <search :text="filter" @change="filter = $event"></search>
