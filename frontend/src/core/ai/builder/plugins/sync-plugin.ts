@@ -183,6 +183,7 @@ export class SyncPlugin {
       node: clonedNode.serialize(),
       position: position
     });
+
     builderState.shouldSaveEditor = true;
   }
 
