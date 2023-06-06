@@ -45,17 +45,13 @@ export const initialState: BuilderState = {
 export const builderState = reactive<BuilderState>(initialState);
 
 export function resetBuilderState() {
-  builderState.builderLoaded = false;
-  builderState.initialGraphLoaded = false;
-  builderState.shouldSaveEditor = false;
   builderState.members = [];
   builderState.isConnected = false;
-  builderState.areaZoom = 1;
   builderState.versionId = '';
   builderState.memberAddedCallbacks = [];
   builderState.memberRemovedCallbacks = [];
-  builderState.controlToNode = new Map();
-  builderState.omitEvents = false;
+
+  resetNodeEditorState();
 }
 
 export function resetNodeEditorState() {
