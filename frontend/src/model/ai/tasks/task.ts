@@ -7,11 +7,15 @@ export interface Graph {
   positions: INodePositions[];
 }
 
+type TaskVersionStatus = 'NONE' | 'CREATING' | 'CREATED' | 'FAILED';
+
 export interface TaskVersion {
   id: string;
   graph: Graph;
   clearml_id?: string;
   creation_date: string;
+  status?: TaskVersionStatus;
+  status_message: string;
 }
 
 export interface Task {

@@ -43,8 +43,14 @@ export function nodeTranslatedEvent(channel: PresenceChannel, data: NodeTranslat
   channel.trigger('client-node-dragged', data);
 }
 
-export function pushNodeCreatedEvent(channel: PresenceChannel, node: INode) {
-  channel.trigger('client-node-created', node);
+export function pushNodeCreatedEvent(
+  channel: PresenceChannel,
+  data: {
+    node: INode;
+    position?: { x: number; y: number };
+  }
+) {
+  channel.trigger('client-node-created', data);
 }
 
 export function pushNodeRemovedEvent(channel: PresenceChannel, nodeId: string) {

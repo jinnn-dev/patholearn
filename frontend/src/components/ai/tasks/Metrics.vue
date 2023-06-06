@@ -6,7 +6,14 @@ import Diagram from '../../general/Diagram.vue';
 import NoContent from '../../general/NoContent.vue';
 const route = useRoute();
 
-const { result: metrics, loading } = useService(AiService.getTaskMetrics, true, route.params.id as string);
+const props = defineProps({
+  clearMlTaskId: {
+    type: String,
+    required: true
+  }
+});
+
+const { result: metrics, loading } = useService(AiService.getTaskMetrics, true, props.clearMlTaskId);
 
 const processData = (series: any) => {
   const keys = Object.keys(series);

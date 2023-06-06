@@ -108,12 +108,16 @@ export function selectableNodes<T>(
     if (!node.selected) {
       return;
     }
+    const editorNode = editor?.getNode(node.id);
+    if (!editorNode) {
+      return;
+    }
+
     pushNodeUnlockedEvent(builderState.channel as PresenceChannel, node.id);
     unlockElement(builderState.task!.id, node.id, builderState.me!.id);
     node.lockStatus = undefined;
     node.selected = false;
     area.update('node', node.id);
-    builderState.shouldSaveEditor = true;
   }
 
   // eslint-disable-next-line max-statements, complexity

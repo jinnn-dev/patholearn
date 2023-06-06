@@ -22,6 +22,7 @@ import { createNodeInstance, parseNode } from '../factories/node-factory';
 import { Produces } from 'rete-vue-render-plugin';
 import { Member } from '../../../../composables/ws/usePresenceChannel';
 import { animateBetweenTwoPoints, calculatePointsBetween } from '../../../../utils/animate';
+import { addNodeAtPosition, cloneNodeAndAdd, omitReteEvents, removeNodeAndConnections } from '../editor-utils';
 
 export class SyncPlugin {
   root = new Scope<never, [Root<Schemes>]>('sync');
@@ -37,6 +38,7 @@ export class SyncPlugin {
   externalConnectionCreated = false;
   externalConnectionRemoved = false;
   externalPicked = false;
+  nodeChangedPosition = false;
 
   areaPlugin: AreaPlugin<Schemes, AreaExtra>;
   editor: NodeEditor<Schemes>;
@@ -65,21 +67,13 @@ export class SyncPlugin {
           context.type === 'connectioncreated' ||
           context.type === 'connectionremoved')
       ) {
-        if (context.type === 'nodecreated' && !this.externalAdd) {
-          if (!this.externalAdd) {
-            pushNodeCreatedEvent(builderState.channel as PresenceChannel, context.data.serialize());
-            builderState.shouldSaveEditor = true;
-          }
-          this.externalAdd = false;
-        }
-
-        if (context.type === 'noderemoved') {
-          if (!this.externalRemove) {
-            pushNodeRemovedEvent(builderState.channel as PresenceChannel, context.data.id);
-            builderState.shouldSaveEditor = true;
-          }
-          this.externalRemove = false;
-        }
+        // if (context.type === 'noderemoved') {
+        //   if (!this.externalRemove) {
+        //     pushNodeRemovedEvent(builderState.channel as PresenceChannel, context.data.id);
+        //     builderState.shouldSaveEditor = true;
+        //   }
+        //   this.externalRemove = false;
+        // }
 
         if (context.type === 'connectioncreated') {
           if (!this.externalConnectionCreated) {
@@ -117,13 +111,19 @@ export class SyncPlugin {
           }
           const node = this.editor.getNode(context.data.id);
           if (!node.lockStatus?.externalLock) {
+            if (
+              context.data.position.x !== context.data.previous.x ||
+              context.data.position.y !== context.data.previous.y
+            ) {
+              this.nodeChangedPosition = true;
+            }
             return context;
           }
           return;
         }
 
         if (context.type === 'nodetranslated') {
-          if (builderState.channel && !this.externalDrag && !this.externalAdd) {
+          if (!builderState.omitEvents && !this.externalDrag && this.nodeChangedPosition) {
             pushNodeTranslatedEvent(builderState.channel as PresenceChannel, {
               userId: builderState.me!.id,
               nodeId: context.data.id,
@@ -135,12 +135,13 @@ export class SyncPlugin {
           return context;
         }
 
-        // if (context.type === 'nodedragged') {
-        //   console.log(context.data);
-
-        //   builderState.shouldSaveEditor = true;
-        //   return context;
-        // }
+        if (context.type === 'nodedragged') {
+          if (this.nodeChangedPosition) {
+            builderState.shouldSaveEditor = true;
+            this.nodeChangedPosition = false;
+          }
+          return context;
+        }
 
         // if (context.type === 'pointerdown' || context.type === 'pointerup') {
         //   console.log(context);
@@ -164,13 +165,30 @@ export class SyncPlugin {
     });
   }
 
-  cloneNode(nodeId: string) {
-    const node = this.editor.getNode(nodeId);
-    this.editor.addNode(node.duplicate());
+  async createNode(node: NodeProps, position: { x: number; y: number } = { x: 0, y: 0 }) {
+    await this.editor.addNode(node);
+    await this.areaPlugin.translate(node.id, position);
+    const createdNode = this.editor.getNode(node.id);
+    pushNodeCreatedEvent(builderState.channel as PresenceChannel, {
+      node: createdNode.serialize(),
+      position
+    });
+    builderState.shouldSaveEditor = true;
+  }
+
+  async cloneNode(nodeId: string) {
+    const { clonedNode, position } = await omitReteEvents(cloneNodeAndAdd, this.editor, this.areaPlugin, nodeId);
+
+    pushNodeCreatedEvent(builderState.channel as PresenceChannel, {
+      node: clonedNode.serialize(),
+      position: position
+    });
+
+    builderState.shouldSaveEditor = true;
   }
 
   async removeNode(nodeId: string) {
-    await this.editor.removeNode(nodeId);
+    await removeNodeAndConnections(this.editor, nodeId);
     pushNodeRemovedEvent(builderState.channel as PresenceChannel, nodeId);
     builderState.shouldSaveEditor = true;
   }
@@ -209,7 +227,6 @@ export class SyncPlugin {
     if (this.eventsRegistered || !builderState.channel) {
       return;
     }
-    const editor = this.root.parent as NodeEditor<Schemes>;
 
     builderState.memberRemovedCallbacks.push((leftMember: Member) => {
       if (!builderState.task?.lockStatus) {
@@ -218,7 +235,7 @@ export class SyncPlugin {
       for (const [key, value] of Object.entries(builderState.task.lockStatus)) {
         if (value === leftMember.id) {
           delete builderState.task.lockStatus[key];
-          const node = editor.getNode(key);
+          const node = this.editor.getNode(key);
           node.unlock();
           this.areaPlugin.update('node', key);
         }
@@ -230,6 +247,7 @@ export class SyncPlugin {
 
       const area = this.area.parent as AreaPlugin<Schemes, AreaExtra>;
       const node = area.nodeViews.get(data.nodeId);
+
       if (node) {
         this.externalDrag = true;
         // node.translate(data.position.x, data.position.y);
@@ -244,23 +262,23 @@ export class SyncPlugin {
         // await animateBetweenTwoPoints(node.position, { x: data.position.x, y: data.position.y }, 0.05, translate);
         node.translate(data.position.x, data.position.y);
         // const points = calculatePointsBetween(node.position, data.position, 100);
-        // for (const point of points) {
+        // for (const point of pointss) {
         //   node.translate(point.x, point.y);
         // }
       }
     });
 
-    builderState.channel.bind('client-node-created', (data: INode) => {
-      console.log('NODE CREATED EVENT');
-      this.externalAdd = true;
-      const node = parseNode(data);
-      editor.addNode(node);
-    });
+    builderState.channel.bind(
+      'client-node-created',
+      async (data: { node: INode; position: { x: number; y: number } }) => {
+        console.log('NODE CREATED EVENT');
+        await omitReteEvents(addNodeAtPosition, this.editor, this.areaPlugin, parseNode(data.node), data.position);
+      }
+    );
 
-    builderState.channel.bind('client-node-removed', (nodeId: string) => {
+    builderState.channel.bind('client-node-removed', async (nodeId: string) => {
       console.log('NODE REMOVED EVENT');
-      this.externalRemove = true;
-      editor.removeNode(nodeId);
+      await removeNodeAndConnections(this.editor, nodeId);
     });
 
     builderState.channel.bind('client-node-locked', (data: { nodeId: string; userId: string }) => {
@@ -302,14 +320,14 @@ export class SyncPlugin {
     builderState.channel.bind('client-connection-created', (connectionData: ConnProps) => {
       console.log('CONNECTION CREATED EVENT');
       this.externalConnectionCreated = true;
-      editor.addConnection(connectionData);
+      this.editor.addConnection(connectionData);
     });
 
     builderState.channel.bind('client-connection-removed', (connectionId: string) => {
       console.log('CONNECTION REMOVED EVENT');
 
       this.externalConnectionRemoved = true;
-      editor.removeConnection(connectionId);
+      this.editor.removeConnection(connectionId);
     });
 
     builderState.channel.bind('client-control-locked', (controlId: string) => {
@@ -326,8 +344,6 @@ export class SyncPlugin {
     });
 
     builderState.channel.bind('client-control-unlocked', (controlId: string) => {
-      console.log('CONTROL UNLOCKED EVENT');
-
       const node = builderState.controlToNode.get(controlId);
       const control = node?.getControl(controlId);
       if (node && node.lockStatus && control && control.lockStatus) {

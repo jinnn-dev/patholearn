@@ -20,7 +20,7 @@ import { addCustomBackground } from './plugins/custom-background';
 import { NodeType } from './nodes/types';
 import { DimensionControl } from './controls/dimension-control';
 import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } from 'rete-context-menu-plugin';
-import { setupContext } from './plugins/context-menu';
+import { setupContext, setupContextItems } from './plugins/context-menu';
 import { LinearNode } from './nodes/layer/linear-node';
 import { arrangeSetup } from './plugins/arrange-nodes';
 import { DropoutNode } from './nodes/transform/dropout-node';
@@ -83,7 +83,7 @@ export function useEditor() {
     builderState.syncPlugin = sync.value;
 
     contextMenu.value = new ContextMenuPlugin<Schemes>({
-      items: ContextMenuPresets.classic.setup([
+      items: setupContextItems([
         ['Input', [['Dataset', () => createNodeInstance('DatasetNode', socket.value!) as NodeProps]]],
         [
           'Layer',
@@ -156,19 +156,12 @@ export function useEditor() {
       }
     });
 
-    // render.value.addPipe((context) => {
-    //   console.log(context);
-
-    //   return context;
-    // });
-
+    // @ts-ignore
     render.value.addPreset(presets);
     // @ts-ignore
     render.value.addPreset(setupContext({ delay: 3000 }));
-
+    // @ts-ignore
     render.value.addPreset(setupMousePlugin({ delay: 300 }));
-
-    // render.value.use(sync.value.render);
 
     connection.value.addPreset(ConnectionPresets.classic.setup());
     arrange.value.addPreset(arrangeSetup({ distance: 20 }));
@@ -180,15 +173,16 @@ export function useEditor() {
     area.value.use(render.value);
     area.value.use(arrange.value);
     area.value.use(contextMenu.value);
+    // @ts-ignore
     area.value.use(mousePlugin.value);
 
     area.value.use(sync.value.area);
 
     // sync.value.area.use(render.value);
-
     // @ts-ignore
-
     connection.value.use(sync.value.connection);
+
+    area.value.area.content.holder.style.height = '100%';
 
     AreaExtensions.simpleNodesOrder(area.value);
 
@@ -218,7 +212,20 @@ export function useEditor() {
       return;
     }
 
-    await editor.value.addNode(layer as NodeProps);
+    const container = area.value?.area.content.holder;
+    let position = { x: 0, y: 0 };
+    if (container && area.value) {
+      const [hw, hh] = [container.clientWidth / 2, container.clientHeight / 2];
+      console.log(hw, hh);
+
+      const transform = area.value.area.transform;
+      const center = [(hw - transform.x) / transform.k, (hh - transform.y) / transform.k];
+      console.log(center);
+      position.x = center[0];
+      position.y = center[1];
+    }
+    // await editor.value.addNode(layer as NodeProps);
+    await sync.value?.createNode(layer as NodeProps, position);
   };
 
   const zoomAt = async () => {
@@ -274,24 +281,6 @@ export function useEditor() {
     await editor.value?.clear();
 
     for (const nodeData of graph.nodes) {
-      // if (nodeData._type === Conv2DNode.name) {
-      //   node = Conv2DNode.parse(nodeData as IConv2DNode);
-      // } else if (nodeData._type === DatasetNode.name) {
-      //   node = DatasetNode.parse(nodeData as IDatasetNode);
-      // } else if (nodeData._type === LinearNode.name) {
-      //   node = LinearNode.parse(nodeData as ILinearNode);
-      // } else if (nodeData._type === DropoutNode.name) {
-      //   node = DropoutNode.parse(nodeData as IDropoutNode);
-      // } else if (nodeData._type === FlattenNode.name) {
-      //   node = FlattenNode.parse(nodeData as IFlattenNode);
-      // } else if (nodeData._type === BatchNormNode.name) {
-      //   node = BatchNormNode.parse(nodeData as IBatchNormNode);
-      // } else if (nodeData._type === PoolingNode.name) {
-      //   node = PoolingNode.parse(nodeData as IPoolingNode);
-      // } else {
-      //   node = new Presets.classic.Node();
-      // }
-      // node.id = nodeData.id;
       const node = parseNode(nodeData);
       await editor.value?.addNode(node);
     }
@@ -313,7 +302,6 @@ export function useEditor() {
       await area.value?.translate(position.id, { x: position.x, y: position.y });
     }
 
-    // await arrangeLayout();
     await zoomAt();
 
     builderState.initialGraphLoaded = true;

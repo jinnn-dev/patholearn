@@ -58,7 +58,7 @@ const remainingUsers = computed(() => membersNoMe.value.length - props.maxVisibl
     </div>
   </div>
   <div v-else class="flex flex-col gap-4 p-4 max-h-[500px] overflow-auto">
-    <div class="absolute right-2 top-2 cursor-pointer hover:bg-gray-600 rounded-sm p-0.5">
+    <div class="absolute right-2 top-2 cursor-pointer hover:bg-gray-500 rounded-sm p-0.5">
       <icon name="x" @click="isExpanded = false" size="18" stroke-width="24"></icon>
     </div>
     <div class="flex justify-center items-center gap-3">

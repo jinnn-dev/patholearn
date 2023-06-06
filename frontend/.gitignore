@@ -14,5 +14,6 @@ explorations
 stats.html
 .VsCodeCounter
 .env
-*.production
 .VsCodeCounter/
+.env.*
+*.production

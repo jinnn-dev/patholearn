@@ -2,6 +2,7 @@
 import { debounce } from './debounce';
 import Block from './Block.vue';
 import { PropType, onMounted, ref } from 'vue';
+import Icon from '../../../general/Icon.vue';
 
 const props = defineProps({
   subitems: {
@@ -24,8 +25,7 @@ function hideSubitems() {
 </script>
 <template>
   <block
-    class="relative p-1 rounded-lg bg-gray-800 cursor-pointer w-full hover:ring-1 hover:ring-gray-500 hover:bg-gray-600"
-    :class="{ hasSubitems: subitems }"
+    class="relative flex justify-between items-center p-1 rounded-lg bg-gray-700 cursor-pointer w-wull hover:ring-1 hover:ring-gray-500 hover:bg-gray-500"
     @click.stop="
       $emit('select', $event);
       $emit('hide');
@@ -40,7 +40,11 @@ function hideSubitems() {
     data-testid="context-menu-item"
   >
     <slot></slot>
-    <div class="absolute top-0 left-full w-fit-content px-2" v-if="subitems && visibleSubitems">
+    <icon v-if="subitems && subitems.length !== 0" name="caret-right" stroke-width="24" size="14"></icon>
+    <div
+      class="absolute w-36 p-2 bg-gray-700 backdrop-blur-lg rounded-lg top-0 left-full px-2 flex flex-col gap-1"
+      v-if="subitems && visibleSubitems"
+    >
       <item
         v-for="item of subitems"
         :key="item.key"
@@ -54,11 +58,11 @@ function hideSubitems() {
   </block>
 </template>
 <style scoped>
-.hasSubitems::after {
+/* .hasSubitems::after {
   content: '►';
   position: absolute;
   opacity: 0.6;
   right: 5px;
   top: 5px;
-}
+} */
 </style>
