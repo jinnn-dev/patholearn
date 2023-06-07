@@ -92,19 +92,15 @@ services:
     ports:
       - '48888:8000'
 
-  # ai_worker:
-  #   build:
-  #     context: ./ai-worker/.
-  #     dockerfile: dockerfile
-  #   restart: unless-stopped
-  #   networks:
-  #     - auth_auth-network
-  #     - patholearn-network
-  #   volumes:
-  #     - ./ai-worker/app:/app
-  #   command: celery --app worker.celery_app worker --loglevel=info --without-gossip --without-mingle --without-heartbeat -Ofair -Q ai
-  #   environment:
-  #     - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
+  ai_worker:
+    image: hafen.noxz.dev/patholearn-ai/ai-worker:${AI_API_VERSION}
+    restart: unless-stopped
+    networks:
+      - patholearn-ai-network
+    command: celery --app worker.celery_app worker --loglevel=info --without-gossip --without-mingle --without-heartbeat -Ofair -Q ai
+    environment:
+      - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
+      - DATABASE_URL=${MONGO_AI_DRIVER}://${MONGO_AI_USER}:${MONGO_AI_PASSWORD}@${MONGO_AI_IP}:${MONGO_AI_PORT} 
 
   ai_db:
     image: mongo:latest
@@ -118,7 +114,6 @@ services:
       - '47018:${MONGO_AI_PORT}'
     volumes:
       - ai-db-data:/mongodb
-
 
   slide_api:
     image: hafen.noxz.dev/patholearn-ai/slide-api:${SLIDE_API_VERSION}
