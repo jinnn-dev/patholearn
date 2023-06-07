@@ -61,7 +61,7 @@ const isCollapsed = ref<boolean>(false);
 </script>
 <template>
   <aside
-    class="h-screen flex flex-col justify-between overflow-hidden bg-gray-800 border-r-[0.5px] border-gray-500/50 sticky top-0 transition-all ease-in-out duration-300"
+    class="h-screen flex flex-col justify-between overflow-hidden border-r-[0.5px] border-gray-500/50 sticky top-0 transition-all ease-in-out duration-300"
     :class="isCollapsed ? 'w-16' : 'w-56'"
   >
     <div>
@@ -91,7 +91,7 @@ const isCollapsed = ref<boolean>(false);
 
       <div class="p-2">
         <div
-          class="flex justify-center p-2 hover:bg-gray-700 rounded-md cursor-pointer select-none"
+          class="flex justify-center p-2 hover:bg-gray-700/70 hover:ring-1 hover:ring-gray-500 rounded-md cursor-pointer select-none"
           @click="isCollapsed = !isCollapsed"
         >
           <icon

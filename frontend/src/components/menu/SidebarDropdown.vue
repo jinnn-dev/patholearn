@@ -22,13 +22,10 @@ defineProps({
     :class="isCollapsed ? 'px-2' : 'px-0'"
   >
     <div
-      class="group hover:bg-gray-700 bg-gray-800 flex w-full py-2 rounded-lg transition-[margin] tranistion-[background-color] cursor-pointer"
+      class="group hover:bg-gray-700/70 hover:ring-1 hover:ring-gray-500 flex w-full py-2 rounded-lg transition-[margin] tranistion-[background-color] cursor-pointer"
       :class="isCollapsed ? 'mx-0' : 'mx-2'"
     >
-      <div
-        class="flex justify-center items-center flex-shrink-0 z-10 bg-gray-800 group-hover:bg-gray-700"
-        :class="isCollapsed ? 'w-12 ' : 'w-12'"
-      >
+      <div class="flex justify-center items-center flex-shrink-0 z-10" :class="isCollapsed ? 'w-12 ' : 'w-12'">
         <Icon :name="route.icon" size="24" stroke-width="0"></Icon>
       </div>
       <div class="relative flex justify-start items-center z-0">
@@ -41,7 +38,7 @@ defineProps({
   <div
     v-if="route.children"
     v-for="childRoute in route.children"
-    class="transition-[margin] duration-300 ease-in-out"
+    class="transition-[margin] duration-300 ease-in-out mt-1"
     :class="isCollapsed ? 'ml-0' : 'ml-8'"
   >
     <sidebar-item
