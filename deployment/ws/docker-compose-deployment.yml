@@ -3,7 +3,7 @@ version: '3.3'
 services:
   ws:
     image: quay.io/soketi/soketi:1.4-16-debian
-    container_name: ws-deployment
+    container_name: ws-prod
     restart: unless-stopped
     environment:
       - SOKETI_DEBUG=${DEBUG:-1}
@@ -19,8 +19,8 @@ services:
       - "${SOKETI_PORT:-6001}:6001"
       - "${SOKETI_METRICS_SERVER_PORT:-9601}:9601"
     networks:
-      - ws-deployment-network
+      - ws-network-prod
 
 networks:
-  ws-deployment-network:
+  ws-network-prod:
     driver: bridge

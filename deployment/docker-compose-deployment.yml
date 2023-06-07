@@ -2,18 +2,20 @@ version: '3.3'
 services:
   frontend:
     image: hafen.noxz.dev/patholearn-ai/frontend:${FRONTEND_VERSION}
+    container_name: frontend-prod
     restart: unless-stopped
     networks:
-      - patholearn-ai-network
+      - patholearn-ai-network-prod
     ports:
       - "81:80"
   
   learn_api:
     image: hafen.noxz.dev/patholearn-ai/learn-api:${LEARN_API_VERSION}
+    container_name: learn-api-prod
     restart: unless-stopped
     networks:
-      - auth_auth-deployment-network
-      - patholearn-ai-network
+      - auth_auth-network-prod
+      - patholearn-ai-network-prod
     environment:
       - DATABASE_URL=${DATABASE_DRIVER}://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_IP}/${DATABASE_DB}?${DATABASE_QUERY_PARAMETERS}
       - RABBIT_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
@@ -45,8 +47,9 @@ services:
 
   learn_db:
     image: mysql:latest
+    container_name: learn-db-prod
     networks:
-      - patholearn-ai-network
+      - patholearn-ai-network-prod
     restart: unless-stopped
     environment:
       - MYSQL_DATABASE=${DATABASE_DB}
@@ -56,7 +59,7 @@ services:
     ports:
       - '3316:${DATABASE_PORT}'
     volumes:
-      - learn-db:/var/lib/mysql
+      - learn-db-data-prod:/var/lib/mysql
     healthcheck:
       test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
       timeout: 20s
@@ -65,11 +68,12 @@ services:
 
   ai_api:
     image: hafen.noxz.dev/patholearn-ai/ai-api:${AI_API_VERSION}
+    container_name: ai-api-prod
     restart: unless-stopped
     networks:
-      - patholearn-ai-network
-      - ws_ws-deployment-network
-      - auth_auth-deployment-network
+      - patholearn-ai-network-prod
+      - ws_ws-network-prod
+      - auth_auth-network-prod
     environment:
       - SENTRY_DSN=${SENTRY_AI_DSN}
       - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT}
@@ -94,9 +98,10 @@ services:
 
   ai_worker:
     image: hafen.noxz.dev/patholearn-ai/ai-worker:${AI_API_VERSION}
+    container_name: ai-worker-prod
     restart: unless-stopped
     networks:
-      - patholearn-ai-network
+      - patholearn-ai-network-prod
     command: celery --app worker.celery_app worker --loglevel=info --without-gossip --without-mingle --without-heartbeat -Ofair -Q ai
     environment:
       - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
@@ -104,24 +109,26 @@ services:
 
   ai_db:
     image: mongo:latest
+    container_name: ai-db-prod
     restart: unless-stopped
     networks:
-      - patholearn-ai-network
+      - patholearn-ai-network-prod
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_AI_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_AI_INITDB_ROOT_PASSWORD}
     ports:
       - '47018:${MONGO_AI_PORT}'
     volumes:
-      - ai-db-data:/mongodb
+      - ai-db-data-prod:/mongodb
 
   slide_api:
     image: hafen.noxz.dev/patholearn-ai/slide-api:${SLIDE_API_VERSION}
+    container_name: slide-api-prod
     restart: unless-stopped
     networks:
-      - patholearn-ai-network
+      - patholearn-ai-network-prod
     volumes:
-      - slide-data:/data
+      - slide-data-prod:/data
     ports:
       - '48001:8000'
     command: uvicorn app.app:app --host 0.0.0.0 --port 8000 --no-server-header
@@ -139,14 +146,15 @@ services:
 
   slide_worker:
     image: hafen.noxz.dev/patholearn-ai/slide-api:${SLIDE_API_VERSION}
+    container_name: slide-worker-prod
     restart: unless-stopped
     networks:
-      - patholearn-ai-network
+      - patholearn-ai-network-prod
     depends_on:
       - slide_api
     command: celery --app worker.celery_app worker --loglevel=info
     volumes:
-      - slide-data:/data
+      - slide-data-prod:/data
     environment:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
@@ -157,14 +165,15 @@ services:
 
   slide_db:
     image: mongo:latest
+    container_name: slide-db-prod
     restart: unless-stopped
     networks:
-      - patholearn-ai-network
+      - patholearn-ai-network-prod
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
-      - slide-data:/data
+      - slide-db-data-prod:/data
     ports:
       - '47017:${MONGO_PORT}'
 
@@ -186,22 +195,23 @@ services:
 
   rabbit:
     image: rabbitmq:latest
+    container_name: rabbit-prod
     restart: unless-stopped
     networks:
-      - patholearn-ai-network
+      - patholearn-ai-network-prod
     ports:
       - '45672:5672'
 
 networks:
-  auth_auth-deployment-network:
+  auth_auth-network-prod:
     external: true
-  ws_ws-deployment-network:
+  ws_ws-network-prod:
     external: true
-  patholearn-ai-network:
+  patholearn-ai-network-prod:
     external: false
 
 volumes:
-  learn-db:
-  slide-db-data:
-  slide-data:
-  ai-db-data:
+  learn-db-data-prod:
+  slide-db-data-prod:
+  slide-data-prod:
+  ai-db-data-prod:
