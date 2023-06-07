@@ -31,10 +31,12 @@ export function parseNode(nodeData: INode) {
   const lockedBy = getLockedBy(node.id);
   const externalLock = lockedBy?.id !== builderState.me?.id;
   let lockedControl = undefined;
-  for (const elementId of Object.keys(builderState.task!.lockStatus)) {
-    const control = node.getControl(elementId);
-    if (control) {
-      lockedControl = control.id;
+  if (builderState.task?.lockStatus) {
+    for (const elementId of Object.keys(builderState.task.lockStatus)) {
+      const control = node.getControl(elementId);
+      if (control) {
+        lockedControl = control.id;
+      }
     }
   }
   node.parse(nodeData);
