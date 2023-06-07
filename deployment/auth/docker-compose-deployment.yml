@@ -3,7 +3,7 @@ version: '3'
 services:
   db:
     image: mysql:latest
-    container_name: auth_deployment_db
+    container_name: auth-db-prod
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_USER: ${MYSQL_USER}
@@ -12,10 +12,10 @@ services:
     ports:
       - 4307:3306
     networks:
-      - auth-deployment-network
+      - auth-network-prod
     restart: unless-stopped
     volumes:
-      - auth-deployment-db:/var/lib/mysql
+      - auth-db-data-prod:/var/lib/mysql
     healthcheck:
       test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
       timeout: 20s
@@ -23,16 +23,16 @@ services:
 
   supertokens:
     image: registry.supertokens.io/supertokens/supertokens-mysql:4.6
-    container_name: auth-deployment-supertokens
+    container_name: supertokens-prod
     depends_on:
       db:
         condition: service_healthy
     ports:
       - 4567:3567
     environment:
-      MYSQL_CONNECTION_URI: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DB}
+      MYSQL_CONNECTION_URI: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@auth-db-prod:3306/${MYSQL_DB}
     networks:
-      - auth-deployment-network
+      - auth-network-prod
     restart: unless-stopped
     healthcheck:
       test: >
@@ -43,13 +43,13 @@ services:
 
   api:
     image: hafen.noxz.dev/patholearn-ai/auth:${AUTH_API_VERSION:-latest}
-    container_name: auth_deployment_api
+    container_name: auth-api-prod
     restart: unless-stopped
     depends_on:
       supertokens:
         condition: service_healthy
     networks:
-      - auth-deployment-network
+      - auth-network-prod
     environment:
       SENTRY_DSN: ${SENTRY_DSN}
       SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT}
@@ -62,8 +62,8 @@ services:
       - '4001:8000'
 
 volumes:
-  auth-deployment-db:
+  auth-db-data-prod:
 
 networks:
-  auth-deployment-network:
+  auth-network-prod:
     driver: bridge

@@ -1,8 +1,9 @@
 version: '3.3'
 
 services:
-  ws:
+  ws-dev:
     image: quay.io/soketi/soketi:1.4-16-debian
+    container_name: ws
     restart: unless-stopped
     environment:
       - SOKETI_DEBUG=${DEBUG:-1}

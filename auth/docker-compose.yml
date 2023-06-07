@@ -1,8 +1,9 @@
 version: '3'
 
 services:
-  db:
+  db-dev:
     image: mysql:latest
+    container_name: db
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_USER: ${MYSQL_USER}
@@ -20,10 +21,11 @@ services:
       timeout: 20s
       retries: 10
 
-  supertokens:
+  supertokens-dev:
     image: registry.supertokens.io/supertokens/supertokens-mysql:4.6
+    container_name: supertokens
     depends_on:
-      db:
+      db-dev:
         condition: service_healthy
     ports:
       - 3567:3567
@@ -39,13 +41,14 @@ services:
       timeout: 5s
       retries: 5
 
-  api:
+  api-dev:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: api
     restart: unless-stopped
     depends_on:
-      supertokens:
+      supertokens-dev:
         condition: service_healthy
     networks:
       - auth-network
