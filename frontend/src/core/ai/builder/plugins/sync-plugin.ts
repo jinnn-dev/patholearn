@@ -271,7 +271,7 @@ export class SyncPlugin {
     builderState.channel.bind(
       'client-node-created',
       async (data: { node: INode; position: { x: number; y: number } }) => {
-        console.log('NODE CREATED EVENT');
+        console.log('NODE CREATED EVENT', data.node, data.position);
         await omitReteEvents(addNodeAtPosition, this.editor, this.areaPlugin, parseNode(data.node), data.position);
       }
     );
