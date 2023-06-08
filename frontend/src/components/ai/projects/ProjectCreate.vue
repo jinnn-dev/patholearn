@@ -11,8 +11,8 @@ import { AiService } from '../../../services/ai.service';
 
 const showCreate = ref<boolean>(false);
 
-const createProjectData = reactive<{ project_name: string; description?: string }>({
-  project_name: ''
+const createProjectData = reactive<{ name: string; description?: string }>({
+  name: ''
 });
 
 const { result, loading, run } = useService(AiService.createProject);
@@ -20,8 +20,11 @@ const { result, loading, run } = useService(AiService.createProject);
 const emit = defineEmits(['project-created']);
 
 const createProject = async () => {
-  await run(createProjectData.project_name, createProjectData.description);
-  emit('project-created', result);
+  await run(createProjectData.name, createProjectData.description);
+  emit('project-created', result.value);
+  showCreate.value = false;
+  createProjectData.name = '';
+  createProjectData.description = undefined;
 };
 </script>
 <template>
@@ -34,7 +37,7 @@ const createProject = async () => {
   <modal-dialog :show="showCreate" custom-classes="w-96">
     <div class="text-xl">Projekt erstellen</div>
     <input-field
-      v-model:model-value="createProjectData.project_name"
+      v-model:model-value="createProjectData.name"
       label="Name"
       tip="Name des Projekts"
       :required="true"

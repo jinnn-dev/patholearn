@@ -1,29 +1,13 @@
+import { Task } from '../tasks/task';
+
 export interface Project {
   id: string;
   name: string;
-  basename: string;
-  description: string;
-  created: string;
-  parent: {
-    id: string;
-  };
-  stats: {
-    active: {
-      status_count: {
-        closed: number;
-        completed: number;
-        created: number;
-        failed: number;
-        in_progress: number;
-        published: number;
-        publishing: number;
-        queued: number;
-        stopped: number;
-        unknown: number;
-      };
-      total_tasks: number;
-      total_runtime: number;
-      completed_tasks_24h: number;
-    };
-  };
+  created_at: string;
+  description?: string;
+}
+
+export interface ProjectWithTasks {
+  project: Project;
+  tasks: Task[];
 }

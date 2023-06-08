@@ -1,12 +1,11 @@
 import { ApiService } from './api.service';
 import { AI_API_URL } from '../config';
 import { handleError } from './error-handler';
-import { Project } from '../model/ai/projects/project';
+import { Project, ProjectWithTasks } from '../model/ai/projects/project';
 import { Dataset } from '../model/ai/datasets/dataset';
 import { CreateTask, Task } from '../model/ai/tasks/task';
 import { LogEntry } from '../model/ai/tasks/log-entry';
 import { IGraph } from '../core/ai/builder/serializable';
-import { Member } from '../composables/ws/usePresenceChannel';
 
 export class AiService {
   public static async ping() {
@@ -78,13 +77,13 @@ export class AiService {
     return response!.data;
   }
 
-  public static async createProject(project_name: string, description?: string) {
+  public static async createProject(name: string, description?: string) {
     const [_, response] = await handleError(
       ApiService.post({
         resource: '/projects',
         host: AI_API_URL,
         data: {
-          project_name,
+          name,
           description
         }
       }),
@@ -119,7 +118,7 @@ export class AiService {
 
   public static async getProject(projectId: string) {
     const [_, response] = await handleError(
-      ApiService.get<Project>({
+      ApiService.get<ProjectWithTasks>({
         resource: `/projects/${projectId}`,
         host: AI_API_URL
       })
@@ -171,6 +170,17 @@ export class AiService {
         host: AI_API_URL
       })
     );
+    return response!.data;
+  }
+
+  public static async deleteTask(taskId: string) {
+    const [_, response] = await handleError(
+      ApiService.delete({
+        resource: `/tasks/${taskId}`,
+        host: AI_API_URL
+      })
+    );
+
     return response!.data;
   }
 

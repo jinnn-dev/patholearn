@@ -2,12 +2,20 @@
 import { PropType, computed, version } from 'vue';
 import { Task } from '../../../model/ai/tasks/task';
 import Icon from '../../general/Icon.vue';
+import Spinner from '../../general/Spinner.vue';
+import { useService } from '../../../composables/useService';
+import { AiService } from '../../../services/ai.service';
+
 const props = defineProps({
   task: {
     type: Object as PropType<Task>,
     required: true
   }
 });
+
+const emit = defineEmits(['task-deleted']);
+
+const { run, loading } = useService(AiService.deleteTask);
 
 const versionText = computed(() => {
   if (props.task.versions.length === 1) {
@@ -16,9 +24,14 @@ const versionText = computed(() => {
     return 'Versions';
   }
 });
+
+const deleteTask = async () => {
+  await run(props.task.id);
+  emit('task-deleted', props.task.id);
+};
 </script>
 <template>
-  <div class="bg-gray-700 p-2 rounded-lg">
+  <div class="bg-gray-700 p-2 rounded-lg min-w-[150px]">
     <div class="flex justify-between">
       <div class="text-xl">{{ task.name }}</div>
       <router-link :to="`/ai/tasks/${task.id}`"><icon name="arrow-right"></icon></router-link>
@@ -27,6 +40,9 @@ const versionText = computed(() => {
     <div class="flex flex-col items-start justify-start gap-2 mt-2">
       <div>{{ task.versions.length }} {{ versionText }}</div>
     </div>
-    <pre class="text-xs">{{ JSON.stringify(task, null, 2) }}</pre>
+    <div class="flex justify-end mt-2">
+      <spinner v-if="loading"></spinner>
+      <icon v-else name="trash" class="text-red-500 cursor-pointer" @click="deleteTask"></icon>
+    </div>
   </div>
 </template>

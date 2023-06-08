@@ -100,7 +100,7 @@ const saveBuilder = async () => {
 };
 
 const parseBuilder = async () => {
-  // await parseGraph(props.taskId, props.taskVersion.id);
+  await parseGraph(props.taskId, props.taskVersion.id);
   builderState.selectedVersion!.status = 'CREATING';
   startTraining();
 };
