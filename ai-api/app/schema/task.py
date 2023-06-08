@@ -142,7 +142,7 @@ class TaskVersion(BaseModel):
     graph: Graph = Field(...)
     clearml_id: Optional[str] = None
     creation_date: datetime = Field(...)
-    status: TaskVersionStatus = "NONE"
+    status: Optional[TaskVersionStatus] = None
     status_message: Optional[str] = None
 
     class Config:
