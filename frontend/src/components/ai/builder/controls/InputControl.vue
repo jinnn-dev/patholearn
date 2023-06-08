@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { PropType } from 'vue';
-import { builderState } from '../../../../core/ai/builder/state';
+import { builderState, isTraining } from '../../../../core/ai/builder/state';
 
 const props = defineProps({
   data: Object as PropType<any>,
@@ -21,7 +21,7 @@ const change = (e: any) => {
     :max="data?.max"
     :placeholder="placeholder"
     :type="type"
-    :disabled="data?.lockStatus?.externalLock"
+    :disabled="data?.lockStatus?.externalLock || isTraining"
     :value="props.value"
     :style="
       data?.lockStatus?.lockedControlId === data?.id ? `--tw-ring-color: ${data?.lockStatus.lockedBy.info.color};` : ''

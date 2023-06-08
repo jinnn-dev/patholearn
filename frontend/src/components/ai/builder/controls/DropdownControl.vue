@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue';
 import CustomSelect from '../../../form/CustomSelect.vue';
 import Icon from '../../../general/Icon.vue';
-import { builderState } from '../../../../core/ai/builder/state';
+import { builderState, isTraining } from '../../../../core/ai/builder/state';
 
 const props = defineProps({
   data: Object,
@@ -39,7 +39,7 @@ const onFocus = () => {
   isExpanded.value = true;
   builderState.syncPlugin?.selectControl(props.data!.id);
 };
-const isDisbaled = computed(() => props.data?.lockStatus?.externalLock !== undefined);
+const isDisbaled = computed(() => props.data?.lockStatus?.externalLock !== undefined || isTraining.value);
 
 watch(
   () => props.data?.value,

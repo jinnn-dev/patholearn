@@ -88,11 +88,12 @@ const nodeClasses = computed(() => {
     classes.push('ring-4');
   } else {
     classes.push('ring-2');
+    classes.push('ring-gray-400');
   }
 
-  if (isTraining.value) {
-    classes.push('opacity-80');
-  }
+  // if (isTraining.value) {
+  //   classes.push('opacity-80');
+  // }
   return classes.join(' ');
 });
 
@@ -126,6 +127,13 @@ const outputs = computed(() => {
         {{ data?.label }}
       </div>
     </div>
+
+    <!-- <div v-if="isTraining" class="h-1">
+      <svg class="w-full h-1">
+        <line class="stroke-gray-500" x1="0" y1="2" x2="500" y2="2" stroke-width="100"></line>
+        <line class="line stroke-green-500" x1="0" y1="2" x2="500" y2="2" stroke-dasharray="12"></line>
+      </svg>
+    </div> -->
 
     <div class="flex">
       <!-- Inputs-->
@@ -185,7 +193,6 @@ const outputs = computed(() => {
   @apply h-auto;
   @apply pb-5;
   @apply select-none;
-  @apply ring-gray-400;
   @apply shadow-lg;
   @apply shadow-gray-900/50;
 }
@@ -202,14 +209,16 @@ const outputs = computed(() => {
 .output {
   @apply text-right;
   @apply font-mono;
+  @apply mt-2;
 }
 .input {
   @apply text-left;
-  @apply -ml-[18px];
+  @apply -ml-[13px];
+  @apply mt-2;
 }
 .output-socket {
   @apply text-right;
-  @apply -mr-[18px];
+  @apply -mr-[13px];
   @apply inline-block;
 }
 .input-socket {
@@ -241,5 +250,22 @@ const outputs = computed(() => {
 
 .control > input {
   @apply !bg-gray-800;
+}
+
+.line {
+  @apply stroke-green-500;
+  @apply pointer-events-none;
+  @apply fill-[none];
+  stroke-dasharray: 12;
+  stroke-linecap: round;
+  animation: dash 150000s linear infinite;
+  stroke-width: 3px;
+  stroke-dashoffset: 12;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: -10000000;
+  }
 }
 </style>

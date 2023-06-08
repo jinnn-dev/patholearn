@@ -6,6 +6,7 @@ import { AutoArrangePlugin, ArrangeAppliers } from 'rete-auto-arrange-plugin';
 
 import CustomNodeVue from '../../../components/ai/builder/CustomNode.vue';
 import CustomConnectionVue from '../../../components/ai/builder/CustomConnection.vue';
+import CustomSocketVue from '../../../components/ai/builder/CustomSocket.vue';
 import DimensionControlVue from '../../../components/ai/builder/controls/DimensionControl.vue';
 import NumberControlVue from '../../../components/ai/builder/controls/NumberControl.vue';
 import DropdownControlVue from '../../../components/ai/builder/controls/DropdownControl.vue';
@@ -136,10 +137,10 @@ export function useEditor() {
         connection(data) {
           return CustomConnectionVue;
         },
-        // // @ts-ignore
-        // socket(data) {
-        //   return CustomSocketVue;
-        // },
+        // @ts-ignore
+        socket(data) {
+          return CustomSocketVue;
+        },
         // @ts-ignore
         control(data) {
           if (data.payload instanceof DropdownControl) {
