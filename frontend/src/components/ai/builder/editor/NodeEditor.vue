@@ -25,7 +25,8 @@ const props = defineProps({
   }
 });
 
-const { arrangeLayout, zoomAt, init, addNode, download, importGraph, clear, area, registerEvents } = useEditor();
+const { arrangeLayout, zoomAt, init, addNode, download, importGraph, clear, area, registerEvents, startTraining } =
+  useEditor();
 const { run: updateGraph } = useService(AiService.updateTaskVersion);
 
 const { run: parseGraph, result } = useService(AiService.parseTaskVersion);
@@ -99,8 +100,9 @@ const saveBuilder = async () => {
 };
 
 const parseBuilder = async () => {
-  await parseGraph(props.taskId, props.taskVersion.id);
+  // await parseGraph(props.taskId, props.taskVersion.id);
   builderState.selectedVersion!.status = 'CREATING';
+  startTraining();
 };
 
 const itemClicked = async (event: EventName) => {
@@ -171,7 +173,7 @@ onUnmounted(() => {
     </div>
     <div
       class="absolute z-10 bg-gray-800/40 backdrop-blur-sm w-full h-full flex justify-center items-center"
-      v-if="taskVersion.status === 'CREATING' || taskVersion.status === 'CREATED' || taskVersion.clearml_id"
+      v-if="taskVersion.status === 'CREATING' || taskVersion.status === 'CREATED'"
     >
       <div class="text-xl select-none">Das Model wird trainiert</div>
     </div>

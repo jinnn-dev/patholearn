@@ -32,6 +32,8 @@ import { createNodeInstance, parseNode } from './factories/node-factory';
 import { builderState } from './state';
 import { MousePlugin, setupMousePlugin } from './plugins/mouse-plugin';
 import { trackedSelector, selectableNodes, selector } from './trackedSelector';
+import { pushTrainingStarted } from './sync';
+import { PresenceChannel } from 'pusher-js';
 export type NodeProps = DatasetNode | Conv2DNode | LinearNode | DropoutNode | FlattenNode | BatchNormNode | PoolingNode;
 
 export class Connection<A extends NodeProps, B extends NodeProps> extends ClassicPreset.Connection<A, B> {}
@@ -307,6 +309,10 @@ export function useEditor() {
     builderState.initialGraphLoaded = true;
   };
 
+  const startTraining = () => {
+    pushTrainingStarted(builderState.channel as PresenceChannel, 'CREATING');
+  };
+
   const clear = async () => {
     await editor.value?.clear();
     await zoomAt();
@@ -333,6 +339,7 @@ export function useEditor() {
     addNode,
     area,
     registerEvents,
+    startTraining,
     destroy: () => area.value?.destroy()
   };
 }

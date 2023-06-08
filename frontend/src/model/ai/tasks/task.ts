@@ -7,7 +7,7 @@ export interface Graph {
   positions: INodePositions[];
 }
 
-type TaskVersionStatus = 'NONE' | 'CREATING' | 'CREATED' | 'FAILED';
+export type TaskVersionStatus = 'NONE' | 'CREATING' | 'CREATED' | 'FAILED';
 
 export interface TaskVersion {
   id: string;
