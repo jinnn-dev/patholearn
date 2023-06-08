@@ -67,6 +67,14 @@ async def get_task(task_id: str, _: SessionContainer = Depends(verify_session())
     return task
 
 
+@router.delete(
+    "/{task_id}", response_model=int, description="Deletes the task to the given id"
+)
+async def delete_task(task_id: str, _: SessionContainer = Depends(verify_session())):
+    task = await task_collection.delete_one({"_id": ObjectId(task_id)})
+    return task.deleted_count
+
+
 @router.put(
     "/{task_id}/version",
     description="Updates a version of a Task",
