@@ -5,7 +5,7 @@ import { getNodeColor } from '../../../core/ai/builder/node-colors';
 import { LockStatus } from '../../../core/ai/builder/sync';
 import { getTextColor } from '../../../utils/colors';
 import Icon from '../../general/Icon.vue';
-import { builderState } from '../../../core/ai/builder/state';
+import { builderState, isTraining } from '../../../core/ai/builder/state';
 
 function sortByIndex(entries: any) {
   entries.sort((a: any, b: any) => {
@@ -81,13 +81,17 @@ const nodeClasses = computed(() => {
   if (props.data?.selected) {
     classes.push('selected');
   }
-  if (!props.data?.lockStatus?.externalLock) {
+  if (!props.data?.lockStatus?.externalLock && !isTraining.value) {
     classes.push('cursor-pointer');
   }
   if (props.data?.lockStatus?.externalLock) {
     classes.push('ring-4');
   } else {
     classes.push('ring-2');
+  }
+
+  if (isTraining.value) {
+    classes.push('opacity-80');
   }
   return classes.join(' ');
 });

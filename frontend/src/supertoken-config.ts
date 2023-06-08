@@ -7,5 +7,5 @@ export const SuperTokensWebJSConfig = {
     apiDomain: import.meta.env.VITE_AUTH_API_URL,
     websiteDomain: import.meta.env.VITE_WEBSITE_URL
   },
-  recipeList: [Session.init({sessionTokenFrontendDomain: ".janeee.de"}), EmailPassword.init()]
+  recipeList: [Session.init({ sessionTokenFrontendDomain: '.janeee.de' }), EmailPassword.init()]
 };

@@ -171,12 +171,12 @@ onUnmounted(() => {
         </div>
       </div>
     </div>
-    <div
+    <!-- <div
       class="absolute z-10 bg-gray-800/40 backdrop-blur-sm w-full h-full flex justify-center items-center"
-      v-if="taskVersion.status === 'CREATING' || taskVersion.status === 'CREATED'"
+      v-if="taskVersion.status || taskVersion.status !== 'NONE' || taskVersion.clearml_id"
     >
       <div class="text-xl select-none">Das Model wird trainiert</div>
-    </div>
+    </div> -->
     <div class="rete w-full h-full bg-gray-900" ref="rete"></div>
   </div>
 </template>

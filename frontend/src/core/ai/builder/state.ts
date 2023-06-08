@@ -1,6 +1,6 @@
 import { Member } from '../../../composables/ws/usePresenceChannel';
 import { PresenceChannel } from 'pusher-js';
-import { reactive } from 'vue';
+import { computed, reactive } from 'vue';
 import { AreaExtra, NodeProps, Schemes } from './use-editor';
 import { AreaPlugin } from 'rete-area-plugin';
 import { Task, TaskVersion } from '../../../model/ai/tasks/task';
@@ -73,3 +73,10 @@ export function getLockedBy(elementId: string): Member | undefined {
   }
   return;
 }
+
+export const isTraining = computed(
+  () =>
+    builderState.selectedVersion?.status ||
+    builderState.selectedVersion?.status !== 'NONE' ||
+    builderState.selectedVersion.clearml_id !== null
+);
