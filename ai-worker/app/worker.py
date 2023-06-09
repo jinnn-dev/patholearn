@@ -73,11 +73,11 @@ def enqueue_builder_task(
         status = "FAILED"
         update_version_status(task_id, version_id, status)
         return
-    update_version_status(task_id, version_id, status)
 
-    task = Task.get_task(project_name=task_name, task_name=version_id)
+    task: Task = Task.get_task(project_name=task_name, task_name=version_id)
 
     update_version_clearml_id(task_id, version_id, task.id)
+    update_version_status(task_id, version_id, status)
 
     return exit_code
 

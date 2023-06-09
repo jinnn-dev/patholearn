@@ -142,7 +142,7 @@ class TaskVersion(BaseModel):
     graph: Graph = Field(...)
     clearml_id: Optional[str] = None
     creation_date: datetime = Field(...)
-    status: TaskVersionStatus = "NONE"
+    status: Optional[TaskVersionStatus] = None
     status_message: Optional[str] = None
 
     class Config:
@@ -170,7 +170,7 @@ class UpdateTaskVersion(BaseModel):
 class Task(BaseMongoModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="id")
     creator_id: str = Field(...)
-    project_id: str = Field(...)
+    project_id: PyObjectId = Field(default_factory=PyObjectId, alias="project_id")
     creation_date: datetime = Field(...)
     name: str = Field(...)
     description: Optional[str] = Field(...)
