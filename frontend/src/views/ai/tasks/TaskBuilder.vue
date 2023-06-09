@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { defineAsyncComponent } from 'vue';
 import { builderState } from '../../../core/ai/builder/state';
-import NodeEditor from '../../../components/ai/builder/editor/NodeEditor.vue';
+// import NodeEditor from '../../../components/ai/builder/editor/NodeEditor.vue';
+
+const NodeEditor = defineAsyncComponent(() => import('../../../components/ai/builder/editor/NodeEditor.vue'));
 </script>
 <template>
   <div class="bg-gray-900 w-full h-full relative">
