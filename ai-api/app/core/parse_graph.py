@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Literal, Optional
 
 from pydantic import BaseModel
 from app.schema.task import Graph, IConnection, INode, NodeType
@@ -113,12 +113,26 @@ class Conv2dLayer(Layer):
     stride: tuple
 
 
+class PoolingLayer(Node):
+    kernel_size: tuple
+    stride: tuple
+    type: Literal["max", "average"]
+
+
+class DropoutNode(Node):
+    percentage: float
+
+
 class OutputNode(Node):
     optimizer: Optimizer
     loss_function: LossFunction
     learning_rate: float
     epoch: int
     batch_size: int
+
+
+class BatchNormNode(Node):
+    momentum: float
 
 
 def find_node_by_id(nodes: List[INode], id: str) -> Optional[INode]:
@@ -190,6 +204,12 @@ def parse_node(
             node_instance = get_output_node(node)
         elif node.type == NodeType.FlattenNode:
             node_instance = get_flatten_node(node)
+        elif node.type == NodeType.PoolingNode:
+            node_instance = get_pooling_node(node)
+        elif node.type == NodeType.DropoutNode:
+            node_instance = get_dropout_node(node)
+        elif node.type == NodeType.BatchNormNode:
+            node_instance = get_batch_norm_node(node)
         else:
             return
         processed_nodes[node.id] = node_instance
@@ -256,3 +276,24 @@ def get_output_node(node: INode):
 
 def get_flatten_node(node: INode):
     return FlattenNode(id=node.id)
+
+
+def get_pooling_node(node: INode):
+    logger.debug(node.controls)
+    return PoolingLayer(
+        id=node.id,
+        kernel_size=(
+            node.controls[0].value["x"],
+            node.controls[0].value["y"],
+        ),
+        stride=(node.controls[1].value["x"], node.controls[1].value["y"]),
+        type=node.controls[2].value,
+    )
+
+
+def get_dropout_node(node: INode):
+    return DropoutNode(id=node.id, percentage=node.controls[0].value)
+
+
+def get_batch_norm_node(node: INode):
+    return BatchNormNode(id=node.id, momentum=node.controls[0].value)

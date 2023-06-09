@@ -9,7 +9,7 @@ import torchmetrics
 from clearml import Task
 
 Task.add_requirements("/clearml.requirements.txt")
-task: Task = Task.init(project_name="Test", task_name="648235bb19dfdd22b1547541")
+task: Task = Task.init(project_name="Test 2", task_name="64823f9580b04ece0b6d4c20")
 task.execute_remotely(queue_name="default", clone=False, exit_process=True)
 
 # Data Module for loading data and setting up data loaders
@@ -79,11 +79,18 @@ class ClassificationModel(torch.nn.Module):
     def __init__(self):
         super().__init__()
         self.model = torch.nn.Sequential(
-            torch.nn.Conv2d(in_channels=1, out_channels=64, kernel_size=(5, 5), stride=(1, 1)),
+            torch.nn.Conv2d(in_channels=1, out_channels=32, kernel_size=(3, 3), stride=(1, 1)),
             torch.nn.ReLU(),
+            torch.nn.Conv2d(in_channels=32, out_channels=64, kernel_size=(3, 3), stride=(1, 1)),
+            torch.nn.ReLU(),
+            torch.nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2)),
+            torch.nn.Dropout(p=0.25),
             torch.nn.Flatten(),
-            torch.nn.Linear(in_features=36864, out_features=10),
-            torch.nn.Softmax()
+            torch.nn.Linear(in_features=9216, out_features=128),
+            torch.nn.ReLU(),
+            torch.nn.Dropout(p=0.5),
+            torch.nn.Linear(in_features=128, out_features=10),
+            torch.nn.LogSoftmax(dim=1)
         )
     def forward(self, x):
         logits = self.model(x)
@@ -94,7 +101,7 @@ class LightningModel(pl.LightningModule):
     def __init__(self, model):
         super().__init__()
 
-        self.learning_rate = 0.001
+        self.learning_rate = 0.01
         # The inherited PyTorch module
         self.model = model
 
@@ -159,7 +166,7 @@ data_module = MNISTDataModule(data_dir="./", batch_size=50)
 lightning_model = LightningModel(model)
 
 trainer = pl.Trainer(
-    max_epochs=20,
+    max_epochs=10,
     accelerator="auto",  # Uses GPUs or TPUs if available
     devices="auto",  # Uses all available GPUs/TPUs if applicable
     log_every_n_steps=100

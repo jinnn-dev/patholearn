@@ -4,6 +4,7 @@ import networkx as nx
 from pydantic import BaseModel
 from torchvision import datasets
 from app.core.parse_graph import (
+    BatchNormNode,
     Dataset,
     FlattenNode,
     Layer,
@@ -11,6 +12,8 @@ from app.core.parse_graph import (
     Node,
     OutputNode,
     Conv2dLayer,
+    PoolingLayer,
+    DropoutNode,
 )
 from app.utils.logger import logger
 from app.schema.task import Task, TaskVersion
@@ -166,7 +169,6 @@ class ClassificationModel:
 
         layer_ids = dfs_nodes[1:-1]
         layer_data = [layers.nodes[layer_id]["data"] for layer_id in layer_ids]
-
         input_data_shape = (
             output_node.batch_size,
             in_channels,
@@ -238,7 +240,27 @@ class ClassificationModel:
                 )
                 in_features = layer.out_features
                 parsed_layers.append(parsed_layer)
-
+            if isinstance(layer, PoolingLayer):
+                parsed_layer = None
+                if layer.type == "average":
+                    parsed_layer_string = f"torch.nn.AvgPool2d(kernel_size={layer.kernel_size}, stride={layer.stride})"
+                    parsed_layer = torch.nn.AvgPool2d(
+                        kernel_size=layer.kernel_size, stride=layer.stride
+                    )
+                else:
+                    parsed_layer_string = f"torch.nn.MaxPool2d(kernel_size={layer.kernel_size}, stride={layer.stride})"
+                    parsed_layer = torch.nn.MaxPool2d(
+                        kernel_size=layer.kernel_size, stride=layer.stride
+                    )
+                layer_data_shape = get_output_shape(parsed_layer, layer_data_shape)
+                logger.debug(layer_data_shape)
+                parsed_layers_strings.append(parsed_layer_string)
+            if isinstance(layer, DropoutNode):
+                parsed_layer_string = f"torch.nn.Dropout(p={layer.percentage / 100})"
+                parsed_layers_strings.append(parsed_layer_string)
+            if isinstance(layer, BatchNormNode):
+                parsed_layer_string = f"torch.nn.BatchNorm2d(num_features={in_features}, momentum={layer.momentum})"
+                parsed_layers_strings.append(parsed_layer_string)
             else:
                 continue
             parsed_layers.append(parsed_layer)
@@ -458,6 +480,8 @@ def get_dataset_module(dataset_node: Dataset, output_node: OutputNode):
 
 
 def get_model(graph: nx.digraph, dataset_node: Dataset, output_node: OutputNode):
+    for node in graph.nodes(data=True):
+        logger.debug(node)
     model = ClassificationModel(
         graph, dataset_node, output_node, dataset_node.classes, True
     )

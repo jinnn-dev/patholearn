@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List
 from app.train.train_model import start_builder_training
 from bson import ObjectId
-from fastapi import APIRouter, Body, Depends
+from fastapi import APIRouter, Body, Depends, HTTPException
 from pydantic import parse_obj_as
 from supertokens_python.recipe import session
 from supertokens_python.recipe.session import SessionContainer
@@ -55,6 +55,51 @@ async def create_task(
     )
     created_task = await task_collection.find_one({"_id": new_task.inserted_id})
     return created_task
+
+
+@router.put("/unlock")
+async def unlock_element(
+    data: LockElement = Body(...), s: SessionContainer = Depends(verify_session())
+):
+    # element = await task_collection.find_one(
+    #     {
+    #         "_id": ObjectId(data.task_id),
+    #         "versions": {"$elemMatch": {"id": ObjectId(data.version_id)}},
+    #     }
+    # )
+
+    element: Task = await task_collection.find_one(
+        {
+            "_id": ObjectId(data.task_id),
+        }
+    )
+    if element is not None:
+        await task_collection.find_one_and_update(
+            {
+                "_id": ObjectId(data.task_id),
+            },
+            {"$unset": {f"lockStatus.{data.element_id}": ""}},
+        )
+
+
+@router.delete("/unlock")
+async def unlock_elements(
+    data: UnlockElements = Body(...), s: SessionContainer = Depends(verify_session())
+):
+    # await task_collection.update_many(
+    #     {"_id": ObjectId(data.task_id), "lockStatus": data.user_ids},
+    #     {"$unset": {f"lockStatus.{data.element_id}": ""}},
+    # )
+
+    update_query = {"$unset": {}}
+    for key in data.element_ids:
+        update_query["$unset"]["lockStatus." + key] = ""
+    await task_collection.find_one_and_update(
+        {
+            "_id": ObjectId(data.task_id),
+        },
+        update_query,
+    )
 
 
 @router.get(
@@ -154,51 +199,6 @@ async def lock_element(
     # if element is not None:
 
 
-@router.put("/unlock")
-async def unlock_element(
-    data: LockElement = Body(...), s: SessionContainer = Depends(verify_session())
-):
-    # element = await task_collection.find_one(
-    #     {
-    #         "_id": ObjectId(data.task_id),
-    #         "versions": {"$elemMatch": {"id": ObjectId(data.version_id)}},
-    #     }
-    # )
-
-    element: Task = await task_collection.find_one(
-        {
-            "_id": ObjectId(data.task_id),
-        }
-    )
-    if element is not None:
-        await task_collection.find_one_and_update(
-            {
-                "_id": ObjectId(data.task_id),
-            },
-            {"$unset": {f"lockStatus.{data.element_id}": ""}},
-        )
-
-
-@router.delete("/unlock")
-async def unlock_elements(
-    data: UnlockElements = Body(...), s: SessionContainer = Depends(verify_session())
-):
-    # await task_collection.update_many(
-    #     {"_id": ObjectId(data.task_id), "lockStatus": data.user_ids},
-    #     {"$unset": {f"lockStatus.{data.element_id}": ""}},
-    # )
-
-    update_query = {"$unset": {}}
-    for key in data.element_ids:
-        update_query["$unset"]["lockStatus." + key] = ""
-    await task_collection.find_one_and_update(
-        {
-            "_id": ObjectId(data.task_id),
-        },
-        update_query,
-    )
-
-
 @router.get("/{task_id}/version/{version_id}/parse")
 async def parse_builder_state(
     task_id: str, version_id: str, s: SessionContainer = Depends(verify_session())
@@ -216,9 +216,12 @@ async def parse_builder_state(
     task_graph = parse_obj_as(Graph, task.versions[0].graph)
 
     parsed_graph, dataset_node, output_node = parse_graph(task_graph)
-    pytorch_text = parse_to_pytorch_graph(
-        parsed_graph, dataset_node, output_node, task, task.versions[0]
-    )
+    try:
+        pytorch_text = parse_to_pytorch_graph(
+            parsed_graph, dataset_node, output_node, task, task.versions[0]
+        )
+    except:
+        return HTTPException(status_code=500, detail="Model could not be parsed")
     await task_collection.update_one(
         {
             "_id": ObjectId(task_id),
