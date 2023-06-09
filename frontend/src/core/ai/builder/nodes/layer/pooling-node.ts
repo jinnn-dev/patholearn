@@ -20,7 +20,7 @@ export class PoolingNode extends Node<
   height = 235;
 
   constructor(socket: ClassicPreset.Socket) {
-    super('Pooling', socket, "PoolingNode");
+    super('Pooling', socket, 'PoolingNode');
   }
 
   public duplicate(): PoolingNode {
@@ -56,6 +56,6 @@ export class PoolingNode extends Node<
         { x: 3, y: 3 }
       )
     );
-    this.addControl('type', new DropdownControl(['max', 'average'], 'Type', 'type'));
+    this.addControl('type', new DropdownControl(['max', 'average'], 'Type', 'type', 'max'));
   }
 }
