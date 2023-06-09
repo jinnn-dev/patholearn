@@ -88,7 +88,11 @@ const nodeClasses = computed(() => {
     classes.push('ring-4');
   } else {
     classes.push('ring-2');
-    classes.push('ring-gray-400');
+    if (isTraining.value) {
+      classes.push('ring-green-600');
+    } else {
+      classes.push('ring-gray-400');
+    }
   }
 
   // if (isTraining.value) {
@@ -144,14 +148,14 @@ const outputs = computed(() => {
           :key="key"
           :data-testid="'input-' + key"
         >
-          <div class="input-socket" :ref="(el) => onRef(el, key, input, 'input')" data-testid="input-socket"></div>
+          <div class="input-socket" :ref="(el: any) => onRef(el, key, input, 'input')" data-testid="input-socket"></div>
           <div class="input-title" v-show="!input.control || !input.showControl" data-testid="input-title">
             {{ input.label }}
           </div>
           <div
             class="input-control"
             v-show="input.control && input.showControl"
-            :ref="(el) => onRef(el, key, input.control, 'control')"
+            :ref="(el: any) => onRef(el, key, input.control, 'control')"
             data-testid="input-control"
           ></div>
         </div>
@@ -160,7 +164,11 @@ const outputs = computed(() => {
       <!-- Outputs-->
       <div class="output shrink-0" v-for="[key, output] in outputs" :key="key" :data-testid="'output-' + key">
         <div class="output-title" data-testid="output-title">{{ output.label }}</div>
-        <div class="output-socket" :ref="(el) => onRef(el, key, output, 'output')" data-testid="output-socket"></div>
+        <div
+          class="output-socket"
+          :ref="(el: any) => onRef(el, key, output, 'output')"
+          data-testid="output-socket"
+        ></div>
       </div>
     </div>
     <!-- Controls-->
@@ -168,7 +176,7 @@ const outputs = computed(() => {
       class="control"
       v-for="[key, control] in controls"
       :key="key"
-      :ref="(el) => onRef(el, key, control, 'control')"
+      :ref="(el: any) => onRef(el, key, control, 'control')"
       :data-testid="'control-' + key"
     ></div>
 
