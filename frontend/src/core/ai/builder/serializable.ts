@@ -59,7 +59,7 @@ export function serializePort(
   port: ClassicPreset.Input<ClassicPreset.Socket> | ClassicPreset.Output<ClassicPreset.Socket>
 ): IPort {
   return {
-    type: port instanceof ClassicPreset.Input<ClassicPreset.Socket> ? 'ClassicPreset.Input' : 'ClassicPreset.Output',
+    type: port instanceof ClassicPreset.Input ? 'ClassicPreset.Input' : 'ClassicPreset.Output',
     key: key,
     id: port.id,
     label: port.label,
