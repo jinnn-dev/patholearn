@@ -10,6 +10,7 @@ import CustomSocketVue from '../../../components/ai/builder/CustomSocket.vue';
 import DimensionControlVue from '../../../components/ai/builder/controls/DimensionControl.vue';
 import NumberControlVue from '../../../components/ai/builder/controls/NumberControl.vue';
 import DropdownControlVue from '../../../components/ai/builder/controls/DropdownControl.vue';
+import DiagramControlVue from '../../../components/ai/builder/controls/DiagramControl.vue';
 
 import { DatasetNode } from './nodes/input/dataset-node';
 import { DropdownControl } from './controls/dropdown-control';
@@ -35,6 +36,7 @@ import { MousePlugin, setupMousePlugin } from './plugins/mouse-plugin';
 import { trackedSelector, selectableNodes, selector } from './trackedSelector';
 import { pushTrainingStarted } from './sync';
 import { PresenceChannel } from 'pusher-js';
+import { DiagramControl } from './controls/diagram-control';
 export type NodeProps = DatasetNode | Conv2DNode | LinearNode | DropoutNode | FlattenNode | BatchNormNode | PoolingNode;
 
 export class Connection<A extends NodeProps, B extends NodeProps> extends ClassicPreset.Connection<A, B> {}
@@ -143,6 +145,9 @@ export function useEditor() {
         },
         // @ts-ignore
         control(data) {
+          if (data.payload instanceof DiagramControl) {
+            return DiagramControlVue;
+          }
           if (data.payload instanceof DropdownControl) {
             return DropdownControlVue;
           }

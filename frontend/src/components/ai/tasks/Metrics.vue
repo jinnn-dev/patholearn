@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
 import { useService } from '../../../composables/useService';
 import { AiService } from '../../../services/ai.service';
 import Diagram from '../../general/Diagram.vue';
 import NoContent from '../../general/NoContent.vue';
-const route = useRoute();
 
 const props = defineProps({
   clearMlTaskId: {
