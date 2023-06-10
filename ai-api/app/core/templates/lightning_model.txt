@@ -48,7 +48,7 @@ class LightningModel(pl.LightningModule):
         self.log("valid_loss", loss)
         self.valid_acc(predicted_labels, true_labels)
         self.log(
-            "valid_acc", self.valid_acc, on_espoch=True, on_step=False, prog_bar=True
+            "valid_acc", self.valid_acc, on_epoch=True, on_step=False, prog_bar=True
         )
 
     def test_step(self, batch, batch_idx):
@@ -57,5 +57,5 @@ class LightningModel(pl.LightningModule):
         self.log("test_acc", self.test_acc, on_epoch=True, on_step=False)
 
     def configure_optimizers(self):
-        optimizer = ${optimizer}(logits, true_labels)
+        optimizer = ${optimizer}(self.parameters(), lr=self.learning_rate)
         return optimizer

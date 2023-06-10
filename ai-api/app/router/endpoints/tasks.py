@@ -215,23 +215,27 @@ async def parse_builder_state(
 
     task_graph = parse_obj_as(Graph, task.versions[0].graph)
 
-    parsed_graph, dataset_node, output_node = parse_graph(task_graph)
-    try:
-        pytorch_text = parse_to_pytorch_graph(
-            parsed_graph, dataset_node, output_node, task, task.versions[0]
-        )
-    except:
-        return HTTPException(status_code=500, detail="Model could not be parsed")
-    await task_collection.update_one(
-        {
-            "_id": ObjectId(task_id),
-            "versions": {"$elemMatch": {"id": ObjectId(version_id)}},
-        },
-        {"$set": {"versions.$[version].status": "CREATING"}},
-        array_filters=[{"version.id": ObjectId(version_id)}],
+    parsed_graph, dataset_node, output_node, combine_nodes = parse_graph(task_graph)
+    # try:
+    #     pytorch_text = parse_to_pytorch_graph(
+    #         parsed_graph, dataset_node, output_node, task, task.versions[0]
+    #     )
+    # except Exception as e:
+    #     logger.error(e)
+    #     return HTTPException(status_code=500, detail="Model could not be parsed")
+    pytorch_text = parse_to_pytorch_graph(
+        parsed_graph, dataset_node, output_node, combine_nodes, task, task.versions[0]
     )
+    # await task_collection.update_one(
+    #     {
+    #         "_id": ObjectId(task_id),
+    #         "versions": {"$elemMatch": {"id": ObjectId(version_id)}},
+    #     },
+    #     {"$set": {"versions.$[version].status": "CREATING"}},
+    #     array_filters=[{"version.id": ObjectId(version_id)}],
+    # )
 
-    start_builder_training(pytorch_text, task_id, task.name, version_id)
+    # start_builder_training(pytorch_text, task_id, task.name, version_id)
 
     return pytorch_text
 

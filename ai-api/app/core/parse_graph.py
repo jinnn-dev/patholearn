@@ -166,15 +166,12 @@ def parse_graph(builderState: Graph):
 
     for node in builderState.nodes:
         if node.type == NodeType.DatasetNode and start_node_id is None:
-            parse_node(node, nodes_dict, builderState.connections, processed_nodes)
             start_node_id = node.id
         if node.type == NodeType.OutputNode and end_node_id is None:
             end_node_id = node.id
-        if start_node_id is not None and end_node_id is not None:
-            break
-
-    for node in builderState.nodes:
-        parse_node(node, nodes_dict, builderState.connections, processed_nodes)
+        _, node_instance = parse_node(
+            node, nodes_dict, builderState.connections, processed_nodes
+        )
 
     graph = nx.DiGraph()
 
@@ -188,52 +185,26 @@ def parse_graph(builderState: Graph):
         graph, source=start_node_id, target=end_node_id
     )
 
-    nodes_between_set = {node for path in paths_between_generator for node in path}
+    nodes_between_set = set()
+    combine_nodes = set()
 
+    for path in paths_between_generator:
+        for node in path:
+            node_instance = graph.nodes[node]["data"]
+            if isinstance(node_instance, AddNode) or isinstance(
+                node_instance, ConcatenateNode
+            ):
+                combine_nodes.add(node_instance.id)
+            nodes_between_set.add(node)
     path_graph: nx.DiGraph = graph.subgraph(nodes_between_set)
 
-    for node in path_graph.nodes(data=True):
-        logger.debug(node)
+    # for node in path_graph.nodes(data=True):
+    #     logger.debug(node)
 
     dataset_node = path_graph.nodes[start_node_id]["data"]
     output_node = path_graph.nodes[end_node_id]["data"]
 
-    return path_graph, dataset_node, output_node
-
-
-def parse_node(
-    node: INode,
-    nodes_dict: Dict[str, INode],
-    connections: List[IConnection],
-    processed_nodes: Dict[str, INode],
-):
-    if node.id not in processed_nodes:
-        if node.type == NodeType.DatasetNode:
-            node_instance = get_dataset(node)
-        elif node.type == NodeType.Conv2DNode:
-            node_instance = get_conv_node(node)
-        elif node.type == NodeType.LinearNode:
-            node_instance = get_linear_node(node)
-        elif node.type == NodeType.OutputNode:
-            node_instance = get_output_node(node)
-        elif node.type == NodeType.FlattenNode:
-            node_instance = get_flatten_node(node)
-        elif node.type == NodeType.PoolingNode:
-            node_instance = get_pooling_node(node)
-        elif node.type == NodeType.DropoutNode:
-            node_instance = get_dropout_node(node)
-        elif node.type == NodeType.BatchNormNode:
-            node_instance = get_batch_norm_node(node)
-        elif node.type == NodeType.AddNode:
-            node_instance = get_add_node(node)
-        else:
-            return
-        processed_nodes[node.id] = node_instance
-        to_nodes = get_to_nodes(node, connections)
-        from_nodes = get_from_nodes(node, connections)
-        node_instance.to_nodes = to_nodes
-        node_instance.from_nodes = from_nodes
-    return processed_nodes
+    return path_graph, dataset_node, output_node, list(combine_nodes)
 
 
 def get_dataset(node: INode):
@@ -318,6 +289,10 @@ def get_add_node(node: INode):
     return AddNode(id=node.id)
 
 
+def get_concatenate_node(node: INode):
+    return ConcatenateNode(id=node.id)
+
+
 def get_to_nodes(node: INode, connections: List[IConnection]):
     to_nodes = []
     for connection in connections:
@@ -332,3 +307,36 @@ def get_from_nodes(node: INode, connections: List[IConnection]):
         if connection.target == node.id:
             from_nodes.append(connection.source)
     return from_nodes
+
+
+node_type_map = {
+    NodeType.DatasetNode: get_dataset,
+    NodeType.Conv2DNode: get_conv_node,
+    NodeType.LinearNode: get_linear_node,
+    NodeType.OutputNode: get_output_node,
+    NodeType.FlattenNode: get_flatten_node,
+    NodeType.PoolingNode: get_pooling_node,
+    NodeType.DropoutNode: get_dropout_node,
+    NodeType.BatchNormNode: get_batch_norm_node,
+    NodeType.AddNode: get_add_node,
+    NodeType.ConcatenateNode: get_concatenate_node,
+}
+
+
+def parse_node(
+    node: INode,
+    nodes_dict: Dict[str, INode],
+    connections: List[IConnection],
+    processed_nodes: Dict[str, INode],
+):
+    if node.id not in processed_nodes:
+        if node.type not in node_type_map:
+            return None
+        node_function = node_type_map[node.type]
+        node_instance = node_function(node)
+        processed_nodes[node.id] = node_instance
+        to_nodes = get_to_nodes(node, connections)
+        from_nodes = get_from_nodes(node, connections)
+        node_instance.to_nodes = to_nodes
+        node_instance.from_nodes = from_nodes
+    return processed_nodes, node_instance
