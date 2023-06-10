@@ -56,6 +56,8 @@ from enum import Enum
 
 class Node(BaseModel):
     id: str
+    from_nodes: Optional[str]
+    to_nodes: Optional[List[str]]
 
 
 class FlattenNode(Node):
@@ -135,6 +137,14 @@ class BatchNormNode(Node):
     momentum: float
 
 
+class AddNode(Node):
+    pass
+
+
+class ConcatenateNode(Node):
+    pass
+
+
 def find_node_by_id(nodes: List[INode], id: str) -> Optional[INode]:
     return next((node for node in nodes if node.id == id), None)
 
@@ -177,9 +187,13 @@ def parse_graph(builderState: Graph):
     paths_between_generator = nx.all_simple_paths(
         graph, source=start_node_id, target=end_node_id
     )
+
     nodes_between_set = {node for path in paths_between_generator for node in path}
 
     path_graph: nx.DiGraph = graph.subgraph(nodes_between_set)
+
+    for node in path_graph.nodes(data=True):
+        logger.debug(node)
 
     dataset_node = path_graph.nodes[start_node_id]["data"]
     output_node = path_graph.nodes[end_node_id]["data"]
@@ -210,15 +224,16 @@ def parse_node(
             node_instance = get_dropout_node(node)
         elif node.type == NodeType.BatchNormNode:
             node_instance = get_batch_norm_node(node)
+        elif node.type == NodeType.AddNode:
+            node_instance = get_add_node(node)
         else:
             return
         processed_nodes[node.id] = node_instance
-
+        to_nodes = get_to_nodes(node, connections)
+        from_nodes = get_from_nodes(node, connections)
+        node_instance.to_nodes = to_nodes
+        node_instance.from_nodes = from_nodes
     return processed_nodes
-
-
-def get_neighbours(node: INode, connections: List[IConnection]):
-    pass
 
 
 def get_dataset(node: INode):
@@ -279,7 +294,7 @@ def get_flatten_node(node: INode):
 
 
 def get_pooling_node(node: INode):
-    logger.debug(node.controls)
+    # logger.debug(node.controls)
     return PoolingLayer(
         id=node.id,
         kernel_size=(
@@ -297,3 +312,23 @@ def get_dropout_node(node: INode):
 
 def get_batch_norm_node(node: INode):
     return BatchNormNode(id=node.id, momentum=node.controls[0].value)
+
+
+def get_add_node(node: INode):
+    return AddNode(id=node.id)
+
+
+def get_to_nodes(node: INode, connections: List[IConnection]):
+    to_nodes = []
+    for connection in connections:
+        if connection.source == node.id:
+            to_nodes.append(connection.target)
+    return to_nodes
+
+
+def get_from_nodes(node: INode, connections: List[IConnection]):
+    from_nodes = []
+    for connection in connections:
+        if connection.target == node.id:
+            from_nodes.append(connection.source)
+    return from_nodes

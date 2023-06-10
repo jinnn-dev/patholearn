@@ -1,0 +1,10 @@
+class ClassificationModel(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.model = torch.nn.Sequential(
+            ${layers_string}
+        )
+
+    def forward(self, x):
+        logits = self.model(x)
+        return logits

@@ -1,4 +1,5 @@
 from enum import Enum
+from string import Template
 from typing import List
 import networkx as nx
 from pydantic import BaseModel
@@ -19,6 +20,7 @@ from app.utils.logger import logger
 from app.schema.task import Task, TaskVersion
 import torch
 import numpy as np
+import black
 
 
 class Element(BaseModel):
@@ -83,68 +85,8 @@ class OptimizerString(Enum):
 
 class MNISTDataModule:
     def __init__(self) -> None:
-        self.dataset_module = """# Data Module for loading data and setting up data loaders
-class MNISTDataModule(pl.LightningDataModule):
-    def __init__(self, data_dir: str = "./", batch_size: int = 32):
-        super().__init__()
-        self.data_dir = data_dir
-        self.transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
-        self.batch_size = batch_size
-
-    def prepare_data(self):
-        # download
-        datasets.MNIST(self.data_dir, train=True, download=True)
-        datasets.MNIST(self.data_dir, train=False, download=True)
-
-    def setup(self, stage: str):
-        # Assign train/val datasets for use in dataloaders
-        if stage == "fit":
-            mnist_full = datasets.MNIST(self.data_dir, train=True, transform=self.transform)
-            self.mnist_train, self.mnist_val = random_split(mnist_full, [55000, 5000])
-
-        # Assign test dataset for use in dataloader(s)
-        if stage == "test":
-            self.mnist_test = datasets.MNIST(self.data_dir, train=False, transform=self.transform)
-
-        if stage == "predict":
-            self.mnist_predict = datasets.MNIST(self.data_dir, train=False, transform=self.transform)
-
-    def train_dataloader(self):
-        return DataLoader(
-                self.mnist_train, 
-                batch_size=self.batch_size, 
-                num_workers=multiprocessing.cpu_count(),  
-                shuffle=True, 
-                drop_last=True
-            )
-
-    def val_dataloader(self):
-        return DataLoader(
-                self.mnist_val, 
-                batch_size=self.batch_size, 
-                num_workers=multiprocessing.cpu_count(),  
-                shuffle=False, 
-                drop_last=False
-            )
-
-    def test_dataloader(self):
-        return DataLoader(
-                self.mnist_test, 
-                batch_size=self.batch_size, 
-                num_workers=multiprocessing.cpu_count(), 
-                shuffle=False, 
-                drop_last=False
-            )
-
-    def predict_dataloader(self):
-        return DataLoader(
-                self.mnist_predict, 
-                batch_size=self.batch_size, 
-                num_workers=multiprocessing.cpu_count(), 
-                shuffle=False, 
-                drop_last=False
-            )
-"""
+        with open("/app/core/templates/data_module.txt", "r") as f:
+            self.dataset_module = f.read()
 
     def get_instance(self, data_dir: str = "./", batch_size: int = 32):
         return f"""MNISTDataModule(data_dir="{data_dir}", batch_size={batch_size})"""
@@ -272,16 +214,10 @@ class ClassificationModel:
         sequential = f"""self.model = torch.nn.Sequential"""
         logger.debug(sequential)
 
-        self.model_class = f"""class ClassificationModel(torch.nn.Module):
-    def __init__(self):
-        super().__init__()
-        {sequential}(
-{layers_string}
-        )
-    def forward(self, x):
-        logits = self.model(x)
-        return logits
-        """
+        with open("/app/core/templates/classification_model.txt", "r") as f:
+            src = Template(f.read())
+            replacements = {"layers_string": layers_string}
+            self.model_class = src.substitute(replacements)
 
         # for index in range(1, len(dfs_nodes) - 1):
         #     logger.debug(index)
@@ -319,75 +255,26 @@ class ClassificationModel:
 class LightningModel:
     def __init__(self, output_node: OutputNode) -> None:
         self.learning_rate = output_node.learning_rate
-        self.model_class = f"""class LightningModel(pl.LightningModule):
-    def __init__(self, model):
-        super().__init__()
 
-        self.learning_rate = {self.learning_rate}
-        # The inherited PyTorch module
-        self.model = model
+        with open("/app/core/templates/lightning_model.txt", "r") as f:
+            src = Template(f.read())
+            replacements = {
+                "learning_rate": self.learning_rate,
+                "loss": LossFunctionString._member_map_[
+                    output_node.loss_function.name
+                ].value,
+                "optimizer": OptimizerString._member_map_[
+                    output_node.optimizer.name
+                ].value,
+            }
+            result = src.substitute(replacements)
+            self.model_class = result
 
-        # Save settings and hyperparameters to the log directory
-        # but skip the model parameters
-        self.save_hyperparameters(ignore=['model'])
-
-        # Set up attributes for computing the accuracy
-        self.train_acc = torchmetrics.Accuracy(task='multiclass', num_classes=10)
-        self.valid_acc = torchmetrics.Accuracy(task='multiclass', num_classes=10)
-        self.test_acc = torchmetrics.Accuracy(task='multiclass', num_classes=10)
-        
-    # Defining the forward method is only necessary 
-    # if you want to use a Trainer's .predict() method (optional)
-    def forward(self, x):
-        return self.model(x)
-        
-    # A common forward step to compute the loss and labels
-    # this is used for training, validation, and testing below
-    def _shared_step(self, batch):
-        features, true_labels = batch
-        logits = self(features)
-        loss = {LossFunctionString._member_map_[output_node.loss_function.name].value}(logits, true_labels)
-        # predicted_labels = torch.argmax(logits, dim=1)
-        predicted_labels = logits
-        return loss, true_labels, predicted_labels
-
-    def training_step(self, batch, batch_idx):
-        loss, true_labels, predicted_labels = self._shared_step(batch)
-        self.log("train_loss", loss)
-        
-        # To account for Dropout behavior during evaluation
-        self.model.eval()
-        with torch.no_grad():
-            _, true_labels, predicted_labels = self._shared_step(batch)
-        self.train_acc.update(predicted_labels, true_labels)
-        self.log("train_acc", self.train_acc, on_epoch=True, on_step=False)
-        self.model.train()
-        return loss  # this is passed to the optimzer for training
-
-    def validation_step(self, batch, batch_idx):
-        loss, true_labels, predicted_labels = self._shared_step(batch)
-        self.log("valid_loss", loss)
-        self.valid_acc(predicted_labels, true_labels)
-        self.log("valid_acc", self.valid_acc,
-                    on_epoch=True, on_step=False, prog_bar=True)
-
-    def test_step(self, batch, batch_idx):
-        loss, true_labels, predicted_labels = self._shared_step(batch)
-        self.test_acc(predicted_labels, true_labels)
-        self.log("test_acc", self.test_acc, on_epoch=True, on_step=False)
-
-    def configure_optimizers(self):
-        optimizer = {OptimizerString._member_map_[output_node.optimizer.name].value}(self.parameters(),  lr=self.learning_rate)
-        return optimizer
-    """
-
-        self.trainer = f"""pl.Trainer(
-    max_epochs={output_node.epoch},
-    accelerator="auto",  # Uses GPUs or TPUs if available
-    devices="auto",  # Uses all available GPUs/TPUs if applicable
-    log_every_n_steps=100
-)
-        """
+        with open("/app/core/templates/trainer_instance.txt", "r") as f:
+            src = Template(f.read())
+            replacements = {"epochs": output_node.epoch}
+            result = src.substitute(replacements)
+            self.trainer = result
 
     def get_instance(self, model_name: str):
         return f"LightningModel({model_name})"
@@ -444,10 +331,12 @@ def parse_to_pytorch_graph(
     lightning_trainer = "trainer = " + lightning_model.trainer
     lightning_train = f"trainer.fit(model=lightning_model, datamodule=data_module)"
 
-    clearml_string = f"""Task.add_requirements("/clearml.requirements.txt")
-task: Task = Task.init(project_name="{task.name}", task_name="{version.id}")
-task.execute_remotely(queue_name="default", clone=False, exit_process=True)"""
-    return (
+    with open("/app/core/templates/clearml.txt", "r") as f:
+        src = Template(f.read())
+        replacements = {"project_name": task.name, "task_name": version.id}
+        clearml_string = src.substitute(replacements)
+
+    formated = black.format_str(
         import_string
         + paragraph
         + clearml_string
@@ -466,8 +355,11 @@ task.execute_remotely(queue_name="default", clone=False, exit_process=True)"""
         + paragraph
         + lightning_trainer
         + paragraph
-        + lightning_train
+        + lightning_train,
+        mode=black.Mode(),
     )
+
+    return formated
 
 
 def get_dataset_module(dataset_node: Dataset, output_node: OutputNode):
@@ -480,8 +372,8 @@ def get_dataset_module(dataset_node: Dataset, output_node: OutputNode):
 
 
 def get_model(graph: nx.digraph, dataset_node: Dataset, output_node: OutputNode):
-    for node in graph.nodes(data=True):
-        logger.debug(node)
+    # for node in graph.nodes(data=True):
+    #     logger.debug(node)
     model = ClassificationModel(
         graph, dataset_node, output_node, dataset_node.classes, True
     )
