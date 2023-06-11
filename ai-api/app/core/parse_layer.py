@@ -28,7 +28,6 @@ def parse_conv2d_layer(
     )
 
     activation = get_activation_function(layer_data.activation_function)
-
     return (
         [layer, activation],
         layer.out_channels,
@@ -94,7 +93,12 @@ def parse_batch_norm_node(
 
 
 def get_activation_function(activation_function: ActivationFunction) -> torch.nn.Module:
-    return (ActivationFunctionModule._member_map_[activation_function.name].value)()
+    torch_activation_function = ActivationFunctionModule._member_map_[
+        activation_function.name
+    ].value
+    if activation_function == ActivationFunction.LogSoftmax:
+        return torch_activation_function(dim=1)
+    return torch_activation_function()
 
 
 def get_output_shape(model: torch.nn.Module, layer_dim: tuple) -> tuple:

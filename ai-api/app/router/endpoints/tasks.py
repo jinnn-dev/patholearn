@@ -21,7 +21,6 @@ from app.schema.task import (
 )
 from app.core.parse_graph import parse_graph
 from app.core.parse_to_pytorch import parse_to_pytorch_graph
-from app.utils.logger import logger
 
 router = APIRouter()
 
@@ -226,16 +225,16 @@ async def parse_builder_state(
     pytorch_text = parse_to_pytorch_graph(
         parsed_graph, dataset_node, output_node, combine_nodes, task, task.versions[0]
     )
-    # await task_collection.update_one(
-    #     {
-    #         "_id": ObjectId(task_id),
-    #         "versions": {"$elemMatch": {"id": ObjectId(version_id)}},
-    #     },
-    #     {"$set": {"versions.$[version].status": "CREATING"}},
-    #     array_filters=[{"version.id": ObjectId(version_id)}],
-    # )
+    await task_collection.update_one(
+        {
+            "_id": ObjectId(task_id),
+            "versions": {"$elemMatch": {"id": ObjectId(version_id)}},
+        },
+        {"$set": {"versions.$[version].status": "CREATING"}},
+        array_filters=[{"version.id": ObjectId(version_id)}],
+    )
 
-    # start_builder_training(pytorch_text, task_id, task.name, version_id)
+    start_builder_training(pytorch_text, task_id, task.name, version_id)
 
     return pytorch_text
 

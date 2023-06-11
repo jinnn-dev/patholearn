@@ -3,44 +3,26 @@ from __future__ import annotations
 from enum import Enum
 from string import Template
 from typing import List, Union
+from app.core.parse_classification_model import get_classification_model
 
 import matplotlib.pyplot as plt
 from pydantic import BaseModel
-from app.core.parse_layer import parse_layer
 from app.core.parse_lightning import LightningModel
-from app.schema.parser import (
-    ActivationFunctionModule,
-    ActivationFunctionString,
-)
+
 import networkx as nx
 
 from app.core.parse_graph import (
     AddNode,
-    BatchNormNode,
     ConcatenateNode,
-    Dataset,
-    FlattenNode,
-    LinearLayer,
+    DatasetNode,
     Node,
     OutputNode,
-    Conv2dLayer,
-    PoolingLayer,
-    DropoutNode,
 )
 from app.utils.logger import logger
 from app.schema.task import Task, TaskVersion
 import torch
 import numpy as np
 import black
-
-
-class Split(BaseModel):
-    paths: List[Path]
-    split_node: Node
-    combine_node: Union[AddNode, ConcatenateNode]
-
-
-Path = List[Union[Split, str]]
 
 
 class MNISTDataModule:
@@ -55,53 +37,13 @@ class MNISTDataModule:
 class ClassificationModel:
     def __init__(
         self,
-        layers: nx.DiGraph,
-        dataset_node: Dataset,
-        output_node: OutputNode,
-        num_classes: int,
-        grayscale=False,
+        layers: str,
     ) -> None:
-        self.layers = layers
-        if grayscale:
-            in_channels = 1
-        else:
-            in_channels = 3
-
-        dfs_nodes = list(nx.dfs_preorder_nodes(layers, dataset_node.id))
-
-        layer_ids = dfs_nodes[1:-1]
-
-        layer_data: List[Node] = [
-            layers.nodes[layer_id]["data"] for layer_id in layer_ids
-        ]
-
-        input_data_shape = (
-            output_node.batch_size,
-            in_channels,
-            dataset_node.dimension.x,
-            dataset_node.dimension.y,
-        )
-
-        in_features = in_channels
-        layer_data_shape = input_data_shape
-        parsed_layers = []
-        for index, layer in enumerate(layer_data):
-            parsed_new_layers, new_in_channels, new_layer_data_shape = parse_layer(
-                layer, in_features, layer_data_shape
-            )
-            in_features = new_in_channels
-            layer_data_shape = new_layer_data_shape
-
-            if parsed_new_layers is None:
-                continue
-
-            for parsed_layer in parsed_new_layers:
-                parsed_layers.append("torch.nn." + str(parsed_layer))
-        layers_string = ",\n".join(line for line in parsed_layers)
-
         with open("/app/core/templates/classification_model.txt", "r") as f:
             src = Template(f.read())
-            replacements = {"layers_string": layers_string}
+
+            logger.debug("\n".join(layers))
+            replacements = {"layers_string": ",\n".join(layers)}
             self.model_class = src.substitute(replacements)
 
     def get_instance(self):
@@ -110,7 +52,7 @@ class ClassificationModel:
 
 def parse_to_pytorch_graph(
     graph: nx.DiGraph,
-    dataset_node: Dataset,
+    dataset_node: DatasetNode,
     output_node: OutputNode,
     combine_nodes: List[str],
     task: Task,
@@ -184,7 +126,7 @@ def parse_to_pytorch_graph(
     return formated
 
 
-def get_dataset_module(dataset_node: Dataset, output_node: OutputNode):
+def get_dataset_module(dataset_node: DatasetNode, output_node: OutputNode):
     dataset_name = dataset_node.name
     if dataset_name == "MNIST":
         module = MNISTDataModule()
@@ -195,31 +137,24 @@ def get_dataset_module(dataset_node: Dataset, output_node: OutputNode):
 
 def get_model(
     graph: nx.DiGraph,
-    dataset_node: Dataset,
+    dataset_node: DatasetNode,
     output_node: OutputNode,
     combine_nodes: List[str],
 ):
-    start_node_id = dataset_node.id
-
-    # nx.draw(graph, with_labels=True)
-
-    # # Show the plot
-    # plt.savefig("/app/core/graph.png")
-    # plt.clf()
-
     path = []
-
-    if len(dataset_node.to_nodes) > 1:
-        get_path_until_output(graph, start_node_id, path)
-    elif len(combine_nodes) > 0:
-        get_path_until_output(graph, start_node_id, path)
+    if len(dataset_node.to_nodes) > 1 or len(combine_nodes) > 0:
+        get_path_until_output(graph, dataset_node.id, path)
     else:
         path = list(nx.dfs_preorder_nodes(graph, dataset_node.id))
 
     logger.debug(f"PATH RESULT: {path}")
 
+    layers, layer_strings = get_classification_model(
+        graph, path, dataset_node, output_node
+    )
+    logger.debug(layer_strings)
     model = ClassificationModel(
-        graph, dataset_node, output_node, dataset_node.classes, True
+        layer_strings, dataset_node, output_node, dataset_node.classes, True
     )
     return model.model_class, model.get_instance()
 
@@ -299,11 +234,3 @@ def get_path_until_split(graph: nx.DiGraph, start_node_id: str):
             split_node = node
             break
     return path, split_node
-
-
-def get_output_shape(model: torch.nn.Module, image_dim: tuple) -> tuple:
-    return model(torch.rand(*(image_dim))).data.shape
-
-
-def get_add_node(layers: nx.DiGraph) -> Node:
-    pass

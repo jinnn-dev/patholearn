@@ -1,3 +1,11 @@
+class Add(torch.nn.Module):
+    def __init__(self, *modules):
+        super().__init__()
+        self.sum_modules = torch.nn.ModuleList(modules)
+
+    def forward(self, x):
+        return sum(module(x) for module in self.sum_modules)
+
 class ClassificationModel(torch.nn.Module):
     def __init__(self):
         super().__init__()

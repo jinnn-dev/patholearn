@@ -9,50 +9,6 @@ import matplotlib.pyplot as plt
 import os
 from enum import Enum
 
-# https://towardsdatascience.com/pytorch-layer-dimensions-what-sizes-should-they-be-and-why-4265a41e01fd
-
-# graph = nx.DiGraph()
-# for node in builderState.nodes:
-#     graph.add_node(
-#         node.id,
-#     )
-#     node.type = NodeType(node.type)
-#     graph.nodes[node.id]["data"]: INode = node
-
-# for conn in builderState.connections:
-#     graph.add_edge(conn.source, conn.target)
-
-# dataset_node = find_node_by_type(graph.nodes(data=True), NodeType.DatasetNode)
-# dataset_node_data: INode = dataset_node[1]["data"]
-
-# # for node in graph.nodes(data=True):
-# #     neighbours = list(graph.neighbors(node[0]))
-# #     logger.debug("-----" + str(node[1]["data"].type) + "------")
-# #     for neighbour in neighbours:
-# #         logger.debug(graph.nodes[neighbour])
-
-# parsed_graph = nx.DiGraph()
-
-# for neighbour in dataset_neighbours:
-#     parse_node()
-#     logger.debug(graph.nodes[neighbour])
-
-# output_node = find_node_by_type(graph.nodes(data=True), NodeType.OutputNode)
-
-# start_node = output_node
-# logger.debug(start_node)
-# for neighbour in graph.neighbors(start_node[0]):
-#     logger.debug("Neighbour" + neighbour)
-
-# for node in graph.nodes(data=True):
-#     # logger.debug(node)
-#     node_data: INode = node[1]["data"]
-#     parse_layer(node_data)
-
-# nx.draw(graph)
-# plt.savefig("/app/core/graph.png")
-# plt.clf()
-
 
 class Node(BaseModel):
     id: str
@@ -69,7 +25,7 @@ class DatasetDimension(BaseModel):
     y: int
 
 
-class Dataset(Node):
+class DatasetNode(Node):
     name: str
     channels: int
     dimension: DatasetDimension
@@ -214,7 +170,7 @@ def get_dataset(node: INode):
     )
 
     if selected_dataset_name == "MNIST":
-        return Dataset(
+        return DatasetNode(
             id=node.id,
             name="MNIST",
             channels=1,
