@@ -15,12 +15,12 @@ from app.schema.task import (
     CreateTask,
     LockElement,
     Task,
-    TaskVersion,
     UnlockElements,
     UpdateTaskVersion,
 )
 from app.core.parse_graph import parse_graph
 from app.core.parse_to_pytorch import parse_to_pytorch_graph
+from app.utils.logger import logger
 
 router = APIRouter()
 
@@ -215,16 +215,19 @@ async def parse_builder_state(
     task_graph = parse_obj_as(Graph, task.versions[0].graph)
 
     parsed_graph, dataset_node, output_node, combine_nodes = parse_graph(task_graph)
-    # try:
-    #     pytorch_text = parse_to_pytorch_graph(
-    #         parsed_graph, dataset_node, output_node, task, task.versions[0]
-    #     )
-    # except Exception as e:
-    #     logger.error(e)
-    #     return HTTPException(status_code=500, detail="Model could not be parsed")
-    pytorch_text = parse_to_pytorch_graph(
-        parsed_graph, dataset_node, output_node, combine_nodes, task, task.versions[0]
-    )
+    try:
+        pytorch_text = parse_to_pytorch_graph(
+            parsed_graph,
+            dataset_node,
+            output_node,
+            combine_nodes,
+            task,
+            task.versions[0],
+        )
+    except Exception as e:
+        logger.error(e)
+        return HTTPException(status_code=500, detail="Model could not be parsed")
+
     await task_collection.update_one(
         {
             "_id": ObjectId(task_id),

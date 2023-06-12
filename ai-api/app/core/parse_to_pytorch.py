@@ -42,7 +42,6 @@ class ClassificationModel:
         with open("/app/core/templates/classification_model.txt", "r") as f:
             src = Template(f.read())
 
-            logger.debug("\n".join(layers))
             replacements = {"layers_string": ",\n".join(layers)}
             self.model_class = src.substitute(replacements)
 
@@ -147,15 +146,10 @@ def get_model(
     else:
         path = list(nx.dfs_preorder_nodes(graph, dataset_node.id))
 
-    logger.debug(f"PATH RESULT: {path}")
-
     layers, layer_strings = get_classification_model(
         graph, path, dataset_node, output_node
     )
-    logger.debug(layer_strings)
-    model = ClassificationModel(
-        layer_strings, dataset_node, output_node, dataset_node.classes, True
-    )
+    model = ClassificationModel(layer_strings)
     return model.model_class, model.get_instance()
 
 

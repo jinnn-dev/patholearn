@@ -17,6 +17,52 @@ from app.schema.parser import ActivationFunctionModule
 from app.utils.logger import logger
 
 
+class Add(torch.nn.Module):
+    def __init__(self, *modules):
+        super().__init__()
+        self.sum_modules = torch.nn.ModuleList(modules)
+
+    def forward(self, x):
+        return sum(module(x) for module in self.sum_modules)
+
+    def __str__(self):
+        module_strings = []
+        for module in self.sum_modules:
+            if isinstance(module, torch.nn.Sequential):
+                layers_str = ", ".join(
+                    ("" if isinstance(layer, Add) else "torch.nn.") + str(layer)
+                    for layer in module
+                )
+                module_str = f"torch.nn.Sequential({layers_str})"
+            else:
+                module_str = str(module)
+            module_strings.append(module_str)
+        return f"Add({', '.join(module_strings)})"
+
+
+class Concatenate(torch.nn.Module):
+    def __init__(self, *modules) -> None:
+        super().__init__()
+        self.concate_modules = torch.nn.ModuleList(modules)
+
+    def forward(self, x):
+        return torch.cat([module(x) for module in self.concate_modules], dim=1)
+
+    def __str__(self):
+        module_strings = []
+        for module in self.concate_modules:
+            if isinstance(module, torch.nn.Sequential):
+                layers_str = ", ".join(
+                    ("" if isinstance(layer, Add) else "torch.nn.") + str(layer)
+                    for layer in module
+                )
+                module_str = f"torch.nn.Sequential({layers_str})"
+            else:
+                module_str = str(module)
+            module_strings.append(module_str)
+        return f"Concatenate({', '.join(module_strings)})"
+
+
 def parse_conv2d_layer(
     layer_data: Conv2dLayer, in_channels: int, layer_data_shape: tuple
 ) -> Tuple[List[torch.nn.Module], int, Tuple]:
@@ -99,6 +145,22 @@ def get_activation_function(activation_function: ActivationFunction) -> torch.nn
     if activation_function == ActivationFunction.LogSoftmax:
         return torch_activation_function(dim=1)
     return torch_activation_function()
+
+
+def parse_add_layer(
+    layers: List, input_data_shape: tuple
+) -> Tuple[List[torch.nn.Module], int, Tuple]:
+    layer = Add(*layers)
+    output_shape = get_output_shape(layer, input_data_shape)
+    return layer, output_shape[1], output_shape
+
+
+def parse_concatenate_layer(
+    layers: List, input_data_shape: tuple
+) -> Tuple[List[torch.nn.Module], int, Tuple]:
+    layer = Concatenate(*layers)
+    output_shape = get_output_shape(layer, input_data_shape)
+    return layer, output_shape[1], output_shape
 
 
 def get_output_shape(model: torch.nn.Module, layer_dim: tuple) -> tuple:

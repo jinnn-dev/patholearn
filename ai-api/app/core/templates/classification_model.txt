@@ -6,6 +6,14 @@ class Add(torch.nn.Module):
     def forward(self, x):
         return sum(module(x) for module in self.sum_modules)
 
+class Concatenate(torch.nn.Module):
+    def __init__(self, *modules) -> None:
+        super().__init__()
+        self.concate_modules = torch.nn.ModuleList(modules)
+
+    def forward(self, x):
+        return torch.cat([module(x) for module in self.concate_modules], dim=1)
+
 class ClassificationModel(torch.nn.Module):
     def __init__(self):
         super().__init__()
