@@ -33,27 +33,7 @@ export function nodesCanConnect(source: NodeClassesType, target: NodeClassesType
     showDate: true,
     timeout: 10000
   });
-  addNotification({
-    header: 'Nicht möglich!',
-    detail: `Ein ${source.type} Node kann nicht mit einem ${target.type} verbunden werden.`,
-    level: 'info',
-    showDate: true,
-    timeout: 10000
-  });
-  addNotification({
-    header: 'Nicht möglich!',
-    detail: `Ein ${source.type} Node kann nicht mit einem ${target.type} verbunden werden.`,
-    level: 'sucess',
-    showDate: true,
-    timeout: 10000
-  });
-  addNotification({
-    header: 'Nicht möglich!',
-    detail: `Ein ${source.type} Node kann nicht mit einem ${target.type} verbunden werden.`,
-    level: 'error',
-    showDate: true,
-    timeout: 10000
-  });
+
   if (source.sockets.output && target.sockets.input) {
     const possibleConnections = connectionMatrix[source.sockets.output.type];
     if (!possibleConnections) return false;

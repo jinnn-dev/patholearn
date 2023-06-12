@@ -98,19 +98,21 @@ const backgroundMapping: { [type in NotificationLevel]: string } = {
   >
     <div class="px-2 py-1">
       <div class="text-white py-1">
-        <div></div>
-        <div class="flex items-center gap-3 relative">
-          <icon
-            :name="iconMapping[notification.level]"
-            stroke-width="0"
-            :class="iconTextMapping[notification.level]"
-            size="28"
-          ></icon>
-          <div class="text-lg font-semibold">{{ notification.header }}</div>
-          <div class="absolute right-0 cursor-pointer text-gray-200 hover:text-white" @click="onClose()">
+        <div class="flex items-start w-full">
+          <div class="flex items-center gap-3 relative w-full">
+            <icon
+              :name="iconMapping[notification.level]"
+              stroke-width="0"
+              :class="iconTextMapping[notification.level]"
+              size="28"
+            ></icon>
+            <div class="text-lg font-semibold">{{ notification.header }}</div>
+          </div>
+          <div class="cursor-pointer text-gray-200 hover:text-white" @click="onClose()">
             <icon name="x" :stroke-width="18" :size="18"></icon>
           </div>
         </div>
+
         <div v-if="notification.detail" class="text-base mt-2">
           {{ notification.detail }}
         </div>

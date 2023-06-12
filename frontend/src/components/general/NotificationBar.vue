@@ -13,8 +13,8 @@ const removeItem = (id: string) => {
 </script>
 <template>
   <div class="fixed z-[999] top-2 right-6 transform w-96 flex flex-col gap-2">
-    <TransitionGroup tag="ul" name="notification" class="relative">
-      <div :key="notification.id" v-for="notification in notifications" class="py-1.5">
+    <TransitionGroup tag="ul" name="notification" class="relative w-96">
+      <div :key="notification.id" v-for="notification in notifications" class="py-1.5 w-full">
         <notification :notification="notification" @expired="removeItem($event)" />
       </div>
     </TransitionGroup>
