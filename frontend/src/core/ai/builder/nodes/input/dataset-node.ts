@@ -15,7 +15,7 @@ export class DatasetNode extends Node<
   height = 147;
 
   constructor(socket: ClassicPreset.Socket) {
-    super('Dataset', socket, "DatasetNode");
+    super('Dataset', socket, 'DatasetNode');
   }
 
   public duplicate() {
@@ -24,12 +24,12 @@ export class DatasetNode extends Node<
       // @ts-ignore
       node.controls[key] = control.duplicate();
     }
-    node.addOutput('dataset', new ClassicPreset.Output(node.socket, 'Dataset', false));
+    node.addOutput('dataset', new ClassicPreset.Output(node.socket, 'Dataset'));
     return node;
   }
 
   public addElements() {
     this.addControl('dataset', new DropdownControl(['MNIST', 'BHI'], 'Dataset', 'dataset', 'MNIST'));
-    this.addOutput('dataset', new ClassicPreset.Output(this.socket, 'Dataset', false));
+    this.addOutput('dataset', new ClassicPreset.Output(this.socket, 'Dataset'));
   }
 }
