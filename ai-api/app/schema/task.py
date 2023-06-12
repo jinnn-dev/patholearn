@@ -103,13 +103,18 @@ ControlType = TypeVar(
 )
 
 
+class ISocket(BaseModel):
+    input: Optional[str]
+    output: Optional[str]
+
+
 class INode(ISerializable):
     type: NodeType
     label: str
     inputs: List[IPort]
     outputs: List[IPort]
     controls: List[ControlType]
-    socket: str
+    sockets: ISocket
     lockStatus: Optional[Any]
 
     class Config:
