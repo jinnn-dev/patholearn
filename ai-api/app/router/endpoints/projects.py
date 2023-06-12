@@ -64,11 +64,14 @@ async def get_project(project_id: str, _: SessionContainer = Depends(verify_sess
 
 
 @router.delete("/{project_id}")
-async def delete_project_clearml(
+async def delete_project(
     project_id: str, _: SessionContainer = Depends(verify_session())
 ):
-    delete_result = await project_collection.delete_one({"_id": ObjectId(project_id)})
-    return delete_result.deleted_count
+    project_delete_result = await project_collection.delete_one(
+        {"_id": ObjectId(project_id)}
+    )
+    task_delete_result = await task_collection.delete_many({"project_id": project_id})
+    return project_delete_result.deleted_count + task_delete_result.deleted_count
 
 
 @router.post("/clearml")
