@@ -3,13 +3,14 @@ import { INode } from '../../serializable';
 import { DimensionControl } from '../../controls/dimension-control';
 import { DropdownControl } from '../../controls/dropdown-control';
 import { Node } from '../node';
+import { Socket } from '../../sockets/socket';
 
 export interface IPoolingNode extends INode {}
 
 export class PoolingNode extends Node<
   IPoolingNode,
-  { in: ClassicPreset.Socket },
-  { out: ClassicPreset.Socket },
+  { in: Socket },
+  { out: Socket },
   {
     kernel: DimensionControl;
     stride: DimensionControl;
@@ -19,24 +20,24 @@ export class PoolingNode extends Node<
   width = 200;
   height = 235;
 
-  constructor(socket: ClassicPreset.Socket) {
-    super('Pooling', socket, 'PoolingNode');
+  constructor() {
+    super('Pooling', 'PoolingNode', { input: 'All', output: 'All' });
   }
 
   public duplicate(): PoolingNode {
-    const node = new PoolingNode(this.socket);
+    const node = new PoolingNode();
     for (const [key, control] of Object.entries(this.controls)) {
       // @ts-ignore
       node.controls[key] = control.duplicate();
     }
-    node.addInput('in', new ClassicPreset.Input(node.socket, 'in'));
-    node.addOutput('out', new ClassicPreset.Output(node.socket, 'out'));
+    node.addInput('in', new ClassicPreset.Input(node.sockets.input!, 'in'));
+    node.addOutput('out', new ClassicPreset.Output(node.sockets.output!, 'out'));
     return node;
   }
 
   public addElements() {
-    this.addInput('in', new ClassicPreset.Input(this.socket, 'in'));
-    this.addOutput('out', new ClassicPreset.Output(this.socket, 'out'));
+    this.addInput('in', new ClassicPreset.Input(this.sockets.input!, 'in'));
+    this.addOutput('out', new ClassicPreset.Output(this.sockets.output!, 'out'));
 
     this.addControl(
       'kernel',

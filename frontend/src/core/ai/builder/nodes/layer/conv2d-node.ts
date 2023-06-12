@@ -4,13 +4,14 @@ import { INode } from '../../serializable';
 import { DimensionControl } from '../../controls/dimension-control';
 import { ActivationControl } from '../../controls/activation-control';
 import { Node } from '../node';
+import { Socket } from '../../sockets/socket';
 
 export interface IConv2DNode extends INode {}
 
 export class Conv2DNode extends Node<
   IConv2DNode,
-  { in: ClassicPreset.Socket },
-  { out: ClassicPreset.Socket },
+  { in: Socket },
+  { out: Socket },
   {
     filters: NumberControl;
     kernel: DimensionControl;
@@ -21,24 +22,24 @@ export class Conv2DNode extends Node<
   width = 200;
   height = 280;
 
-  constructor(socket: ClassicPreset.Socket) {
-    super('Conv2D', socket, "Conv2DNode");
+  constructor() {
+    super('Conv2D', 'Conv2DNode', { input: '2D', output: '2D' });
   }
 
   public duplicate(): Conv2DNode {
-    const node = new Conv2DNode(this.socket);
+    const node = new Conv2DNode();
     for (const [key, control] of Object.entries(this.controls)) {
       // @ts-ignore
       node.controls[key] = control.duplicate();
     }
-    node.addInput('in', new ClassicPreset.Input(node.socket, 'in'));
-    node.addOutput('out', new ClassicPreset.Output(node.socket, 'out'));
+    node.addInput('in', new ClassicPreset.Input(node.sockets.input!, 'in'));
+    node.addOutput('out', new ClassicPreset.Output(node.sockets.output!, 'out'));
     return node;
   }
 
   public addElements() {
-    this.addInput('in', new ClassicPreset.Input(this.socket, 'in'));
-    this.addOutput('out', new ClassicPreset.Output(this.socket, 'out'));
+    this.addInput('in', new ClassicPreset.Input(this.sockets.input!, 'in'));
+    this.addOutput('out', new ClassicPreset.Output(this.sockets.output!, 'out'));
 
     this.addControl('filters', new NumberControl(0, 128, 'Filters', 'Filters', 16));
     this.addControl(

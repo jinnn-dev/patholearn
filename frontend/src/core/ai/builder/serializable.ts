@@ -1,4 +1,5 @@
 import { ClassicPreset } from 'rete';
+import { SocketType } from './sockets/socket';
 
 export interface IGraph {
   nodes: INode[];
@@ -36,12 +37,20 @@ export interface IInputControl extends IControl {
   inputType: 'number' | 'string';
 }
 
+export interface ISocket {
+  name: string;
+  type: SocketType;
+}
+
 export interface INode extends ISerializable {
   label: string;
   inputs: IPort[];
   outputs: IPort[];
   controls: IControl[];
-  socket: string;
+  sockets: {
+    in?: ISocket;
+    out?: ISocket;
+  };
 }
 
 export interface INodePositions {

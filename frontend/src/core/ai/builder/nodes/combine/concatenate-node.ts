@@ -1,30 +1,27 @@
 import { ClassicPreset } from 'rete';
 import { INode } from '../../serializable';
 import { Node } from '../node';
+import { Socket } from '../../sockets/socket';
 
 export interface IConcatenateNode extends INode {}
 
-export class ConcatenateNode extends Node<
-  IConcatenateNode,
-  { first: ClassicPreset.Socket; second: ClassicPreset.Socket },
-  { out: ClassicPreset.Socket },
-  {}
-> {
+export class ConcatenateNode extends Node<IConcatenateNode, { first: Socket; second: Socket }, { out: Socket }, {}> {
   width = 180;
   height = 115;
-  constructor(socket: ClassicPreset.Socket) {
-    super('Concatenate', socket, "ConcatenateNode");
+  constructor() {
+    super('Concatenate', 'ConcatenateNode', { input: 'All', output: 'All' });
   }
 
   public duplicate() {
-    const node = new ConcatenateNode(this.socket);
+    const node = new ConcatenateNode();
+    node.sockets = this.sockets;
     node.addElements();
     return node;
   }
 
   public addElements(): void {
-    this.addInput('first', new ClassicPreset.Input(this.socket, 'first'));
-    this.addInput('second', new ClassicPreset.Input(this.socket, 'second'));
-    this.addOutput('out', new ClassicPreset.Output(this.socket, 'out'));
+    this.addInput('first', new ClassicPreset.Input(this.sockets.input!, 'first'));
+    this.addInput('second', new ClassicPreset.Input(this.sockets.input!, 'second'));
+    this.addOutput('out', new ClassicPreset.Output(this.sockets.output!, 'out'));
   }
 }
