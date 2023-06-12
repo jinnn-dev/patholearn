@@ -36,7 +36,7 @@ const emit = defineEmits(['task-created']);
 const createTask = async () => {
   await run(createTaskData);
   showCreate.value = false;
-  emit('task-created', result);
+  emit('task-created', result.value);
 };
 </script>
 <template>

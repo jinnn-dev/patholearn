@@ -34,13 +34,14 @@ const toggleWsConnection = () => {
       class="flex w-full py-2 rounded-lg transition-[margin] tranistion-[background-color]"
       :class="isCollapsed ? 'mx-0' : 'mx-2'"
     >
-      <div
-        class="flex justify-center items-center flex-shrink-0 z-10 bg-gray-800 group-hover:bg-gray-700"
-        :class="isCollapsed ? 'w-12 ' : 'w-12'"
-      >
+      <div class="flex justify-center items-center flex-shrink-0 z-10" :class="isCollapsed ? 'w-12 ' : 'w-12'">
         <div class="flex h-7 items-center justify-center">
           <spinner v-if="websocketLoading"></spinner>
-          <div v-else @click="toggleWsConnection()" class="cursor-pointer hover:bg-gray-600 p-2 rounded-lg">
+          <div
+            v-else
+            @click="toggleWsConnection()"
+            class="cursor-pointer hover:bg-gray-700/70 hover:ring-1 hover:ring-gray-500 p-2 rounded-lg"
+          >
             <icon v-if="wsIsConnected" class="text-green-500" name="plugs-connected" stroke-width="0"></icon>
             <icon v-else class="text-red-500" name="plugs" stroke-width="0"></icon>
           </div>

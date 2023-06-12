@@ -18,7 +18,7 @@ import SkeletonCard from '../containers/SkeletonCard.vue';
 import Spinner from '../general/Spinner.vue';
 import ToggleButton from '../form/ToggleButton.vue';
 import TaskCountBadge from './TaskCountBadge.vue';
-import DotMenu from '../general/DotMenu.vue';
+import DotMenuComplete from '../general/DotMenuComplete.vue';
 import ConfirmButtons from '../general/ConfirmButtons.vue';
 
 const props = defineProps({
@@ -118,14 +118,7 @@ onClickOutside(target, () => (openDotMenu.value = false));
       <div class="flex-1 text-xl">
         {{ baseTask?.name }}
       </div>
-      <div class="flex justify-end ml-5">
-        <Icon
-          class="ring-white hover:ring-2 rounded-md transition-all cursor-pointer"
-          name="dots-three-vertical"
-          @click.stop="openDotMenu = !openDotMenu"
-        ></Icon>
-      </div>
-      <dot-menu ref="target" :optionsOpen="openDotMenu" @delete="$emit('deleteBaseTask')" @edit="showEditTask = true" />
+      <dot-menu-complete @delete="$emit('deleteBaseTask')" @edit="showEditTask = true"></dot-menu-complete>
     </div>
 
     <task-count-badge :count="baseTask?.task_count"></task-count-badge>

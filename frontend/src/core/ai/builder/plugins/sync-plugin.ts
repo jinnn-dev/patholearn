@@ -1,7 +1,7 @@
 import { BaseSchemes, Root, Scope, ClassicPreset, NodeEditor } from 'rete';
 import { Area2D, AreaPlugin, BaseArea } from 'rete-area-plugin';
 import { Connection, ConnectionPlugin } from 'rete-connection-plugin';
-import { builderState, getLockedBy } from '../state';
+import { builderState, getLockedBy, isTraining } from '../state';
 import {
   NodeTranslatedEvent,
   lockElement,
@@ -23,6 +23,7 @@ import { Produces } from 'rete-vue-render-plugin';
 import { Member } from '../../../../composables/ws/usePresenceChannel';
 import { animateBetweenTwoPoints, calculatePointsBetween } from '../../../../utils/animate';
 import { addNodeAtPosition, cloneNodeAndAdd, omitReteEvents, removeNodeAndConnections } from '../editor-utils';
+import { TaskVersionStatus } from '../../../../model/ai/tasks/task';
 
 export class SyncPlugin {
   root = new Scope<never, [Root<Schemes>]>('sync');
@@ -106,6 +107,9 @@ export class SyncPlugin {
         // }
 
         if (context.type === 'nodetranslate') {
+          if (isTraining.value) {
+            return;
+          }
           if (this.externalDrag) {
             return context;
           }
@@ -161,6 +165,8 @@ export class SyncPlugin {
       return context;
     });
     this.connection.addPipe((context) => {
+      if (!isTraining.value) return context;
+      if (context.type === 'connectionpick') return;
       return context;
     });
   }
@@ -362,6 +368,12 @@ export class SyncPlugin {
       const control = node.getControl(data.controlId);
       if (control) {
         control.setValue(...data.value);
+      }
+    });
+
+    builderState.channel.bind('client-training-started', (status: TaskVersionStatus) => {
+      if (builderState.selectedVersion) {
+        builderState.selectedVersion.status = status;
       }
     });
   }

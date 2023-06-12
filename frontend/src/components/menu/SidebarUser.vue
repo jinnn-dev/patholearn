@@ -48,7 +48,7 @@ const nameString = computed(() => {
     <div class="flex w-full py-2 gap-2 rounded-lg transition-all" :class="isCollapsed ? 'mx-0' : 'mx-2'">
       <div class="flex justify-center items-center flex-shrink-0 transition-all">
         <div
-          class="flex justify-center items-center hover:bg-gray-700 bg-gray-800 z-10 cursor-pointer rounded-lg h-10"
+          class="flex justify-center items-center hover:bg-gray-700/70 hover:ring-1 hover:ring-gray-500 z-10 cursor-pointer rounded-lg h-10"
           :class="isCollapsed ? 'w-12 ' : 'w-12'"
           @click="doLogout()"
         >

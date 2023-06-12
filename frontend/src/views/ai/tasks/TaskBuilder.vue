@@ -1,6 +1,13 @@
 <script setup lang="ts">
+import { defineAsyncComponent, onUnmounted } from 'vue';
 import { builderState } from '../../../core/ai/builder/state';
-import NodeEditor from '../../../components/ai/builder/editor/NodeEditor.vue';
+import { notifications } from '../../../utils/notification-state';
+
+const NodeEditor = defineAsyncComponent(() => import('../../../components/ai/builder/editor/NodeEditor.vue'));
+
+onUnmounted(() => {
+  notifications.value = [];
+});
 </script>
 <template>
   <div class="bg-gray-900 w-full h-full relative">

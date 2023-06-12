@@ -5,7 +5,7 @@ import { getNodeColor } from '../../../core/ai/builder/node-colors';
 import { LockStatus } from '../../../core/ai/builder/sync';
 import { getTextColor } from '../../../utils/colors';
 import Icon from '../../general/Icon.vue';
-import { builderState } from '../../../core/ai/builder/state';
+import { builderState, isTraining } from '../../../core/ai/builder/state';
 
 function sortByIndex(entries: any) {
   entries.sort((a: any, b: any) => {
@@ -81,14 +81,23 @@ const nodeClasses = computed(() => {
   if (props.data?.selected) {
     classes.push('selected');
   }
-  if (!props.data?.lockStatus?.externalLock) {
+  if (!props.data?.lockStatus?.externalLock && !isTraining.value) {
     classes.push('cursor-pointer');
   }
   if (props.data?.lockStatus?.externalLock) {
     classes.push('ring-4');
   } else {
     classes.push('ring-2');
+    if (isTraining.value) {
+      classes.push('ring-green-600');
+    } else {
+      classes.push('ring-gray-400');
+    }
   }
+
+  // if (isTraining.value) {
+  //   classes.push('opacity-80');
+  // }
   return classes.join(' ');
 });
 
@@ -123,6 +132,13 @@ const outputs = computed(() => {
       </div>
     </div>
 
+    <!-- <div v-if="isTraining" class="h-1">
+      <svg class="w-full h-1">
+        <line class="stroke-gray-500" x1="0" y1="2" x2="500" y2="2" stroke-width="100"></line>
+        <line class="line stroke-green-500" x1="0" y1="2" x2="500" y2="2" stroke-dasharray="12"></line>
+      </svg>
+    </div> -->
+
     <div class="flex">
       <!-- Inputs-->
       <div class="flex flex-col">
@@ -132,14 +148,14 @@ const outputs = computed(() => {
           :key="key"
           :data-testid="'input-' + key"
         >
-          <div class="input-socket" :ref="(el) => onRef(el, key, input, 'input')" data-testid="input-socket"></div>
+          <div class="input-socket" :ref="(el: any) => onRef(el, key, input, 'input')" data-testid="input-socket"></div>
           <div class="input-title" v-show="!input.control || !input.showControl" data-testid="input-title">
             {{ input.label }}
           </div>
           <div
             class="input-control"
             v-show="input.control && input.showControl"
-            :ref="(el) => onRef(el, key, input.control, 'control')"
+            :ref="(el: any) => onRef(el, key, input.control, 'control')"
             data-testid="input-control"
           ></div>
         </div>
@@ -148,7 +164,11 @@ const outputs = computed(() => {
       <!-- Outputs-->
       <div class="output shrink-0" v-for="[key, output] in outputs" :key="key" :data-testid="'output-' + key">
         <div class="output-title" data-testid="output-title">{{ output.label }}</div>
-        <div class="output-socket" :ref="(el) => onRef(el, key, output, 'output')" data-testid="output-socket"></div>
+        <div
+          class="output-socket"
+          :ref="(el: any) => onRef(el, key, output, 'output')"
+          data-testid="output-socket"
+        ></div>
       </div>
     </div>
     <!-- Controls-->
@@ -156,7 +176,7 @@ const outputs = computed(() => {
       class="control"
       v-for="[key, control] in controls"
       :key="key"
-      :ref="(el) => onRef(el, key, control, 'control')"
+      :ref="(el: any) => onRef(el, key, control, 'control')"
       :data-testid="'control-' + key"
     ></div>
 
@@ -181,7 +201,6 @@ const outputs = computed(() => {
   @apply h-auto;
   @apply pb-5;
   @apply select-none;
-  @apply ring-gray-400;
   @apply shadow-lg;
   @apply shadow-gray-900/50;
 }
@@ -198,14 +217,16 @@ const outputs = computed(() => {
 .output {
   @apply text-right;
   @apply font-mono;
+  @apply mt-2;
 }
 .input {
   @apply text-left;
-  @apply -ml-[18px];
+  @apply -ml-[13px];
+  @apply mt-2;
 }
 .output-socket {
   @apply text-right;
-  @apply -mr-[18px];
+  @apply -mr-[13px];
   @apply inline-block;
 }
 .input-socket {
@@ -237,5 +258,22 @@ const outputs = computed(() => {
 
 .control > input {
   @apply !bg-gray-800;
+}
+
+.line {
+  @apply stroke-green-500;
+  @apply pointer-events-none;
+  @apply fill-[none];
+  stroke-dasharray: 12;
+  stroke-linecap: round;
+  animation: dash 150000s linear infinite;
+  stroke-width: 3px;
+  stroke-dashoffset: 12;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: -10000000;
+  }
 }
 </style>

@@ -6,37 +6,37 @@ import { AutoArrangePlugin, ArrangeAppliers } from 'rete-auto-arrange-plugin';
 
 import CustomNodeVue from '../../../components/ai/builder/CustomNode.vue';
 import CustomConnectionVue from '../../../components/ai/builder/CustomConnection.vue';
+import CustomSocketVue from '../../../components/ai/builder/CustomSocket.vue';
 import DimensionControlVue from '../../../components/ai/builder/controls/DimensionControl.vue';
 import NumberControlVue from '../../../components/ai/builder/controls/NumberControl.vue';
 import DropdownControlVue from '../../../components/ai/builder/controls/DropdownControl.vue';
+import DiagramControlVue from '../../../components/ai/builder/controls/DiagramControl.vue';
 
-import { DatasetNode } from './nodes/input/dataset-node';
 import { DropdownControl } from './controls/dropdown-control';
-import { Conv2DNode } from './nodes/layer/conv2d-node';
 import { NumberControl } from './controls/number-control';
 import { Ref, ref } from 'vue';
 import { IConnection, IGraph, INode, INodePositions } from './serializable';
 import { addCustomBackground } from './plugins/custom-background';
-import { NodeType } from './nodes/types';
+import { NodeClassesType, NodeType } from './nodes/types';
 import { DimensionControl } from './controls/dimension-control';
-import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } from 'rete-context-menu-plugin';
+import { ContextMenuExtra, ContextMenuPlugin } from 'rete-context-menu-plugin';
 import { setupContext, setupContextItems } from './plugins/context-menu';
-import { LinearNode } from './nodes/layer/linear-node';
 import { arrangeSetup } from './plugins/arrange-nodes';
-import { DropoutNode } from './nodes/transform/dropout-node';
-import { FlattenNode } from './nodes/transform/flatten-node';
-import { BatchNormNode } from './nodes/transform/batch-norm-node';
-import { PoolingNode } from './nodes/layer/pooling-node';
 import { SyncPlugin } from './plugins/sync-plugin';
 import { createNodeInstance, parseNode } from './factories/node-factory';
 import { builderState } from './state';
 import { MousePlugin, setupMousePlugin } from './plugins/mouse-plugin';
-import { trackedSelector, selectableNodes, selector } from './trackedSelector';
-export type NodeProps = DatasetNode | Conv2DNode | LinearNode | DropoutNode | FlattenNode | BatchNormNode | PoolingNode;
+import { selectableNodes, selector } from './trackedSelector';
+import { pushTrainingStarted } from './sync';
+import { PresenceChannel } from 'pusher-js';
+import { DiagramControl } from './controls/diagram-control';
+import { Socket, nodesCanConnect } from './sockets/socket';
+
+export type NodeProps = NodeClassesType;
 
 export class Connection<A extends NodeProps, B extends NodeProps> extends ClassicPreset.Connection<A, B> {}
 
-export type ConnProps = Connection<DatasetNode, Conv2DNode> | Connection<Conv2DNode, Conv2DNode>;
+export type ConnProps = Connection<NodeClassesType, NodeClassesType> | Connection<NodeClassesType, NodeClassesType>;
 export type Schemes = GetSchemes<NodeProps, ConnProps>;
 
 export type AreaExtra = VueArea2D<Schemes> | ContextMenuExtra;
@@ -57,23 +57,10 @@ export function useEditor() {
 
   const loading = ref(false);
 
-  // EDITOR SOCKET TYPE CHECK
-  // editor.addPipe((context) => {
-  //   if (context.type === "connectioncreate") {
-  //     const source = editor.getNode(context.data.source);
-  //     const sourceSocket = source.outputs[context.data.sourceOutput]?.socket;
-  //     const target = editor.getNode(context.data.target);
-  //     const targetSocket = (target.inputs as any)[context.data.targetInput]
-  //       ?.socket;
-
-  //     if (sourceSocket !== targetSocket) return; // prevent 'connectioncreate' if the ports have different sockets
-  //   }
-  //   return context;
-
   const init = async (container: HTMLElement) => {
     builderState.builderLoaded = false;
 
-    socket.value = new ClassicPreset.Socket('socket');
+    // socket.value = new ClassicPreset.Socket('socket');
     editor.value = new NodeEditor<Schemes>();
     area.value = new AreaPlugin<Schemes, AreaExtra>(container);
     connection.value = new ConnectionPlugin<Schemes, AreaExtra>();
@@ -84,31 +71,31 @@ export function useEditor() {
 
     contextMenu.value = new ContextMenuPlugin<Schemes>({
       items: setupContextItems([
-        ['Input', [['Dataset', () => createNodeInstance('DatasetNode', socket.value!) as NodeProps]]],
+        ['Input', [['Dataset', () => createNodeInstance('DatasetNode') as NodeProps]]],
         [
           'Layer',
           [
-            ['Conv2D', () => createNodeInstance('Conv2DNode', socket.value!) as NodeProps],
-            ['Linear', () => createNodeInstance('LinearNode', socket.value!) as NodeProps],
-            ['Pooling', () => createNodeInstance('PoolingNode', socket.value!) as NodeProps]
+            ['Conv2D', () => createNodeInstance('Conv2DNode') as NodeProps],
+            ['Linear', () => createNodeInstance('LinearNode') as NodeProps],
+            ['Pooling', () => createNodeInstance('PoolingNode') as NodeProps]
           ]
         ],
         [
           'Transform',
           [
-            ['Dropout', () => createNodeInstance('DropoutNode', socket.value!) as NodeProps],
-            ['Flatten', () => createNodeInstance('FlattenNode', socket.value!) as NodeProps],
-            ['Batch Norm.', () => createNodeInstance('BatchNormNode', socket.value!) as NodeProps]
+            ['Dropout', () => createNodeInstance('DropoutNode') as NodeProps],
+            ['Flatten', () => createNodeInstance('FlattenNode') as NodeProps],
+            ['Batch Norm.', () => createNodeInstance('BatchNormNode') as NodeProps]
           ]
         ],
         [
           'Cobine',
           [
-            ['Add', () => createNodeInstance('AddNode', socket.value!) as NodeProps],
-            ['Concatenate', () => createNodeInstance('ConcatenateNode', socket.value!) as NodeProps]
+            ['Add', () => createNodeInstance('AddNode') as NodeProps],
+            ['Concatenate', () => createNodeInstance('ConcatenateNode') as NodeProps]
           ]
         ],
-        ['Output', () => createNodeInstance('OutputNode', socket.value!) as NodeProps]
+        ['Output', () => createNodeInstance('OutputNode') as NodeProps]
       ])
     });
 
@@ -134,12 +121,15 @@ export function useEditor() {
         connection(data) {
           return CustomConnectionVue;
         },
-        // // @ts-ignore
-        // socket(data) {
-        //   return CustomSocketVue;
-        // },
+        // @ts-ignore
+        socket(data) {
+          return CustomSocketVue;
+        },
         // @ts-ignore
         control(data) {
+          if (data.payload instanceof DiagramControl) {
+            return DiagramControlVue;
+          }
           if (data.payload instanceof DropdownControl) {
             return DropdownControlVue;
           }
@@ -164,10 +154,45 @@ export function useEditor() {
     render.value.addPreset(setupMousePlugin({ delay: 300 }));
 
     connection.value.addPreset(ConnectionPresets.classic.setup());
+
     arrange.value.addPreset(arrangeSetup({ distance: 20 }));
 
     editor.value.use(area.value);
     editor.value.use(sync.value.root);
+
+    // TODO: ADJUST -> PREVENT CONNECTION CREATION BASED ON SOCKET OBJECT
+    // editor.value.addPipe((context) => {
+    //   if (context.type === 'connectioncreate') {
+    //     // const source = editor.value!.getNode(context.data.source);
+    //     // const sourceSocket = source.outputs[context.data.sourceOutput]?.socket;
+    //     // const target = editor.value!.getNode(context.data.target);
+    //     // const targetSocket = (target.inputs as any)[context.data.targetInput]?.socket;
+
+    //     console.log(sourceSocket, targetSocket);
+
+    //     if (sourceSocket !== targetSocket) return; // prevent 'connectioncreate' if the ports have different sockets
+    //   }
+    //   return context;
+    // });
+
+    editor.value.addPipe((context) => {
+      if (context.type === 'connectioncreate') {
+        if (!editor.value) {
+          return context;
+        }
+        const source = editor.value.getNode(context.data.source);
+        const sourceSocket = (source.outputs[context.data.sourceOutput] as any).socket as Socket;
+        const target = editor.value.getNode(context.data.target);
+        const targetSocket = (target.inputs[context.data.targetInput] as any).socket as Socket;
+
+        if (!nodesCanConnect(source, target)) {
+          return;
+        }
+
+        return context;
+      }
+      return context;
+    });
 
     area.value.use(connection.value);
     area.value.use(render.value);
@@ -206,7 +231,7 @@ export function useEditor() {
     if (!socket.value || !editor.value) {
       return;
     }
-    let layer = createNodeInstance(layerType, socket.value);
+    let layer = createNodeInstance(layerType);
 
     if (!layer) {
       return;
@@ -307,6 +332,10 @@ export function useEditor() {
     builderState.initialGraphLoaded = true;
   };
 
+  const startTraining = () => {
+    pushTrainingStarted(builderState.channel as PresenceChannel, 'CREATING');
+  };
+
   const clear = async () => {
     await editor.value?.clear();
     await zoomAt();
@@ -333,6 +362,7 @@ export function useEditor() {
     addNode,
     area,
     registerEvents,
+    startTraining,
     destroy: () => area.value?.destroy()
   };
 }

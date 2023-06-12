@@ -2,34 +2,32 @@
   <div class="socket" :title="data.name"></div>
 </template>
 
-<script lang="ts">
-export default {
-  props: ['data']
-};
+<script lang="ts" setup>
+defineProps({
+  data: {
+    type: Object,
+    required: true
+  }
+});
 </script>
 
 <style lang="css" scoped>
 .socket {
-  /* @apply inline-block;
+  @apply inline-block;
   @apply cursor-pointer;
-  @apply w-5;
-  @apply h-5;
-  @apply bg-teal-600;
-  @apply rounded-full; */
-  /* @apply border-2; */
-  /* @apply border-2; */
-  /* @apply border-highlight-800; */
-  border: 1px solid white;
-  /* width: 16px;
-  height: 32px; */
+  @apply w-6;
+  @apply h-6;
+  @apply rounded-full;
+  @apply border-[1px];
+  @apply border-gray-50;
+  background-color: #96b38a;
   vertical-align: middle;
-  background-color: #fff;
-  margin: 8px;
+  /* margin: 5px 9px; */
   z-index: 4;
   box-sizing: border-box;
 }
 
 .socket:hover {
-  @apply bg-gray-200;
+  @apply border-[3px];
 }
 </style>

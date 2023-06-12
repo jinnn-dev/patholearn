@@ -2,7 +2,7 @@ import { AreaExtensions, BaseArea, BaseAreaPlugin } from 'rete-area-plugin';
 import { Schemes } from './use-editor';
 import { NodeEditor } from 'rete';
 import { lockElement, pushNodeLockedEvent, pushNodeUnlockedEvent, unlockElement } from './sync';
-import { builderState } from './state';
+import { builderState, isTraining } from './state';
 import { PresenceChannel } from 'pusher-js';
 
 export function trackedSelector<
@@ -87,7 +87,7 @@ export function selectableNodes<T>(
   let unselect = false;
 
   function selectNode(node: Schemes['Node']) {
-    if (node.selected || node.lockStatus) {
+    if (node.selected || node.lockStatus || isTraining.value) {
       return;
     }
     pushNodeLockedEvent(builderState.channel as PresenceChannel, node.id);

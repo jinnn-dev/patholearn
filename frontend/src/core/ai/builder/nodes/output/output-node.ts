@@ -2,12 +2,13 @@ import { ClassicPreset } from 'rete';
 import { INode } from '../../serializable';
 import { Node } from '../node';
 import { DropdownControl, NumberControl } from '../../controls';
+import { Socket } from '../../sockets/socket';
 
 export interface IOutputNode extends INode {}
 
 export class OutputNode extends Node<
   IOutputNode,
-  { in: ClassicPreset.Socket },
+  { in: Socket },
   {},
   {
     optimizer: DropdownControl;
@@ -20,22 +21,22 @@ export class OutputNode extends Node<
   width = 250;
   height = 350;
 
-  constructor(socket: ClassicPreset.Socket) {
-    super('Output', socket,  "OutputNode");
+  constructor() {
+    super('Output', 'OutputNode', { input: 'All' });
   }
 
   public duplicate(): OutputNode {
-    const node = new OutputNode(this.socket);
+    const node = new OutputNode();
     for (const [key, control] of Object.entries(this.controls)) {
       // @ts-ignore
       node.controls[key] = control.duplicate();
     }
-    node.addInput('in', new ClassicPreset.Input(node.socket, 'in'));
+    node.addInput('in', new ClassicPreset.Input(node.sockets.input!, 'in'));
     return node;
   }
 
   public addElements(): void {
-    this.addInput('in', new ClassicPreset.Input(this.socket, 'in'));
+    this.addInput('in', new ClassicPreset.Input(this.sockets.input!, 'in'));
     this.addControl(
       'optimizer',
       new DropdownControl(['SGD', 'RMSprop', 'Adagrad', 'Adam'], 'Optimizer', 'optimizer', 'Adam')

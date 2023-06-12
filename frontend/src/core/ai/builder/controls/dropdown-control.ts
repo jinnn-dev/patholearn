@@ -9,8 +9,15 @@ export interface IDropdownControl extends IControl {
 }
 
 export class DropdownControl extends Control<IDropdownControl> {
-  constructor(public values: any[], public label: string, public key: string, public value?: any, type: ControlType = 'DropdownControl') {
-    super("ActivationControl");
+  constructor(
+    public values: any[],
+    public label: string,
+    public key: string,
+    public value?: any,
+    type: ControlType = 'DropdownControl'
+  ) {
+    super('DropdownControl');
+    this.type = type;
   }
 
   public setValue(value: any) {

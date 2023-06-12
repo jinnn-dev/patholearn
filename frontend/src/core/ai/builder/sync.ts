@@ -4,6 +4,7 @@ import { INode } from './serializable';
 import { ConnProps } from './use-editor';
 import { Member } from '../../../composables/ws/usePresenceChannel';
 import { AiService } from '../../../services/ai.service';
+import { TaskVersionStatus } from '../../../model/ai/tasks/task';
 
 export interface MouseMoveEvent {
   id: string;
@@ -98,4 +99,8 @@ export function pushControlChanged(channel: PresenceChannel, nodeId: string, con
     controlId: controlId,
     value: value
   });
+}
+
+export function pushTrainingStarted(channel: PresenceChannel, status: TaskVersionStatus) {
+  channel.trigger('client-training-started', status);
 }

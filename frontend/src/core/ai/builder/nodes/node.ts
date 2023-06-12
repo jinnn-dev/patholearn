@@ -4,34 +4,47 @@ import { Control } from '../controls/control';
 import { parseControl } from '../factories/control-factory';
 import { NodeType } from './types';
 import { LockStatus } from '../sync';
+import { Socket, SocketType } from '../sockets/socket';
+import { getSocket } from '../factories/socket-factory';
+
+type InputsMap = { [key in string]: Socket };
+type OutputsMap = { [key in string]: Socket };
+
+interface SocketConfig {
+  input?: SocketType;
+  output?: SocketType;
+}
 
 export abstract class Node<
     T extends INode,
-    Inputs extends { [key in string]?: ClassicPreset.Socket } = { [key in string]?: ClassicPreset.Socket },
-    Outputs extends { [key in string]?: ClassicPreset.Socket } = { [key in string]?: ClassicPreset.Socket },
+    Inputs extends InputsMap = InputsMap,
+    Outputs extends OutputsMap = OutputsMap,
     Controls extends { [key in string]?: Control<any> } = { [key in string]?: Control<any> }
   >
   extends ClassicPreset.Node<Inputs, Outputs, Controls>
   implements Serializable<T extends ISerializable ? any : any>
 {
-  protected socket;
+  public sockets: { input?: Socket; output?: Socket } = {};
 
   public type: NodeType;
-  constructor(label: string, socket: ClassicPreset.Socket, type: NodeType, public lockStatus?: LockStatus) {
+  constructor(label: string, type: NodeType, socketConfig: SocketConfig, public lockStatus?: LockStatus) {
     super(label);
-    this.socket = socket;
-    this.type = type
+    if (socketConfig.input) {
+      this.sockets.input = getSocket(socketConfig.input);
+    }
+    if (socketConfig.output) {
+      this.sockets.output = getSocket(socketConfig.output);
+    }
+    this.type = type;
   }
 
   public parse<S>(data: S extends INode ? any : any) {
-    const socket = new ClassicPreset.Socket(data.socket);
-
     for (const input of data.inputs) {
-      this.addInput(input.key, new ClassicPreset.Input(this.socket, input.key) as any);
+      this.addInput(input.key, new ClassicPreset.Input(this.sockets.input!, input.key) as any);
     }
 
     for (const output of data.outputs) {
-      this.addOutput(output.key, new ClassicPreset.Output(socket, output.key) as any);
+      this.addOutput(output.key, new ClassicPreset.Output(this.sockets.output!, output.key) as any);
     }
 
     for (const control of data.controls) {
@@ -76,7 +89,10 @@ export abstract class Node<
       inputs: inputs,
       outputs: outputs,
       controls: controls,
-      socket: this.socket.name
+      sockets: {
+        in: this.sockets.input?.serialize(),
+        out: this.sockets.output?.serialize()
+      }
     } as T;
   }
 

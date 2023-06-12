@@ -12,7 +12,7 @@ import Spinner from '../../../general/Spinner.vue';
 import { TaskVersion } from '../../../../model/ai/tasks/task';
 import { NodeType, isNode } from '../../../../core/ai/builder/nodes/types';
 import { EventName } from '../../../../core/ai/builder/events';
-import { builderState, resetBuilderState, resetNodeEditorState } from '../../../../core/ai/builder/state';
+import { builderState, isTraining, resetBuilderState, resetNodeEditorState } from '../../../../core/ai/builder/state';
 
 const props = defineProps({
   taskId: {
@@ -25,7 +25,8 @@ const props = defineProps({
   }
 });
 
-const { arrangeLayout, zoomAt, init, addNode, download, importGraph, clear, area, registerEvents } = useEditor();
+const { arrangeLayout, zoomAt, init, addNode, download, importGraph, clear, area, registerEvents, startTraining } =
+  useEditor();
 const { run: updateGraph } = useService(AiService.updateTaskVersion);
 
 const { run: parseGraph, result } = useService(AiService.parseTaskVersion);
@@ -101,6 +102,7 @@ const saveBuilder = async () => {
 const parseBuilder = async () => {
   await parseGraph(props.taskId, props.taskVersion.id);
   builderState.selectedVersion!.status = 'CREATING';
+  startTraining();
 };
 
 const itemClicked = async (event: EventName) => {
@@ -158,7 +160,7 @@ onUnmounted(() => {
       <primary-button name="Neuer Node" @click="addNode"></primary-button>
       <primary-button name="Save" @click="saveBuilder"></primary-button> -->
 
-      <editor-tools @selected="itemClicked"></editor-tools>
+      <editor-tools v-if="!isTraining" @selected="itemClicked"></editor-tools>
       <div
         v-if="loading || builderState.shouldSaveEditor"
         class="absolute z-10 flex gap-1 bottom-4 left-4 bg-gray-800 py-1 px-2 ring-1 ring-gray-700 rounded-lg shadow-lg shadow-gray-900"
@@ -169,12 +171,12 @@ onUnmounted(() => {
         </div>
       </div>
     </div>
-    <div
+    <!-- <div
       class="absolute z-10 bg-gray-800/40 backdrop-blur-sm w-full h-full flex justify-center items-center"
-      v-if="taskVersion.status === 'CREATING' || taskVersion.status === 'CREATED' || taskVersion.clearml_id"
+      v-if="taskVersion.status || taskVersion.status !== 'NONE' || taskVersion.clearml_id"
     >
       <div class="text-xl select-none">Das Model wird trainiert</div>
-    </div>
+    </div> -->
     <div class="rete w-full h-full bg-gray-900" ref="rete"></div>
   </div>
 </template>

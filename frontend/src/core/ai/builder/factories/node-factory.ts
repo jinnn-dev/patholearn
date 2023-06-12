@@ -2,7 +2,6 @@ import { INode } from '../serializable';
 
 import * as Nodes from '../nodes';
 import { Presets } from 'rete-vue-render-plugin';
-import { ClassicPreset } from 'rete';
 import { NodeType } from '../nodes/types';
 import { builderState, getLockedBy } from '../state';
 import { NodeProps } from '../use-editor';
@@ -21,8 +20,7 @@ export function parseNode(nodeData: INode) {
 
   let node;
   if (nodeClass) {
-    const socket = new ClassicPreset.Socket(nodeData.socket);
-    node = new nodeClass(socket);
+    node = new nodeClass();
   } else {
     node = new Presets.classic.Node();
   }
@@ -54,12 +52,12 @@ export function parseNode(nodeData: INode) {
   return node;
 }
 
-export function createNodeInstance(node: NodeType, socket: ClassicPreset.Socket) {
+export function createNodeInstance(node: NodeType) {
   const nodeClass = getNodeClass(node);
   if (!nodeClass) {
     return undefined;
   }
-  const instance = new nodeClass(socket);
+  const instance = new nodeClass();
   instance.addElements();
   cacheControlsMapping(instance as NodeProps);
   return instance;

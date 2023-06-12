@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
 import { useService } from '../../../composables/useService';
 import { AiService } from '../../../services/ai.service';
 import Diagram from '../../general/Diagram.vue';
 import NoContent from '../../general/NoContent.vue';
-const route = useRoute();
 
 const props = defineProps({
   clearMlTaskId: {
@@ -47,8 +45,8 @@ const processData = (series: any) => {
       </div>
     </div>
     <div v-else>
-      <div v-if="!metrics || metrics.length === 0" class="mt-8">
-        <no-content text="Noch keine Metriken"></no-content>
+      <div v-if="!metrics || metrics.length === 0 || Object.keys(metrics).length === 0" class="mt-8">
+        <no-content text="Noch keine Metriken vorhanden"></no-content>
       </div>
       <div v-else class="grid grid-cols-1 2xl:grid-cols-2 gap-4">
         <div v-for="(value, name, index) in metrics">
