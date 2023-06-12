@@ -19,7 +19,7 @@ import { NumberControl } from './controls/number-control';
 import { Ref, ref } from 'vue';
 import { IConnection, IGraph, INode, INodePositions } from './serializable';
 import { addCustomBackground } from './plugins/custom-background';
-import { NodeType } from './nodes/types';
+import { NodeClassesType, NodeType } from './nodes/types';
 import { DimensionControl } from './controls/dimension-control';
 import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } from 'rete-context-menu-plugin';
 import { setupContext, setupContextItems } from './plugins/context-menu';
@@ -37,11 +37,12 @@ import { trackedSelector, selectableNodes, selector } from './trackedSelector';
 import { pushTrainingStarted } from './sync';
 import { PresenceChannel } from 'pusher-js';
 import { DiagramControl } from './controls/diagram-control';
-export type NodeProps = DatasetNode | Conv2DNode | LinearNode | DropoutNode | FlattenNode | BatchNormNode | PoolingNode;
+
+export type NodeProps = NodeClassesType;
 
 export class Connection<A extends NodeProps, B extends NodeProps> extends ClassicPreset.Connection<A, B> {}
 
-export type ConnProps = Connection<DatasetNode, Conv2DNode> | Connection<Conv2DNode, Conv2DNode>;
+export type ConnProps = Connection<NodeClassesType, NodeClassesType> | Connection<NodeClassesType, NodeClassesType>;
 export type Schemes = GetSchemes<NodeProps, ConnProps>;
 
 export type AreaExtra = VueArea2D<Schemes> | ContextMenuExtra;
@@ -61,19 +62,6 @@ export function useEditor() {
   const animationApplier: Ref<ArrangeAppliers.TransitionApplier<Schemes, never> | undefined> = ref();
 
   const loading = ref(false);
-
-  // EDITOR SOCKET TYPE CHECK
-  // editor.addPipe((context) => {
-  //   if (context.type === "connectioncreate") {
-  //     const source = editor.getNode(context.data.source);
-  //     const sourceSocket = source.outputs[context.data.sourceOutput]?.socket;
-  //     const target = editor.getNode(context.data.target);
-  //     const targetSocket = (target.inputs as any)[context.data.targetInput]
-  //       ?.socket;
-
-  //     if (sourceSocket !== targetSocket) return; // prevent 'connectioncreate' if the ports have different sockets
-  //   }
-  //   return context;
 
   const init = async (container: HTMLElement) => {
     builderState.builderLoaded = false;
@@ -172,10 +160,26 @@ export function useEditor() {
     render.value.addPreset(setupMousePlugin({ delay: 300 }));
 
     connection.value.addPreset(ConnectionPresets.classic.setup());
+
     arrange.value.addPreset(arrangeSetup({ distance: 20 }));
 
     editor.value.use(area.value);
     editor.value.use(sync.value.root);
+
+    // TODO: ADJUST -> PREVENT CONNECTION CREATION BASED ON SOCKET OBJECT
+    // editor.value.addPipe((context) => {
+    //   if (context.type === 'connectioncreate') {
+    //     const source = editor.value!.getNode(context.data.source);
+    //     const sourceSocket = source.outputs[context.data.sourceOutput]?.socket;
+    //     const target = editor.value!.getNode(context.data.target);
+    //     const targetSocket = (target.inputs as any)[context.data.targetInput]?.socket;
+
+    //     console.log(sourceSocket, targetSocket);
+
+    //     if (sourceSocket !== targetSocket) return; // prevent 'connectioncreate' if the ports have different sockets
+    //   }
+    //   return context;
+    // });
 
     area.value.use(connection.value);
     area.value.use(render.value);

@@ -5,6 +5,33 @@ import * as Transforms from './transform';
 import * as Outputs from './output';
 import * as Combines from './combine';
 
+type LayerClasses = {
+  [K in keyof typeof Layers]: InstanceType<typeof Layers[K]>;
+};
+
+type InputClasses = {
+  [K in keyof typeof Inputs]: InstanceType<typeof Inputs[K]>;
+};
+
+type TransformClasses = {
+  [K in keyof typeof Transforms]: InstanceType<typeof Transforms[K]>;
+};
+
+type OutputClasses = {
+  [K in keyof typeof Outputs]: InstanceType<typeof Outputs[K]>;
+};
+
+type CombineClasses = {
+  [K in keyof typeof Combines]: InstanceType<typeof Combines[K]>;
+};
+
+export type NodeClassesType =
+  | LayerClasses[keyof LayerClasses]
+  | InputClasses[keyof InputClasses]
+  | TransformClasses[keyof TransformClasses]
+  | OutputClasses[keyof OutputClasses]
+  | CombineClasses[keyof CombineClasses];
+
 export type LayerType = keyof typeof Layers;
 export type InputType = keyof typeof Inputs;
 export type TransformType = keyof typeof Transforms;
