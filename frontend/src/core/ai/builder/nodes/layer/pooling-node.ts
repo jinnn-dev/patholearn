@@ -21,7 +21,7 @@ export class PoolingNode extends Node<
   height = 235;
 
   constructor() {
-    super('Pooling', 'PoolingNode', { input: 'All', output: 'All' });
+    super('Pooling', 'PoolingNode', { input: '2D', output: '2D' });
   }
 
   public duplicate(): PoolingNode {
