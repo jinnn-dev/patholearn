@@ -26,18 +26,17 @@ const connectionMatrix: { [key in SocketType]?: SocketType[] } = {
 };
 
 export function nodesCanConnect(source: NodeClassesType, target: NodeClassesType): boolean {
-  addNotification({
-    header: 'Nicht möglich!',
-    detail: `Ein ${source.type} Node kann nicht mit einem ${target.type} verbunden werden.`,
-    level: 'warning',
-    showDate: true,
-    timeout: 10000
-  });
-
   if (source.sockets.output && target.sockets.input) {
     const possibleConnections = connectionMatrix[source.sockets.output.type];
     if (!possibleConnections) return false;
     if (!possibleConnections.includes(target.sockets.input.type)) {
+      addNotification({
+        header: 'Nicht möglich!',
+        detail: `Ein ${source.type} Node kann nicht mit einem ${target.type} verbunden werden.`,
+        level: 'warning',
+        showDate: true,
+        timeout: 10000
+      });
       return false;
     }
     return true;
