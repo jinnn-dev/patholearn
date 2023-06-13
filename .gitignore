@@ -10,3 +10,4 @@ sequia_merged.sql
 input.json
 **/.DS_Store
 imagedb-restore.sh
+clearml.conf
