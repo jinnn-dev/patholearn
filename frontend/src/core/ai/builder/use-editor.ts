@@ -44,7 +44,6 @@ export type AreaExtra = VueArea2D<Schemes> | ContextMenuExtra;
 export function useEditor() {
   const eventsRegisterd = ref(false);
 
-  const socket: Ref<ClassicPreset.Socket | undefined> = ref();
   const area: Ref<AreaPlugin<Schemes, AreaExtra> | undefined> = ref();
   const connection: Ref<ConnectionPlugin<Schemes, AreaExtra> | undefined> = ref();
   const render: Ref<VueRenderPlugin<Schemes> | undefined> = ref();
@@ -228,7 +227,7 @@ export function useEditor() {
   };
 
   const addNode = async (layerType: NodeType) => {
-    if (!socket.value || !editor.value) {
+    if (!editor.value) {
       return;
     }
     let layer = createNodeInstance(layerType);
