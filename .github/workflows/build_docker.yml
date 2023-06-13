@@ -61,5 +61,5 @@ jobs:
         with:
           context: ./frontend/
           file: ./frontend/prod.dockerfile
-          push: true
+          push: ${{ GitHub.event_name != 'pull_request' }}
           tags: hafen.noxz.dev/patholearn-ai/frontend:latest
