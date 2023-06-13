@@ -12,36 +12,111 @@ env:
   REGISTRY: hafen.noxz.dev
 
 jobs:
-  # learn_api:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout source code
-  #       uses: actions/checkout@v2
-  #     - name: Set up Docker Buildx
-  #       uses: docker/setup-buildx-action@v1
-  #       with:
-  #         buildkitd-flags: --debug
-  #     - name: Build Docker image
-  #       uses: docker/build-push-action@v2
-  #       with:
-  #         context: ./learn-api/
-  #         file: ./learn-api/prod.dockerfile
-  #         push: true
-  #         tags: hub.noxz.dev/patholearn-ai/learn-api:latest
-  # slide_api:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout source code
-  #       uses: actions/checkout@v2
-  #     - name: Set up Docker Buildx
-  #       uses: docker/setup-buildx-action@v1
-  #     - name: Build Docker image
-  #       uses: docker/build-push-action@v2
-  #       with:
-  #         context: ./slide-api/
-  #         file: ./slide-api/prod.dockerfile
-  #         push: true
-  #         tags: hub.noxz.dev/patholearn-ai/slide-api:latest
+  learn_api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+      - name: Build Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./learn-api/
+          file: ./learn-api/prod.dockerfile
+          push: ${{ GitHub.event_name != 'pull_request' }}
+          tags: hub.noxz.dev/patholearn-ai/learn-api:latest
+  slide_api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+      - name: Build Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./slide-api/
+          file: ./slide-api/prod.dockerfile
+          push: ${{ GitHub.event_name != 'pull_request' }}
+          tags: hub.noxz.dev/patholearn-ai/slide-api:latest
+  ai_api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+      - name: Build Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./ai-api/
+          file: ./ai-api/prod.dockerfile
+          push: ${{ GitHub.event_name != 'pull_request' }}
+          tags: hub.noxz.dev/patholearn-ai/ai-api:latest
+  ai_worker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+      - name: Build Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./ai-worker/
+          file: ./ai-worker/prod.dockerfile
+          push: ${{ GitHub.event_name != 'pull_request' }}
+          tags: hub.noxz.dev/patholearn-ai/ai-worker:latest
+  auth:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+      - name: Build Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./auth/
+          file: ./auth/prod.dockerfile
+          push: ${{ GitHub.event_name != 'pull_request' }}
+          tags: hub.noxz.dev/patholearn-ai/auth:latest
   frontend:
     runs-on: ubuntu-latest
     steps:
