@@ -54,7 +54,7 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: ${{ env.REGISTRY }}
-          usename: ${{ secrets.REGISTRY_USERNAME }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_TOKEN }}
       - name: Build Docker image
         uses: docker/build-push-action@v2
