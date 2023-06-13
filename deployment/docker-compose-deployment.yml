@@ -70,6 +70,8 @@ services:
     image: hafen.noxz.dev/patholearn-ai/ai-api:${AI_API_VERSION}
     container_name: ai-api-prod
     restart: unless-stopped
+    volumes:
+      - ./clearml.conf:/root/clearml.conf
     networks:
       - patholearn-ai-network-prod
       - ws_ws-network-prod
@@ -100,6 +102,8 @@ services:
     image: hafen.noxz.dev/patholearn-ai/ai-worker:${AI_API_VERSION}
     container_name: ai-worker-prod
     restart: unless-stopped
+    volumes:
+      - ./clearml.conf:/root/clearml.conf
     networks:
       - patholearn-ai-network-prod
     command: celery --app worker.celery_app worker --loglevel=info --without-gossip --without-mingle --without-heartbeat -Ofair -Q ai
