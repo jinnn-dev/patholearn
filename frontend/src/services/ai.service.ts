@@ -200,8 +200,18 @@ export class AiService {
 
   public static async parseTaskVersion(taskId: string, versionId: string) {
     const [_, response] = await handleError(
-      ApiService.get<Task>({
+      ApiService.get<string>({
         resource: `/tasks/${taskId}/version/${versionId}/parse`,
+        host: AI_API_URL
+      })
+    );
+    return response!.data;
+  }
+
+  public static async startTaskVersionTraining(taskId: string, versionId: string) {
+    const [_, response] = await handleError(
+      ApiService.post<string>({
+        resource: `/tasks/${taskId}/version/${versionId}/train`,
         host: AI_API_URL
       })
     );

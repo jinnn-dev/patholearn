@@ -1,22 +1,24 @@
 import { IconNames } from '../../../../icons';
 import { NodeType } from './nodes/types';
 
-export type EventName = 'arrange' | 'center' | 'save' | 'clear' | 'parse' | NodeType;
+export type EventName = 'arrange' | 'center' | 'save' | 'clear' | 'parse' | 'train' | NodeType;
 
 interface EventSettingItem {
   icon: IconNames;
   label: string;
   divider?: boolean;
+  header?: string;
 }
 
 type EventSetting = Record<EventName, EventSettingItem>;
 
 export const eventSettings: EventSetting = {
   arrange: { icon: 'layout', label: 'Arrange', divider: true },
-  parse: { icon: 'brain', label: 'parse' },
   center: { icon: 'arrow-counter-clockwise', label: 'Center' },
   save: { icon: 'floppy-disk', label: 'Save' },
   clear: { icon: 'broom', label: 'Clear' },
+  parse: { icon: 'brain', label: 'Parse Model', divider: true, header: 'Actions' },
+  train: { icon: 'barbell', label: 'Start Training' },
   DatasetNode: { icon: 'images', label: 'Dataset', divider: true },
   Conv2DNode: { icon: 'stack', label: 'Conv2D', divider: true },
   LinearNode: { icon: 'cards', label: 'Linear' },
