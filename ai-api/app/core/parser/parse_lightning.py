@@ -1,7 +1,7 @@
 from string import Template
 
 from app.schema.parser import LossFunctionString, OptimizerString, LossFunctionModule
-from app.core.parse_graph import OutputNode
+from app.core.parser.parse_graph import OutputNode
 from app.utils.logger import logger
 
 
@@ -9,7 +9,7 @@ class LightningModel:
     def __init__(self, output_node: OutputNode) -> None:
         self.learning_rate = output_node.learning_rate
 
-        with open("/app/core/templates/lightning_model.txt", "r") as f:
+        with open("/app/core/parser/templates/lightning_model.txt", "r") as f:
             src = Template(f.read())
             replacements = {
                 "learning_rate": self.learning_rate,
@@ -23,7 +23,7 @@ class LightningModel:
             result = src.substitute(replacements)
             self.model_class = result
 
-        with open("/app/core/templates/trainer_instance.txt", "r") as f:
+        with open("/app/core/parser/templates/trainer_instance.txt", "r") as f:
             src = Template(f.read())
             replacements = {"epochs": output_node.epoch}
             result = src.substitute(replacements)

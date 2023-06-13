@@ -3,15 +3,15 @@ from __future__ import annotations
 from enum import Enum
 from string import Template
 from typing import List, Union
-from app.core.parse_classification_model import get_classification_model
+from app.core.parser.parse_classification_model import get_classification_model
 
 import matplotlib.pyplot as plt
 from pydantic import BaseModel
-from app.core.parse_lightning import LightningModel
+from app.core.parser.parse_lightning import LightningModel
 
 import networkx as nx
 
-from app.core.parse_graph import (
+from app.core.parser.parse_graph import (
     AddNode,
     ConcatenateNode,
     DatasetNode,
@@ -27,7 +27,7 @@ import black
 
 class MNISTDataModule:
     def __init__(self) -> None:
-        with open("/app/core/templates/data_module.txt", "r") as f:
+        with open("/app/core/parser/templates/data_module.txt", "r") as f:
             self.dataset_module = f.read()
 
     def get_instance(self, data_dir: str = "./", batch_size: int = 32):
@@ -39,7 +39,7 @@ class ClassificationModel:
         self,
         layers: str,
     ) -> None:
-        with open("/app/core/templates/classification_model.txt", "r") as f:
+        with open("/app/core/parser/templates/classification_model.txt", "r") as f:
             src = Template(f.read())
 
             replacements = {"layers_string": ",\n".join(layers)}
@@ -94,7 +94,7 @@ def parse_to_pytorch_graph(
     lightning_trainer = "trainer = " + lightning_model.trainer
     lightning_train = f"trainer.fit(model=lightning_model, datamodule=data_module)"
 
-    with open("/app/core/templates/clearml.txt", "r") as f:
+    with open("/app/core/parser/templates/clearml.txt", "r") as f:
         src = Template(f.read())
         replacements = {"project_name": task.name, "task_name": version.id}
         clearml_string = src.substitute(replacements)
