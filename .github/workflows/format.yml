@@ -1,0 +1,57 @@
+name: format
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  learn_api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+      - name: Running black
+        uses: psf/black@stable
+        with:
+          src: './learn-api'
+  slide_api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+      - name: Running black
+        uses: psf/black@stable
+        with:
+          src: './slide-api'
+  ai_api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+      - name: Running black
+        uses: psf/black@stable
+        with:
+          src: './ai-api'
+
+  ai_worker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+      - name: Running black
+        uses: psf/black@stable
+        with:
+          src: './ai-worker'
+
+  auth:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+      - name: Running black
+        uses: psf/black@stable
+        with:
+          src: './auth'
