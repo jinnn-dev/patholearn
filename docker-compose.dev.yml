@@ -121,8 +121,8 @@ services:
     networks:
       - patholearn-network
     ports:
-      - '9000:9000'
-      - '9001:9001'
+      - '9003:9000'
+      - '9004:9001'
     volumes:
       - ./minio_data:/data
     environment:
