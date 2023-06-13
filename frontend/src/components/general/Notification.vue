@@ -106,14 +106,14 @@ const backgroundMapping: { [type in NotificationLevel]: string } = {
               :class="iconTextMapping[notification.level]"
               size="28"
             ></icon>
-            <div class="text-lg font-semibold">{{ notification.header }}</div>
+            <div class="text-base font-semibold">{{ notification.header }}</div>
           </div>
           <div class="cursor-pointer text-gray-200 hover:text-white" @click="onClose()">
             <icon name="x" :stroke-width="18" :size="18"></icon>
           </div>
         </div>
 
-        <div v-if="notification.detail" class="text-base mt-2">
+        <div v-if="notification.detail" class="text-sm mt-2">
           {{ notification.detail }}
         </div>
       </div>
