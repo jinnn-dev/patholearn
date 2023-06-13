@@ -57,6 +57,6 @@ fi
 cd $DIRECTORY
 dockerfile="${MODE}.dockerfile"
 echo $dockerfile
-docker buildx build --tag hafen.noxz.dev/patholearn/$IMAGE:$TAG -o type=image --platform=linux/amd64 --push -f $dockerfile .
+docker buildx build --tag hafen.noxz.dev/patholearn-ai/$IMAGE:$TAG -o type=image --platform=linux/amd64 --push -f $dockerfile .
 
 echo 'Build and publish of docker image'

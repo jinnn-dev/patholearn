@@ -91,6 +91,7 @@ def get_slide_by_id(
     )
     if metadata:
         slide = convert_slide_binary_metadata_to_base64(slide)
+
     return slide
 
 
@@ -104,14 +105,7 @@ def get_slide(*, collection: Collection = Depends(get_slide_collection), slide_i
 
 @router.get("/{slide_id}/layers")
 def get_slide_layers(*, slide_id: str):
-    layers = app.minio_wrapper.get_slide_layers(slide_id)
-    max_layer = -1
-    for layer in layers:
-        object_name = layer.object_name
-        layer = int(object_name.split("/")[-2])
-        if layer > max_layer:
-            max_layer = layer
-    return max_layer
+    return app.minio_wrapper.get_max_slide_layer(slide_id)
 
 
 @router.delete("/{slide_id}")
@@ -128,9 +122,10 @@ def delete_slide(
 
 
 @router.get("/{slide_id}/download/{layer}")
-def download_slide(
-    *, collection: Collection = Depends(get_slide_collection), slide_id: str, layer: int
-):
-    image = app.minio_wrapper.get_slide(slide_id, layer)
-    # slide = crud_slide.get_slide(collection=collection, slide_id=slide_id)
-    return Response(content=image, media_type="image/jpg")
+def download_slide(*, slide_id: str, layer: int):
+    try:
+        image = app.minio_wrapper.get_slide(slide_id, layer)
+        return Response(content=image, media_type="image/jpg")
+    except Exception as e:
+        logger.error(e)
+        raise HTTPException(status_code=500, detail="Slide could not be downloaded")

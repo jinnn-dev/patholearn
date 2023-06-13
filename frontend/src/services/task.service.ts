@@ -150,7 +150,7 @@ export class TaskService {
     return response!.data;
   }
 
-  public static async getUserSolutionToUser(taskId: number, userId: number): Promise<UserSolutionWithUser> {
+  public static async getUserSolutionToUser(taskId: number, userId: string): Promise<UserSolutionWithUser> {
     const [_, response] = await handleError(
       ApiService.get<UserSolutionWithUser>({
         resource: this._apiUrl(`/task/${taskId}/userSolution/user/${userId}`)
@@ -295,7 +295,7 @@ export class TaskService {
     return response!.data;
   }
 
-  public static async solveTaskToUser(task_id: number, user_id: number): Promise<TaskResult> {
+  public static async solveTaskToUser(task_id: number, user_id: string): Promise<TaskResult> {
     const [_, response] = await handleError(
       ApiService.get<TaskResult>({
         resource: this._apiUrl('/' + task_id + '/solve/' + user_id)
@@ -606,6 +606,19 @@ export class TaskService {
       'Usersolutions could not be downloaded'
     );
 
+    return response!.data;
+  }
+
+  public static async downloadMask(taskId: number) {
+    const [_, response] = await handleError(
+      ApiService.get<any>(
+        {
+          resource: this._apiUrl(`/task/${taskId}/mask`)
+        },
+        'arraybuffer'
+      ),
+      'Download mask failed'
+    );
     return response!.data;
   }
 

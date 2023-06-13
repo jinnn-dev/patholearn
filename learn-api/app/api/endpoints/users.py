@@ -101,19 +101,13 @@ def create_user_open(*, db: Session = Depends(deps.get_db), user_in: UserCreate)
             status_code=403,
             detail="Open user registration is forbidden on this server",
         )
-    user = crud_user.get_by_email(db, email=user_in.email)
-    if user:
-        raise HTTPException(
-            status_code=400,
-            detail="The user with this username already exists in the system",
-        )
     user = crud_user.create(db, obj_in=user_in)
     return user
 
 
 @router.get("/{user_id}", response_model=UserSchema)
 def read_user_by_id(
-    user_id: int,
+    user_id: str,
     current_user: models.user.User = Depends(deps.get_current_active_user),
     db: Session = Depends(deps.get_db),
 ) -> Any:
@@ -134,7 +128,7 @@ def read_user_by_id(
 def update_user(
     *,
     db: Session = Depends(deps.get_db),
-    user_id: int,
+    user_id: str,
     user_in: UserUpdate,
     current_user: models.user.User = Depends(deps.get_current_active_superuser),
 ) -> Any:

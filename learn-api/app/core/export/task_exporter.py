@@ -22,9 +22,8 @@ from xlsxwriter.worksheet import Worksheet
 
 
 class TaskPointRow(BaseModel):
-    user_id: int
+    user_id: str
     first_name: str
-    middle_name: str
     last_name: str
     x: float
     y: float
@@ -298,7 +297,6 @@ class TaskExporter:
                     TaskPointRow(
                         user_id=user.id,
                         first_name=user.firstname,
-                        middle_name=user.middlename or "",
                         last_name=user.lastname,
                         x=annotation.coord.image[0].x,
                         y=annotation.coord.image[0].y,

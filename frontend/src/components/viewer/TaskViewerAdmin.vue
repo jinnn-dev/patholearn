@@ -86,8 +86,8 @@ const props = defineProps({
   base_task_id: Number,
   task_group_id: Number,
   course_id: Number,
-  showUserSolutionId: Number,
-  hideUserSolutionId: Number
+  showUserSolutionId: String,
+  hideUserSolutionId: String
 });
 
 const showConfirmationDialog = ref<boolean>(false);
@@ -753,7 +753,7 @@ const validateAnnotations = async () => {
   validationResultIsPending.value = false;
 };
 
-const showUserSolutionAnnotations = async (userId: number) => {
+const showUserSolutionAnnotations = async (userId: string) => {
   if (!loadedUserSolutions.has(userId)) {
     userSolutionAnnotationsLoading.value = true;
     const userSolution = await TaskService.getUserSolutionToUser(props.task!.id, userId);
@@ -797,7 +797,7 @@ const setTaskResultStyles = (taskResult: TaskResult, annotations?: Annotation[])
   setColors(taskResult, drawingViewer, annotations);
 };
 
-const hideUserSolutionAnnotations = (userId: number) => {
+const hideUserSolutionAnnotations = (userId: string) => {
   const annotations = loadedUserSolutions.get(userId)?.annotations;
   unselectAnnotation();
   if (annotations) {
@@ -866,9 +866,6 @@ const showAllSolutionAnnotations = () => {
       <form-field label="Nutzer" margin-hor="my-0">
         <div class="flex gap-2">
           <div>{{ annotationsToUser.get(selectedPolygon.id)!.firstname }}</div>
-          <div v-if="annotationsToUser.get(selectedPolygon.id)!.middlename">
-            {{ annotationsToUser.get(selectedPolygon.id)!.middlename }}
-          </div>
           <div>{{ annotationsToUser.get(selectedPolygon.id)!.lastname }}</div>
         </div>
       </form-field>

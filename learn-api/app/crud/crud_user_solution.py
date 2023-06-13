@@ -16,7 +16,7 @@ from app.utils.logger import logger
 
 class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUpdate]):
     def get_solution_and_user_to_task(
-        self, db: Session, *, user_id: int, task_id: int
+        self, db: Session, *, user_id: str, task_id: int
     ) -> Tuple[UserSolution, User]:
         """
         Returns the UserSolution and User to the given user and task.
@@ -35,7 +35,7 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         )
 
     def get_solution_to_task_and_user(
-        self, db: Session, *, user_id: int, task_id: int
+        self, db: Session, *, user_id: str, task_id: int
     ) -> UserSolution:
         """
         Returns the UserSolution to the given user and task.
@@ -92,7 +92,7 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         return db.query(self.model).filter(UserSolution.task_id == task_id).all()
 
     def remove_by_user_id_and_task_id(
-        self, db: Session, *, user_id: int, task_id: int
+        self, db: Session, *, user_id: str, task_id: int
     ) -> SchemaSolution:
         """
         Removes Solution of the given user to the given task.
@@ -129,7 +129,7 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         return db_objs
 
     def remove_all_by_user_to_course(
-        self, db: Session, user_id: int, course_id: int
+        self, db: Session, user_id: str, course_id: int
     ) -> List[SchemaSolution]:
         """
         Removes all UserSolution of the User to a Course.
@@ -200,7 +200,7 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         return db_objs
 
     def get_solved_percentage_to_task_group(
-        self, db: Session, *, user_id: int, task_group_id: int
+        self, db: Session, *, user_id: str, task_group_id: int
     ) -> Tuple:
         """
         Returns the percentage of the user solved tasks to the given TaskGroup.
@@ -218,7 +218,7 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         return query.first()
 
     def get_solved_percentage_to_base_task(
-        self, db: Session, *, user_id: int, base_task_id: int
+        self, db: Session, *, user_id: str, base_task_id: int
     ) -> Tuple:
         """
         Returns the percentage of the user solved tasks to the given BaseTask.
@@ -236,7 +236,7 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         )
 
     def get_solved_percentage_to_course(
-        self, db: Session, *, user_id: int, course_id: int
+        self, db: Session, *, user_id: str, course_id: int
     ) -> int:
         """
         Returns the percentage of the user solved tasks to the given Course
@@ -255,7 +255,7 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         )
 
     def get_amount_of_correct_solutions_to_course(
-        self, db: Session, *, user_id: int, course_id: int
+        self, db: Session, *, user_id: str, course_id: int
     ) -> int:
         """
         Returns the amount correct solved tasks to the course
@@ -270,7 +270,7 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         )
 
     def get_amount_of_wrong_solutions_to_course(
-        self, db: Session, *, user_id: int, course_id: int
+        self, db: Session, *, user_id: str, course_id: int
     ) -> int:
         """
         Returns the amount wrong solved tasks to the course
@@ -285,7 +285,7 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         )
 
     def get_amount_of_correct_solutions_to_task_group(
-        self, db: Session, *, user_id: int, task_group_id: int
+        self, db: Session, *, user_id: str, task_group_id: int
     ) -> int:
         """
         Returns the amount correct solved tasks to the task group
@@ -300,7 +300,7 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         )
 
     def get_amount_of_wrong_solutions_to_task_group(
-        self, db: Session, *, user_id: int, task_group_id: int
+        self, db: Session, *, user_id: str, task_group_id: int
     ) -> int:
         """
         Returns the amount wrong solved tasks to the task group
@@ -315,7 +315,7 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         )
 
     def get_amount_of_correct_solutions_to_base_task(
-        self, db: Session, *, user_id: int, base_task_id: int
+        self, db: Session, *, user_id: str, base_task_id: int
     ) -> int:
         """
         Returns the amount correct solved tasks to the base task
@@ -330,7 +330,7 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         )
 
     def get_amount_of_wrong_solutions_to_base_task(
-        self, db: Session, *, user_id: int, base_task_id: int
+        self, db: Session, *, user_id: str, base_task_id: int
     ) -> int:
         """
         Returns the amount wrong solved tasks to the base task
@@ -344,7 +344,7 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
             db, user_id=user_id, id_name="base_task_id", id_value=base_task_id
         )
 
-    def increment_failed_attempts(self, db: Session, user_id: int, task_id: int) -> int:
+    def increment_failed_attempts(self, db: Session, user_id: str, task_id: int) -> int:
         model = self.get_solution_to_task_and_user(db, user_id=user_id, task_id=task_id)
         new_attempts = model.failed_attempts + 1
         model.failed_attempts = new_attempts
@@ -354,7 +354,7 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         return new_attempts
 
     def __get_amount_of_wrong_solutions(
-        self, db: Session, *, user_id: int, id_name: str, id_value: int
+        self, db: Session, *, user_id: str, id_name: str, id_value: int
     ) -> int:
         return (
             db.query(func.count())
@@ -371,7 +371,7 @@ class CRUDUserSolution(CRUDBase[UserSolution, UserSolutionCreate, UserSolutionUp
         )
 
     def __get_amount_of_correct_solution(
-        self, db: Session, user_id: int, id_name: str, id_value: int
+        self, db: Session, user_id: str, id_name: str, id_value: int
     ) -> int:
         return (
             db.query(func.count())

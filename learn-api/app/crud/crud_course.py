@@ -11,7 +11,7 @@ from app.models.task import Task
 from app.schemas.course import CourseAdmin, CourseCreate, CourseDetail, CourseUpdate
 
 
-def set_member_status(*, courses: List[Course], user_id: int) -> None:
+def set_member_status(*, courses: List[Course], user_id: str) -> None:
     for course in courses:
         for member in course.members:
             if member.id == user_id:
@@ -40,7 +40,7 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
         return db_obj
 
     def join_course(
-        self, db: Session, *, short_name: str, user_id: int
+        self, db: Session, *, short_name: str, user_id: str
     ) -> Optional[Course]:
         """
         Join the given course.
@@ -70,7 +70,7 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
         db.refresh(db_obj)
         return course
 
-    def leave_course(self, db: Session, *, course_id: int, user_id: int) -> None:
+    def leave_course(self, db: Session, *, course_id: int, user_id: str) -> None:
         """
         Lets user leave a course
 
@@ -97,7 +97,7 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
         """
         return db.query(self.model).filter(Course.owner_id == owner_id).all()
 
-    def get_multi_by_user(self, db: Session, *, user_id: int) -> List[CourseDetail]:
+    def get_multi_by_user(self, db: Session, *, user_id: str) -> List[CourseDetail]:
         """
         Returns all Courses where the user is a member.
 
@@ -129,7 +129,7 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
         return db.query(self.model).filter(Course.name == name).first()
 
     def get_multi_by_name(
-        self, db: Session, *, search: str, user_id: int
+        self, db: Session, *, search: str, user_id: str
     ) -> List[Course]:
         """
         Returns all Courses where the name contains the search string
@@ -147,7 +147,7 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
         set_member_status(courses=courses, user_id=user_id)
         return courses
 
-    def is_not_member_and_owner(self, db, course_id: int, user_id: int) -> bool:
+    def is_not_member_and_owner(self, db, course_id: int, user_id: str) -> bool:
         """
         Checks if User is Member or Owner.
 
@@ -165,7 +165,7 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
         is_owner = course.owner.id == user_id
         return is_member is False and is_owner is False
 
-    def user_is_course_owner(self, db, *, course_id: int, user_id: int) -> bool:
+    def user_is_course_owner(self, db, *, course_id: int, user_id: str) -> bool:
         course = self.get(db, id=course_id)
 
         # if not course:

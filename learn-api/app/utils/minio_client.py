@@ -30,7 +30,7 @@ class MinioClient:
             endpoint=settings.MINIO_URL,
             access_key=settings.MINIO_ROOT_USER,
             secret_key=settings.MINIO_ROOT_PASSWORD,
-            secure=False,
+            secure=settings.MINIO_SECURE,
         )
         self.bucket = None
         self.bucket_name = None

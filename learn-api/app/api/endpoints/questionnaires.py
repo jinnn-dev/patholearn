@@ -97,10 +97,9 @@ def download_questionnaire_statistic(
         item = QuestionnaireRow(
             question_text=data[0],
             firstname=data[1],
-            middlename=data[2],
-            lastname=data[3],
-            selection=data[4],
-            answer=data[5],
+            lastname=data[2],
+            selection=data[3],
+            answer=data[4],
         )
         result.append(item)
 

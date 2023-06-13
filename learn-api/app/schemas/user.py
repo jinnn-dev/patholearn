@@ -8,19 +8,18 @@ from pydantic import BaseModel, EmailStr
 class UserBase(BaseModel):
     email: Optional[EmailStr] = None
     firstname: Optional[str] = None
-    middlename: Optional[str] = None
     lastname: Optional[str] = None
-    is_active: Optional[bool] = True
     is_superuser: bool = False
 
 
 # Properties to receive via API on creation
 class UserCreate(UserBase):
+    id: str
     email: EmailStr
     firstname: str
-    middlename: Optional[str]
     lastname: str
-    password: str
+    is_superuser: Optional[bool]
+    last_login: Optional[datetime.datetime]
 
 
 # Properties to receive via API on update
@@ -30,7 +29,7 @@ class UserUpdate(UserBase):
 
 
 class UserInDBBase(UserBase):
-    id: Optional[int] = None
+    id: Optional[str] = None
 
     class Config:
         orm_mode = True

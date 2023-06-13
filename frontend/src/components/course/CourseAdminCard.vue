@@ -10,7 +10,7 @@ import RoleOnly from '../containers/RoleOnly.vue';
 import ModalDialog from '../containers/ModalDialog.vue';
 import InputField from '../form/InputField.vue';
 import Icon from '../general/Icon.vue';
-import DotMenu from '../general/DotMenu.vue';
+import DotMenuComplete from '../general/DotMenuComplete.vue';
 import ConfirmButtons from '../general/ConfirmButtons.vue';
 
 const props = defineProps({
@@ -90,7 +90,8 @@ onClickOutside(target, () => (dotMenuOpen.value = false));
         <div>
           {{ taskgroup.name }}
         </div>
-        <div>
+        <dot-menu-complete @delete="showDeleteTaskGroup = true" @edit="showEditTaskGroup = true"></dot-menu-complete>
+        <!-- <div class="relative">
           <Icon
             class="cursor-pointer ml-4 hover:text-gray-200 rounded-md"
             name="dots-three-vertical"
@@ -103,7 +104,7 @@ onClickOutside(target, () => (dotMenuOpen.value = false));
             @delete="showDeleteTaskGroup = true"
             @edit="showEditTaskGroup = true"
           />
-        </div>
+        </div> -->
       </div>
 
       <task-count-badge :count="taskgroup?.task_count"></task-count-badge>

@@ -2,7 +2,8 @@ import json
 import os
 import uuid
 from typing import Any, Dict, List, Union
-
+from app.core.annotation_extractor import create_mask_from_annotations
+import requests
 import pyvips
 from pydantic import parse_obj_as
 
@@ -55,13 +56,13 @@ from app.schemas.user_solution import (
 from app.core.annotation_type import is_info_annotation
 from app.utils.minio_client import MinioClient, minio_client
 from app.utils.timer import Timer
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from fastapi.datastructures import UploadFile
 from fastapi.params import File
 from sqlalchemy.orm import Session
 from starlette.responses import StreamingResponse
 from app.utils.logger import logger
-
+from app.core.config import settings
 
 router = APIRouter()
 
@@ -313,6 +314,39 @@ def add_task_annotation(
     return {"Status": "OK"}
 
 
+@router.get("/{task_id}/mask", response_model=Any)
+def download_mask(
+    *,
+    db: Session = Depends(get_db),
+    task_id: int,
+    current_user: User = Depends(get_current_active_superuser),
+):
+    task = crud_task.get(db, id=task_id)
+    base_task = crud_base_task.get(db, id=task.base_task_id)
+    slide_id = base_task.slide_id
+
+    try:
+        slide_result = requests.get(
+            f"{settings.SLIDE_URL}/slides/{slide_id}?metadata=true"
+        )
+        slide_result.raise_for_status()
+    except requests.exceptions.HTTPError as err:
+        raise HTTPException(status_code=500, detail=err.response.text)
+
+    slide = slide_result.json()
+    slide_width = slide["metadata"]["width"]
+    slide_height = slide["metadata"]["height"]
+
+    mask = create_mask_from_annotations(
+        parse_obj_as(List[OffsetPolygonData], task.solution),
+        parse_obj_as(List[AnnotationGroup], task.annotation_groups),
+        slide_width,
+        slide_height,
+    )
+
+    return Response(content=mask, media_type="image/png")
+
+
 @router.get("/{task_id}/validate", response_model=Any)
 def validate_task_annotations(
     *,
@@ -478,7 +512,7 @@ def delete_task_result(
 @router.get(
     "/{task_id}/userSolution/download", response_model=Any, response_description="xlsx"
 )
-def download_usersolutions(
+def usersolutions(
     *,
     db: Session = Depends(get_db),
     task_id: int,
@@ -608,7 +642,7 @@ def get_user_solution_to_user(
     *,
     db: Session = Depends(get_db),
     task_id: int,
-    user_id: int,
+    user_id: str,
     current_user: User = Depends(get_current_active_superuser),
 ):
     task = crud_task.get(db=db, id=task_id)

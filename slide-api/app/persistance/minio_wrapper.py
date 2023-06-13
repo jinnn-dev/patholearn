@@ -7,6 +7,8 @@ import os
 from pathlib import Path
 import numpy as np
 from cv2 import cv2
+from loguru import logger
+import xml.etree.ElementTree as ET
 
 
 class MinioWrapper:
@@ -59,6 +61,16 @@ class MinioWrapper:
             bucket_name=MinioWrapper.info_bucket, file_name=file_name
         )
 
+    def get_max_slide_layer(self, slide_id: str):
+        layers = self.get_slide_layers(slide_id)
+        max_layer = -1
+        for layer in layers:
+            object_name = layer.object_name
+            layer = int(object_name.split("/")[-2])
+            if layer > max_layer:
+                max_layer = layer
+        return max_layer
+
     def get_slide_layers(self, slide_id: str):
         result = self.minio_client.get_object_names_in_folder(
             bucket_name=MinioWrapper.pyramid_bucket,
@@ -67,10 +79,34 @@ class MinioWrapper:
         return list(result)
 
     def get_slide(self, slide_id: str, layer=0):
+        if layer == -1:
+            layer = self.get_max_slide_layer(slide_id)
+
+        object_path = f"{slide_id}/{layer}.jpeg"
+
+        slide = self.minio_client.get_object(
+            bucket_name=MinioWrapper.pyramid_bucket, object_path=object_path
+        )
+
+        # if slide is not None:
+        #     logger.info("Slide is cached")
+        #     return slide
+        logger.info("Slide is not cached")
         result = self.minio_client.get_objects_in_folder(
             bucket_name=MinioWrapper.pyramid_bucket,
             folder_path=f"{slide_id}/dzi_files/{layer}",
         )
+
+        dzi_file = self.minio_client.get_object(
+            bucket_name=MinioWrapper.pyramid_bucket, object_path=f"{slide_id}/dzi.dzi"
+        )
+
+        tree = ET.parse(ET.fromstring(dzi_file))
+        root = tree.getroot()
+        for child in root:
+            print(child.attrib)
+
+        logger.info(dzi_file)
 
         data = {}
 
@@ -98,6 +134,10 @@ class MinioWrapper:
                 max_y = y
             data[base_name] = parsed_image
 
+        logger.info(
+            f"{str(len(result))}, {str(max_x)}, {str(max_width)}, {str(max_y)}, {str(max_height)}"
+        )
+
         output_image = np.zeros(
             (max_height - max_y + 1, max_width - max_x + 1, 3), dtype=np.uint8
         )
@@ -120,4 +160,17 @@ class MinioWrapper:
 
             curr_x += update_x
         _, im_jpg = cv2.imencode(".jpg", output_image)
+
+        file_name = f"{layer}.jpeg"
+        cv2.imwrite(file_name, output_image)
+
+        self.minio_client.create_object(
+            bucket_name=MinioWrapper.pyramid_bucket,
+            file_name=f"{slide_id}/{file_name}",
+            file_content=file_name,
+            content_type="image/jpeg",
+        )
+
+        os.remove(file_name)
+
         return im_jpg.tobytes()

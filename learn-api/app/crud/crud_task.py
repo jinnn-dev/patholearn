@@ -10,7 +10,7 @@ from app.schemas.task import TaskCreate, TaskUpdate
 
 
 class CRUDTask(CRUDBase[Task, TaskCreate, TaskUpdate]):
-    def has_new_task(self, db: Session, user_id: int, base_task_id: int) -> bool:
+    def has_new_task(self, db: Session, user_id: str, base_task_id: int) -> bool:
         """
         Check if the base task has new tasks for the given user
 
@@ -28,7 +28,7 @@ class CRUDTask(CRUDBase[Task, TaskCreate, TaskUpdate]):
         return True if result is not None else False
 
     def has_new_task_multiple_base_tasks(
-        self, db: Session, user_id: int, base_task_ids: List[int]
+        self, db: Session, user_id: str, base_task_ids: List[int]
     ) -> bool:
         """
         Check if any of the base tasks has new tasks for the given user
@@ -46,7 +46,7 @@ class CRUDTask(CRUDBase[Task, TaskCreate, TaskUpdate]):
         )
         return True if result is not None else False
 
-    def create_new_task(self, db: Session, user_id: int, base_task_id: int) -> NewTask:
+    def create_new_task(self, db: Session, user_id: str, base_task_id: int) -> NewTask:
         """
         Creates a new Entity which indicates that the given user has new tasks
 
@@ -62,7 +62,7 @@ class CRUDTask(CRUDBase[Task, TaskCreate, TaskUpdate]):
         db.commit()
         return obj
 
-    def remove_new_task(self, db: Session, user_id: int, base_task_id: int) -> NewTask:
+    def remove_new_task(self, db: Session, user_id: str, base_task_id: int) -> NewTask:
         """
         Removes the entity for identifying that there is a new task for the user
 

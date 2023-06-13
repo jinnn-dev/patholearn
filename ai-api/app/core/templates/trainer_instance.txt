@@ -1,0 +1,6 @@
+pl.Trainer(
+    max_epochs=${epochs},
+    accelerator="auto", # Uses GPUs or TPUs if available
+    devices="auto", # Uses all available GPUs/TPUs if applicable
+    log_every_n_steps=10
+)

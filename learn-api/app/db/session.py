@@ -7,7 +7,7 @@ from app.core.config import settings
 Database connection configuration and connection creation
 """
 engine = create_engine(
-    settings.DATABASE_URL, pool_pre_ping=True, echo=True, echo_pool="debug"
+    settings.DATABASE_URL, pool_pre_ping=True, echo=False, echo_pool=False
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

@@ -1,14 +1,21 @@
 module.exports = {
   darkMode: 'class',
+
   content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   safelist: [
     'bg-gray-700/95',
 
     {
       pattern: /^backdrop-blur-/
-    }
+    },
+    { pattern: /^text-/ },
+    { pattern: /^bg-/ }
   ],
   theme: {
+    fontFamily: {
+      sans: ['Poppins', 'sans-serif'],
+      mono: ['JetBrains']
+    },
     extend: {
       animation: {
         skeleton: 'pulse 1.5s ease-in-out infinite'

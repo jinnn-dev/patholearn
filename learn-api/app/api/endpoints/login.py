@@ -43,6 +43,19 @@ def login_access_token(
     }
 
 
+@router.post("/login", response_model=SchemaUser)
+def login(db: Session = Depends(deps.get_db), form_data=User) -> Any:
+    print(form_data.id)
+    user = crud_user.get(db, id=form_data.id)
+    if not user:
+        raise HTTPException(status_code=400, detail="User could not be found")
+
+    update_user = UserUpdate()
+    update_user.last_login = datetime.now()
+    updated_user = crud_user.update(db, db_obj=user, obj_in=update_user)
+    return updated_user
+
+
 @router.post("/login/test-token", response_model=SchemaUser)
 def test_token(current_user: User = Depends(deps.get_current_user)) -> Any:
     """

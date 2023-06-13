@@ -1,0 +1,3 @@
+Task.add_requirements("/clearml.requirements.txt")
+task:Task = Task.init(project_name="${project_name}", task_name="${task_name}")
+task.execute_remotely(queue_name="default", clone=False, exit_process=True)

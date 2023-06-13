@@ -123,6 +123,9 @@ const deleteTiledImage = (index: number) => {
 
 const downloadImage = async () => {
   await downloadRun(route.params.id as string, selectedSlideLayer.value);
+  if (downloadResult.value === undefined) {
+    return;
+  }
 
   const url = window.URL.createObjectURL(new Blob([downloadResult.value]));
   const link = document.createElement('a');

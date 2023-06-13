@@ -46,6 +46,7 @@ const saveValue = () => {
         :size="20"
         class="cursor-pointer ml-2"
         name="floppy-disk"
+        strokeWidth="0"
         weight="bold"
         @click.stop="saveValue"
       />

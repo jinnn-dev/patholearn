@@ -40,12 +40,16 @@ class Settings(BaseSettings):
         if "MINIO_ROOT_PASSWORD" in os.environ
         else "minioKey1234"
     )
-    MINIO_URL = os.environ["MINIO_URL"] if "MINIO_URL" in os.environ else "minio:9000"
 
-    FIRST_SUPERUSER_EMAIL: EmailStr = "admin@admin.de"
-    FIRST_SUPERUSER_PASSWORD: str = "admin"
-    FIRST_SUPERUSER_FIRSTNAME: str = "Admin"
-    FIRST_SUPERUSER_LASTNAME: str = "Admin"
+    MINIO_URL = os.environ["MINIO_URL"] if "MINIO_URL" in os.environ else "minio:9000"
+    MINIO_SECURE = (
+        os.environ["MINIO_SECURE"] if "MINIO_SECURE" is os.environ else "True"
+    )
+
+    FIRST_SUPERUSER_EMAIL: EmailStr = os.environ.get("LEARN_API_ADMIN_EMAIL", None)
+    FIRST_SUPERUSER_PASSWORD: str = os.environ.get("LEARN_API_ADMIN_PASSWORD", None)
+    FIRST_SUPERUSER_FIRSTNAME: str = os.environ.get("LEARN_API_ADMIN_FIRSTNAME", None)
+    FIRST_SUPERUSER_LASTNAME: str = os.environ.get("LEARN_API_ADMIN_LASTNAME", None)
     USERS_OPEN_REGISTRATION: bool = True
 
     SENTRY_DSN = os.environ["SENTRY_DSN"] if "SENTRY_DSN" in os.environ else None

@@ -65,9 +65,7 @@ const leaveGroup = () => {
   <content-container>
     <template v-if="isMember" v-slot:header>
       <content-header
-        :subText="`bei ${course?.owner.firstname} ${course?.owner.middlename ? course?.owner.middlename : ''} ${
-          course?.owner.lastname
-        }`"
+        :subText="`bei ${course?.owner.firstname} ${course?.owner.lastname}`"
         :text="course?.name"
         link="/home"
         linkText="Zurück zur Kursauswahl"
