@@ -13,4 +13,4 @@ RUN pip install -r torch.requirements.txt
 COPY clearml.requirements.txt /
 
 COPY ./app /app
-COPY clearml.conf /root/clearml.conf
+# COPY clearml.conf /root/clearml.conf
