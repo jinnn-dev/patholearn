@@ -1,12 +1,30 @@
 <template>
   <svg data-testid="connection" class="w-full">
-    <path class="background" :class="isTraining ? 'stroke-green-900' : 'stroke-gray-300'" :d="path"></path>
-    <path v-if="isTraining" class="line" :d="path"></path>
+    <path class="background" :class="computedClasses" :d="path"></path>
+    <path v-if="builderState.selectedVersion?.status === 'in_progress'" class="line" :d="path"></path>
   </svg>
 </template>
 
 <script lang="ts" setup>
-import { isTraining } from '../../../core/ai/builder/state';
+import { computed } from 'vue';
+import { builderState } from '../../../core/ai/builder/state';
+import { TaskVersionStatus } from '../../../model/ai/tasks/task';
+
+const classMapping: { [type in TaskVersionStatus]?: string } = {
+  in_progress: 'stroke-sky-900',
+  completed: 'stroke-green-600',
+  failed: 'stroke-red-600'
+};
+
+const computedClasses = computed(() => {
+  if (builderState.selectedVersion?.status) {
+    const classes = classMapping[builderState.selectedVersion.status];
+    if (classes) {
+      return classes;
+    }
+  }
+  return 'stroke-gray-300';
+});
 
 defineProps({
   data: Object,
@@ -33,7 +51,7 @@ svg {
 }
 
 .line {
-  @apply stroke-green-500;
+  @apply stroke-sky-500;
   @apply pointer-events-none;
   @apply stroke-[4px];
   @apply fill-[none];

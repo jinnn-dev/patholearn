@@ -8,6 +8,7 @@ import Icon from '../../../components/general/Icon.vue';
 import UserListIndicator from '../../../components/ws/UserListIndicator.vue';
 import { builderState, resetBuilderState } from '../../../core/ai/builder/state';
 import TaskNavigation from '../../../components/ai/tasks/TaskNavigation.vue';
+import { addNotification } from '../../../utils/notification-state';
 const route = useRoute();
 
 const { loading, result: task, run } = useService(AiService.getTask);
@@ -29,6 +30,21 @@ onMounted(async () => {
   builderState.memberAddedCallbacks = memberAddedCallbacks.value;
   builderState.memberRemovedCallbacks = memberRemovedCallbacks.value;
   builderState.selectedVersion = task.value?.versions[0];
+
+  if (builderState.channel) {
+    builderState.channel.bind('training-clearml', (clearmlId: string) => {
+      if (builderState.selectedVersion) {
+        builderState.selectedVersion.clearml_id = clearmlId;
+      }
+      addNotification({
+        header: 'ClearML created',
+        detail: clearmlId,
+        level: 'info',
+        showDate: true,
+        timeout: 4000
+      });
+    });
+  }
 });
 
 watch(
@@ -58,7 +74,7 @@ onUnmounted(() => {
   <router-link
     v-if="task"
     :to="`/ai/projects/${task.project_id}`"
-    class="fixed top-4 left-4 z-20 flex justify-center items-center py-1 px-2 cursor-pointer rounded-md gap-2 bg-gray-700/70 backdrop-blur-md ring-[1px] ring-gray-500/70 hover:ring-1 hover:ring-gray-500 hover:bg-gray-500 shadow-md shadow-gray-900"
+    class="fixed top-4 left-4 z-30 flex justify-center items-center py-1 px-2 cursor-pointer rounded-md gap-2 bg-gray-700/70 backdrop-blur-md ring-[1px] ring-gray-500/70 hover:ring-1 hover:ring-gray-500 hover:bg-gray-500 shadow-md shadow-gray-900"
   >
     <icon name="arrow-left" size="18"></icon>
     <div>Projekt</div>

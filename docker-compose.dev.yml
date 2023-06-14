@@ -176,6 +176,7 @@ services:
     networks:
       - auth_auth-network
       - patholearn-network
+      - ws_ws-network
     volumes:
       - ./ai-worker/app:/app
       - ./clearml.conf:/root/clearml.conf
@@ -183,6 +184,29 @@ services:
     environment:
       - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
       - DATABASE_URL=${MONGO_AI_DRIVER}://${MONGO_AI_USER}:${MONGO_AI_PASSWORD}@${MONGO_AI_IP}:${MONGO_AI_PORT}
+      - WEBSOCKET_APP_ID=${WEBSOCKET_APP_ID}
+      - WEBSOCKET_APP_KEY=${WEBSOCKET_APP_KEY}
+      - WEBSOCKET_APP_SECRET=${WEBSOCKET_APP_SECRET}
+      - WEBSOCKET_HOST=${WEBSOCKET_HOST}
+      - WEBSOCKET_PORT=${WEBSOCKET_PORT}
+      - WEBSOCKET_SSL=${WEBSOCKET_SSL}
+
+  ai_beat_worker:
+    build:
+      context: ./ai-worker/.
+      dockerfile: dockerfile
+    restart: unless-stopped
+    networks:
+      - auth_auth-network
+      - patholearn-network
+    volumes:
+      - ./ai-worker/app:/app
+      - ./clearml.conf:/root/clearml.conf
+    command: celery --app worker.celery_app beat -S app.scheduler.schedulers:DatabaseScheduler --loglevel=info
+    environment:
+      - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
+      - DATABASE_URL=${MONGO_AI_DRIVER}://${MONGO_AI_USER}:${MONGO_AI_PASSWORD}@${MONGO_AI_IP}:${MONGO_AI_PORT}
+
 
   ai_db:
     image: mongo:latest

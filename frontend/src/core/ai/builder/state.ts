@@ -75,7 +75,5 @@ export function getLockedBy(elementId: string): Member | undefined {
 }
 
 export const isTraining = computed(
-  () =>
-    (builderState.selectedVersion?.status !== null && builderState.selectedVersion?.status !== 'NONE') ||
-    builderState.selectedVersion.clearml_id !== null
+  () => builderState.selectedVersion?.status !== null || builderState.selectedVersion.clearml_id !== null
 );

@@ -3,7 +3,7 @@ from typing import List, Tuple
 import torch
 import numpy as np
 
-from app.core.parse_graph import (
+from app.core.parser.parse_graph import (
     ActivationFunction,
     BatchNormNode,
     Conv2dLayer,

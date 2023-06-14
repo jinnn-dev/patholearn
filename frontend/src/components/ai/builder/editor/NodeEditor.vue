@@ -11,8 +11,9 @@ import Icon from '../../../general/Icon.vue';
 import Spinner from '../../../general/Spinner.vue';
 import { TaskVersion } from '../../../../model/ai/tasks/task';
 import { NodeType, isNode } from '../../../../core/ai/builder/nodes/types';
-import { EventName } from '../../../../core/ai/builder/events';
+import { EventName } from '../../../../core/ai/builder/editor-events';
 import { builderState, isTraining, resetBuilderState, resetNodeEditorState } from '../../../../core/ai/builder/state';
+import TaskStatus from '../../../../components/ai/builder/editor/TrainingStatus.vue';
 
 const props = defineProps({
   taskId: {
@@ -30,6 +31,7 @@ const { arrangeLayout, zoomAt, init, addNode, download, importGraph, clear, area
 const { run: updateGraph } = useService(AiService.updateTaskVersion);
 
 const { run: parseGraph, result } = useService(AiService.parseTaskVersion);
+const { run: startVersionTraining, result: versionTrainingResult } = useService(AiService.startTaskVersionTraining);
 
 const rete = ref();
 
@@ -61,7 +63,7 @@ watch(
   () => builderState.shouldSaveEditor,
   async () => {
     if (builderState.shouldSaveEditor) {
-      await saveBuilder();
+      await saveEditor();
     }
   }
 );
@@ -93,16 +95,24 @@ const checkLockStatus = async () => {
   await AiService.unlockElements(builderState.task.id, Array.from(keys));
 };
 
-const saveBuilder = async () => {
+const saveEditor = async () => {
   loadingText.value = 'Saving';
   await updateGraph(props.taskId, props.taskVersion.id, download());
   builderState.shouldSaveEditor = false;
 };
 
-const parseBuilder = async () => {
+const parseEditor = async () => {
   await parseGraph(props.taskId, props.taskVersion.id);
-  builderState.selectedVersion!.status = 'CREATING';
-  startTraining();
+  // builderState.selectedVersion!.status = 'CREATING';
+  // startTraining();
+};
+
+const startEditorTraining = async () => {
+  await startVersionTraining(props.taskId, props.taskVersion.id);
+  if (builderState.selectedVersion) {
+    builderState.selectedVersion.status = 'creating';
+    startTraining();
+  }
 };
 
 const itemClicked = async (event: EventName) => {
@@ -112,7 +122,7 @@ const itemClicked = async (event: EventName) => {
     await arrangeLayout();
   }
   if (event === 'save') {
-    await saveBuilder();
+    await saveEditor();
   }
 
   if (event === 'center') {
@@ -123,12 +133,17 @@ const itemClicked = async (event: EventName) => {
   if (event === 'clear') {
     loadingText.value = 'Clearing';
     await clear();
-    await saveBuilder();
+    await saveEditor();
   }
 
   if (event === 'parse') {
     loadingText.value = 'Parsing';
-    await parseBuilder();
+    await parseEditor();
+  }
+
+  if (event === 'train') {
+    loadingText.value = 'Starting Training';
+    await startEditorTraining();
   }
 
   if (isNode(event)) {
@@ -153,6 +168,8 @@ onUnmounted(() => {
       <code-highlight>{{ result }}</code-highlight>
     </div>
   </modal-dialog>
+
+  <task-status v-if="builderState.selectedVersion?.status"></task-status>
 
   <div class="relative h-full overflow-hidden">
     <div class="flex justify-start">

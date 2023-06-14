@@ -56,7 +56,7 @@ export function initWebsocket() {
       header: 'Websocket konnte nicht verbunden werden',
       detail: e,
       showDate: false,
-      timeout: 1000
+      timeout: 10000
     });
   }
   websocketLoading.value = false;

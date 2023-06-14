@@ -1,3 +1,4 @@
+import json
 import os
 import subprocess
 from bson import ObjectId
@@ -5,15 +6,24 @@ from bson import ObjectId
 from celery import Celery
 from celery.utils.log import get_task_logger
 from clearml import Task
-from app.train import main
+from pydantic import parse_obj_as
 from app.database.database import task_collection
+from app.scheduler.session import SessionManager
+from app.scheduler.models import IntervalSchedule, PeriodicTask
+from app.ws.client import ws_client
 
 celery_app = Celery(__name__)
 celery_app.conf.broker_url = os.environ.get(
     "CELERY_BROKER_URL", "amqp://guest:guest@rabbit:5673//"
 )
+beat_dburi = "sqlite:///app/scheduler/schedule.db"
+celery_app.conf.update({"beat_dburi": beat_dburi})
 
 logger = get_task_logger(__name__)
+
+session_manager = SessionManager()
+session = session_manager.session_factory(beat_dburi)
+session.close()
 
 
 def update_version_status(task_id: str, version_id: str, status: str):
@@ -52,9 +62,12 @@ def enqueue_builder_task(
         ),
         mode=0o777,
     )
+
+    logger.info(f"Writing python file for {task_id} ({task_name})")
     with open(script_path, "w") as file:
         file.write(file_contents)
 
+    logger.info(f"Starting script for {task_id} ({task_name})")
     command = ["python", script_path]
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     # Read from stdout and stderr
@@ -65,21 +78,118 @@ def enqueue_builder_task(
     stdout = stdout.decode("utf-8")
     stderr = stderr.decode("utf-8")
 
-    print("Standard Output:", stdout)
-    print("Standard Error:", stderr)
-    print("Exit code:", exit_code)
-    status = "CREATED"
+    logger.info(f"Script {task_id} stdout: {stdout}")
+    logger.error(f"Script {task_id} stderr: {stderr}")
+    print(f"Script {task_id} exit code: {exit_code}")
     if exit_code != 0:
-        status = "FAILED"
+        status = "failed"
         update_version_status(task_id, version_id, status)
+        ws_client.trigger(
+            f"presence-task-{task_id}",
+            "training-status-changed",
+            {"old": "creating", "new": "failed"},
+        )
         return
 
-    task: Task = Task.get_task(project_name=task_name, task_name=version_id)
+    try:
+        task: Task = Task.get_task(project_name=task_name, task_name=version_id)
+    except Exception as e:
+        update_version_status(task_id, version_id, "failed")
+        ws_client.trigger(
+            f"presence-task-{task_id}",
+            "training-status-changed",
+            {"old": "creating", "new": "failed"},
+        )
+        return
 
     update_version_clearml_id(task_id, version_id, task.id)
-    update_version_status(task_id, version_id, status)
+    update_version_status(task_id, version_id, task.status)
+    ws_client.trigger(
+        f"presence-task-{task_id}",
+        "training-status-changed",
+        {"old": "creating", "new": task.status},
+    )
+    ws_client.trigger(
+        f"presence-task-{task_id}",
+        "training-clearml",
+        task.id,
+    )
+    _, session_maker = session_manager.create_session(beat_dburi)
+    session = session_maker()
+    schedule = (
+        session.query(IntervalSchedule)
+        .filter_by(every=1, period=IntervalSchedule.SECONDS)
+        .first()
+    )
+    logger.debug(schedule)
+    if not schedule:
+        schedule = IntervalSchedule(every=5, period=IntervalSchedule.SECONDS)
+        session.add(schedule)
+        session.commit()
+    task = PeriodicTask(
+        interval=schedule,
+        name=task.id,
+        task="check_task_status",
+        kwargs=json.dumps(
+            {
+                "clearml_task_id": task.id,
+                "task_id": task_id,
+                "task_name": task_name,
+                "version_id": version_id,
+            }
+        ),
+        queue="ai",
+    )
+    session.add(task)
+    session.commit()
 
-    return exit_code
+    return 1
+
+
+@celery_app.task(name="check_task_status", queue="ai")
+def check_task_version(
+    clearml_task_id: str, task_id: str, task_name: str, version_id: str
+):
+    _, session_maker = session_manager.create_session(beat_dburi)
+    session = session_maker()
+
+    clearml_task: Task = Task.get_task(task_id=clearml_task_id)
+    new_status = clearml_task.status
+
+    if new_status == "completed" or new_status == "failed":
+        periodic_task = (
+            session.query(PeriodicTask).filter_by(name=clearml_task_id).first()
+        )
+        if periodic_task is not None:
+            session.delete(periodic_task)
+            session.commit()
+
+    db_task = task_collection.find_one(
+        {
+            "_id": ObjectId(task_id),
+            "versions": {"$elemMatch": {"id": ObjectId(version_id)}},
+        },
+    )
+    old_status = db_task["versions"][0]["status"]
+
+    if old_status != new_status:
+        websocket_result = ws_client.trigger(
+            f"presence-task-{task_id}",
+            "training-status-changed",
+            {"old": old_status, "new": new_status},
+        )
+        logger.info(f"Websocket result ({task_id}): {websocket_result}")
+
+        task_collection.update_one(
+            {
+                "_id": ObjectId(task_id),
+                "versions": {"$elemMatch": {"id": ObjectId(version_id)}},
+            },
+            {"$set": {"versions.$[version].status": new_status}},
+            array_filters=[{"version.id": ObjectId(version_id)}],
+        )
+
+    return 0
 
 
 @celery_app.task(name="enqueue_task", queue="ai")

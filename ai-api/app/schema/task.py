@@ -139,7 +139,19 @@ class Graph(BaseModel):
         }
 
 
-TaskVersionStatus = Literal["NONE", "FAILED", "CREATING", "CREATED"]
+TaskVersionStatus = Literal[
+    "creating",
+    "created",
+    "in_progress",
+    "stopped",
+    "closed",
+    "failed",
+    "completed",
+    "queued",
+    "published",
+    "publishing",
+    "unknown",
+]
 
 
 class TaskVersion(BaseModel):

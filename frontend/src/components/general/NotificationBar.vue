@@ -22,11 +22,11 @@ const removeItem = (id: string) => {
 </template>
 <style>
 .notification-move {
-  transition: all 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+  transition: all 0.3s cubic-bezier(0.33, 1, 0.68, 1);
 }
 .notification-enter-active,
 .notification-leave-active {
-  transition: all 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+  transition: all 0.3s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 .notification-enter-from,

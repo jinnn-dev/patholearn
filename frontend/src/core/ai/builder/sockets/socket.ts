@@ -32,9 +32,9 @@ export function nodesCanConnect(source: NodeClassesType, target: NodeClassesType
     if (!possibleConnections.includes(target.sockets.input.type)) {
       addNotification({
         header: 'Nicht möglich!',
-        detail: `Ein ${source.type} Node kann nicht mit einem ${target.type} verbunden werden.`,
+        detail: getWarningMessage(source, target),
         level: 'warning',
-        showDate: true,
+        showDate: false,
         timeout: 10000
       });
       return false;
@@ -42,4 +42,19 @@ export function nodesCanConnect(source: NodeClassesType, target: NodeClassesType
     return true;
   }
   return false;
+}
+
+export function getWarningMessage(sourceNode: NodeClassesType, targetNode: NodeClassesType) {
+  const sourceType = sourceNode.sockets.output?.type;
+  const targetType = targetNode.sockets.input?.type;
+
+  if (sourceType === '2D' && targetType === 'Linear') {
+    return `Ein ${targetNode.label} Node kann nur lineare Daten verarbeiten. Es muss ein Flatten Node zwischen gefügt werden.`;
+  }
+
+  if (sourceType === 'Linear' && targetType === '2D') {
+    return `Ein ${sourceNode.label} Node produziert lineare Daten. Der ${targetNode.label} Node verarbeitet aber nur 2D-Daten. Ändere die Reihenfolge der Nodes.`;
+  }
+
+  return `Ein ${sourceNode.label} Node kann nicht mit einem ${targetNode.label} Node verbunden werden.`;
 }

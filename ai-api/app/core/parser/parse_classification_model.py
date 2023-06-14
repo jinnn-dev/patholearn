@@ -1,12 +1,17 @@
 from typing import List, Union
-from app.core.parse_layer import (
+from app.core.parser.parse_layer import (
     Add,
     parse_add_layer,
     parse_concatenate_layer,
     parse_layer,
 )
 import networkx as nx
-from app.core.parse_graph import AddNode, ConcatenateNode, DatasetNode, OutputNode
+from app.core.parser.parse_graph import (
+    AddNode,
+    ConcatenateNode,
+    DatasetNode,
+    OutputNode,
+)
 from app.utils.logger import logger
 import torch
 

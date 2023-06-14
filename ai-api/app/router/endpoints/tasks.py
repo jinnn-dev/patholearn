@@ -18,9 +18,10 @@ from app.schema.task import (
     UnlockElements,
     UpdateTaskVersion,
 )
-from app.core.parse_graph import parse_graph
-from app.core.parse_to_pytorch import parse_to_pytorch_graph
+from app.core.parser.parse_graph import parse_graph
+from app.core.parser.parse_to_pytorch import parse_to_pytorch_graph
 from app.utils.logger import logger
+from app.crud.task import get_task_with_version
 
 router = APIRouter()
 
@@ -198,23 +199,18 @@ async def lock_element(
     # if element is not None:
 
 
-@router.get("/{task_id}/version/{version_id}/parse")
-async def parse_builder_state(
-    task_id: str, version_id: str, s: SessionContainer = Depends(verify_session())
+@router.post("/{task_id}/version/{version_id}/train")
+async def start_task_training(
+    task_id: str, version_id: str, _: SessionContainer = Depends(verify_session())
 ):
-    db_task = await task_collection.find_one(
-        {
-            "_id": ObjectId(task_id),
-            "versions": {"$elemMatch": {"id": ObjectId(version_id)}},
-        },
+    task, task_version = await get_task_with_version(task_id, version_id)
+
+    if task is None or task_version is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    parsed_graph, dataset_node, output_node, combine_nodes = parse_graph(
+        task_version.graph
     )
-    if db_task is None:
-        return None
-    task = parse_obj_as(Task, db_task)
-
-    task_graph = parse_obj_as(Graph, task.versions[0].graph)
-
-    parsed_graph, dataset_node, output_node, combine_nodes = parse_graph(task_graph)
     try:
         pytorch_text = parse_to_pytorch_graph(
             parsed_graph,
@@ -226,18 +222,46 @@ async def parse_builder_state(
         )
     except Exception as e:
         logger.error(e)
-        return HTTPException(status_code=500, detail="Model could not be parsed")
+        raise HTTPException(status_code=500, detail="Model could not be parsed")
 
     await task_collection.update_one(
         {
             "_id": ObjectId(task_id),
             "versions": {"$elemMatch": {"id": ObjectId(version_id)}},
         },
-        {"$set": {"versions.$[version].status": "CREATING"}},
+        {"$set": {"versions.$[version].status": "creating"}},
         array_filters=[{"version.id": ObjectId(version_id)}],
     )
 
     start_builder_training(pytorch_text, task_id, task.name, version_id)
+
+    return pytorch_text
+
+
+@router.get("/{task_id}/version/{version_id}/parse")
+async def parse_builder_version(
+    task_id: str, version_id: str, s: SessionContainer = Depends(verify_session())
+):
+    task, task_version = await get_task_with_version(task_id, version_id)
+
+    if task is None or task_version is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    parsed_graph, dataset_node, output_node, combine_nodes = parse_graph(
+        task_version.graph
+    )
+    try:
+        pytorch_text = parse_to_pytorch_graph(
+            parsed_graph,
+            dataset_node,
+            output_node,
+            combine_nodes,
+            task,
+            task.versions[0],
+        )
+    except Exception as e:
+        logger.error(e)
+        raise HTTPException(status_code=500, detail="Model could not be parsed")
 
     return pytorch_text
 

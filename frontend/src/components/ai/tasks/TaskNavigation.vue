@@ -7,7 +7,7 @@ defineProps({
 });
 </script>
 <template>
-  <div class="fixed left-1/2 -translate-x-1/2 top-4 flex justify-center items-center z-20">
+  <div class="fixed left-1/2 -translate-x-1/2 top-4 flex justify-center items-center z-30">
     <div
       class="flex gap-4 bg-gray-700/70 backdrop-blur-md px-8 py-1.5 rounded-full ring-[1px] ring-gray-500/70 shadow-md shadow-gray-900"
     >

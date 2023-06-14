@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import Icon from '../../../general/Icon.vue';
 import ToolItem from './ToolItem.vue';
-import { eventSettings, EventName } from '../../../../core/ai/builder/events';
+import { eventSettings, EventName } from '../../../../core/ai/builder/editor-events';
 import { getNodeColor } from '../../../../core/ai/builder/node-colors';
 import { NodeType, getNodeGroup } from '../../../../core/ai/builder/nodes/types';
 
@@ -34,7 +34,7 @@ const emit = defineEmits<{ (e: 'selected', value: EventName): void }>();
           <div v-for="[key, item] in Object.entries(eventSettings)">
             <div v-if="item.divider" class="w-full mt-4 mb-2">
               <div class="text-gray-200 font-bold text-sm">
-                {{ getNodeGroup(key as NodeType) || 'Tools' }}
+                {{ item.header || getNodeGroup(key as NodeType) || 'Tools' }}
               </div>
               <div class="h-[2px] mt-1" :class="'bg-'+(getNodeColor(key as NodeType) || 'gray-400')"></div>
             </div>
