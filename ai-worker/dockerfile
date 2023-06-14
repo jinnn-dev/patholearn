@@ -4,11 +4,11 @@ ENV PYTHONPATH "${PYTHONPATH}:/app/"
 COPY requirements.txt /
 RUN pip install -r requirements.txt
 
-COPY ai.requirements.txt /
-RUN pip install -r ai.requirements.txt
+# COPY ai.requirements.txt /
+# RUN pip install -r ai.requirements.txt
 
-COPY torch.requirements.txt /
-RUN pip install -r torch.requirements.txt
+# COPY torch.requirements.txt /
+# RUN pip install -r torch.requirements.txt
 
 COPY clearml.requirements.txt /
 

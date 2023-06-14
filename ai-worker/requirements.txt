@@ -1,4 +1,5 @@
 celery==5.2.7
+SQLAlchemy==2.0.16
 clearml==1.10.3
 urllib3==1.26.15
 pymongo==4.3.3

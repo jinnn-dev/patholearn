@@ -1,3 +1,4 @@
+import json
 import os
 import subprocess
 from bson import ObjectId
@@ -5,15 +6,23 @@ from bson import ObjectId
 from celery import Celery
 from celery.utils.log import get_task_logger
 from clearml import Task
-from app.train import main
 from app.database.database import task_collection
+from app.scheduler.session import SessionManager
+from app.scheduler.models import IntervalSchedule, PeriodicTask
+
 
 celery_app = Celery(__name__)
 celery_app.conf.broker_url = os.environ.get(
     "CELERY_BROKER_URL", "amqp://guest:guest@rabbit:5673//"
 )
+beat_dburi = "sqlite:///app/scheduler/schedule.db"
+celery_app.conf.update({"beat_dburi": beat_dburi})
 
 logger = get_task_logger(__name__)
+
+session_manager = SessionManager()
+session = session_manager.session_factory(beat_dburi)
+session.close()
 
 
 def update_version_status(task_id: str, version_id: str, status: str):
@@ -74,12 +83,51 @@ def enqueue_builder_task(
         update_version_status(task_id, version_id, status)
         return
 
-    task: Task = Task.get_task(project_name=task_name, task_name=version_id)
+    try:
+        task: Task = Task.get_task(
+            project_name="Test", task_name="6488ae018d0d218831d7ef65"
+        )
+    except Exception as e:
+        update_version_status(task_id, version_id, "FAILED")
+        return
 
     update_version_clearml_id(task_id, version_id, task.id)
     update_version_status(task_id, version_id, status)
+    _, session_maker = session_manager.create_session(beat_dburi)
+    session = session_maker()
+    schedule = (
+        session.query(IntervalSchedule)
+        .filter_by(every=1, period=IntervalSchedule.SECONDS)
+        .first()
+    )
+    logger.debug(schedule)
+    if not schedule:
+        schedule = IntervalSchedule(every=10, period=IntervalSchedule.SECONDS)
+        session.add(schedule)
+        session.commit()
+    task = PeriodicTask(
+        interval=schedule,
+        name=task.id,
+        task="ping",
+        args=json.dumps([task.id]),
+        queue="ai",
+    )
+    session.add(task)
+    session.commit()
 
-    return exit_code
+    return 1
+
+
+@celery_app.task(name="ping", queue="ai")
+def ping(task_id: str):
+    logger.info("HEREREEE")
+    engine, session_maker = session_manager.create_session(beat_dburi)
+    session = session_maker()
+    logger.info(f"Task ID: {task_id}")
+    task = session.query(PeriodicTask).filter_by(name=task_id).first()
+    session.delete(task)
+    session.commit()
+    return 0
 
 
 @celery_app.task(name="enqueue_task", queue="ai")
