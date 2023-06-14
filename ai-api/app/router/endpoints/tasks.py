@@ -229,7 +229,7 @@ async def start_task_training(
             "_id": ObjectId(task_id),
             "versions": {"$elemMatch": {"id": ObjectId(version_id)}},
         },
-        {"$set": {"versions.$[version].status": "CREATING"}},
+        {"$set": {"versions.$[version].status": "creating"}},
         array_filters=[{"version.id": ObjectId(version_id)}],
     )
 
