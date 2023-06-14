@@ -1,13 +1,14 @@
 <script lang="ts" setup>
 import { getEnv } from './config';
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { detect } from 'detect-browser';
 import NotificationBar from './components/general/NotificationBar.vue';
 import { useRoute } from 'vue-router';
 import Sidebar from './components/menu/Sidebar.vue';
 import AppLoading from './components/AppLoading.vue';
 import { appState } from './utils/app.state';
-import { initWebsocket, registerConnectionEvents } from './services/ws.service';
+import { initWebsocket, registerConnectionEvents, wsClient } from './services/ws.service';
+import { addNotification } from './utils/notification-state';
 
 const route = useRoute();
 
@@ -50,6 +51,23 @@ watch(
       if (initWebsocket()) {
         registerConnectionEvents();
       }
+    }
+  }
+);
+
+watch(
+  () => wsClient.value,
+  () => {
+    if (wsClient.value) {
+      wsClient.value?.subscribe('worker').bind('ping', (data: any) => {
+        addNotification({
+          header: 'WORKER PING',
+          detail: data,
+          level: 'info',
+          showDate: true,
+          timeout: 2000
+        });
+      });
     }
   }
 );

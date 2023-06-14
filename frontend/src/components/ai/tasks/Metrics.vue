@@ -11,7 +11,7 @@ const props = defineProps({
   }
 });
 
-const { result: metrics, loading } = useService(AiService.getTaskMetrics, true, props.clearMlTaskId);
+const { result: metrics, loading, run } = useService(AiService.getTaskMetrics, true, props.clearMlTaskId);
 
 const processData = (series: any) => {
   const keys = Object.keys(series);

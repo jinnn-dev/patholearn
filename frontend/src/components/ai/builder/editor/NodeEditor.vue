@@ -13,6 +13,7 @@ import { TaskVersion } from '../../../../model/ai/tasks/task';
 import { NodeType, isNode } from '../../../../core/ai/builder/nodes/types';
 import { EventName } from '../../../../core/ai/builder/editor-events';
 import { builderState, isTraining, resetBuilderState, resetNodeEditorState } from '../../../../core/ai/builder/state';
+import TaskStatus from '../../../../components/ai/builder/editor/TrainingStatus.vue';
 
 const props = defineProps({
   taskId: {
@@ -108,6 +109,10 @@ const parseEditor = async () => {
 
 const startEditorTraining = async () => {
   await startVersionTraining(props.taskId, props.taskVersion.id);
+  if (builderState.selectedVersion) {
+    builderState.selectedVersion.status = 'creating';
+    startTraining();
+  }
 };
 
 const itemClicked = async (event: EventName) => {
@@ -163,6 +168,8 @@ onUnmounted(() => {
       <code-highlight>{{ result }}</code-highlight>
     </div>
   </modal-dialog>
+
+  <task-status v-if="builderState.selectedVersion?.status"></task-status>
 
   <div class="relative h-full overflow-hidden">
     <div class="flex justify-start">

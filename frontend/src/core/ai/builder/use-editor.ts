@@ -332,7 +332,7 @@ export function useEditor() {
   };
 
   const startTraining = () => {
-    pushTrainingStarted(builderState.channel as PresenceChannel, 'CREATING');
+    pushTrainingStarted(builderState.channel as PresenceChannel, 'creating');
   };
 
   const clear = async () => {

@@ -6,6 +6,7 @@ import { LockStatus } from '../../../core/ai/builder/sync';
 import { getTextColor } from '../../../utils/colors';
 import Icon from '../../general/Icon.vue';
 import { builderState, isTraining } from '../../../core/ai/builder/state';
+import { TaskVersionStatus } from 'model/ai/tasks/task';
 
 function sortByIndex(entries: any) {
   entries.sort((a: any, b: any) => {
@@ -76,6 +77,12 @@ const nodeStyles = computed(() => {
   };
 });
 
+const ringMapping: { [type in TaskVersionStatus]?: string } = {
+  completed: 'ring-green-600',
+  in_progress: 'ring-sky-600',
+  failed: 'ring-red-600'
+};
+
 const nodeClasses = computed(() => {
   let classes = [];
   if (props.data?.selected) {
@@ -88,8 +95,12 @@ const nodeClasses = computed(() => {
     classes.push('ring-4');
   } else {
     classes.push('ring-2');
-    if (isTraining.value) {
-      classes.push('ring-green-600');
+    if (builderState.selectedVersion?.status) {
+      const ringColor = ringMapping[builderState.selectedVersion?.status];
+
+      if (ringColor) {
+        classes.push(ringColor);
+      }
     } else {
       classes.push('ring-gray-400');
     }
