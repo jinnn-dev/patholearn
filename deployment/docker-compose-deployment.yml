@@ -134,7 +134,7 @@ services:
       - WEBSOCKET_HOST=${WEBSOCKET_HOST}
       - WEBSOCKET_PORT=${WEBSOCKET_PORT}
       - WEBSOCKET_SSL=${WEBSOCKET_SSL}
-      
+
   ai_db:
     image: mongo:latest
     container_name: ai-db-prod
