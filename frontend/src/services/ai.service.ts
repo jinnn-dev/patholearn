@@ -1,7 +1,7 @@
 import { ApiService } from './api.service';
 import { AI_API_URL } from '../config';
 import { handleError } from './error-handler';
-import { Project, ProjectWithTasks } from '../model/ai/projects/project';
+import { Project, ProjectWithTasks, UpdateProject } from '../model/ai/projects/project';
 import { Dataset } from '../model/ai/datasets/dataset';
 import { CreateTask, Task } from '../model/ai/tasks/task';
 import { LogEntry } from '../model/ai/tasks/log-entry';
@@ -88,6 +88,19 @@ export class AiService {
         }
       }),
       'Projekt konnte nicht erstellt werden'
+    );
+
+    return response!.data;
+  }
+
+  public static async updateProject(data: UpdateProject) {
+    const [_, response] = await handleError(
+      ApiService.put<Project>({
+        resource: `/projects`,
+        host: AI_API_URL,
+        data
+      }),
+      'Projekt konnte nicht aktualisiert werden'
     );
 
     return response!.data;
