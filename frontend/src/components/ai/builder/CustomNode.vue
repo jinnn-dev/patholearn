@@ -6,7 +6,7 @@ import { LockStatus } from '../../../core/ai/builder/sync';
 import { getTextColor } from '../../../utils/colors';
 import Icon from '../../general/Icon.vue';
 import { builderState, isTraining } from '../../../core/ai/builder/state';
-import { TaskVersionStatus } from 'model/ai/tasks/task';
+import { TaskVersionStatus } from '../../../model/ai/tasks/task';
 
 function sortByIndex(entries: any) {
   entries.sort((a: any, b: any) => {
