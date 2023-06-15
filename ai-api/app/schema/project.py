@@ -40,3 +40,9 @@ class ProjectWithTasks(BaseModel):
 class CreateProject(BaseModel):
     name: str = Field(...)
     description: Optional[str] = None
+
+
+class UpdateProject(BaseModel):
+    id: str
+    name: str = Field(...)
+    description: Optional[str] = None

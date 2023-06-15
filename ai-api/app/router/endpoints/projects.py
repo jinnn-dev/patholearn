@@ -3,8 +3,8 @@ from typing import List
 
 from bson import ObjectId
 from pydantic import parse_obj_as
-from app.schema.project import CreateProject, Project, ProjectWithTasks
-from fastapi import APIRouter, Depends
+from app.schema.project import CreateProject, Project, ProjectWithTasks, UpdateProject
+from fastapi import APIRouter, Depends, HTTPException
 from supertokens_python.recipe import session
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
@@ -36,6 +36,22 @@ async def create_project(
     logger.debug(created_project)
 
     return created_project
+
+
+@router.put("", response_model=Project)
+async def update_project(
+    update_project: UpdateProject, _: SessionContainer = Depends(verify_session())
+):
+    update_dict = update_project.dict(exclude_unset=True)
+    update_dict.pop("id", None)
+
+    updated_project = await project_collection.update_one(
+        {"_id": ObjectId(update_project.id)}, {"$set": update_dict}
+    )
+    if updated_project.modified_count:
+        return await project_collection.find_one({"_id": ObjectId(update_project.id)})
+    else:
+        raise HTTPException(status_code=404, detail="Project not found")
 
 
 @router.get("", response_model=List[Project])
