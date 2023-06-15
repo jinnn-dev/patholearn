@@ -1,9 +1,9 @@
 import { ApiService } from './api.service';
 import { AI_API_URL } from '../config';
 import { handleError } from './error-handler';
-import { Project, ProjectWithTasks } from '../model/ai/projects/project';
+import { Project, ProjectWithTasks, UpdateProject } from '../model/ai/projects/project';
 import { Dataset } from '../model/ai/datasets/dataset';
-import { CreateTask, Task } from '../model/ai/tasks/task';
+import { CreateTask, Task, UpdateTask } from '../model/ai/tasks/task';
 import { LogEntry } from '../model/ai/tasks/log-entry';
 import { IGraph } from '../core/ai/builder/serializable';
 
@@ -93,6 +93,19 @@ export class AiService {
     return response!.data;
   }
 
+  public static async updateProject(data: UpdateProject) {
+    const [_, response] = await handleError(
+      ApiService.put<Project>({
+        resource: `/projects`,
+        host: AI_API_URL,
+        data
+      }),
+      'Projekt konnte nicht aktualisiert werden'
+    );
+
+    return response!.data;
+  }
+
   public static async deleteProject(projectId: string) {
     const [_, response] = await handleError(
       ApiService.delete({
@@ -170,6 +183,18 @@ export class AiService {
         host: AI_API_URL
       })
     );
+    return response!.data;
+  }
+
+  public static async updateTask(data: UpdateTask) {
+    const [_, response] = await handleError(
+      ApiService.put<Task>({
+        resource: `/tasks`,
+        host: AI_API_URL,
+        data
+      })
+    );
+
     return response!.data;
   }
 

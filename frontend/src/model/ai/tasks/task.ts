@@ -47,3 +47,9 @@ export interface CreateTask {
   description?: string;
   project_id: string;
 }
+
+export interface UpdateTask {
+  id: string;
+  name?: string;
+  description?: string;
+}

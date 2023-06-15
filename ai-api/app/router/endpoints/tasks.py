@@ -15,6 +15,8 @@ from app.schema.task import (
     CreateTask,
     LockElement,
     Task,
+    TaskNoGraph,
+    UdateTask,
     UnlockElements,
     UpdateTaskVersion,
 )
@@ -55,6 +57,21 @@ async def create_task(
     )
     created_task = await task_collection.find_one({"_id": new_task.inserted_id})
     return created_task
+
+
+@router.put("", response_model=TaskNoGraph)
+async def update_task(
+    update_task: UdateTask, _: SessionContainer = Depends(verify_session())
+):
+    update_dict = update_task.dict(exclude_unset=True)
+    update_dict.pop("id", None)
+
+    updated_project = await task_collection.update_one(
+        {"_id": ObjectId(update_task.id)}, {"$set": update_dict}
+    )
+    return await task_collection.find_one(
+        {"_id": ObjectId(update_task.id)}, projection={"versions.graph": False}
+    )
 
 
 @router.put("/unlock")

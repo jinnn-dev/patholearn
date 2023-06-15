@@ -221,6 +221,12 @@ class CreateTask(BaseModel):
     project_id: str
 
 
+class UdateTask(BaseModel):
+    id: str
+    name: str
+    description: Optional[str]
+
+
 class Info(BaseModel):
     id: str
     first_name: str
