@@ -155,7 +155,6 @@ def check_task_version(
 
     clearml_task: Task = Task.get_task(task_id=clearml_task_id)
     new_status = clearml_task.status
-
     if new_status == "completed" or new_status == "failed":
         periodic_task = (
             session.query(PeriodicTask).filter_by(name=clearml_task_id).first()
