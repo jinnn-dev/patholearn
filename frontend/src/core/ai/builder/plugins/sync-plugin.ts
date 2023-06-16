@@ -18,7 +18,7 @@ import {
 import { Channel, PresenceChannel } from 'pusher-js';
 import { AreaExtra, ConnProps, NodeProps, Schemes } from '../use-editor';
 import { INode } from '../serializable';
-import { createNodeInstance, parseNode } from '../factories/node-factory';
+import { cacheControlsMapping, createNodeInstance, parseNode } from '../factories/node-factory';
 import { Produces } from 'rete-vue-render-plugin';
 import { Member } from '../../../../composables/ws/usePresenceChannel';
 import { animateBetweenTwoPoints, calculatePointsBetween } from '../../../../utils/animate';
@@ -184,7 +184,7 @@ export class SyncPlugin {
 
   async cloneNode(nodeId: string) {
     const { clonedNode, position } = await omitReteEvents(cloneNodeAndAdd, this.editor, this.areaPlugin, nodeId);
-
+    cacheControlsMapping(clonedNode);
     pushNodeCreatedEvent(builderState.channel as PresenceChannel, {
       node: clonedNode.serialize(),
       position: position
