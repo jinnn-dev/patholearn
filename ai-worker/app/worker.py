@@ -80,7 +80,7 @@ def enqueue_builder_task(
 
     logger.info(f"Script {task_id} stdout: {stdout}")
     logger.error(f"Script {task_id} stderr: {stderr}")
-    print(f"Script {task_id} exit code: {exit_code}")
+    logger.info(f"Script {task_id} exit code: {exit_code}")
     if exit_code != 0:
         status = "failed"
         update_version_status(task_id, version_id, status)
@@ -121,11 +121,12 @@ def enqueue_builder_task(
         .filter_by(every=1, period=IntervalSchedule.SECONDS)
         .first()
     )
-    logger.debug(schedule)
     if not schedule:
         schedule = IntervalSchedule(every=5, period=IntervalSchedule.SECONDS)
         session.add(schedule)
         session.commit()
+    logger.info(f"Schedule to use: {schedule}")
+
     task = PeriodicTask(
         interval=schedule,
         name=task.id,
@@ -143,7 +144,9 @@ def enqueue_builder_task(
     session.add(task)
     session.commit()
 
-    return 1
+    logger.info(f"Created Periodic task: {task}")
+
+    return 0
 
 
 @celery_app.task(name="check_task_status", queue="ai")
