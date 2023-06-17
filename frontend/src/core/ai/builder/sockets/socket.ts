@@ -4,7 +4,7 @@ import { Node } from '../nodes/node';
 import { NodeClassesType } from '../nodes/types';
 import { addNotification } from '../../../../utils/notification-state';
 
-export type SocketType = 'Linear' | '2D' | 'All';
+export type SocketType = 'Linear' | '2D' | 'All' | 'Metric';
 
 export class Socket extends ClassicPreset.Socket {
   constructor(name: string, public type: SocketType) {
@@ -22,7 +22,8 @@ export class Socket extends ClassicPreset.Socket {
 const connectionMatrix: { [key in SocketType]?: SocketType[] } = {
   Linear: ['Linear', 'All'],
   '2D': ['2D', 'All'],
-  All: ['Linear', '2D', 'All']
+  All: ['Linear', '2D', 'All'],
+  Metric: ['Metric']
 };
 
 export function nodesCanConnect(source: NodeClassesType, target: NodeClassesType): boolean {

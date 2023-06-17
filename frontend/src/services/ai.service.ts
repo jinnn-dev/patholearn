@@ -243,6 +243,16 @@ export class AiService {
     return response!.data;
   }
 
+  public static async getLatestMetrics(taskId: string, versionId: string) {
+    const [_, response] = await handleError(
+      ApiService.get<string>({
+        resource: `/tasks/${taskId}/version/${versionId}/metrics/latest`,
+        host: AI_API_URL
+      })
+    );
+    return response!.data;
+  }
+
   public static async lockElement(taskId: string, elementId: string, userId: string) {
     const [_, response] = await handleError(
       ApiService.put<Task>({

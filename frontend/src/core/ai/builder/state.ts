@@ -25,6 +25,7 @@ interface BuilderState {
   controlToNode: Map<string, NodeProps>;
   selectedVersion?: TaskVersion;
   omitEvents: boolean;
+  versionMetrics?: Object;
 }
 
 export const initialState: BuilderState = {
@@ -61,6 +62,7 @@ export function resetNodeEditorState() {
   builderState.areaZoom = 1;
   builderState.controlToNode = new Map();
   builderState.omitEvents = false;
+  builderState.versionMetrics = undefined;
 }
 
 export function getLockedBy(elementId: string): Member | undefined {

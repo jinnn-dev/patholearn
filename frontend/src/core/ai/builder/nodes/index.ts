@@ -3,3 +3,4 @@ export * from './layer';
 export * from './transform';
 export * from './output';
 export * from './combine';
+export * from './metric';

@@ -18,7 +18,7 @@ export class LinearNode extends Node<
   }
 > {
   width = 200;
-  height = 190;
+  height = 200;
 
   constructor() {
     super('Linear', 'LinearNode', { input: 'Linear', output: 'Linear' });
