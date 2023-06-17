@@ -12,7 +12,8 @@ watch(
   () => builderState.versionMetrics,
   (newVal, _) => {
     odlMetric.value = currentMetric.value;
-    currentMetric.value = filteredMetric(newVal) + 1;
+    const newFilteredMetric = filteredMetric(newVal);
+    currentMetric.value = newFilteredMetric + (maxEpochs.value === newFilteredMetric ? 0 : 1);
   }
 );
 
@@ -23,6 +24,8 @@ const filteredMetric = (metric: any) => {
 
   return builderState.versionMetrics['epoch']['epoch'].last;
 };
+
+const maxEpochs = computed(() => getEpochs(builderState.editor as any));
 </script>
 <template>
   <div class="flex justify-center items-center text-5xl font-mono">
@@ -37,7 +40,7 @@ const filteredMetric = (metric: any) => {
     />
     <div v-else>-</div>
     <div>/</div>
-    <div v-if="builderState.editor">{{ getEpochs(builderState.editor as any) }}</div>
+    <div v-if="builderState.editor">{{ maxEpochs }}</div>
     <div v-else>-</div>
   </div>
 </template>
