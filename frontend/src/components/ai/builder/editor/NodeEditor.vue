@@ -6,6 +6,7 @@ import { useEditor } from '../../../../core/ai/builder/use-editor';
 
 import EditorTools from './EditorTools.vue';
 import ModalDialog from '../../../containers/ModalDialog.vue';
+import SaveButton from '../../../general/SaveButton.vue';
 import CodeHighlight from '../../../containers/CodeHighlight.vue';
 import Icon from '../../../general/Icon.vue';
 import Spinner from '../../../general/Spinner.vue';
@@ -32,6 +33,8 @@ const { run: updateGraph } = useService(AiService.updateTaskVersion);
 
 const { run: parseGraph, result } = useService(AiService.parseTaskVersion);
 const { run: startVersionTraining, result: versionTrainingResult } = useService(AiService.startTaskVersionTraining);
+const { run: getLatestMetrics, result: taskVersionMetrics } = useService(AiService.getLatestMetrics);
+const { run: resetVersion, result: resetVersionResult, loading: resetLoading } = useService(AiService.resetVersion);
 
 const rete = ref();
 
@@ -46,6 +49,125 @@ onMounted(async () => {
   await checkLockStatus();
 
   await importGraph(props.taskVersion.graph);
+
+  await getLatestMetrics(props.taskId, props.taskVersion.id);
+
+  builderState.versionMetrics = taskVersionMetrics.value;
+
+  // builderState.versionMetrics = {
+  //   hp_metric: {
+  //     hp_metric: {
+  //       last: -1.0,
+  //       min: -1.0,
+  //       max: -1.0
+  //     }
+  //   },
+  //   epoch: {
+  //     epoch: {
+  //       last: 29.0,
+  //       min: 0.0,
+  //       max: 29.0
+  //     }
+  //   },
+  //   train_loss: {
+  //     train_loss: {
+  //       last: 0.9670859,
+  //       min: 0.46051708,
+  //       max: 1.6930023
+  //     }
+  //   },
+  //   valid_loss: {
+  //     valid_loss: {
+  //       last: 1.0018281,
+  //       min: 0.9481368,
+  //       max: 1.1906168
+  //     }
+  //   },
+  //   train_acc: {
+  //     train_acc: {
+  //       last: 0.6977818,
+  //       min: 0.5799818,
+  //       max: 0.69832724
+  //     }
+  //   },
+  //   valid_acc: {
+  //     valid_acc: {
+  //       last: 0.6918,
+  //       min: 0.5868,
+  //       max: 0.6922
+  //     }
+  //   },
+  //   ':monitor:machine': {
+  //     network_rx_mbs: {
+  //       last: 3.301,
+  //       min: 3.186,
+  //       max: 3.607
+  //     },
+  //     io_read_mbs: {
+  //       last: 0.066,
+  //       min: 0.065,
+  //       max: 9.872
+  //     },
+  //     io_write_mbs: {
+  //       last: 8.816,
+  //       min: 7.435,
+  //       max: 136.456
+  //     },
+  //     memory_free_gb: {
+  //       last: 52.501,
+  //       min: 52.501,
+  //       max: 52.656
+  //     },
+  //     cpu_usage: {
+  //       last: 28.747,
+  //       min: 28.348,
+  //       max: 28.871
+  //     },
+  //     network_tx_mbs: {
+  //       last: 0.148,
+  //       min: 0.146,
+  //       max: 0.161
+  //     },
+  //     memory_used_gb: {
+  //       last: 0.956,
+  //       min: 0.463,
+  //       max: 0.956
+  //     },
+  //     disk_free_percent: {
+  //       last: 46.0,
+  //       min: 3.312,
+  //       max: 46.0
+  //     }
+  //   },
+  //   ':monitor:gpu': {
+  //     gpu_0_utilization: {
+  //       last: 44.719,
+  //       min: 39.649,
+  //       max: 45.724
+  //     },
+  //     gpu_0_mem_used_gb: {
+  //       last: 0.318,
+  //       min: 0.0,
+  //       max: 0.318
+  //     },
+  //     gpu_0_mem_usage: {
+  //       last: 8.679,
+  //       min: 8.388,
+  //       max: 8.679
+  //     },
+  //     gpu_0_mem_free_gb: {
+  //       last: 7.306,
+  //       min: 7.306,
+  //       max: 7.329
+  //     },
+  //     gpu_0_temperature: {
+  //       last: 61.509,
+  //       min: 50.421,
+  //       max: 61.509
+  //     }
+  //   }
+  // };
+
   builderState.area = area.value;
   loading.value = false;
 });
@@ -55,6 +177,10 @@ watch(
   () => {
     if (builderState.isConnected && builderState.builderLoaded) {
       registerEvents();
+
+      builderState.channel?.bind('training-metrics', (data: Object) => {
+        builderState.versionMetrics = data;
+      });
     }
   }
 );
@@ -113,6 +239,12 @@ const startEditorTraining = async () => {
     builderState.selectedVersion.status = 'creating';
     startTraining();
   }
+};
+
+const runResetVersion = async () => {
+  await resetVersion(builderState.task!.id, builderState.selectedVersion!.id);
+  builderState.selectedVersion = resetVersionResult.value;
+  builderState.versionMetrics = undefined;
 };
 
 const itemClicked = async (event: EventName) => {
@@ -194,6 +326,12 @@ onUnmounted(() => {
     >
       <div class="text-xl select-none">Das Model wird trainiert</div>
     </div> -->
-    <div class="rete w-full h-full bg-gray-900" ref="rete"></div>
+    <div
+      class="fixed bottom-4 right-4 z-30"
+      v-if="builderState.selectedVersion?.clearml_id && builderState.selectedVersion.status === 'completed'"
+    >
+      <save-button name="Zurücksetzen" @click="runResetVersion" :loading="resetLoading"></save-button>
+    </div>
+    <div class="rete w-full h-full bg-gray-900 text-lg" ref="rete"></div>
   </div>
 </template>

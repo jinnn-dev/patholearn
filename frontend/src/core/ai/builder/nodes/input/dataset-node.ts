@@ -8,7 +8,7 @@ export interface IDatasetNode extends INode {}
 
 export class DatasetNode extends Node<IDatasetNode, {}, { dataset: Socket }, { dataset: DropdownControl }> {
   width = 180;
-  height = 147;
+  height = 155;
 
   constructor() {
     super('Dataset', 'DatasetNode', { output: '2D' });

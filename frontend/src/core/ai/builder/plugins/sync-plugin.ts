@@ -315,7 +315,7 @@ export class SyncPlugin {
     builderState.channel.bind('client-node-unlocked', (nodeId: string) => {
       console.log('CLIENT NODE UNLOCKED');
       delete builderState.task?.lockStatus[nodeId];
-      this.editor.getNode(nodeId).unlock();
+      this.editor.getNode(nodeId)?.unlock();
       // const nodeView = this.areaPlugin.nodeViews.get(nodeId);
       // if (nodeView?.element) {
       //   nodeView.element.style.transition = '';

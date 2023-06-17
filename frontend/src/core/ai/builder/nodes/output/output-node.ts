@@ -9,7 +9,7 @@ export interface IOutputNode extends INode {}
 export class OutputNode extends Node<
   IOutputNode,
   { in: Socket },
-  {},
+  { metrics: Socket },
   {
     optimizer: DropdownControl;
     loss: DropdownControl;
@@ -19,10 +19,10 @@ export class OutputNode extends Node<
   }
 > {
   width = 250;
-  height = 350;
+  height = 370;
 
   constructor() {
-    super('Output', 'OutputNode', { input: 'All' });
+    super('Output', 'OutputNode', { input: 'All', output: 'Metric' });
   }
 
   public duplicate(): OutputNode {
@@ -32,11 +32,13 @@ export class OutputNode extends Node<
       node.controls[key] = control.duplicate();
     }
     node.addInput('in', new ClassicPreset.Input(node.sockets.input!, 'in'));
+    node.addOutput('metrics', new ClassicPreset.Output(node.sockets.output!, 'metrics'));
     return node;
   }
 
   public addElements(): void {
     this.addInput('in', new ClassicPreset.Input(this.sockets.input!, 'in'));
+    this.addOutput('metrics', new ClassicPreset.Output(this.sockets.output!, 'metrics'));
     this.addControl(
       'optimizer',
       new DropdownControl(['SGD', 'RMSprop', 'Adagrad', 'Adam'], 'Optimizer', 'optimizer', 'Adam')

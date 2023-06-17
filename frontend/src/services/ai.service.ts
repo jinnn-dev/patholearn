@@ -3,7 +3,7 @@ import { AI_API_URL } from '../config';
 import { handleError } from './error-handler';
 import { Project, ProjectWithTasks, UpdateProject } from '../model/ai/projects/project';
 import { Dataset } from '../model/ai/datasets/dataset';
-import { CreateTask, Task, UpdateTask } from '../model/ai/tasks/task';
+import { CreateTask, Task, TaskVersion, UpdateTask } from '../model/ai/tasks/task';
 import { LogEntry } from '../model/ai/tasks/log-entry';
 import { IGraph } from '../core/ai/builder/serializable';
 
@@ -238,6 +238,30 @@ export class AiService {
       ApiService.post<string>({
         resource: `/tasks/${taskId}/version/${versionId}/train`,
         host: AI_API_URL
+      })
+    );
+    return response!.data;
+  }
+
+  public static async getLatestMetrics(taskId: string, versionId: string) {
+    const [_, response] = await handleError(
+      ApiService.get<string>({
+        resource: `/tasks/${taskId}/version/${versionId}/metrics/latest`,
+        host: AI_API_URL
+      })
+    );
+    return response!.data;
+  }
+
+  public static async resetVersion(taskId: string, versionId: string) {
+    const [_, response] = await handleError(
+      ApiService.post<TaskVersion>({
+        resource: `/tasks/reset`,
+        host: AI_API_URL,
+        data: {
+          task_id: taskId,
+          version_id: versionId
+        }
       })
     );
     return response!.data;

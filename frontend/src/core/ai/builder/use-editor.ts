@@ -11,6 +11,7 @@ import DimensionControlVue from '../../../components/ai/builder/controls/Dimensi
 import NumberControlVue from '../../../components/ai/builder/controls/NumberControl.vue';
 import DropdownControlVue from '../../../components/ai/builder/controls/DropdownControl.vue';
 import DiagramControlVue from '../../../components/ai/builder/controls/DiagramControl.vue';
+import MetricControlVue from '../../../components/ai/builder/controls/MetricControl.vue';
 
 import { DropdownControl } from './controls/dropdown-control';
 import { NumberControl } from './controls/number-control';
@@ -31,6 +32,7 @@ import { pushTrainingStarted } from './sync';
 import { PresenceChannel } from 'pusher-js';
 import { DiagramControl } from './controls/diagram-control';
 import { Socket, nodesCanConnect } from './sockets/socket';
+import { MetricControl } from './controls';
 
 export type NodeProps = NodeClassesType;
 
@@ -94,7 +96,8 @@ export function useEditor() {
             ['Concatenate', () => createNodeInstance('ConcatenateNode') as NodeProps]
           ]
         ],
-        ['Output', () => createNodeInstance('OutputNode') as NodeProps]
+        ['Output', () => createNodeInstance('OutputNode') as NodeProps],
+        ['Metric', () => createNodeInstance('MetricNode') as NodeProps]
       ])
     });
 
@@ -126,6 +129,9 @@ export function useEditor() {
         },
         // @ts-ignore
         control(data) {
+          if (data.payload instanceof MetricControl) {
+            return MetricControlVue;
+          }
           if (data.payload instanceof DiagramControl) {
             return DiagramControlVue;
           }

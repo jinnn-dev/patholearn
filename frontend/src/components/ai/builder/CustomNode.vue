@@ -124,9 +124,9 @@ const outputs = computed(() => {
 </script>
 
 <template>
-  <div class="node" :class="nodeClasses" :style="nodeStyles" data-testid="node">
+  <div class="node flex flex-col h-full" :class="nodeClasses" :style="nodeStyles" data-testid="node">
     <div
-      v-if="data?.selected && data?.id"
+      v-if="data?.selected && data?.id && !isTraining"
       class="absolute flex -top-12 rounded-lg left-0 overflow-hidden bg-gray-700 shadow-md shadow-gray-900/50"
     >
       <div class="hover:bg-gray-500 p-1" @click.stop="builderState.syncPlugin?.cloneNode(data.id)">
@@ -137,7 +137,7 @@ const outputs = computed(() => {
       </div>
     </div>
 
-    <div class="overflow-hidden rounded-t-lg">
+    <div class="overflow-hidden rounded-t-lg shrink-0">
       <div class="title" data-testid="title" :class="titleClasses">
         {{ data?.label }}
       </div>
@@ -184,7 +184,7 @@ const outputs = computed(() => {
     </div>
     <!-- Controls-->
     <div
-      class="control"
+      class="control h-full"
       v-for="[key, control] in controls"
       :key="key"
       :ref="(el: any) => onRef(el, key, control, 'control')"
@@ -210,7 +210,6 @@ const outputs = computed(() => {
   @apply box-border;
   @apply min-w-[200px];
   @apply h-auto;
-  @apply pb-5;
   @apply select-none;
   @apply shadow-lg;
   @apply shadow-gray-900/50;

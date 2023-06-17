@@ -28,5 +28,6 @@ export const eventSettings: EventSetting = {
   BatchNormNode: { icon: 'equalizer', label: 'BatchNorm' },
   AddNode: { icon: 'arrows-merge', label: 'Add', divider: true },
   ConcatenateNode: { icon: 'plus-circle-new', label: 'Concatenate' },
-  OutputNode: { icon: 'flag', label: 'Output', divider: true }
+  OutputNode: { icon: 'flag', label: 'Output', divider: true },
+  MetricNode: { icon: 'chart-line', label: 'Metric', divider: true }
 };

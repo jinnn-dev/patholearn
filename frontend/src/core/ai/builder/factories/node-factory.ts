@@ -58,6 +58,7 @@ export function createNodeInstance(node: NodeType) {
     return undefined;
   }
   const instance = new nodeClass();
+
   instance.addElements();
   cacheControlsMapping(instance as NodeProps);
   return instance;

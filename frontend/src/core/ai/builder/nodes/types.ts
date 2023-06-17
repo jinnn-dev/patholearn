@@ -4,6 +4,7 @@ import * as Inputs from './input';
 import * as Transforms from './transform';
 import * as Outputs from './output';
 import * as Combines from './combine';
+import * as Metrics from './metric';
 
 type LayerClasses = {
   [K in keyof typeof Layers]: InstanceType<typeof Layers[K]>;
@@ -25,22 +26,28 @@ type CombineClasses = {
   [K in keyof typeof Combines]: InstanceType<typeof Combines[K]>;
 };
 
+type MetricClasses = {
+  [K in keyof typeof Metrics]: InstanceType<typeof Metrics[K]>;
+};
+
 export type NodeClassesType =
   | LayerClasses[keyof LayerClasses]
   | InputClasses[keyof InputClasses]
   | TransformClasses[keyof TransformClasses]
   | OutputClasses[keyof OutputClasses]
-  | CombineClasses[keyof CombineClasses];
+  | CombineClasses[keyof CombineClasses]
+  | MetricClasses[keyof MetricClasses];
 
 export type LayerType = keyof typeof Layers;
 export type InputType = keyof typeof Inputs;
 export type TransformType = keyof typeof Transforms;
 export type OutputType = keyof typeof Outputs;
 export type CombineType = keyof typeof Combines;
+export type MetricType = keyof typeof Metrics;
 
-export type NodeType = LayerType | InputType | TransformType | OutputType | CombineType;
+export type NodeType = LayerType | InputType | TransformType | OutputType | CombineType | MetricType;
 
-export type NodeGroupType = 'Input' | 'Layer' | 'Transform' | 'Output' | 'Combine';
+export type NodeGroupType = 'Input' | 'Layer' | 'Transform' | 'Output' | 'Combine' | 'Metric';
 
 export function isNode(value: string) {
   return Object.keys(Nodes).includes(value);
@@ -66,6 +73,10 @@ export function isCombineType(value: string) {
   return Object.keys(Combines).includes(value);
 }
 
+export function isMetricType(value: string) {
+  return Object.keys(Metrics).includes(value);
+}
+
 export function getNodeGroup(nodeType: NodeType): NodeGroupType | undefined {
   if (isInputType(nodeType)) {
     return 'Input';
@@ -83,5 +94,9 @@ export function getNodeGroup(nodeType: NodeType): NodeGroupType | undefined {
 
   if (isCombineType(nodeType)) {
     return 'Combine';
+  }
+
+  if (isMetricType(nodeType)) {
+    return 'Metric';
   }
 }

@@ -62,6 +62,33 @@ async def create_task(
     return created_task
 
 
+@router.post("/reset", response_model=TaskVersion)
+async def reset_version(
+    update_data: Dict, _: SessionContainer = Depends(verify_session())
+):
+    task_id = update_data["task_id"]
+    version_id = update_data["version_id"]
+    task, version = await get_task_with_version(task_id, version_id)
+    if version.clearml_id:
+        task: ClearmlTask = ClearmlTask.get_task(task_id=version.clearml_id)
+        task.delete()
+    await task_collection.update_one(
+        {
+            "_id": ObjectId(task_id),
+            "versions": {"$elemMatch": {"id": ObjectId(version_id)}},
+        },
+        {
+            "$set": {"versions.$[version].clearml_id": None},
+            "$unset": {"versions.$[version].status": 1},
+        },
+        array_filters=[{"version.id": ObjectId(version_id)}],
+    )
+    updated_task, updated_version = await get_task_with_version(
+        task_id=task_id, version_id=version_id
+    )
+    return updated_version
+
+
 @router.put("", response_model=TaskNoGraph)
 async def update_task(
     update_task: UdateTask, _: SessionContainer = Depends(verify_session())

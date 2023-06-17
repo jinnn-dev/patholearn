@@ -20,7 +20,7 @@ export class Conv2DNode extends Node<
   }
 > {
   width = 200;
-  height = 280;
+  height = 290;
 
   constructor() {
     super('Conv2D', 'Conv2DNode', { input: '2D', output: '2D' });
