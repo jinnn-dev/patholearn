@@ -160,7 +160,6 @@ def check_task_version(
     new_status = clearml_task.status
 
     metrics = clearml_task.get_last_scalar_metrics()
-    logger.info(type(metrics))
     if metrics is not None and metrics:
         websocket_result = ws_client.trigger(
             f"presence-task-{task_id}",
