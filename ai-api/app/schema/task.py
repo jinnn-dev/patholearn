@@ -20,6 +20,7 @@ class NodeType(Enum):
     AddNode = "AddNode"
     ConcatenateNode = "ConcatenateNode"
     OutputNode = "OutputNode"
+    MetricNode = "MetricNode"
 
 
 class ControlType(Enum):
@@ -27,6 +28,7 @@ class ControlType(Enum):
     DimensionControl = "DimensionControl"
     DropdownControl = "DropdownControl"
     NumberControl = "NumberControl"
+    MetricConrol = "MetricControl"
 
 
 class ISerializable(BaseModel):
