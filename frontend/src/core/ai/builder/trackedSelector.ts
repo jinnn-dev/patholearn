@@ -87,9 +87,19 @@ export function selectableNodes<T>(
   let unselect = false;
 
   function selectNode(node: Schemes['Node']) {
-    if (node.selected || node.lockStatus || isTraining.value) {
+    if (node.selected || node.lockStatus) {
       return;
     }
+
+    if (isTraining.value) {
+      if (node.type === 'MetricNode') {
+        area.update('node', node.id);
+        node.selected = true;
+      }
+
+      return;
+    }
+
     pushNodeLockedEvent(builderState.channel as PresenceChannel, node.id);
     lockElement(builderState.task!.id, node.id, builderState.me!.id);
     const lockStatus = {

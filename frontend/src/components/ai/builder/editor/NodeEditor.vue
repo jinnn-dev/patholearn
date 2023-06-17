@@ -6,6 +6,7 @@ import { useEditor } from '../../../../core/ai/builder/use-editor';
 
 import EditorTools from './EditorTools.vue';
 import ModalDialog from '../../../containers/ModalDialog.vue';
+import SaveButton from '../../../general/SaveButton.vue';
 import CodeHighlight from '../../../containers/CodeHighlight.vue';
 import Icon from '../../../general/Icon.vue';
 import Spinner from '../../../general/Spinner.vue';
@@ -33,6 +34,7 @@ const { run: updateGraph } = useService(AiService.updateTaskVersion);
 const { run: parseGraph, result } = useService(AiService.parseTaskVersion);
 const { run: startVersionTraining, result: versionTrainingResult } = useService(AiService.startTaskVersionTraining);
 const { run: getLatestMetrics, result: taskVersionMetrics } = useService(AiService.getLatestMetrics);
+const { run: resetVersion, result: resetVersionResult, loading: resetLoading } = useService(AiService.resetVersion);
 
 const rete = ref();
 
@@ -177,7 +179,6 @@ watch(
       registerEvents();
 
       builderState.channel?.bind('training-metrics', (data: Object) => {
-        console.log(data);
         builderState.versionMetrics = data;
       });
     }
@@ -238,6 +239,12 @@ const startEditorTraining = async () => {
     builderState.selectedVersion.status = 'creating';
     startTraining();
   }
+};
+
+const runResetVersion = async () => {
+  await resetVersion(builderState.task!.id, builderState.selectedVersion!.id);
+  builderState.selectedVersion = resetVersionResult.value;
+  builderState.versionMetrics = undefined;
 };
 
 const itemClicked = async (event: EventName) => {
@@ -319,6 +326,12 @@ onUnmounted(() => {
     >
       <div class="text-xl select-none">Das Model wird trainiert</div>
     </div> -->
+    <div
+      class="fixed bottom-4 right-4 z-30"
+      v-if="builderState.selectedVersion?.clearml_id && builderState.selectedVersion.status === 'completed'"
+    >
+      <save-button name="Zurücksetzen" @click="runResetVersion" :loading="resetLoading"></save-button>
+    </div>
     <div class="rete w-full h-full bg-gray-900 text-lg" ref="rete"></div>
   </div>
 </template>

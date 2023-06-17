@@ -9,7 +9,7 @@ export interface IMetricControl extends IControl {
 export class MetricControl extends Control<IMetricControl> {
   constructor(
     public key: string,
-    public values: string[] = ['acc', 'loss'],
+    public values: string[] = ['acc', 'loss', 'epoch'],
     public value: string = 'acc',
     type: ControlType = 'MetricControl'
   ) {
@@ -21,7 +21,6 @@ export class MetricControl extends Control<IMetricControl> {
 
   public setValue(value: string): void {
     this.value = value;
-    console.log(this.value);
   }
 
   public static parse(data: IMetricControl) {

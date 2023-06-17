@@ -17,6 +17,10 @@ const animatedNumber = ref(props.from !== undefined ? props.from : 0);
 const interval = ref();
 
 const animateValue = (start: number, end: number, duration: number) => {
+  if (interval.value) {
+    clearInterval(interval.value);
+  }
+
   const range = end - start;
   const minTimer = 50;
   let stepTime = Math.abs(Math.floor(duration / range));
@@ -24,7 +28,6 @@ const animateValue = (start: number, end: number, duration: number) => {
 
   let startTime = new Date().getTime();
   let endTime = startTime + duration;
-  let timer: any;
 
   const run = () => {
     const now = new Date().getTime();
@@ -34,19 +37,18 @@ const animateValue = (start: number, end: number, duration: number) => {
     animatedNumber.value = value;
 
     if (value === end) {
-      clearInterval(timer);
+      clearInterval(interval.value);
     }
   };
 
-  timer = setInterval(run, stepTime);
+  interval.value = setInterval(run, stepTime);
   run();
 };
 
 watch(
   () => props.to,
   () => {
-    // animateValue(animatedNumber.value, props.to, 300);
-    animatedNumber.value = props.to;
+    animateValue(animatedNumber.value, props.to, 300);
   }
 );
 </script>

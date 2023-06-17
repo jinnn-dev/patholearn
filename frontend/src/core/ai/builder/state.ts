@@ -25,7 +25,7 @@ interface BuilderState {
   controlToNode: Map<string, NodeProps>;
   selectedVersion?: TaskVersion;
   omitEvents: boolean;
-  versionMetrics?: Object;
+  versionMetrics?: any;
 }
 
 export const initialState: BuilderState = {
