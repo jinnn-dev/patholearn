@@ -2,6 +2,8 @@
 import { computed, ref, watch } from 'vue';
 import { builderState } from '../../../../../core/ai/builder/state';
 import Vue3Autocounter from 'vue3-autocounter';
+import { getEpochs } from '../../../../../core/ai/builder/editor-utils';
+import { NodeEditor } from 'rete';
 
 const odlMetric = ref<number>();
 const currentMetric = ref<number>();
@@ -33,6 +35,9 @@ const filteredMetric = (metric: any) => {
       :decimals="0"
       :autoinit="true"
     />
+    <div v-else>-</div>
+    <div>/</div>
+    <div v-if="builderState.editor">{{ getEpochs(builderState.editor as any) }}</div>
     <div v-else>-</div>
   </div>
 </template>

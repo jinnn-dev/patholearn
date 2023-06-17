@@ -3,6 +3,7 @@ import { AreaExtra, NodeProps, Schemes } from './use-editor';
 import { Position } from 'rete-area-plugin/_types/types';
 import { AreaPlugin } from 'rete-area-plugin';
 import { builderState } from './state';
+import { OutputNode } from './nodes';
 
 export async function omitReteEvents<T, A extends unknown[]>(func: (...data: A) => Promise<T>, ...data: A) {
   builderState.omitEvents = true;
@@ -44,4 +45,13 @@ export async function cloneNodeAndAdd(
     clonedNode: duplicatedNode,
     position
   };
+}
+
+export function getEpochs(editor: NodeEditor<Schemes>) {
+  for (const node of editor.getNodes()) {
+    if (node instanceof OutputNode) {
+      return node.controls['epochs'].value;
+    }
+  }
+  return undefined;
 }
