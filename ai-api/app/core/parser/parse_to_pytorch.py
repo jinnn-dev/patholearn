@@ -93,6 +93,7 @@ def parse_to_pytorch_graph(
     lightning_model_instance = lightning_model.get_instance("lightning_model", "model")
     lightning_trainer = "trainer = " + lightning_model.trainer
     lightning_train = f"trainer.fit(model=lightning_model, datamodule=data_module)"
+    lightning_test = f"trainer.test(model=lightning_model, datamodule=data_module)"
 
     with open("/app/core/parser/templates/clearml.txt", "r") as f:
         src = Template(f.read())
@@ -118,7 +119,9 @@ def parse_to_pytorch_graph(
         + paragraph
         + lightning_trainer
         + paragraph
-        + lightning_train,
+        + lightning_train
+        + paragraph
+        + lightning_test,
         mode=black.Mode(),
     )
 
