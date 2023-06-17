@@ -3,7 +3,7 @@ import { PropType, computed, ref, watch } from 'vue';
 import CustomSelect from '../../../form/CustomSelect.vue';
 import Icon from '../../../general/Icon.vue';
 import { builderState, isTraining } from '../../../../core/ai/builder/state';
-import { LockStatus } from 'core/ai/builder/sync';
+import { LockStatus } from '../../../../core/ai/builder/sync';
 
 const props = defineProps({
   id: String,
