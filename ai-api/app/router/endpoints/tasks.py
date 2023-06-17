@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import Dict, List, Optional
 from app.train.train_model import start_builder_training
 from bson import ObjectId
 from fastapi import APIRouter, Body, Depends, HTTPException
@@ -7,6 +7,7 @@ from pydantic import parse_obj_as
 from supertokens_python.recipe import session
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
+from clearml import Task as ClearmlTask
 import app.clearml_wrapper.clearml_wrapper as clearml_wrapper
 from app.schema.builder_task import CreateBuilderTask, BuilderTask
 from app.database.database import task_collection
@@ -14,8 +15,10 @@ from app.schema.task import (
     Graph,
     CreateTask,
     LockElement,
+    NodeType,
     Task,
     TaskNoGraph,
+    TaskVersion,
     UdateTask,
     UnlockElements,
     UpdateTaskVersion,
@@ -253,6 +256,28 @@ async def start_task_training(
     start_builder_training(pytorch_text, task_id, task.name, version_id)
 
     return pytorch_text
+
+
+@router.get(
+    "/{task_id}/version/{version_id}/metrics/latest", response_model=Optional[Dict]
+)
+async def get_latest_task_metrics(
+    task_id: str, version_id: str, _: SessionContainer = Depends(verify_session())
+):
+    _, version = await get_task_with_version(task_id, version_id)
+    parsed_version = parse_obj_as(TaskVersion, version)
+
+    if parsed_version.clearml_id is not None:
+        try:
+            clearml_task: ClearmlTask = ClearmlTask.get_task(
+                task_id=parsed_version.clearml_id
+            )
+            metrics = clearml_task.get_last_scalar_metrics()
+            return metrics
+        except Exception as e:
+            logger.error(e)
+            return None
+    return None
 
 
 @router.get("/{task_id}/version/{version_id}/parse")

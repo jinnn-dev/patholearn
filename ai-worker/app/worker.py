@@ -158,6 +158,13 @@ def check_task_version(
 
     clearml_task: Task = Task.get_task(task_id=clearml_task_id)
     new_status = clearml_task.status
+
+    websocket_result = ws_client.trigger(
+        f"presence-task-{task_id}",
+        "training-metrics",
+        clearml_task.get_last_scalar_metrics(),
+    )
+
     if new_status == "completed" or new_status == "failed":
         periodic_task = (
             session.query(PeriodicTask).filter_by(name=clearml_task_id).first()

@@ -125,6 +125,8 @@ def parse_graph(builderState: Graph):
             start_node_id = node.id
         if node.type == NodeType.OutputNode and end_node_id is None:
             end_node_id = node.id
+        if node.type == NodeType.MetricNode:
+            continue
         _, node_instance = parse_node(
             node, nodes_dict, builderState.connections, processed_nodes
         )
