@@ -11,3 +11,4 @@ input.json
 **/.DS_Store
 imagedb-restore.sh
 clearml.conf
+*.db
