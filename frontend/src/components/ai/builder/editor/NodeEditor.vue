@@ -328,7 +328,10 @@ onUnmounted(() => {
     </div> -->
     <div
       class="fixed bottom-4 right-4 z-30"
-      v-if="builderState.selectedVersion?.clearml_id && builderState.selectedVersion.status === 'completed'"
+      v-if="
+        builderState.selectedVersion?.clearml_id &&
+        (builderState.selectedVersion.status === 'completed' || builderState.selectedVersion.status === 'failed')
+      "
     >
       <save-button name="Zurücksetzen" @click="runResetVersion" :loading="resetLoading"></save-button>
     </div>

@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { PropType, computed, ref, watch } from 'vue';
 import { builderState } from '../../../../../core/ai/builder/state';
 import AnimatedNumber from '../AnimatedNumber.vue';
 
 import Vue3Autocounter from 'vue3-autocounter';
+import { MetricInternalname } from '../../../../../core/ai/builder/controls/metric-control';
 
 const props = defineProps({
   metricKey: {
-    type: String,
+    type: String as PropType<MetricInternalname>,
     required: true
   }
 });
@@ -68,7 +69,7 @@ const currentStat = computed(() =>
 const oldStat = computed(() => (odlMetric.value === undefined ? undefined : odlMetric.value[currentStage.value]));
 </script>
 <template>
-  <div class="flex flex-col justify-evenly items-between h-full w-full">
+  <div class="flex flex-col justify-between items-between pt-2 h-full w-full">
     <div class="flex w-full justify-evenly items-center">
       <button
         @focus="selectStage('train')"
@@ -108,6 +109,40 @@ const oldStat = computed(() => (odlMetric.value === undefined ? undefined : odlM
         :autoinit="true"
       />
       <div v-else>-</div>
+    </div>
+    <div class="flex justify-evenly">
+      <div class="flex flex-col justify-center items-center">
+        <div class="text-gray-300 font-semibold text-sm">Min</div>
+        <vue3-autocounter
+          v-if="currentStat"
+          class="font-mono"
+          ref="counter"
+          :startAmount="oldStat === undefined ? 0 : oldStat.min"
+          :endAmount="currentStat === undefined ? 0 : currentStat.min"
+          :duration="1"
+          separator=","
+          decimalSeparator="."
+          :decimals="2"
+          :autoinit="true"
+        />
+        <div v-else>-</div>
+      </div>
+      <div class="flex flex-col justify-center items-center">
+        <div class="text-gray-300 font-semibold text-sm">Max</div>
+        <vue3-autocounter
+          v-if="currentStat"
+          class="font-mono"
+          ref="counter"
+          :startAmount="oldStat === undefined ? 0 : oldStat.max"
+          :endAmount="currentStat === undefined ? 0 : currentStat.max"
+          :duration="1"
+          separator=","
+          decimalSeparator="."
+          :decimals="2"
+          :autoinit="true"
+        />
+        <div v-else>-</div>
+      </div>
     </div>
     <!-- <animated-number :value="0" :formatValue="formatToPrice" :duration="300" /> -->
     <!-- <div class="text-center">

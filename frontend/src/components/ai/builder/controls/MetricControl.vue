@@ -5,13 +5,16 @@ import Dropdown from '../components/Dropdown.vue';
 import AnimatedNumber from '../components/AnimatedNumber.vue';
 import TripleMetric from '../components/metrics/TripleMetric.vue';
 import EpochMetric from '../components/metrics/EpochMetric.vue';
+import { MetricDisplayName, MetricVariableMapping } from '../../../../core/ai/builder/controls';
 
 const props = defineProps({
   data: Object,
   seed: Number
 });
 
-const selectedValue = ref<string>(props.data?.value || props.data?.values[0]);
+const isNotTripeMetric = computed(() => selectedValue.value === 'Epoch');
+
+const selectedValue = ref<MetricDisplayName>(props.data?.value || props.data?.values[0]);
 
 const valueChanged = (change: any) => {
   props.data!.setValue(change);
@@ -39,9 +42,8 @@ const onFocus = () => {
       @on-focus-out="onFocusOut"
     ></dropdown>
     <div class="h-full flex justify-center items-center">
-      <triple-metric v-if="selectedValue === 'acc'" metric-key="acc"></triple-metric>
-      <triple-metric v-if="selectedValue === 'loss'" metric-key="loss"></triple-metric>
-      <epoch-metric v-if="selectedValue === 'epoch'"></epoch-metric>
+      <epoch-metric v-if="isNotTripeMetric"></epoch-metric>
+      <triple-metric v-else :metric-key="MetricVariableMapping[selectedValue]"></triple-metric>
     </div>
   </div>
 </template>

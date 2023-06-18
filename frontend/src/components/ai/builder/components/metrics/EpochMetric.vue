@@ -18,7 +18,7 @@ watch(
 );
 
 const filteredMetric = (metric: any) => {
-  if (!metric || Object.keys(metric).length === 0) {
+  if (!metric || Object.keys(metric).length === 0 || !('epoch' in builderState.versionMetrics)) {
     return undefined;
   }
 
