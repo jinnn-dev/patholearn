@@ -15,6 +15,7 @@ import { NodeType, isNode } from '../../../../core/ai/builder/nodes/types';
 import { EventName } from '../../../../core/ai/builder/editor-events';
 import { builderState, isTraining, resetBuilderState, resetNodeEditorState } from '../../../../core/ai/builder/state';
 import TaskStatus from '../../../../components/ai/builder/editor/TrainingStatus.vue';
+import { downloadFile } from '../../../../utils/download-file';
 
 const props = defineProps({
   taskId: {
@@ -35,6 +36,11 @@ const { run: parseGraph, result } = useService(AiService.parseTaskVersion);
 const { run: startVersionTraining, result: versionTrainingResult } = useService(AiService.startTaskVersionTraining);
 const { run: getLatestMetrics, result: taskVersionMetrics } = useService(AiService.getLatestMetrics);
 const { run: resetVersion, result: resetVersionResult, loading: resetLoading } = useService(AiService.resetVersion);
+const {
+  run: runDownloadFile,
+  result: downloadResult,
+  loading: downloadLoading
+} = useService(AiService.downloadTaskVersion);
 
 const rete = ref();
 
@@ -164,6 +170,26 @@ const itemClicked = async (event: EventName) => {
     await startEditorTraining();
   }
 
+  if (event === 'reset') {
+    loadingText.value = 'Resetting training state';
+    await runResetVersion();
+  }
+
+  if (event === 'downloadPython') {
+    loadingText.value = 'Downloading Python File';
+    await runDownloadFile(builderState.task!.id, builderState.selectedVersion!.id, 'python');
+
+    downloadFile(downloadResult.value, builderState.selectedVersion!.id + '.py');
+  }
+
+  if (event === 'downloadJupyter') {
+    loadingText.value = 'Downloading Jupyter Notebook';
+    await runDownloadFile(builderState.task!.id, builderState.selectedVersion!.id, 'jupyter');
+    console.log(downloadResult.value);
+
+    downloadFile(JSON.stringify(downloadResult.value), builderState.selectedVersion!.id + '.ipynb');
+  }
+
   if (isNode(event)) {
     await addNode(event as NodeType);
   }
@@ -195,7 +221,7 @@ onUnmounted(() => {
       <primary-button name="Neuer Node" @click="addNode"></primary-button>
       <primary-button name="Save" @click="saveBuilder"></primary-button> -->
 
-      <editor-tools v-if="!isTraining" @selected="itemClicked"></editor-tools>
+      <editor-tools @selected="itemClicked"></editor-tools>
       <div
         v-if="loading || builderState.shouldSaveEditor"
         class="absolute z-10 flex gap-1 bottom-4 left-4 bg-gray-800 py-1 px-2 ring-1 ring-gray-700 rounded-lg shadow-lg shadow-gray-900"
@@ -205,21 +231,6 @@ onUnmounted(() => {
           <spinner></spinner>
         </div>
       </div>
-    </div>
-    <!-- <div
-      class="absolute z-10 bg-gray-800/40 backdrop-blur-sm w-full h-full flex justify-center items-center"
-      v-if="taskVersion.status || taskVersion.status !== 'NONE' || taskVersion.clearml_id"
-    >
-      <div class="text-xl select-none">Das Model wird trainiert</div>
-    </div> -->
-    <div
-      class="fixed bottom-4 right-4 z-30"
-      v-if="
-        builderState.selectedVersion?.clearml_id &&
-        (builderState.selectedVersion.status === 'completed' || builderState.selectedVersion.status === 'failed')
-      "
-    >
-      <save-button name="Zurücksetzen" @click="runResetVersion" :loading="resetLoading"></save-button>
     </div>
     <div class="rete w-full h-full bg-gray-900 text-lg" ref="rete"></div>
   </div>

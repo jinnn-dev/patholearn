@@ -1,7 +1,17 @@
 import { IconNames } from '../../../../icons';
 import { NodeType } from './nodes/types';
 
-export type EventName = 'arrange' | 'center' | 'save' | 'clear' | 'parse' | 'train' | NodeType;
+export type EventName =
+  | 'arrange'
+  | 'center'
+  | 'save'
+  | 'clear'
+  | 'parse'
+  | 'train'
+  | 'reset'
+  | 'downloadPython'
+  | 'downloadJupyter'
+  | NodeType;
 
 interface EventSettingItem {
   icon: IconNames;
@@ -17,8 +27,11 @@ export const eventSettings: EventSetting = {
   center: { icon: 'arrow-counter-clockwise', label: 'Center' },
   save: { icon: 'floppy-disk', label: 'Save' },
   clear: { icon: 'broom', label: 'Clear' },
-  parse: { icon: 'brain', label: 'Parse Model', divider: true, header: 'Actions' },
-  train: { icon: 'barbell', label: 'Start Training' },
+  train: { icon: 'barbell', label: 'Start Training', header: 'Training', divider: true },
+  reset: { icon: 'eraser-new', label: 'Reset Training state' },
+  parse: { icon: 'brain', label: 'Parse Model', divider: true },
+  downloadPython: { icon: 'code', label: 'Python', divider: true, header: 'Download' },
+  downloadJupyter: { icon: 'notebook', label: 'Jupyter Notebook' },
   DatasetNode: { icon: 'images', label: 'Dataset', divider: true },
   Conv2DNode: { icon: 'stack', label: 'Conv2D', divider: true },
   LinearNode: { icon: 'cards', label: 'Linear' },
