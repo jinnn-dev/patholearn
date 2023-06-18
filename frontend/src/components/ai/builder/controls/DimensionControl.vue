@@ -33,7 +33,7 @@ const changeY = (e: any) => {
 </script>
 <template>
   <div class="flex items-center gap-2 justify-start">
-    <div class="w-12 flex-shrink-0 text-right">{{ data?.label }}:</div>
+    <div class="w-14 flex-shrink-0 text-left">{{ data?.label }}</div>
     <input-control
       :data="data"
       :value="data?.value?.x"

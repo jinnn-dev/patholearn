@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue';
 import CustomSelect from '../../../form/CustomSelect.vue';
 import Icon from '../../../general/Icon.vue';
-import { builderState, isTraining } from '../../../../core/ai/builder/state';
+import { builderState, versionHasStatus } from '../../../../core/ai/builder/state';
 import Dropdown from '../components/Dropdown.vue';
 
 const props = defineProps({

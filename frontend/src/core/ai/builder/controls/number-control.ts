@@ -10,7 +10,7 @@ export interface INumberControl extends IControl {
 }
 
 export class NumberControl extends Control<INumberControl> {
-  private value?: number;
+  public value?: number;
   constructor(
     public min: number,
     public max: number,
@@ -18,7 +18,7 @@ export class NumberControl extends Control<INumberControl> {
     public placeholder: string,
     public initialValue?: number
   ) {
-    super("NumberControl");
+    super('NumberControl');
     this.value = initialValue;
   }
 

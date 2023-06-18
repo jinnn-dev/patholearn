@@ -3,6 +3,7 @@ import { MetricControl } from '../../controls';
 import { INode } from '../../serializable';
 import { Socket } from '../../sockets/socket';
 import { Node } from '../node';
+
 export interface IMetricNode extends INode {}
 
 export class MetricNode extends Node<IMetricNode, { in: Socket }, {}, { metric: MetricControl }> {

@@ -6,6 +6,7 @@ import { AreaPlugin } from 'rete-area-plugin';
 import { Task, TaskVersion } from '../../../model/ai/tasks/task';
 import { SyncPlugin } from './plugins/sync-plugin';
 import { Node } from './nodes/node';
+import { NodeEditor } from 'rete';
 interface BuilderState {
   builderLoaded: boolean;
   initialGraphLoaded: boolean;
@@ -26,6 +27,7 @@ interface BuilderState {
   selectedVersion?: TaskVersion;
   omitEvents: boolean;
   versionMetrics?: any;
+  editor?: NodeEditor<Schemes>;
 }
 
 export const initialState: BuilderState = {
@@ -76,6 +78,6 @@ export function getLockedBy(elementId: string): Member | undefined {
   return;
 }
 
-export const isTraining = computed(
+export const versionHasStatus = computed(
   () => builderState.selectedVersion?.status !== null || builderState.selectedVersion.clearml_id !== null
 );

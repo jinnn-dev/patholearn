@@ -164,7 +164,7 @@ export function useEditor() {
 
     editor.value.use(area.value);
     editor.value.use(sync.value.root);
-
+    builderState.editor = editor.value;
     // TODO: ADJUST -> PREVENT CONNECTION CREATION BASED ON SOCKET OBJECT
     // editor.value.addPipe((context) => {
     //   if (context.type === 'connectioncreate') {

@@ -2,11 +2,9 @@ from typing import Dict, List, Literal, Optional
 
 from pydantic import BaseModel
 from app.schema.task import Graph, IConnection, INode, NodeType
-import networkx
 from app.utils.logger import logger
 import networkx as nx
 import matplotlib.pyplot as plt
-import os
 from enum import Enum
 
 
@@ -101,6 +99,22 @@ class ConcatenateNode(Node):
     pass
 
 
+Metric = Literal[
+    "Accuracy",
+    "ROC AUC",
+    "Average Precision",
+    "Cohen Kappa",
+    "F1 Score",
+    "Precision",
+    "Loss",
+    "Epoch",
+]
+
+
+class MetricNode(Node):
+    value: Metric
+
+
 def find_node_by_id(nodes: List[INode], id: str) -> Optional[INode]:
     return next((node for node in nodes if node.id == id), None)
 
@@ -109,26 +123,25 @@ def find_node_by_type(nodes: List[INode], node_type: NodeType) -> Optional[INode
     return next((node for node in nodes if node[1]["data"].type == node_type), None)
 
 
-def parse_graph(builderState: Graph):
-    nodes_dict = {node.id: node for node in builderState.nodes}
+def parse_graph_to_networkx(version_graph: Graph):
+    nodes_dict = {node.id: node for node in version_graph.nodes}
     processed_nodes = {}
 
     # parse node type to enum
-    for node in builderState.nodes:
+    for node in version_graph.nodes:
         node.type = NodeType(node.type)
 
     start_node_id = None
     end_node_id = None
 
-    for node in builderState.nodes:
+    for node in version_graph.nodes:
         if node.type == NodeType.DatasetNode and start_node_id is None:
             start_node_id = node.id
         if node.type == NodeType.OutputNode and end_node_id is None:
             end_node_id = node.id
-        if node.type == NodeType.MetricNode:
-            continue
+
         _, node_instance = parse_node(
-            node, nodes_dict, builderState.connections, processed_nodes
+            node, nodes_dict, version_graph.connections, processed_nodes
         )
 
     graph = nx.DiGraph()
@@ -136,7 +149,7 @@ def parse_graph(builderState: Graph):
     for node_id in processed_nodes:
         graph.add_node(node_id, data=processed_nodes[node_id])
 
-    for connection in builderState.connections:
+    for connection in version_graph.connections:
         graph.add_edge(connection.source, connection.target)
 
     paths_between_generator = nx.all_simple_paths(
@@ -162,7 +175,17 @@ def parse_graph(builderState: Graph):
     dataset_node = path_graph.nodes[start_node_id]["data"]
     output_node = path_graph.nodes[end_node_id]["data"]
 
-    return path_graph, dataset_node, output_node, list(combine_nodes)
+    metric_nodes = []
+    for node in processed_nodes:
+        if isinstance(graph.nodes[node]["data"], MetricNode):
+            metric_nodes.append(graph.nodes[node]["data"])
+    return (
+        path_graph,
+        dataset_node,
+        output_node,
+        list(combine_nodes),
+        list(metric_nodes),
+    )
 
 
 def get_dataset(node: INode):
@@ -251,6 +274,10 @@ def get_concatenate_node(node: INode):
     return ConcatenateNode(id=node.id)
 
 
+def get_metric_node(node: INode):
+    return MetricNode(id=node.id, value=node.controls[0].value)
+
+
 def get_to_nodes(node: INode, connections: List[IConnection]):
     to_nodes = []
     for connection in connections:
@@ -278,6 +305,7 @@ node_type_map = {
     NodeType.BatchNormNode: get_batch_norm_node,
     NodeType.AddNode: get_add_node,
     NodeType.ConcatenateNode: get_concatenate_node,
+    NodeType.MetricNode: get_metric_node,
 }
 
 

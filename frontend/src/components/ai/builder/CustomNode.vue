@@ -5,7 +5,7 @@ import { getNodeColor } from '../../../core/ai/builder/node-colors';
 import { LockStatus } from '../../../core/ai/builder/sync';
 import { getTextColor } from '../../../utils/colors';
 import Icon from '../../general/Icon.vue';
-import { builderState, isTraining } from '../../../core/ai/builder/state';
+import { builderState, versionHasStatus } from '../../../core/ai/builder/state';
 import { TaskVersionStatus } from '../../../model/ai/tasks/task';
 
 function sortByIndex(entries: any) {
@@ -88,7 +88,7 @@ const nodeClasses = computed(() => {
   if (props.data?.selected) {
     classes.push('selected');
   }
-  if (!props.data?.lockStatus?.externalLock && !isTraining.value) {
+  if (!props.data?.lockStatus?.externalLock && !versionHasStatus.value) {
     classes.push('cursor-pointer');
   }
   if (props.data?.lockStatus?.externalLock) {
@@ -106,7 +106,7 @@ const nodeClasses = computed(() => {
     }
   }
 
-  // if (isTraining.value) {
+  // if (versionHasStatus.value) {
   //   classes.push('opacity-80');
   // }
   return classes.join(' ');
@@ -126,7 +126,7 @@ const outputs = computed(() => {
 <template>
   <div class="node flex flex-col h-full" :class="nodeClasses" :style="nodeStyles" data-testid="node">
     <div
-      v-if="data?.selected && data?.id && !isTraining"
+      v-if="data?.selected && data?.id && !versionHasStatus"
       class="absolute flex -top-12 rounded-lg left-0 overflow-hidden bg-gray-700 shadow-md shadow-gray-900/50"
     >
       <div class="hover:bg-gray-500 p-1" @click.stop="builderState.syncPlugin?.cloneNode(data.id)">
@@ -143,7 +143,7 @@ const outputs = computed(() => {
       </div>
     </div>
 
-    <!-- <div v-if="isTraining" class="h-1">
+    <!-- <div v-if="versionHasStatus" class="h-1">
       <svg class="w-full h-1">
         <line class="stroke-gray-500" x1="0" y1="2" x2="500" y2="2" stroke-width="100"></line>
         <line class="line stroke-green-500" x1="0" y1="2" x2="500" y2="2" stroke-dasharray="12"></line>
