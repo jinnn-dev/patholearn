@@ -23,7 +23,7 @@ import { Produces } from 'rete-vue-render-plugin';
 import { Member } from '../../../../composables/ws/usePresenceChannel';
 import { animateBetweenTwoPoints, calculatePointsBetween } from '../../../../utils/animate';
 import { addNodeAtPosition, cloneNodeAndAdd, omitReteEvents, removeNodeAndConnections } from '../editor-utils';
-import { TaskVersionStatus } from '../../../../model/ai/tasks/task';
+import { TaskVersion, TaskVersionStatus } from '../../../../model/ai/tasks/task';
 
 export class SyncPlugin {
   root = new Scope<never, [Root<Schemes>]>('sync');
@@ -374,6 +374,13 @@ export class SyncPlugin {
     builderState.channel.bind('client-training-started', (status: TaskVersionStatus) => {
       if (builderState.selectedVersion) {
         builderState.selectedVersion.status = status;
+      }
+    });
+
+    builderState.channel.bind('client-training-reseted', (resetedVersion?: TaskVersion) => {
+      if (resetedVersion) {
+        builderState.selectedVersion = resetedVersion;
+        builderState.versionMetrics = undefined;
       }
     });
   }

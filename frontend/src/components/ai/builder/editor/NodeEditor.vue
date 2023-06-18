@@ -21,6 +21,8 @@ import {
 } from '../../../../core/ai/builder/state';
 import TaskStatus from '../../../../components/ai/builder/editor/TrainingStatus.vue';
 import { downloadFile } from '../../../../utils/download-file';
+import { pushTrainingReset } from '../../../../core/ai/builder/sync';
+import { PresenceChannel } from 'pusher-js';
 
 const props = defineProps({
   taskId: {
@@ -140,6 +142,7 @@ const startEditorTraining = async () => {
 
 const runResetVersion = async () => {
   await resetVersion(builderState.task!.id, builderState.selectedVersion!.id);
+  pushTrainingReset(builderState.channel as PresenceChannel, resetVersionResult.value);
   builderState.selectedVersion = resetVersionResult.value;
   builderState.versionMetrics = undefined;
 };
