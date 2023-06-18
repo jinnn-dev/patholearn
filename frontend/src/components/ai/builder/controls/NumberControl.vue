@@ -26,7 +26,7 @@ const change = (e: any) => {
 </script>
 <template>
   <div class="flex items-center gap-2 justify-start">
-    <div class="text-right shrink-0">{{ data?.label }}</div>
+    <div class="text-left shrink-0">{{ data?.label }}</div>
     <input-control :data="data" :value="data?.value" @change="change" type="number"></input-control>
     <!-- <input
       :min="data?.min"
