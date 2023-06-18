@@ -91,12 +91,9 @@ export function selectableNodes<T>(
       return;
     }
 
-    if (isTraining.value) {
-      if (node.type === 'MetricNode') {
-        area.update('node', node.id);
-        node.selected = true;
-      }
-
+    if (isTraining.value && node.type === 'MetricNode') {
+      area.update('node', node.id);
+      node.selected = true;
       return;
     }
 
@@ -118,6 +115,12 @@ export function selectableNodes<T>(
     }
     const editorNode = editor?.getNode(node.id);
     if (!editorNode) {
+      return;
+    }
+
+    if (isTraining.value && node.type === 'MetricNode') {
+      node.selected = false;
+      area.update('node', node.id);
       return;
     }
 
