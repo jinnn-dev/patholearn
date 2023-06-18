@@ -160,10 +160,10 @@ const itemClicked = async (event: EventName) => {
     await saveEditor();
   }
 
-  if (event === 'parse') {
-    loadingText.value = 'Parsing';
-    await parseEditor();
-  }
+  // if (event === 'parse') {
+  //   loadingText.value = 'Parsing';
+  //   await parseEditor();
+  // }
 
   if (event === 'train') {
     loadingText.value = 'Starting Training';
@@ -178,15 +178,12 @@ const itemClicked = async (event: EventName) => {
   if (event === 'downloadPython') {
     loadingText.value = 'Downloading Python File';
     await runDownloadFile(builderState.task!.id, builderState.selectedVersion!.id, 'python');
-
     downloadFile(downloadResult.value, builderState.selectedVersion!.id + '.py');
   }
 
   if (event === 'downloadJupyter') {
     loadingText.value = 'Downloading Jupyter Notebook';
     await runDownloadFile(builderState.task!.id, builderState.selectedVersion!.id, 'jupyter');
-    console.log(downloadResult.value);
-
     downloadFile(JSON.stringify(downloadResult.value), builderState.selectedVersion!.id + '.ipynb');
   }
 
