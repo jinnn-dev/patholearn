@@ -2,11 +2,9 @@ from typing import Dict, List, Literal, Optional
 
 from pydantic import BaseModel
 from app.schema.task import Graph, IConnection, INode, NodeType
-import networkx
 from app.utils.logger import logger
 import networkx as nx
 import matplotlib.pyplot as plt
-import os
 from enum import Enum
 
 
@@ -125,25 +123,25 @@ def find_node_by_type(nodes: List[INode], node_type: NodeType) -> Optional[INode
     return next((node for node in nodes if node[1]["data"].type == node_type), None)
 
 
-def parse_graph(builderState: Graph):
-    nodes_dict = {node.id: node for node in builderState.nodes}
+def parse_graph_to_networkx(version_graph: Graph):
+    nodes_dict = {node.id: node for node in version_graph.nodes}
     processed_nodes = {}
 
     # parse node type to enum
-    for node in builderState.nodes:
+    for node in version_graph.nodes:
         node.type = NodeType(node.type)
 
     start_node_id = None
     end_node_id = None
 
-    for node in builderState.nodes:
+    for node in version_graph.nodes:
         if node.type == NodeType.DatasetNode and start_node_id is None:
             start_node_id = node.id
         if node.type == NodeType.OutputNode and end_node_id is None:
             end_node_id = node.id
 
         _, node_instance = parse_node(
-            node, nodes_dict, builderState.connections, processed_nodes
+            node, nodes_dict, version_graph.connections, processed_nodes
         )
 
     graph = nx.DiGraph()
@@ -151,7 +149,7 @@ def parse_graph(builderState: Graph):
     for node_id in processed_nodes:
         graph.add_node(node_id, data=processed_nodes[node_id])
 
-    for connection in builderState.connections:
+    for connection in version_graph.connections:
         graph.add_edge(connection.source, connection.target)
 
     paths_between_generator = nx.all_simple_paths(

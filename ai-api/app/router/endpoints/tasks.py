@@ -1,13 +1,17 @@
 from datetime import datetime
-from typing import Dict, List, Optional
+import json
+import tempfile
+from typing import Dict, List, Literal, Optional, Union
 from app.train.train_model import start_builder_training
 from bson import ObjectId
 from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi.responses import FileResponse, PlainTextResponse, JSONResponse
 from pydantic import parse_obj_as
 from supertokens_python.recipe import session
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
 from clearml import Task as ClearmlTask
+import nbformat as nbf
 import app.clearml_wrapper.clearml_wrapper as clearml_wrapper
 from app.schema.builder_task import CreateBuilderTask, BuilderTask
 from app.database.database import task_collection
@@ -23,8 +27,10 @@ from app.schema.task import (
     UnlockElements,
     UpdateTaskVersion,
 )
-from app.core.parser.parse_graph import parse_graph
-from app.core.parser.parse_to_pytorch import parse_to_pytorch_graph
+from app.core.parser.parse_graph import parse_graph_to_networkx
+from app.core.parser.parse_to_pytorch import (
+    parse_task_version_to_python,
+)
 from app.utils.logger import logger
 from app.crud.task import get_task_with_version
 
@@ -255,19 +261,8 @@ async def start_task_training(
     if task is None or task_version is None:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    parsed_graph, dataset_node, output_node, combine_nodes, metric_nodes = parse_graph(
-        task_version.graph
-    )
     try:
-        pytorch_text = parse_to_pytorch_graph(
-            parsed_graph,
-            dataset_node,
-            output_node,
-            combine_nodes,
-            metric_nodes,
-            task,
-            task.versions[0],
-        )
+        pytorch_text, _ = parse_task_version_to_python(task, task_version)
     except Exception as e:
         logger.error(e)
         raise HTTPException(status_code=500, detail="Model could not be parsed")
@@ -282,6 +277,58 @@ async def start_task_training(
     )
 
     start_builder_training(pytorch_text, task_id, task.name, version_id)
+
+    try:
+        pytorch_text, _ = parse_task_version_to_python(task, task_version)
+    except Exception as e:
+        logger.error(e)
+        raise HTTPException(status_code=500, detail="Model could not be parsed")
+
+    return pytorch_text
+
+
+@router.get(
+    "/{task_id}/version/{version_id}/download",
+)
+async def download_builder_version(
+    task_id: str, version_id: str, language: Literal["python", "jupyter"] = "python"
+):
+    task, task_version = await get_task_with_version(task_id, version_id)
+
+    if task is None or task_version is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    pytorch_text, model = parse_task_version_to_python(task, task_version, True)
+
+    if language == "python":
+        return PlainTextResponse(content=pytorch_text, media_type="text/x-python")
+    else:
+        nb = nbf.v4.new_notebook()
+
+        model_dict = model.dict()
+        for key, value in model_dict.items():
+            if key == "ignore_clearml" or value is None:
+                continue
+            cell = nbf.v4.new_code_cell(source=value)
+            nb["cells"].append(cell)
+
+        return JSONResponse(json.loads(nbf.writes(nb)))
+
+
+@router.get("/{task_id}/version/{version_id}/parse")
+async def parse_builder_version(
+    task_id: str, version_id: str, s: SessionContainer = Depends(verify_session())
+):
+    task, task_version = await get_task_with_version(task_id, version_id)
+
+    if task is None or task_version is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    try:
+        pytorch_text = parse_task_version_to_python(task, task_version)
+    except Exception as e:
+        logger.error(e)
+        raise HTTPException(status_code=500, detail="Model could not be parsed")
 
     return pytorch_text
 
@@ -306,36 +353,6 @@ async def get_latest_task_metrics(
             logger.error(e)
             return None
     return None
-
-
-@router.get("/{task_id}/version/{version_id}/parse")
-async def parse_builder_version(
-    task_id: str, version_id: str, s: SessionContainer = Depends(verify_session())
-):
-    task, task_version = await get_task_with_version(task_id, version_id)
-
-    if task is None or task_version is None:
-        raise HTTPException(status_code=404, detail="Task not found")
-
-    parsed_graph, dataset_node, output_node, combine_nodes, metric_nodes = parse_graph(
-        task_version.graph
-    )
-
-    try:
-        pytorch_text = parse_to_pytorch_graph(
-            parsed_graph,
-            dataset_node,
-            output_node,
-            combine_nodes,
-            metric_nodes,
-            task,
-            task.versions[0],
-        )
-    except Exception as e:
-        logger.error(e)
-        raise HTTPException(status_code=500, detail="Model could not be parsed")
-
-    return pytorch_text
 
 
 @router.post("/builder", response_model=BuilderTask, status_code=201)
