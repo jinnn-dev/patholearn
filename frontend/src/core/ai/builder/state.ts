@@ -78,6 +78,6 @@ export function getLockedBy(elementId: string): Member | undefined {
   return;
 }
 
-export const isTraining = computed(
+export const versionHasStatus = computed(
   () => builderState.selectedVersion?.status !== null || builderState.selectedVersion.clearml_id !== null
 );

@@ -8,7 +8,7 @@ export type EventName =
   | 'clear'
   // | 'parse'
   | 'train'
-  | 'reset'
+  | 'abort'
   | 'downloadPython'
   | 'downloadJupyter'
   | NodeType;
@@ -29,7 +29,7 @@ export const eventSettings: EventSetting = {
   save: { icon: 'floppy-disk', label: 'Save', disableOnTraining: true },
   clear: { icon: 'broom', label: 'Clear', disableOnTraining: true },
   train: { icon: 'barbell', label: 'Start', header: 'Training', divider: true, disableOnTraining: true },
-  reset: { icon: 'eraser-new', label: 'Reset' },
+  abort: { icon: 'stop', label: 'Reset / Stop' },
   // parse: { icon: 'brain', label: 'Parse Model', divider: true },
   downloadPython: { icon: 'code', label: 'Python', divider: true, header: 'Download' },
   downloadJupyter: { icon: 'notebook', label: 'Jupyter Notebook' },

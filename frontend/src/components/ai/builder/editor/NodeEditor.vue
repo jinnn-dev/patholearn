@@ -13,7 +13,12 @@ import Spinner from '../../../general/Spinner.vue';
 import { TaskVersion } from '../../../../model/ai/tasks/task';
 import { NodeType, isNode } from '../../../../core/ai/builder/nodes/types';
 import { EventName } from '../../../../core/ai/builder/editor-events';
-import { builderState, isTraining, resetBuilderState, resetNodeEditorState } from '../../../../core/ai/builder/state';
+import {
+  builderState,
+  versionHasStatus,
+  resetBuilderState,
+  resetNodeEditorState
+} from '../../../../core/ai/builder/state';
 import TaskStatus from '../../../../components/ai/builder/editor/TrainingStatus.vue';
 import { downloadFile } from '../../../../utils/download-file';
 
@@ -170,7 +175,7 @@ const itemClicked = async (event: EventName) => {
     await startEditorTraining();
   }
 
-  if (event === 'reset') {
+  if (event === 'abort') {
     loadingText.value = 'Resetting training state';
     await runResetVersion();
   }

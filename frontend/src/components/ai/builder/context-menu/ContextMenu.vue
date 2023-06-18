@@ -4,7 +4,7 @@ import { debounce } from './debounce';
 import Block from './Block.vue';
 import Search from './Search.vue';
 import Item from './Item.vue';
-import { isTraining } from '../../../../core/ai/builder/state';
+import { versionHasStatus } from '../../../../core/ai/builder/state';
 
 const props = defineProps({
   items: {
@@ -37,7 +37,7 @@ function getItems() {
     @mouseover="hide.cancel()"
     @mouseleave="hide.call()"
     data-testid="context-menu"
-    v-if="items.length !== 0 && !isTraining"
+    v-if="items.length !== 0 && !versionHasStatus"
   >
     <!-- <block v-if="searchBar">
       <search :text="filter" @change="filter = $event"></search>

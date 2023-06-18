@@ -2,7 +2,7 @@ import { AreaExtensions, BaseArea, BaseAreaPlugin } from 'rete-area-plugin';
 import { Schemes } from './use-editor';
 import { NodeEditor } from 'rete';
 import { lockElement, pushNodeLockedEvent, pushNodeUnlockedEvent, unlockElement } from './sync';
-import { builderState, isTraining } from './state';
+import { builderState, versionHasStatus } from './state';
 import { PresenceChannel } from 'pusher-js';
 
 export function trackedSelector<
@@ -91,7 +91,7 @@ export function selectableNodes<T>(
       return;
     }
 
-    if (isTraining.value && node.type === 'MetricNode') {
+    if (versionHasStatus.value && node.type === 'MetricNode') {
       area.update('node', node.id);
       node.selected = true;
       return;
@@ -118,7 +118,7 @@ export function selectableNodes<T>(
       return;
     }
 
-    if (isTraining.value && node.type === 'MetricNode') {
+    if (versionHasStatus.value && node.type === 'MetricNode') {
       node.selected = false;
       area.update('node', node.id);
       return;

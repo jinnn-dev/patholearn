@@ -1,7 +1,7 @@
 import { BaseSchemes, Root, Scope, ClassicPreset, NodeEditor } from 'rete';
 import { Area2D, AreaPlugin, BaseArea } from 'rete-area-plugin';
 import { Connection, ConnectionPlugin } from 'rete-connection-plugin';
-import { builderState, getLockedBy, isTraining } from '../state';
+import { builderState, getLockedBy, versionHasStatus } from '../state';
 import {
   NodeTranslatedEvent,
   lockElement,
@@ -107,7 +107,7 @@ export class SyncPlugin {
         // }
 
         if (context.type === 'nodetranslate') {
-          if (isTraining.value) {
+          if (versionHasStatus.value) {
             return;
           }
           if (this.externalDrag) {
@@ -165,7 +165,7 @@ export class SyncPlugin {
       return context;
     });
     this.connection.addPipe((context) => {
-      if (!isTraining.value) return context;
+      if (!versionHasStatus.value) return context;
       if (context.type === 'connectionpick') return;
       return context;
     });

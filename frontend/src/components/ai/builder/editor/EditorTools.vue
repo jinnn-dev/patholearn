@@ -5,7 +5,8 @@ import ToolItem from './ToolItem.vue';
 import { eventSettings, EventName } from '../../../../core/ai/builder/editor-events';
 import { getNodeColor } from '../../../../core/ai/builder/node-colors';
 import { NodeType, getNodeGroup } from '../../../../core/ai/builder/nodes/types';
-import { isTraining } from '../../../../core/ai/builder/state';
+import { versionHasStatus } from '../../../../core/ai/builder/state';
+import { builderState } from '../../../../core/ai/builder/state';
 
 const toolsOpen = ref(false);
 
@@ -40,11 +41,13 @@ const emit = defineEmits<{ (e: 'selected', value: EventName): void }>();
               <div class="h-[2px] mt-1" :class="'bg-'+(getNodeColor(key as NodeType) || 'gray-400')"></div>
             </div>
             <tool-item
-              :disable="item.disableOnTraining && isTraining"
+              :disable=" key as EventName === 'abort' ? !builderState.selectedVersion?.clearml_id : item.disableOnTraining && versionHasStatus"
               :icon="item.icon"
               :label="item.label"
               @click="
-                (!item.disableOnTraining && isTraining) || !isTraining ? emit('selected', key as EventName) : null
+                (!item.disableOnTraining && versionHasStatus) || !versionHasStatus
+                  ? emit('selected', key as EventName)
+                  : null
               "
             ></tool-item>
           </div>
