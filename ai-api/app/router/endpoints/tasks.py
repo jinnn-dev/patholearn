@@ -255,7 +255,7 @@ async def start_task_training(
     if task is None or task_version is None:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    parsed_graph, dataset_node, output_node, combine_nodes = parse_graph(
+    parsed_graph, dataset_node, output_node, combine_nodes, metric_nodes = parse_graph(
         task_version.graph
     )
     try:
@@ -264,6 +264,7 @@ async def start_task_training(
             dataset_node,
             output_node,
             combine_nodes,
+            metric_nodes,
             task,
             task.versions[0],
         )
@@ -316,15 +317,17 @@ async def parse_builder_version(
     if task is None or task_version is None:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    parsed_graph, dataset_node, output_node, combine_nodes = parse_graph(
+    parsed_graph, dataset_node, output_node, combine_nodes, metric_nodes = parse_graph(
         task_version.graph
     )
+
     try:
         pytorch_text = parse_to_pytorch_graph(
             parsed_graph,
             dataset_node,
             output_node,
             combine_nodes,
+            metric_nodes,
             task,
             task.versions[0],
         )

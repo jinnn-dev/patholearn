@@ -4,7 +4,7 @@ from enum import Enum
 from string import Template
 from typing import List, Union
 from app.core.parser.parse_classification_model import get_classification_model
-
+import torchmetrics
 import matplotlib.pyplot as plt
 from pydantic import BaseModel
 from app.core.parser.parse_lightning import LightningModel
@@ -15,6 +15,7 @@ from app.core.parser.parse_graph import (
     AddNode,
     ConcatenateNode,
     DatasetNode,
+    MetricNode,
     Node,
     OutputNode,
 )
@@ -54,6 +55,7 @@ def parse_to_pytorch_graph(
     dataset_node: DatasetNode,
     output_node: OutputNode,
     combine_nodes: List[str],
+    metric_nodes: List[MetricNode],
     task: Task,
     version: TaskVersion,
 ):
@@ -88,7 +90,7 @@ def parse_to_pytorch_graph(
     model_class, model_call = get_model(graph, dataset_node, output_node, combine_nodes)
     model_instance = "model" + " = " + model_call
 
-    lightning_model = LightningModel(output_node)
+    lightning_model = LightningModel(output_node, metric_nodes)
     lightning_model_class = lightning_model.model_class
     lightning_model_instance = lightning_model.get_instance("lightning_model", "model")
     lightning_trainer = "trainer = " + lightning_model.trainer

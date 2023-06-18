@@ -101,6 +101,22 @@ class ConcatenateNode(Node):
     pass
 
 
+Metric = Literal[
+    "Accuracy",
+    "ROC AUC",
+    "Average Precision",
+    "Cohen Kappa",
+    "F1 Score",
+    "Precision",
+    "Loss",
+    "Epoch",
+]
+
+
+class MetricNode(Node):
+    value: Metric
+
+
 def find_node_by_id(nodes: List[INode], id: str) -> Optional[INode]:
     return next((node for node in nodes if node.id == id), None)
 
@@ -125,8 +141,7 @@ def parse_graph(builderState: Graph):
             start_node_id = node.id
         if node.type == NodeType.OutputNode and end_node_id is None:
             end_node_id = node.id
-        if node.type == NodeType.MetricNode:
-            continue
+
         _, node_instance = parse_node(
             node, nodes_dict, builderState.connections, processed_nodes
         )
@@ -162,7 +177,17 @@ def parse_graph(builderState: Graph):
     dataset_node = path_graph.nodes[start_node_id]["data"]
     output_node = path_graph.nodes[end_node_id]["data"]
 
-    return path_graph, dataset_node, output_node, list(combine_nodes)
+    metric_nodes = []
+    for node in processed_nodes:
+        if isinstance(graph.nodes[node]["data"], MetricNode):
+            metric_nodes.append(graph.nodes[node]["data"])
+    return (
+        path_graph,
+        dataset_node,
+        output_node,
+        list(combine_nodes),
+        list(metric_nodes),
+    )
 
 
 def get_dataset(node: INode):
@@ -251,6 +276,10 @@ def get_concatenate_node(node: INode):
     return ConcatenateNode(id=node.id)
 
 
+def get_metric_node(node: INode):
+    return MetricNode(id=node.id, value=node.controls[0].value)
+
+
 def get_to_nodes(node: INode, connections: List[IConnection]):
     to_nodes = []
     for connection in connections:
@@ -278,6 +307,7 @@ node_type_map = {
     NodeType.BatchNormNode: get_batch_norm_node,
     NodeType.AddNode: get_add_node,
     NodeType.ConcatenateNode: get_concatenate_node,
+    NodeType.MetricNode: get_metric_node,
 }
 
 
