@@ -181,19 +181,16 @@ export function useEditor() {
     // });
 
     editor.value.addPipe((context) => {
+      if (!editor.value) {
+        return;
+      }
+
       if (context.type === 'connectioncreate') {
         if (!editor.value) {
-          return context;
-        }
-        const source = editor.value.getNode(context.data.source);
-        const sourceSocket = (source.outputs[context.data.sourceOutput] as any).socket as Socket;
-        const target = editor.value.getNode(context.data.target);
-        const targetSocket = (target.inputs[context.data.targetInput] as any).socket as Socket;
-        console.log(target.lockStatus);
-
-        if (target.lockStatus) {
           return;
         }
+        const source = editor.value.getNode(context.data.source);
+        const target = editor.value.getNode(context.data.target);
 
         if (!nodesCanConnect(source, target)) {
           return;
