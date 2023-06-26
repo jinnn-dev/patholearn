@@ -22,7 +22,7 @@ services:
       retries: 10
 
   supertokens-dev:
-    image: registry.supertokens.io/supertokens/supertokens-mysql:4.6
+    image: registry.supertokens.io/supertokens/supertokens-mysql:latest
     container_name: supertokens
     depends_on:
       db-dev:
