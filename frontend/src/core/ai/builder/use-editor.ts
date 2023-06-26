@@ -189,6 +189,11 @@ export function useEditor() {
         const sourceSocket = (source.outputs[context.data.sourceOutput] as any).socket as Socket;
         const target = editor.value.getNode(context.data.target);
         const targetSocket = (target.inputs[context.data.targetInput] as any).socket as Socket;
+        console.log(target.lockStatus);
+
+        if (target.lockStatus) {
+          return;
+        }
 
         if (!nodesCanConnect(source, target)) {
           return;
