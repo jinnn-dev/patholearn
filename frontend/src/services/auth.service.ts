@@ -21,6 +21,7 @@ interface LoginUser {
 
 export enum AuthError {
   PasswordToWeak,
+  EmailInvalid,
   CouldNotRegister,
   CouldNotLogin,
   WrongCredentials
@@ -85,6 +86,7 @@ export class AuthService {
       }),
       'Could not login user'
     );
+
     if (response?.status === 'WRONG_CREDENTIALS_ERROR' || response?.status === 'FIELD_ERROR') {
       return AuthError.WrongCredentials;
     }
@@ -126,6 +128,12 @@ export class AuthService {
     if (!response) {
       return AuthError.CouldNotRegister;
     }
+    if (response?.status === 'FIELD_ERROR') {
+      if (response.formFields[0].id === 'email') {
+        return AuthError.EmailInvalid;
+      }
+      return AuthError.PasswordToWeak;
+    }
     if (response.status === 'OK') {
       const userId = response.user.id;
 
@@ -150,16 +158,6 @@ export class AuthService {
       return finalResponse!.data;
     }
 
-    if (response.status === 'FIELD_ERROR') {
-      for (const field of response.formFields) {
-        if (
-          field.id === 'password' &&
-          field.error == 'Password must contain at least 8 characters, including a number'
-        ) {
-          return AuthError.PasswordToWeak;
-        }
-      }
-    }
     return AuthError.CouldNotRegister;
   }
 

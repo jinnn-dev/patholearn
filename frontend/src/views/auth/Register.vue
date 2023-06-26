@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { reactive, ref, watch } from 'vue';
-import { email, minLength, required } from '@vuelidate/validators';
+import { computed, reactive, ref, watch } from 'vue';
+import { email, minLength, required, alphaNum } from '@vuelidate/validators';
 import useVuelidate from '@vuelidate/core';
 import { useRouter } from 'vue-router';
 import { AuthService, AuthError } from '../../services/auth.service';
@@ -29,7 +29,7 @@ watch(
 
 const emailAlreadyExists = ref<boolean>(false);
 const passwordToWeak = ref<boolean>(false);
-
+const emailInvalid = ref(false);
 const passwordMatch = ref<boolean>(true);
 
 const registerLoading = ref<boolean>(false);
@@ -50,9 +50,9 @@ const validator = useVuelidate(rules, formData);
 const router = useRouter();
 const onSubmit = async () => {
   registerLoading.value = true;
-
+  emailInvalid.value = false;
   validator.value.$touch();
-  passwordMatch.value = formData.password == formData.confirmPassword;
+  passwordMatch.value = formData.password === formData.confirmPassword;
   if (!validator.value.$invalid && passwordMatch.value) {
     const emailExists = await AuthService.doesEmailExists(formData.email);
     if (emailExists) {
@@ -65,11 +65,41 @@ const onSubmit = async () => {
 
     if (response === AuthError.PasswordToWeak) {
       passwordToWeak.value = true;
+      registerLoading.value = false;
+      return;
     }
+
+    if (response === AuthError.EmailInvalid) {
+      emailInvalid.value = true;
+      registerLoading.value = false;
+      return;
+    }
+  } else {
+    registerLoading.value = false;
+    return;
   }
   router.push('/login');
   registerLoading.value = false;
 };
+
+const emailErrorMessage = computed(() => {
+  if (validator.value.email.$errors.some((e) => e.hasOwnProperty('$property')) || emailInvalid.value) {
+    return 'Keine gültige E-Mail-Adresse';
+  }
+  if (emailAlreadyExists.value) {
+    return 'E-Mail existiert bereits';
+  }
+  return undefined;
+});
+
+const passwordErrorMessage = computed(() => {
+  if (passwordToWeak.value) {
+    return 'Das Passwort muss mindestens 8 Zeichen lang sein und eine Zahl enthalten';
+  }
+  if (!passwordMatch.value) {
+    return 'Passwörter stimmen nicht überein';
+  }
+});
 </script>
 <template>
   <div class="w-full min-h-screen flex flex-col items-center justify-center">
@@ -90,14 +120,10 @@ const onSubmit = async () => {
           label="E-Mail"
           placeholder="demo@demo.de"
           type="email"
+          :error-message="emailErrorMessage"
         >
           <Icon name="at" />
         </auth-input>
-        <div v-if="validator.email.$errors.some((e) => e.hasOwnProperty('$property'))" class="text-red-500">
-          Keine gültige E-Mail-Adresse
-        </div>
-
-        <div v-if="emailAlreadyExists" class="text-red-400 font-semibold">E-Mail existiert bereits</div>
 
         <auth-input
           v-model="formData.password"
@@ -106,12 +132,10 @@ const onSubmit = async () => {
           label="Passwort"
           placeholder="1234"
           type="password"
+          :error-message="passwordErrorMessage"
         >
           <Icon name="user" />
         </auth-input>
-        <div v-if="passwordToWeak" class="text-red-500">
-          Das Passwort muss mindestens 8 Zeichen lang sein und eine Zahl enthalten
-        </div>
         <auth-input
           v-model="formData.confirmPassword"
           :required="true"
@@ -122,7 +146,6 @@ const onSubmit = async () => {
         >
           <Icon name="key" />
         </auth-input>
-        <div v-if="!passwordMatch" class="text-red-500">Passwörter stimmen nicht überein.</div>
         <div class="w-full flex justify-end mt-8">
           <save-button :loading="registerLoading" name="Beitreten" />
         </div>
