@@ -17,7 +17,7 @@ export const routes: RouteRecordRaw[] = [
     meta: {
       public: true
     },
-    component: () => import('../views/ai/datasets/Datasets.vue')
+    component: () => import('../views/ai/datasets/CreateDataset.vue')
   },
   {
     path: '/ai/datasets/:id',

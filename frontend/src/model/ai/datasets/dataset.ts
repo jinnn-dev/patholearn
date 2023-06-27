@@ -9,3 +9,12 @@ export interface Dataset {
     total_size: number;
   };
 }
+
+export type DatasetType = 'classification' | 'detection' | 'segmentation';
+
+export interface CreateDataset {
+  name: string;
+  description?: string;
+  type: DatasetType;
+  file?: File;
+}
