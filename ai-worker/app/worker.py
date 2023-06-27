@@ -155,8 +155,18 @@ def check_task_version(
 ):
     _, session_maker = session_manager.create_session(beat_dburi)
     session = session_maker()
+    try:
+        clearml_task: Task = Task.get_task(task_id=clearml_task_id)
+    except ValueError as error:
+        logger.error(error)
+        periodic_task = (
+            session.query(PeriodicTask).filter_by(name=clearml_task_id).first()
+        )
+        if periodic_task is not None:
+            session.delete(periodic_task)
+            session.commit()
+        return
 
-    clearml_task: Task = Task.get_task(task_id=clearml_task_id)
     new_status = clearml_task.status
 
     metrics = clearml_task.get_last_scalar_metrics()

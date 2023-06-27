@@ -1,3 +1,5 @@
+from typing import Dict, List
+from clearml import Dataset
 import httpx
 
 from app.config.config import Config
@@ -205,3 +207,32 @@ def get_task_metrics(task_id: str):
         auth=(Config.CLEARML_API_ACCESS_KEY, Config.CLEARML_API_SECRET_KEY),
     )
     return response.json()["data"]
+
+
+def create_dataset(
+    dataset_name: str,
+    dataset_description: str,
+    dataset_project: str,
+    dataset_tags: List[str],
+):
+    dataset = Dataset.create(
+        dataset_name=dataset_name,
+        dataset_project=dataset_project,
+        description=dataset_description,
+        dataset_tags=dataset_tags,
+        output_uri="s3://10.168.2.83:9000/clearml",
+    )
+    return dataset
+
+
+def add_files_to_dataset(dataset: Dataset, folder_path: str):
+    dataset.add_files(folder_path)
+    dataset.upload()
+
+
+def set_metadata_of_dataset(dataset: Dataset, metadata: Dict):
+    return dataset.set_metadata(metadata, ui_visible=False)
+
+
+def finalize_dataset(dataset: Dataset):
+    dataset.finalize(raise_on_error=True)
