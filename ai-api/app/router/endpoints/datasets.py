@@ -49,59 +49,6 @@ async def create_new_dataset(
     background_tasks.add_task(create_dataset_backgroud, dataset=dataset, file=file.file)
     return dataset
 
-    background_tasks.add_task(write_temporary_file)
-
-    dataset_file_id = uuid4()
-    file_name = f"{dataset_file_id}.zip"
-
-    save_path = f"/tmp/{file_name}"
-
-    with open(save_path, "wb") as f:
-        # write the uploaded file's content to the temporary file
-        f.write(await file.read())
-
-    extract_dir = f"/tmp/{dataset_file_id}"
-    os.mkdir(extract_dir)
-    shutil.unpack_archive(save_path, extract_dir)
-
-    macosx_dir_path = os.path.join(extract_dir, "__MACOSX")
-    if os.path.exists(macosx_dir_path) and os.path.isdir(macosx_dir_path):
-        shutil.rmtree(macosx_dir_path)
-    logger.debug(os.listdir(extract_dir))
-
-    # TODO: VERIFY THAT NO SUB-FOLDERS ARE CONTAINED AND ONLY VALID IMAGE FILES ARE CONTAIND
-
-    class_map = {}
-    class_index = 0
-    classes = []
-    for dir in os.listdir(extract_dir):
-        if dir not in class_map:
-            class_map[dir] = class_index
-            classes.append(class_index)
-            class_index += 1
-    logger.debug(class_map)
-    logger.debug(classes)
-    dataset = Dataset.create(
-        dataset_name=name,
-        dataset_project=f"Datasets",
-        description=description,
-        dataset_tags=[dataset_type],
-        output_uri="s3://10.168.2.83:9000/clearml",
-    )
-
-    dataset.add_files(path=extract_dir)
-    dataset.upload(show_progress=True, verbose=True)
-
-    dataset.set_metadata({"class_map": class_map, "classes": classes}, ui_visible=False)
-
-    dataset.finalize()
-
-    logger.debug(dataset.get_metadata())
-
-    shutil.rmtree(save_path)
-
-    return "Ok"
-
 
 @router.get("")
 async def login(s: SessionContainer = Depends(verify_session())):
