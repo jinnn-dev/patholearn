@@ -1,6 +1,11 @@
 from datetime import datetime
-from typing import Annotated, Optional
-from app.crud.dataset import get_dataset, update_dataset_status
+from typing import Annotated, List, Optional
+from app.crud.dataset import (
+    get_dataset,
+    get_datasets,
+    update_dataset_status,
+    delete_dataset,
+)
 
 from pydantic import parse_obj_as
 
@@ -18,6 +23,7 @@ import os
 from app.schema.dataset import Dataset
 from app.database.database import dataset_collection
 from app.core.dataset.create_dataset import create_dataset, create_dataset_backgroud
+from clearml import Dataset as ClearmlDataset
 
 router = APIRouter()
 
@@ -50,9 +56,43 @@ async def create_new_dataset(
     return dataset
 
 
-@router.get("")
-async def login(s: SessionContainer = Depends(verify_session())):
-    return clearml_wrapper.get_datasets()
+@router.get("", response_model=List[Dataset])
+async def datasets(_: SessionContainer = Depends(verify_session())):
+    return await get_datasets()
+
+
+@router.get("/{dataset_id}", response_model=Dataset)
+async def dataset(dataset_id: str, _: SessionContainer = Depends(verify_session())):
+    return await get_dataset(dataset_id)
+
+
+@router.delete("/{dataset_id}", response_model=Dataset)
+async def dataset_delete(
+    dataset_id: str, _: SessionContainer = Depends(verify_session())
+):
+    dataset = await get_dataset(dataset_id)
+    clearml_id = dataset.clearml_dataset["id"]
+    clearml_project_id = dataset.clearml_dataset["project"]["id"]
+    try:
+        clearml_dataset = ClearmlDataset.delete(
+            clearml_id,
+            delete_files=True,
+            delete_external_files=True,
+            force=True,
+            entire_dataset=True,
+        )
+        clearml_wrapper.delete_project(clearml_project_id)
+        await delete_dataset(dataset_id)
+    except Exception as error:
+        logger.error(
+            f"Failed deleting dataset {dataset_id} (ClearML {clearml_id}): {error}"
+        )
+    return dataset
+
+
+# @router.get("")
+# async def login(s: SessionContainer = Depends(verify_session())):
+#     return clearml_wrapper.get_datasets()
 
 
 @router.get("/{dataset_project_id}")

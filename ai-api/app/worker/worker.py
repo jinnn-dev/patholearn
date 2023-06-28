@@ -9,6 +9,7 @@ from app.clearml_wrapper.clearml_wrapper import (
     add_files_to_dataset,
     create_dataset as create_clearml_dataset,
     finalize_dataset,
+    get_dataset_task,
     set_metadata_of_dataset,
 )
 from app.utils.io import delete_osx_files, unpack_archive, delete_folder
@@ -52,7 +53,6 @@ def create_dataset(file_path: str, dataset_id: str):
         dataset_project="Datasets",
         dataset_tags=[dataset.dataset_type],
     )
-    update_dataset(dataset_id=dataset.id, fields={"clearml_id": clearml_dataset.id})
 
     try:
         logger.info(f"{log_prefix} Adding files to dataset")
@@ -71,6 +71,9 @@ def create_dataset(file_path: str, dataset_id: str):
         logger.error(f"{log_prefix} Failed finalizing: {error}")
         update_dataset_status(dataset.id, "failed")
         return
+
+    clearml_dataset = get_dataset_task(clearml_dataset)
+    update_dataset(dataset_id=dataset.id, fields={"clearml_dataset": clearml_dataset})
 
     delete_folder(unpack_path)
 

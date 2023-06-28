@@ -1,5 +1,5 @@
 import datetime
-from typing import Literal, Optional
+from typing import Dict, Literal, Optional
 from bson import ObjectId
 from pydantic import BaseModel, Field
 from app.schema.py_object_id import PyObjectId
@@ -16,8 +16,8 @@ class Dataset(BaseMongoModel):
     description: Optional[str] = None
     dataset_type: DatasetType = Field(default="Classification")
     created_at: datetime.datetime = Field(...)
-    clearml_id: Optional[str]
     status: Optional[DatasetStatus]
+    clearml_dataset: Optional[Dict]
 
     class Config:
         allow_population_by_field_name = True
