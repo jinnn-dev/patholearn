@@ -36,6 +36,16 @@ jobs:
         with:
           src: './ai-api'
 
+  ai_api_worker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+      - name: Running black
+        uses: psf/black@stable
+        with:
+          src: './ai-api'
+
   ai_worker:
     runs-on: ubuntu-latest
     steps:
