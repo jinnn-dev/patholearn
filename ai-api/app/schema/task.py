@@ -27,6 +27,7 @@ class ControlType(Enum):
     ActivationControl = "ActivationControl"
     DimensionControl = "DimensionControl"
     DropdownControl = "DropdownControl"
+    AsyncDropdownControl = "AsyncDropdownControl"
     NumberControl = "NumberControl"
     MetricConrol = "MetricControl"
 
@@ -88,6 +89,11 @@ class IDropdownControl(IControl):
     label: str
 
 
+class IAsyncDropdownControl(IControl):
+    label: str
+    asyncFunction: str
+
+
 class INumberControl(IControl):
     min: int
     max: int
@@ -97,6 +103,7 @@ class INumberControl(IControl):
 
 ControlType = TypeVar(
     "ControlType",
+    IAsyncDropdownControl,
     IDropdownControl,
     IDimensionControl,
     INumberControl,
