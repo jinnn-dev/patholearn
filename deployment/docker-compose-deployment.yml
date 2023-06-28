@@ -96,6 +96,10 @@ services:
       - SUPERTOKENS_DOMAIN=${SUPERTOKENS_DOMAIN}
       - COOKIE_DOMAIN=${COOKIE_DOMAIN}
       - ANTI_CSRF=${ANTI_CSRF}
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_SECURE=${MINIO_SECURE}
+      - MINIO_URL=${MINIO_URL}
     ports:
       - '48888:8000'
 
@@ -103,9 +107,9 @@ services:
     image: hafen.noxz.dev/patholearn-ai/ai-api-worker:${AI_API_VERSION}
     restart: unless-stopped
     networks:
-      - auth_auth-network
-      - patholearn-network
-      - ws_ws-network
+      - patholearn-ai-network-prod
+      - ws_ws-network-prod
+      - auth_auth-network-prod
     volumes:
       - ./clearml.conf:/root/clearml.conf
       - ai-api-data-prod:/data
