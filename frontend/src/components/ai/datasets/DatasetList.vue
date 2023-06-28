@@ -4,6 +4,8 @@ import { useService } from '../../../composables/useService';
 import { AiService } from '../../../services/ai.service';
 import SkeletonCard from '../../containers/SkeletonCard.vue';
 import PrimaryButton from '../../general/PrimaryButton.vue';
+import NoContent from '../../general/NoContent.vue';
+
 const { result: datasets, loading } = useService(AiService.getDatasets, true);
 </script>
 <template>
@@ -18,8 +20,11 @@ const { result: datasets, loading } = useService(AiService.getDatasets, true);
         ></router-link>
       </div>
 
-      <div class="flex gap-4 flex-wrap">
+      <div v-if="datasets && datasets.length !== 0" class="flex gap-4 flex-wrap">
         <dataset-card v-for="dataset in datasets" :dataset="dataset"></dataset-card>
+      </div>
+      <div v-else>
+        <no-content text="Keine Datensätze vorhanden"></no-content>
       </div>
     </div>
   </div>

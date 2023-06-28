@@ -4,7 +4,7 @@ import { useService } from '../../../composables/useService';
 import ContentContainer from '../../../components/containers/ContentContainer.vue';
 import { useRoute, useRouter } from 'vue-router';
 import SaveButton from '../../../components/general/SaveButton.vue';
-
+import DatasetStatus from '../../../components/ai/datasets/DatasetStatus.vue';
 const route = useRoute();
 const router = useRouter();
 
@@ -21,14 +21,12 @@ const deleteDataset = async () => {
   <content-container :loading="loading" back-route="/ai/datasets" back-text="Datensätze">
     <template #header>
       <div>{{ dataset?.name }}</div>
-      <div class="mt-4 flex justify-center items-center gap-4">
-        <div class="text-center text-lg bg-purple-900/50 px-2 py-1 rounded-full">
-          {{ dataset?.status }}
-        </div>
+      <div class="w-full flex justify-center items-center gap-4 text-base mt-4" v-if="dataset">
+        <dataset-status :status="dataset?.status"></dataset-status>
       </div>
     </template>
     <template #content>
-      <div class="flex justify-end">
+      <div class="flex justify-end items-center">
         <save-button
           class="w-32"
           @click="deleteDataset"
