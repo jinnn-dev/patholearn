@@ -2,7 +2,7 @@ import { ApiService } from './api.service';
 import { AI_API_URL } from '../config';
 import { handleError } from './error-handler';
 import { Project, ProjectWithTasks, UpdateProject } from '../model/ai/projects/project';
-import { Dataset } from '../model/ai/datasets/dataset';
+import { CreateDataset, Dataset } from '../model/ai/datasets/dataset';
 import { CreateTask, Task, TaskVersion, UpdateTask } from '../model/ai/tasks/task';
 import { LogEntry } from '../model/ai/tasks/log-entry';
 import { IGraph } from '../core/ai/builder/serializable';
@@ -51,6 +51,28 @@ export class AiService {
         host: AI_API_URL
       }),
       'Datensätze konnten nicht geladen werden'
+    );
+    return response!.data;
+  }
+
+  public static async getDataset(datasetId: string) {
+    const [_, response] = await handleError(
+      ApiService.get<Dataset>({
+        resource: `/datasets/${datasetId}`,
+        host: AI_API_URL
+      }),
+      'Datensatz konnten nicht geladen werden'
+    );
+    return response!.data;
+  }
+
+  public static async deleteDataset(datasetId: string) {
+    const [_, response] = await handleError(
+      ApiService.delete<Dataset>({
+        resource: `/datasets/${datasetId}`,
+        host: AI_API_URL
+      }),
+      'Datensatz konnten nicht gelöscht werden'
     );
     return response!.data;
   }
@@ -465,6 +487,25 @@ export class AiService {
       })
     );
 
+    return response!.data;
+  }
+
+  public static async createDataset(createDataset: CreateDataset, onUploadProgress?: (event: any) => void) {
+    const formData = new FormData();
+    formData.append('name', createDataset.name);
+    formData.append('description', createDataset.description || '');
+    formData.append('file', createDataset.file!);
+    formData.append('dataset_type', createDataset.type);
+
+    const [_, response] = await handleError(
+      ApiService.post<Dataset>({
+        resource: '/datasets',
+        data: formData,
+        config: { onUploadProgress },
+        host: AI_API_URL
+      }),
+      'Dataset could not be created'
+    );
     return response!.data;
   }
 }

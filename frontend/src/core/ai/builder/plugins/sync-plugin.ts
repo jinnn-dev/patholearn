@@ -242,15 +242,17 @@ export class SyncPlugin {
         if (value === leftMember.id) {
           delete builderState.task.lockStatus[key];
           const node = this.editor.getNode(key);
-          node.unlock();
-          this.areaPlugin.update('node', key);
+          if (node) {
+            node.unlock();
+            this.areaPlugin.update('node', key);
+          }
+
         }
       }
     });
 
     builderState.channel.bind('client-node-dragged', async (data: NodeTranslatedEvent) => {
       console.log('NODE DRAGGED EVENT');
-
       const area = this.area.parent as AreaPlugin<Schemes, AreaExtra>;
       const node = area.nodeViews.get(data.nodeId);
 

@@ -2,7 +2,7 @@ import Session from 'supertokens-web-js/recipe/session';
 import EmailPassword from 'supertokens-web-js/recipe/emailpassword';
 export const SuperTokensWebJSConfig = {
   appInfo: {
-    appName: 'Patholearn AUth',
+    appName: 'Patholearn Auth',
     apiDomain: import.meta.env.VITE_AUTH_API_URL,
     websiteDomain: import.meta.env.VITE_WEBSITE_URL
   },

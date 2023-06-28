@@ -181,14 +181,16 @@ export function useEditor() {
     // });
 
     editor.value.addPipe((context) => {
+      if (!editor.value) {
+        return;
+      }
+
       if (context.type === 'connectioncreate') {
         if (!editor.value) {
-          return context;
+          return;
         }
         const source = editor.value.getNode(context.data.source);
-        const sourceSocket = (source.outputs[context.data.sourceOutput] as any).socket as Socket;
         const target = editor.value.getNode(context.data.target);
-        const targetSocket = (target.inputs[context.data.targetInput] as any).socket as Socket;
 
         if (!nodesCanConnect(source, target)) {
           return;

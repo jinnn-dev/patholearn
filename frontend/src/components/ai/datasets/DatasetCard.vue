@@ -4,6 +4,8 @@ import { PropType } from 'vue';
 import { useService } from '../../../composables/useService';
 import { AiService } from '../../../services/ai.service';
 import Icon from '../../general/Icon.vue';
+import { formatBytes } from '../../../utils/format-bytes';
+import DatasetStatus from './DatasetStatus.vue';
 
 const props = defineProps({
   dataset: {
@@ -11,38 +13,30 @@ const props = defineProps({
     required: true
   }
 });
-const { result } = useService(AiService.getSpecificDataset, true, props.dataset.id);
-
-function formatBytes(bytes: number, decimals = 2) {
-  if (!+bytes) return '0 Bytes';
-
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
-
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
-}
+// const { result } = useService(AiService.getSpecificDataset, true, props.dataset.id);
 </script>
 <template>
-  <div class="bg-gray-700 p-2 rounded-lg">
+  <div class="bg-gray-700 p-2 rounded-lg min-w-[150px]">
     <div class="flex justify-between">
-      <div class="text-xl">{{ dataset.basename }}</div>
-      <router-link :to="`/ai/datasets/${result?.id}`"><icon name="arrow-right"></icon></router-link>
+      <div class="text-xl">{{ dataset.name }}</div>
+      <router-link :to="`/ai/datasets/${dataset.id}`"><icon name="arrow-right"></icon></router-link>
     </div>
-    <div class="text-sm text-gray-200 mb-2">{{ new Date(dataset.created).toLocaleDateString() }}</div>
-    <div class="flex flex-col gap-2">
-      <div class="flex items-center gap-2 py-1rounded-md text-sm font-mono">
-        <icon name="files" stroke-width="0"></icon>
-        <div>
-          {{ dataset.dataset_stats.file_count }}
+    <div class="text-sm text-gray-200 mb-2">{{ new Date(dataset.created_at).toLocaleDateString() }}</div>
+
+    <div class="flex flex-col gap-4 items-center">
+      <dataset-status :status="dataset.status"></dataset-status>
+      <div class="w-full flex flex-col gap-2">
+        <div class="flex items-center gap-2 py-1rounded-md text-sm font-mono">
+          <icon name="files" stroke-width="0"></icon>
+          <div>
+            {{ dataset.clearml_dataset ? dataset.clearml_dataset?.runtime.ds_file_count : '-' }}
+          </div>
         </div>
-      </div>
-      <div class="flex items-center gap-2 py-1rounded-md text-sm font-mono">
-        <icon name="hard-drive" stroke-width="0"></icon>
-        <div>
-          {{ formatBytes(dataset.dataset_stats.total_size) }}
+        <div class="flex items-center gap-2 py-1rounded-md text-sm font-mono">
+          <icon name="hard-drive" stroke-width="0"></icon>
+          <div>
+            {{ dataset.clearml_dataset ? formatBytes(dataset.clearml_dataset?.runtime.ds_total_size, 1000) : '-' }}
+          </div>
         </div>
       </div>
     </div>

@@ -15,13 +15,14 @@ defineProps({
     type: Boolean,
     default: false
   },
-  autocomplete: String
+  autocomplete: String,
+  errorMessage: String
 });
 
 const onChanged = (e: Event) => emit('update:modelValue', (e.currentTarget as any).value);
 </script>
 <template>
-  <form-field :label="label">
+  <form-field :label="label" :error-message="errorMessage">
     <template v-slot:icon>
       <slot></slot>
     </template>

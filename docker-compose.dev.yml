@@ -150,6 +150,7 @@ services:
     volumes:
       - ./ai-api/app:/app
       - ./clearml.conf:/root/clearml.conf
+      - ai_api_data:/data
     environment:
       - SENTRY_DSN=${SENTRY_AI_DSN}
       - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT}
@@ -165,8 +166,46 @@ services:
       - WEBSOCKET_SSL=${WEBSOCKET_SSL}
       - DATABASE_URL=${MONGO_AI_DRIVER}://${MONGO_AI_USER}:${MONGO_AI_PASSWORD}@${MONGO_AI_IP}:${MONGO_AI_PORT}
       - ANTI_CSRF=${ANTI_CSRF}
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_SECURE=${MINIO_SECURE}
+      - MINIO_URL=${MINIO_URL}
     ports:
       - '8888:8000'
+
+  ai_api_worker:
+    build:
+      context: ./ai-api/.
+      dockerfile: worker.dockerfile
+    restart: unless-stopped
+    networks:
+      - auth_auth-network
+      - patholearn-network
+      - ws_ws-network
+    volumes:
+      - ./ai-api/app:/app
+      - ./clearml.conf:/root/clearml.conf
+      - ai_api_data:/data
+    environment:
+      - SENTRY_DSN=${SENTRY_AI_DSN}
+      - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT}
+      - CLEARML_API=${CLEARML_API}
+      - CLEARML_API_ACCESS_KEY=${CLEARML_API_ACCESS_KEY}
+      - CLEARML_API_SECRET_KEY=${CLEARML_API_SECRET_KEY}
+      - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
+      - WEBSOCKET_APP_ID=${WEBSOCKET_APP_ID}
+      - WEBSOCKET_APP_KEY=${WEBSOCKET_APP_KEY}
+      - WEBSOCKET_APP_SECRET=${WEBSOCKET_APP_SECRET}
+      - WEBSOCKET_HOST=${WEBSOCKET_HOST}
+      - WEBSOCKET_PORT=${WEBSOCKET_PORT}
+      - WEBSOCKET_SSL=${WEBSOCKET_SSL}
+      - DATABASE_URL=${MONGO_AI_DRIVER}://${MONGO_AI_USER}:${MONGO_AI_PASSWORD}@${MONGO_AI_IP}:${MONGO_AI_PORT}
+      - ANTI_CSRF=${ANTI_CSRF}
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_SECURE=${MINIO_SECURE}
+      - MINIO_URL=${MINIO_URL}
+    command: celery --app worker.worker.celery_app worker --loglevel=info --without-gossip --without-mingle --without-heartbeat -Ofair -Q ai_api
 
   ai_worker:
     build:
@@ -238,3 +277,4 @@ volumes:
   my-db:
   mongodb_data:
   ai_db_data:
+  ai_api_data:
