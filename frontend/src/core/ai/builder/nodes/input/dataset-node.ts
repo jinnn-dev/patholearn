@@ -3,10 +3,11 @@ import { DropdownControl } from '../../controls/dropdown-control';
 import { INode } from '../../serializable';
 import { Node } from '../node';
 import { Socket } from '../../sockets/socket';
+import { AsyncDropdownControl } from '../../controls';
 
 export interface IDatasetNode extends INode {}
 
-export class DatasetNode extends Node<IDatasetNode, {}, { dataset: Socket }, { dataset: DropdownControl }> {
+export class DatasetNode extends Node<IDatasetNode, {}, { dataset: Socket }, { dataset: AsyncDropdownControl }> {
   width = 180;
   height = 155;
 
@@ -26,7 +27,7 @@ export class DatasetNode extends Node<IDatasetNode, {}, { dataset: Socket }, { d
   }
 
   public addElements() {
-    this.addControl('dataset', new DropdownControl(['MNIST', 'BHI'], 'Dataset', 'dataset', 'MNIST'));
+    this.addControl('dataset', new AsyncDropdownControl('Dataset', 'dataset', 'datasets'));
     this.addOutput('dataset', new ClassicPreset.Output(this.sockets.output!, 'Dataset'));
   }
 }

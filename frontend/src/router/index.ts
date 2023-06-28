@@ -21,6 +21,8 @@ router.beforeEach(async (to, _from, next) => {
     });
   }
 
+  isLogin.value = false;
+
   if (!onlyWhenLoggedOut && appState.user === null) {
     try {
       const user = await AuthService.getUser();
@@ -30,10 +32,9 @@ router.beforeEach(async (to, _from, next) => {
     }
   }
   appLoading.value = false;
-
   if (adminRoute && !appState.user?.is_superuser) {
     appLoading.value = false;
-
+    isLogin.value = false;
     return next({
       path: '/home'
     });
@@ -41,6 +42,7 @@ router.beforeEach(async (to, _from, next) => {
 
   if (loggedIn && onlyWhenLoggedOut) {
     appLoading.value = false;
+    isLogin.value = false;
     return next('/');
   }
 

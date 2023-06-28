@@ -10,6 +10,7 @@ import CustomSocketVue from '../../../components/ai/builder/CustomSocket.vue';
 import DimensionControlVue from '../../../components/ai/builder/controls/DimensionControl.vue';
 import NumberControlVue from '../../../components/ai/builder/controls/NumberControl.vue';
 import DropdownControlVue from '../../../components/ai/builder/controls/DropdownControl.vue';
+import AsyncDropdownControlVue from '../../../components/ai/builder/controls/AsyncDropdownControl.vue';
 import DiagramControlVue from '../../../components/ai/builder/controls/DiagramControl.vue';
 import MetricControlVue from '../../../components/ai/builder/controls/MetricControl.vue';
 
@@ -32,7 +33,7 @@ import { pushTrainingStarted } from './sync';
 import { PresenceChannel } from 'pusher-js';
 import { DiagramControl } from './controls/diagram-control';
 import { Socket, nodesCanConnect } from './sockets/socket';
-import { MetricControl } from './controls';
+import { AsyncDropdownControl, MetricControl } from './controls';
 
 export type NodeProps = NodeClassesType;
 
@@ -137,6 +138,9 @@ export function useEditor() {
           }
           if (data.payload instanceof DropdownControl) {
             return DropdownControlVue;
+          }
+          if (data.payload instanceof AsyncDropdownControl) {
+            return AsyncDropdownControlVue;
           }
           if (data.payload instanceof NumberControl) {
             return NumberControlVue;

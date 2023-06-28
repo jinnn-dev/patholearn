@@ -9,7 +9,8 @@ const props = defineProps({
   id: String,
   label: String,
   values: Array,
-  value: String,
+  value: [String, Object],
+  displayField: String,
   lockStatus: Object as PropType<LockStatus>
 });
 
@@ -83,7 +84,7 @@ const computedClasses = computed(() => {
       :style="lockStatus?.lockedControlId === id ? `--tw-ring-color: ${lockStatus?.lockedBy.info.color};` : ''"
       :class="computedClasses"
     >
-      <div>{{ selectedValue }}</div>
+      <div>{{ displayField ? (selectedValue as any)[displayField] : selectedValue }}</div>
       <icon name="caret-up-down" stroke-width="0" size="16"></icon>
     </div>
     <div
@@ -91,7 +92,7 @@ const computedClasses = computed(() => {
       class="absolute shadow-lg shadow-gray-800 z-10 w-full overflow-hidden bg-gray-500 top-9 rounded-lg ring-1 ring-gray-300"
     >
       <div v-for="value in values" class="px-2 py-0.5 hover:bg-gray-400" @click="valueChanged(value)">
-        {{ value }}
+        {{ displayField ? (value as any)[displayField] : value }}
       </div>
     </div>
   </div>
