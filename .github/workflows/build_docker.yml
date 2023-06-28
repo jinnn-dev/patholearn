@@ -75,7 +75,7 @@ jobs:
           file: ./ai-api/prod.dockerfile
           push: ${{ GitHub.event_name != 'pull_request' }}
           tags: hafen.noxz.dev/patholearn-ai/ai-api:latest
-  ai_api:
+  ai_api_worker:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
