@@ -55,6 +55,28 @@ export class AiService {
     return response!.data;
   }
 
+  public static async getDataset(datasetId: string) {
+    const [_, response] = await handleError(
+      ApiService.get<Dataset>({
+        resource: `/datasets/${datasetId}`,
+        host: AI_API_URL
+      }),
+      'Datensatz konnten nicht geladen werden'
+    );
+    return response!.data;
+  }
+
+  public static async deleteDataset(datasetId: string) {
+    const [_, response] = await handleError(
+      ApiService.delete<Dataset>({
+        resource: `/datasets/${datasetId}`,
+        host: AI_API_URL
+      }),
+      'Datensatz konnten nicht gelöscht werden'
+    );
+    return response!.data;
+  }
+
   public static async getDatasetImages(dataset_id: string) {
     const [_, response] = await handleError(
       ApiService.get<string[]>({
@@ -476,7 +498,7 @@ export class AiService {
     formData.append('dataset_type', createDataset.type);
 
     const [_, response] = await handleError(
-      ApiService.post<any[]>({
+      ApiService.post<Dataset>({
         resource: '/datasets',
         data: formData,
         config: { onUploadProgress },

@@ -9,7 +9,10 @@ import SaveButton from '../../../components/general/SaveButton.vue';
 import { DatasetType, CreateDataset } from '../../../model/ai/datasets/dataset';
 import { useService } from '../../../composables/useService';
 import { AiService } from '../../../services/ai.service';
-import { create } from 'd3-selection';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
 const { run, loading, result } = useService(AiService.createDataset);
 
 const items: { [type in DatasetType]: { description: string; commingSoon: boolean } } = {
@@ -43,6 +46,9 @@ const updateProgress = (event: any) => {
 
 const uploadDataset = async () => {
   await run(createDatasetForm, updateProgress);
+  if (result.value) {
+    router.push(`/ai/datasets/${result.value.id}`);
+  }
 };
 </script>
 <template>
