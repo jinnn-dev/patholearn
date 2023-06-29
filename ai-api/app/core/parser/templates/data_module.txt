@@ -10,8 +10,8 @@ class DataModule(pl.LightningDataModule):
 
     def setup(self, stage: str):
         # Assign train/val datasets for use in dataloaders
-        full_dataset = CustomDataset()
-        self.train_dataset, self.val_dataset, self.test_dataset = random_split(full_dataset, [0.7, 0.1, 0.2])
+        self.full_dataset = CustomDataset()
+        self.train_dataset, self.val_dataset, self.test_dataset = random_split(self.full_dataset, [0.7, 0.1, 0.2])
 
     def train_dataloader(self):
         return DataLoader(
@@ -42,7 +42,7 @@ class DataModule(pl.LightningDataModule):
 
     def predict_dataloader(self):
         return DataLoader(
-            self.mnist_predict,
+            self.full_dataset,
             batch_size=self.batch_size,
             num_workers=multiprocessing.cpu_count(),
             shuffle=False,
