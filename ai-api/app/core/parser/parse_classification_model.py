@@ -23,10 +23,10 @@ def get_classification_model(
     output_node: OutputNode,
 ):
     input_data_shape = (
-        output_node.batch_size,
+        1,
         dataset_node.channels,
-        dataset_node.dimension.x,
-        dataset_node.dimension.y,
+        dataset_node.dimesion.x if dataset_node.dimension.x <= 256 else 256,
+        dataset_node.dimension.y if dataset_node.dimension.y <= 256 else 256,
     )
 
     result, result_strings, in_channels, layer_data = parse_network(

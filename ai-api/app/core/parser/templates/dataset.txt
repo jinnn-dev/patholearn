@@ -26,9 +26,13 @@ class CustomDataset(Dataset):
             normalize = A.Normalize((0.1307,), (0.3081,))
         else:
             normalize = A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
+        resize_dimension = self.dimension
+        if resize_dimension["x"] > 256 or resize_dimension["y"] > 256:
+            resize_dimension["x"] = 256
+            resize_dimension["y"] = 256
         self.transform = A.Compose(
             [
-                A.Resize(height=self.dimension["y"], width=self.dimension["x"]),
+                A.Resize(height=resize_dimension["y"], width=resize_dimension["x"]),
                 normalize,
                 ToTensorV2(),
             ]
