@@ -1,4 +1,5 @@
 from typing import Dict, List, Literal, Optional
+from app.schema.dataset import Dataset, DatasetType
 
 from pydantic import BaseModel
 from app.schema.task import Graph, IConnection, INode, NodeType
@@ -6,6 +7,7 @@ from app.utils.logger import logger
 import networkx as nx
 import matplotlib.pyplot as plt
 from enum import Enum
+from app.crud.dataset import get_dataset as get_db_dataset
 
 
 class Node(BaseModel):
@@ -28,6 +30,8 @@ class DatasetNode(Node):
     channels: int
     dimension: DatasetDimension
     classes: int
+    dataset_type: DatasetType
+    dataset_id: str
 
 
 class Optimizer(Enum):
@@ -123,7 +127,7 @@ def find_node_by_type(nodes: List[INode], node_type: NodeType) -> Optional[INode
     return next((node for node in nodes if node[1]["data"].type == node_type), None)
 
 
-def parse_graph_to_networkx(version_graph: Graph):
+async def parse_graph_to_networkx(version_graph: Graph):
     nodes_dict = {node.id: node for node in version_graph.nodes}
     processed_nodes = {}
 
@@ -140,7 +144,7 @@ def parse_graph_to_networkx(version_graph: Graph):
         if node.type == NodeType.OutputNode and end_node_id is None:
             end_node_id = node.id
 
-        _, node_instance = parse_node(
+        _, node_instance = await parse_node(
             node, nodes_dict, version_graph.connections, processed_nodes
         )
 
@@ -188,24 +192,22 @@ def parse_graph_to_networkx(version_graph: Graph):
     )
 
 
-def get_dataset(node: INode):
-    control_value = node.controls[0].value
-    selected_dataset_name = (
-        node.controls[0].values[0] if control_value is None else control_value
+async def get_dataset(node: INode):
+    selected_dataset = node.controls[0].value
+    loaded_dataset = await get_db_dataset(selected_dataset["id"])
+
+    return DatasetNode(
+        id=node.id,
+        name=loaded_dataset.name,
+        channels=1 if loaded_dataset.metadata.is_grayscale else 3,
+        classes=len(loaded_dataset.metadata.classes),
+        dimension=loaded_dataset.metadata.dimension,
+        dataset_type=loaded_dataset.dataset_type,
+        dataset_id=loaded_dataset.clearml_dataset["id"],
     )
 
-    if selected_dataset_name == "MNIST":
-        return DatasetNode(
-            id=node.id,
-            name="MNIST",
-            channels=1,
-            classes=10,
-            dimension=DatasetDimension(x=28, y=28),
-        )
-    return None
 
-
-def get_linear_node(node: INode):
+async def get_linear_node(node: INode):
     return LinearLayer(
         id=node.id,
         in_features=1,
@@ -214,7 +216,7 @@ def get_linear_node(node: INode):
     )
 
 
-def get_conv_node(node: INode):
+async def get_conv_node(node: INode):
     return Conv2dLayer(
         id=node.id,
         in_features=1,
@@ -228,7 +230,7 @@ def get_conv_node(node: INode):
     )
 
 
-def get_output_node(node: INode):
+async def get_output_node(node: INode):
     controls = {control.key: control.value for control in node.controls}
 
     return OutputNode(
@@ -241,11 +243,11 @@ def get_output_node(node: INode):
     )
 
 
-def get_flatten_node(node: INode):
+async def get_flatten_node(node: INode):
     return FlattenNode(id=node.id)
 
 
-def get_pooling_node(node: INode):
+async def get_pooling_node(node: INode):
     # logger.debug(node.controls)
     return PoolingLayer(
         id=node.id,
@@ -258,23 +260,23 @@ def get_pooling_node(node: INode):
     )
 
 
-def get_dropout_node(node: INode):
+async def get_dropout_node(node: INode):
     return DropoutNode(id=node.id, percentage=node.controls[0].value)
 
 
-def get_batch_norm_node(node: INode):
+async def get_batch_norm_node(node: INode):
     return BatchNormNode(id=node.id, momentum=node.controls[0].value)
 
 
-def get_add_node(node: INode):
+async def get_add_node(node: INode):
     return AddNode(id=node.id)
 
 
-def get_concatenate_node(node: INode):
+async def get_concatenate_node(node: INode):
     return ConcatenateNode(id=node.id)
 
 
-def get_metric_node(node: INode):
+async def get_metric_node(node: INode):
     return MetricNode(id=node.id, value=node.controls[0].value)
 
 
@@ -309,7 +311,7 @@ node_type_map = {
 }
 
 
-def parse_node(
+async def parse_node(
     node: INode,
     nodes_dict: Dict[str, INode],
     connections: List[IConnection],
@@ -319,7 +321,7 @@ def parse_node(
         if node.type not in node_type_map:
             return None
         node_function = node_type_map[node.type]
-        node_instance = node_function(node)
+        node_instance = await node_function(node)
         processed_nodes[node.id] = node_instance
         to_nodes = get_to_nodes(node, connections)
         from_nodes = get_from_nodes(node, connections)

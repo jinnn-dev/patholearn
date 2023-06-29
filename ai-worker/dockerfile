@@ -13,4 +13,3 @@ RUN pip install -r requirements.txt
 COPY clearml.requirements.txt /
 
 COPY ./app /app
-COPY clearml.conf /root/clearml.conf

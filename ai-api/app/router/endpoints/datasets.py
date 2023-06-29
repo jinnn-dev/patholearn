@@ -34,6 +34,7 @@ async def create_new_dataset(
     name: Annotated[str, Form()],
     description: Annotated[str, Form()],
     dataset_type: Annotated[DatasetType, Form()],
+    is_grayscale: Annotated[str, Form()],
     file: Annotated[UploadFile, Form()] = UploadFile(...),
     s: SessionContainer = Depends(verify_session()),
 ):
@@ -47,6 +48,7 @@ async def create_new_dataset(
             "dataset_type": dataset_type,
             "created_at": datetime.now(),
             "status": "saving",
+            "metadata": {"is_grayscale": is_grayscale == "true"},
         }
     )
 
@@ -71,22 +73,25 @@ async def dataset_delete(
     dataset_id: str, _: SessionContainer = Depends(verify_session())
 ):
     dataset = await get_dataset(dataset_id)
-    clearml_id = dataset.clearml_dataset["id"]
-    clearml_project_id = dataset.clearml_dataset["project"]["id"]
-    try:
-        clearml_dataset = ClearmlDataset.delete(
-            clearml_id,
-            delete_files=True,
-            delete_external_files=True,
-            force=True,
-            entire_dataset=True,
-        )
-        clearml_wrapper.delete_project(clearml_project_id)
-        await delete_dataset(dataset_id)
-    except Exception as error:
-        logger.error(
-            f"Failed deleting dataset {dataset_id} (ClearML {clearml_id}): {error}"
-        )
+    if dataset.clearml_dataset is not None:
+        clearml_id = dataset.clearml_dataset["id"]
+        clearml_project_id = dataset.clearml_dataset["project"]["id"]
+        try:
+            clearml_dataset = ClearmlDataset.delete(
+                clearml_id,
+                delete_files=True,
+                delete_external_files=True,
+                force=True,
+                entire_dataset=True,
+            )
+            clearml_wrapper.delete_project(clearml_project_id)
+        except Exception as error:
+            logger.error(
+                f"Failed deleting dataset {dataset_id} (ClearML {clearml_id}): {error}"
+            )
+
+    await delete_dataset(dataset_id)
+
     return dataset
 
 

@@ -27,7 +27,6 @@ from app.schema.task import (
     UnlockElements,
     UpdateTaskVersion,
 )
-from app.core.parser.parse_graph import parse_graph_to_networkx
 from app.core.parser.parse_to_pytorch import (
     parse_task_version_to_python,
 )
@@ -262,7 +261,7 @@ async def start_task_training(
         raise HTTPException(status_code=404, detail="Task not found")
 
     try:
-        pytorch_text, _ = parse_task_version_to_python(task, task_version)
+        pytorch_text, _ = await parse_task_version_to_python(task, task_version)
     except Exception as e:
         logger.error(e)
         raise HTTPException(status_code=500, detail="Model could not be parsed")
@@ -279,7 +278,7 @@ async def start_task_training(
     start_builder_training(pytorch_text, task_id, task.name, version_id)
 
     try:
-        pytorch_text, _ = parse_task_version_to_python(task, task_version)
+        pytorch_text, _ = await parse_task_version_to_python(task, task_version)
     except Exception as e:
         logger.error(e)
         raise HTTPException(status_code=500, detail="Model could not be parsed")
@@ -298,7 +297,7 @@ async def download_builder_version(
     if task is None or task_version is None:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    pytorch_text, model = parse_task_version_to_python(task, task_version, True)
+    pytorch_text, model = await parse_task_version_to_python(task, task_version, True)
 
     if language == "python":
         return PlainTextResponse(content=pytorch_text, media_type="text/x-python")
@@ -325,7 +324,7 @@ async def parse_builder_version(
         raise HTTPException(status_code=404, detail="Task not found")
 
     try:
-        pytorch_text = parse_task_version_to_python(task, task_version)
+        pytorch_text = await parse_task_version_to_python(task, task_version)
     except Exception as e:
         logger.error(e)
         raise HTTPException(status_code=500, detail="Model could not be parsed")
