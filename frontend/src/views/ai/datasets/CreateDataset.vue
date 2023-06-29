@@ -57,7 +57,7 @@ const uploadDataset = async () => {
 };
 </script>
 <template>
-  <ContentContainer :loading="loading" back-route="/ai/datasets" back-text="Datensätze">
+  <ContentContainer back-route="/ai/datasets" back-text="Datensätze">
     <template #header> <h1>Neuer Datensatz</h1></template>
     <template #content>
       <div class="flex flex-col gap-8">
