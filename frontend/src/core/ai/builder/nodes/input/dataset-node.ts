@@ -27,6 +27,8 @@ export class DatasetNode extends Node<IDatasetNode, {}, { dataset: Socket }, { d
   }
 
   public addElements() {
+    console.log('ADDING');
+
     this.addControl('dataset', new AsyncDropdownControl('Dataset', 'dataset', 'datasets'));
     this.addOutput('dataset', new ClassicPreset.Output(this.sockets.output!, 'Dataset'));
   }

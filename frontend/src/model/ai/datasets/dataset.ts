@@ -19,6 +19,13 @@ export interface Dataset {
   status: DatasetStatus;
   created_at: string;
   creator_id: string;
+  metadata?: {
+    class_map: {
+      [key in string]: string;
+    };
+    is_grayscale: boolean;
+    classes: string[];
+  };
   clearml_dataset?: {
     id: string;
     name: string;
@@ -49,4 +56,5 @@ export interface CreateDataset {
   description?: string;
   type: DatasetType;
   file?: File;
+  is_grascale: boolean;
 }

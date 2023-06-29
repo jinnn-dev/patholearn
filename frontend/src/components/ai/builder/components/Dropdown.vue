@@ -20,7 +20,7 @@ const isExpanded = ref(false);
 
 const container = ref<HTMLElement | null>(null);
 
-const selectedValue = ref(props.value || props.values![0]);
+const selectedValue = ref(props.value || (props.values !== undefined ? props.values[0] : undefined));
 
 const valueChanged = (change: any) => {
   selectedValue.value = change;
@@ -84,7 +84,7 @@ const computedClasses = computed(() => {
       :style="lockStatus?.lockedControlId === id ? `--tw-ring-color: ${lockStatus?.lockedBy.info.color};` : ''"
       :class="computedClasses"
     >
-      <div>{{ displayField ? (selectedValue as any)[displayField] : selectedValue }}</div>
+      <div>{{ selectedValue ? (displayField ? (selectedValue as any)[displayField] : selectedValue) : '' }}</div>
       <icon name="caret-up-down" stroke-width="0" size="16"></icon>
     </div>
     <div

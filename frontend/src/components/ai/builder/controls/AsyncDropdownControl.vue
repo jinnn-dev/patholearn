@@ -48,6 +48,8 @@ onMounted(async () => {
 watch(
   () => props.data?.value,
   () => {
+    console.log('MOUNTING');
+
     if (props.data?.lockStatus?.lockedBy) {
       selectedValue.value = props.data?.value;
     }
