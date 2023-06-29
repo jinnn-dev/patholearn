@@ -25,7 +25,7 @@ def get_classification_model(
     input_data_shape = (
         1,
         dataset_node.channels,
-        dataset_node.dimesion.x if dataset_node.dimension.x <= 256 else 256,
+        dataset_node.dimension.x if dataset_node.dimension.x <= 256 else 256,
         dataset_node.dimension.y if dataset_node.dimension.y <= 256 else 256,
     )
 
