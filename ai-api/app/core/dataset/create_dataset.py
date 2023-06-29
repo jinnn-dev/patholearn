@@ -7,6 +7,7 @@ from celery import Celery
 from clearml import Dataset as ClearmlDataset
 from asgiref.sync import async_to_sync
 from fastapi import UploadFile
+from PIL import Image
 
 from app.crud.dataset import update_dataset, update_dataset_status
 from app.utils.io import (
@@ -58,10 +59,19 @@ def parse_extracted_folder(folder_path: str):
     class_map = {}
     class_index = 0
     classes = []
+    x = None
+    y = None
     for dir in os.listdir(folder_path):
         if dir not in class_map:
+            if x is None:
+                image = glob.glob(os.path.join(folder_path, dir, "*.*"))[0]
+                logger.info(image)
+                im = Image.open(image)
+                width, height = im.size
+                x = width
+                y = height
             class_map[dir] = class_index
             classes.append(class_index)
             class_index += 1
 
-    return {"class_map": class_map, "classes": classes}
+    return {"class_map": class_map, "classes": classes, "dimension": {"x": x, "y": y}}

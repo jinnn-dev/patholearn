@@ -5,3 +5,4 @@ urllib3==1.26.15
 pymongo==4.3.3
 pusher==3.3.2
 pydantic==1.10.9
+boto3==1.26.131

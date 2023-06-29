@@ -26,6 +26,7 @@ class PytorchModel(BaseModel):
     import_string: str
     clearml_string: Optional[str]
     dataset_class: str
+    dataset_module_class: str
     model_class: str
     lightning_model_class: str
     model_instance: str
@@ -40,10 +41,27 @@ class PytorchModel(BaseModel):
         line_break = "\n\n"
         elements = []
         for key, value in self.dict().items():
-            if value is not None and key is not "ignore_clearml":
+            if value is not None and key != "ignore_clearml":
                 elements.append(value)
 
         return format_string(line_break.join(elements))
+
+
+class CustomDataset:
+    def __init__(self, dataset_id: str) -> None:
+        with open("/app/core/parser/templates/dataset.txt", "r") as f:
+            src = Template(f.read())
+            replacements = {"dataset_id": dataset_id}
+            self.dataset = src.substitute(replacements)
+
+
+class DatasetModule:
+    def __init__(self) -> None:
+        with open("/app/core/parser/templates/data_module.txt", "r") as f:
+            self.dataset_module = f.read()
+
+    def get_instance(self, batch_size: int = 32):
+        return f"""DataModule(batch_size={batch_size})"""
 
 
 class MNISTDataModule:
@@ -71,12 +89,11 @@ class ClassificationModel:
 
 
 def get_dataset_module(dataset_node: DatasetNode, output_node: OutputNode):
-    dataset_name = dataset_node.name
-    if dataset_name == "MNIST":
-        module = MNISTDataModule()
-        instance = module.get_instance(data_dir="./", batch_size=output_node.batch_size)
-        return module.dataset_module, instance
-    return None, None
+    dataset = CustomDataset(dataset_node.dataset_id)
+    data_module = DatasetModule()
+    data_module_instance = data_module.get_instance(batch_size=output_node.batch_size)
+
+    return dataset.dataset, data_module.dataset_module, data_module_instance
 
 
 def get_model(
@@ -195,32 +212,41 @@ def parse_to_pytorch(
     imports = [
         "import sys",
         "import multiprocessing",
+        "import glob",
         "import torch",
+        "import albumentations as A",
+        "from albumentations.pytorch import ToTensorV2",
+        "from PIL import Image",
+        "import numpy as np",
         "import pytorch_lightning as pl",
-        "import torchvision.datasets as datasets",
-        "from torch.utils.data import random_split, DataLoader",
+        "from torch.utils.data import random_split, DataLoader, Dataset",
         "from torchvision import transforms",
         "import torchmetrics",
     ]
-
-    if not ignore_clearml:
+    if ignore_clearml:
         imports.append(
-            "from clearml import Task",
+            "from clearml import Dataset as ClearmlDataset",
+        )
+    else:
+        imports.append(
+            "from clearml import Task, Dataset as ClearmlDataset",
         )
 
     import_string = "\n".join(imports)
 
-    dataset_class, dataset_call = get_dataset_module(dataset_node, output_node)
+    dataset_class, dataset_module_class, dataset_module_call = get_dataset_module(
+        dataset_node, output_node
+    )
 
     paragraph = "\n\n"
     import_string = "\n".join(imports)
-    dataset_instance = "data_module" + " = " + dataset_call
+    dataset_instance = "data_module" + " = " + dataset_module_call
     nodes: List[Node] = []
 
     model_class, model_call = get_model(graph, dataset_node, output_node, combine_nodes)
     model_instance = "model" + " = " + model_call
 
-    lightning_model = LightningModel(output_node, metric_nodes)
+    lightning_model = LightningModel(dataset_node, output_node, metric_nodes)
     lightning_model_class = lightning_model.model_class
     lightning_model_instance = lightning_model.get_instance("lightning_model", "model")
     lightning_trainer = "trainer = " + lightning_model.trainer
@@ -237,6 +263,7 @@ def parse_to_pytorch(
         import_string=format_string(import_string),
         clearml_string=None if ignore_clearml else format_string(clearml_string),
         dataset_class=format_string(dataset_class),
+        dataset_module_class=format_string(dataset_module_class),
         model_class=format_string(model_class),
         lightning_model_class=format_string(lightning_model_class),
         model_instance=format_string(model_instance),
@@ -251,7 +278,7 @@ def parse_to_pytorch(
     return formatted, pytorch_model
 
 
-def parse_task_version_to_python(
+async def parse_task_version_to_python(
     task: Task, task_version: TaskVersion, ignore_clearml=False
 ):
     (
@@ -260,7 +287,7 @@ def parse_task_version_to_python(
         output_node,
         combine_nodes,
         metric_nodes,
-    ) = parse_graph_to_networkx(task_version.graph)
+    ) = await parse_graph_to_networkx(task_version.graph)
     formatted, model = parse_to_pytorch(
         parsed_graph,
         dataset_node,

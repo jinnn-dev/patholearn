@@ -496,6 +496,7 @@ export class AiService {
     formData.append('description', createDataset.description || '');
     formData.append('file', createDataset.file!);
     formData.append('dataset_type', createDataset.type);
+    formData.append('is_grayscale', createDataset.is_grascale + '');
 
     const [_, response] = await handleError(
       ApiService.post<Dataset>({

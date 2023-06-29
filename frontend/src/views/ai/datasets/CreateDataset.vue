@@ -37,7 +37,12 @@ const DatasetTypeDisplayValue: { [type in DatasetType]: string } = {
 };
 
 const selectedItem = ref<DatasetType>('classification');
-const createDatasetForm = reactive<CreateDataset>({ name: '', type: selectedItem.value, file: undefined });
+const createDatasetForm = reactive<CreateDataset>({
+  name: '',
+  type: selectedItem.value,
+  file: undefined,
+  is_grascale: false
+});
 const progress = ref();
 
 const updateProgress = (event: any) => {
@@ -52,7 +57,7 @@ const uploadDataset = async () => {
 };
 </script>
 <template>
-  <ContentContainer :loading="loading" back-route="/ai/datasets" back-text="Datensätze">
+  <ContentContainer back-route="/ai/datasets" back-text="Datensätze">
     <template #header> <h1>Neuer Datensatz</h1></template>
     <template #content>
       <div class="flex flex-col gap-8">
@@ -160,6 +165,27 @@ const uploadDataset = async () => {
               icon="file-zip"
               :progress="progress"
             ></file-input>
+          </div>
+        </div>
+        <div>
+          <div class="text-xl mb-4">4. Handelt es sich um Grauwertbilder?</div>
+          <div class="flex justify-center items-center">
+            <div class="flex justify-center items-center h-12 rounded-xl overflow-hidden">
+              <div
+                class="flex justify-center items-center w-24 h-full cursor-pointer"
+                @click="createDatasetForm.is_grascale = true"
+                :class="createDatasetForm.is_grascale ? 'bg-gray-500' : 'bg-gray-700'"
+              >
+                Ja
+              </div>
+              <div
+                class="flex justify-center items-center w-24 h-full cursor-pointer"
+                @click="createDatasetForm.is_grascale = false"
+                :class="!createDatasetForm.is_grascale ? 'bg-gray-500' : 'bg-gray-700'"
+              >
+                Nein
+              </div>
+            </div>
           </div>
         </div>
         <div class="flex justify-end">

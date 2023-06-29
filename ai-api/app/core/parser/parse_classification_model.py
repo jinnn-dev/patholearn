@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Tuple, Union
 from app.core.parser.parse_layer import (
     Add,
     parse_add_layer,
@@ -23,20 +23,31 @@ def get_classification_model(
     output_node: OutputNode,
 ):
     input_data_shape = (
-        output_node.batch_size,
+        1,
         dataset_node.channels,
-        dataset_node.dimension.x,
-        dataset_node.dimension.y,
+        dataset_node.dimension.x if dataset_node.dimension.x <= 256 else 256,
+        dataset_node.dimension.y if dataset_node.dimension.y <= 256 else 256,
     )
 
     result, result_strings, in_channels, layer_data = parse_network(
         path, graph, dataset_node.channels, layer_data_shape=input_data_shape
     )
 
+    classification_layer = torch.nn.Linear(
+        in_features=in_channels, out_features=dataset_node.classes
+    )
+    activation_function = torch.nn.LogSoftmax(dim=1)
+    result.append(classification_layer)
+    result.append(activation_function)
+    result_strings.append("torch.nn." + str(classification_layer))
+    result_strings.append("torch.nn." + str(activation_function))
+
     return torch.nn.Sequential(*result), result_strings
 
 
-def parse_network(network, graph: nx.DiGraph, in_channels, layer_data_shape):
+def parse_network(
+    network, graph: nx.DiGraph, in_channels, layer_data_shape
+) -> Tuple[List[torch.nn.Module], List[str], int, Tuple]:
     layers = []
     layer_strings = []
     current_in_channels = in_channels

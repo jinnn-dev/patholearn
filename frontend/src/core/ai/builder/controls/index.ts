@@ -5,3 +5,4 @@ export * from './number-control';
 export * from './diagram-control';
 export * from './metric-control';
 export * from './control';
+export * from './async-dropdown-control';

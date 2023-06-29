@@ -1,5 +1,5 @@
 import datetime
-from typing import Dict, Literal, Optional
+from typing import Dict, Literal, Optional, List
 from bson import ObjectId
 from pydantic import BaseModel, Field
 from app.schema.py_object_id import PyObjectId
@@ -7,6 +7,18 @@ from app.schema.base_mongo_model import BaseMongoModel
 
 DatasetType = Literal["classification", "detection", "segmentation"]
 DatasetStatus = Literal["saving", "processing", "completed", "failed"]
+
+
+class DatasetDimension(BaseModel):
+    x: int
+    y: int
+
+
+class DatasetMetadata(BaseModel):
+    class_map: Optional[Dict]
+    classes: Optional[List]
+    is_grayscale: Optional[bool]
+    dimension: Optional[DatasetDimension]
 
 
 class Dataset(BaseMongoModel):
@@ -18,6 +30,7 @@ class Dataset(BaseMongoModel):
     created_at: datetime.datetime = Field(...)
     status: Optional[DatasetStatus]
     clearml_dataset: Optional[Dict]
+    metadata: Optional[DatasetMetadata]
 
     class Config:
         allow_population_by_field_name = True

@@ -1,4 +1,5 @@
 import os
+from app.schema.dataset import DatasetDimension
 
 from celery import Celery
 from celery.utils.log import get_task_logger
@@ -40,6 +41,13 @@ def create_dataset(file_path: str, dataset_id: str):
     try:
         logger.info(f"{log_prefix} Parsing folder")
         metadata = parse_extracted_folder(unpack_path)
+        dataset.metadata.classes = metadata["classes"]
+        dataset.metadata.class_map = metadata["class_map"]
+        dataset.metadata.dimension = DatasetDimension(
+            x=metadata["dimension"]["x"], y=metadata["dimension"]["y"]
+        )
+        update_dataset(dataset.id, {"metadata": dataset.metadata.dict()})
+
     except Exception as error:
         logger.error(f"{log_prefix} Failed parsing: {error}")
         update_dataset(dataset.id, {"status": "failed"})
@@ -62,7 +70,7 @@ def create_dataset(file_path: str, dataset_id: str):
         update_dataset_status(dataset.id, "failed")
         return
 
-    set_metadata_of_dataset(clearml_dataset, metadata)
+    set_metadata_of_dataset(clearml_dataset, dataset.metadata.dict())
 
     try:
         logger.info(f"Dataset {dataset_id}: Finalizing")
