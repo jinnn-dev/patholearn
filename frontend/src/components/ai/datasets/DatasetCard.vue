@@ -17,7 +17,7 @@ const props = defineProps({
 </script>
 <template>
   <div class="bg-gray-700 p-2 rounded-lg min-w-[150px]">
-    <div class="flex justify-between">
+    <div class="flex gap-2 justify-between">
       <div class="text-xl">{{ dataset.name }}</div>
       <router-link :to="`/ai/datasets/${dataset.id}`"><icon name="arrow-right"></icon></router-link>
     </div>
@@ -27,7 +27,7 @@ const props = defineProps({
       <dataset-status :status="dataset.status"></dataset-status>
       <div class="w-full flex flex-col gap-2">
         <div class="flex items-center gap-2 py-1rounded-md text-sm font-mono">
-          <icon name="files" stroke-width="0"></icon>
+          <icon name="images" stroke-width="0"></icon>
           <div>
             {{ dataset.clearml_dataset ? dataset.clearml_dataset?.runtime.ds_file_count : '-' }}
           </div>
@@ -37,6 +37,10 @@ const props = defineProps({
           <div>
             {{ dataset.clearml_dataset ? formatBytes(dataset.clearml_dataset?.runtime.ds_total_size, 1000) : '-' }}
           </div>
+        </div>
+        <div class="flex gap-2">
+          <icon name="image" stroke-width="0"></icon>
+          <div class="text-sm font-mono">{{ dataset.metadata?.dimension.x }}x{{ dataset.metadata?.dimension.y }}</div>
         </div>
       </div>
     </div>

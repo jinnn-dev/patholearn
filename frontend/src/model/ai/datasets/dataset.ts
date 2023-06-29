@@ -25,6 +25,10 @@ export interface Dataset {
     };
     is_grayscale: boolean;
     classes: string[];
+    dimension: {
+      x: number;
+      y: number;
+    };
   };
   clearml_dataset?: {
     id: string;
