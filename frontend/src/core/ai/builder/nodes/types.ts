@@ -5,6 +5,7 @@ import * as Transforms from './transform';
 import * as Outputs from './output';
 import * as Combines from './combine';
 import * as Metrics from './metric';
+import * as Architectures from './architectures';
 
 type LayerClasses = {
   [K in keyof typeof Layers]: InstanceType<typeof Layers[K]>;
@@ -30,13 +31,18 @@ type MetricClasses = {
   [K in keyof typeof Metrics]: InstanceType<typeof Metrics[K]>;
 };
 
+type ArchitectureClasses = {
+  [K in keyof typeof Architectures]: InstanceType<typeof Architectures[K]>;
+};
+
 export type NodeClassesType =
   | LayerClasses[keyof LayerClasses]
   | InputClasses[keyof InputClasses]
   | TransformClasses[keyof TransformClasses]
   | OutputClasses[keyof OutputClasses]
   | CombineClasses[keyof CombineClasses]
-  | MetricClasses[keyof MetricClasses];
+  | MetricClasses[keyof MetricClasses]
+  | ArchitectureClasses[keyof ArchitectureClasses];
 
 export type LayerType = keyof typeof Layers;
 export type InputType = keyof typeof Inputs;
@@ -44,10 +50,11 @@ export type TransformType = keyof typeof Transforms;
 export type OutputType = keyof typeof Outputs;
 export type CombineType = keyof typeof Combines;
 export type MetricType = keyof typeof Metrics;
+export type ArchtectureType = keyof typeof Architectures;
 
-export type NodeType = LayerType | InputType | TransformType | OutputType | CombineType | MetricType;
+export type NodeType = LayerType | InputType | TransformType | OutputType | CombineType | MetricType | ArchtectureType;
 
-export type NodeGroupType = 'Input' | 'Layer' | 'Transform' | 'Output' | 'Combine' | 'Metric';
+export type NodeGroupType = 'Input' | 'Layer' | 'Transform' | 'Output' | 'Combine' | 'Metric' | 'Architecture';
 
 export function isNode(value: string) {
   return Object.keys(Nodes).includes(value);
@@ -77,6 +84,10 @@ export function isMetricType(value: string) {
   return Object.keys(Metrics).includes(value);
 }
 
+export function isArchitectureType(value: string) {
+  return Object.keys(Architectures).includes(value);
+}
+
 export function getNodeGroup(nodeType: NodeType): NodeGroupType | undefined {
   if (isInputType(nodeType)) {
     return 'Input';
@@ -98,5 +109,9 @@ export function getNodeGroup(nodeType: NodeType): NodeGroupType | undefined {
 
   if (isMetricType(nodeType)) {
     return 'Metric';
+  }
+
+  if (isArchitectureType(nodeType)) {
+    return 'Architecture';
   }
 }
