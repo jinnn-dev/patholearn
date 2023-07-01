@@ -29,9 +29,11 @@ const createTaskData = reactive<CreateTask>({
 
 const { result, loading, run } = useService(AiService.createTask);
 
-const { result: datasets, loading: datasetLoading } = useService(AiService.getDatasets, true);
-
 const emit = defineEmits(['task-created']);
+
+const openDialog = async () => {
+  showCreate.value = true;
+};
 
 const createTask = async () => {
   await run(createTaskData);
@@ -42,33 +44,31 @@ const createTask = async () => {
 <template>
   <div class="flex justify-end items-center">
     <div>
-      <primary-button bg-color="bg-gray-500" name="Neue Aufgabe" @click="showCreate = true"></primary-button>
+      <primary-button bg-color="bg-gray-500" name="Neue Aufgabe" @click="openDialog"></primary-button>
     </div>
   </div>
 
   <modal-dialog :show="showCreate" custom-classes="w-96">
     <div class="text-xl">Aufgabe erstellen</div>
-    <div v-if="datasets">
-      <input-field
-        v-model:model-value="createTaskData.name"
-        label="Name"
-        tip="Name der Aufgabe"
-        :required="true"
-      ></input-field>
-      <input-area
-        v-model:model-value="createTaskData.description"
-        class="h-64"
-        label="Beschreibung"
-        tip="Beschreibung der Aufgabe"
-      ></input-area>
-      <confirm-buttons
-        class="mt-4"
-        :loading="loading"
-        confirm-text="Speichern"
-        reject-text="Abbrechen"
-        @reject="showCreate = false"
-        @confirm="createTask"
-      ></confirm-buttons>
-    </div>
+    <input-field
+      v-model:model-value="createTaskData.name"
+      label="Name"
+      tip="Name der Aufgabe"
+      :required="true"
+    ></input-field>
+    <input-area
+      v-model:model-value="createTaskData.description"
+      class="h-64"
+      label="Beschreibung"
+      tip="Beschreibung der Aufgabe"
+    ></input-area>
+    <confirm-buttons
+      class="mt-4"
+      :loading="loading"
+      confirm-text="Speichern"
+      reject-text="Abbrechen"
+      @reject="showCreate = false"
+      @confirm="createTask"
+    ></confirm-buttons>
   </modal-dialog>
 </template>
