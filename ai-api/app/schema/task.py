@@ -21,6 +21,7 @@ class NodeType(Enum):
     ConcatenateNode = "ConcatenateNode"
     OutputNode = "OutputNode"
     MetricNode = "MetricNode"
+    ResNetNode = "ResNetNode"
 
 
 class ControlType(Enum):

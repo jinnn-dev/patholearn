@@ -20,6 +20,10 @@ class FlattenNode(Node):
     pass
 
 
+class ResNetNode(Node):
+    pass
+
+
 class DatasetDimension(BaseModel):
     x: int
     y: int
@@ -280,6 +284,10 @@ async def get_metric_node(node: INode):
     return MetricNode(id=node.id, value=node.controls[0].value)
 
 
+async def get_resnet_node(node: INode):
+    return ResNetNode(id=node.id)
+
+
 def get_to_nodes(node: INode, connections: List[IConnection]):
     to_nodes = []
     for connection in connections:
@@ -308,6 +316,7 @@ node_type_map = {
     NodeType.AddNode: get_add_node,
     NodeType.ConcatenateNode: get_concatenate_node,
     NodeType.MetricNode: get_metric_node,
+    NodeType.ResNetNode: get_resnet_node,
 }
 
 
