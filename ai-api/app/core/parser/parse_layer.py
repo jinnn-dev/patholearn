@@ -129,7 +129,7 @@ def parse_flatten_node(
 def parse_dropout_node(
     layer_data: DropoutNode, in_channels: int, layer_data_shape: tuple
 ) -> Tuple[List[torch.nn.Module], int, Tuple]:
-    layer = torch.nn.Dropout(p=layer_data / 100)
+    layer = torch.nn.Dropout(p=layer_data.percentage / 100)
     return [layer], in_channels, layer_data_shape
 
 
@@ -143,7 +143,6 @@ def parse_batch_norm_node(
 def parse_resnet_node(
     layser_data: ResNetNode, in_channels: int, layer_data_shape: tuple
 ) -> Tuple[List[torch.nn.Module], int, Tuple]:
-    logger.info(layer_data_shape)
     layer = torchvision.models.resnet18(
         weights=torchvision.models.ResNet18_Weights.IMAGENET1K_V1
     )
