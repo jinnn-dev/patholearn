@@ -26,7 +26,8 @@ async def get_dataset(dataset_id: str) -> Dataset:
 
 async def get_datasets() -> List[Dataset]:
     result = []
-    async for element in dataset_collection.find():
+    elements = dataset_collection.find().sort("created_at", -1)
+    async for element in elements:
         result.append(parse_obj_as(Dataset, element))
     return result
 
