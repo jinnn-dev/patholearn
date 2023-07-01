@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { PropType, computed, ref, version } from 'vue';
-import { Task } from '../../../model/ai/tasks/task';
+import { Task, TaskVersionStatus } from '../../../model/ai/tasks/task';
 import Icon from '../../general/Icon.vue';
 import Spinner from '../../general/Spinner.vue';
 import { useService } from '../../../composables/useService';
@@ -32,6 +32,28 @@ const deleteTask = async () => {
   await run(props.task.id);
   emit('task-deleted', props.task.id);
 };
+
+const computedStatus = computed(() => {
+  const status: { [type in TaskVersionStatus]: number } = {
+    completed: 0,
+    closed: 0,
+    created: 0,
+    creating: 0,
+    failed: 0,
+    in_progress: 0,
+    published: 0,
+    publishing: 0,
+    queued: 0,
+    stopped: 0,
+    unknown: 0
+  };
+  for (const version of props.task.versions) {
+    if (version.status) {
+      status[version.status] += 1;
+    }
+  }
+  return status;
+});
 </script>
 <template>
   <modal-dialog :show="showTaskDescription" custom-classes="w-1/2">
@@ -66,6 +88,32 @@ const deleteTask = async () => {
     </div>
     <div v-else>
       <div class="text-gray-300">Keine Beschreibung</div>
+    </div>
+
+    <div class="flex w-full justify-between items-center gap-4 bg-gray-800 p-2 rounded-lg font-mono mt-4 text-lg">
+      <div class="flex gap-2 items-center justify-center">
+        <icon name="check" size="24" class="text-green-500"></icon>
+        <div>
+          {{ computedStatus['completed'] }}
+        </div>
+      </div>
+      <div class="flex gap-2 items-center justify-center">
+        <icon
+          name="spinner"
+          size="24"
+          class="text-amber-500"
+          :class="computedStatus['in_progress'] > 0 ? 'animate-slowspin' : ''"
+        ></icon>
+        <div>
+          {{ computedStatus['in_progress'] }}
+        </div>
+      </div>
+      <div class="flex gap-2 items-center justify-center">
+        <icon name="x" size="24" class="text-red-500"></icon>
+        <div>
+          {{ computedStatus['failed'] }}
+        </div>
+      </div>
     </div>
 
     <div class="flex justify-end mt-2">

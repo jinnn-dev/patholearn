@@ -18,7 +18,8 @@ module.exports = {
     },
     extend: {
       animation: {
-        skeleton: 'pulse 1.5s ease-in-out infinite'
+        skeleton: 'pulse 1.5s ease-in-out infinite',
+        slowspin: 'spin 3s linear infinite'
       },
       width: {
         'fit-content': 'fit-content'
