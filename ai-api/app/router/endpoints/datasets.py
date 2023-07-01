@@ -86,7 +86,7 @@ async def dataset_delete(
             )
             clearml_wrapper.delete_project(clearml_project_id)
         except Exception as error:
-            logger.error(
+            logger.exception(
                 f"Failed deleting dataset {dataset_id} (ClearML {clearml_id}): {error}"
             )
 

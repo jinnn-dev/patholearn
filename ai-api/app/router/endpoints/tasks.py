@@ -263,7 +263,7 @@ async def start_task_training(
     try:
         pytorch_text, _ = await parse_task_version_to_python(task, task_version)
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         raise HTTPException(status_code=500, detail="Model could not be parsed")
 
     await task_collection.update_one(
@@ -280,7 +280,7 @@ async def start_task_training(
     try:
         pytorch_text, _ = await parse_task_version_to_python(task, task_version)
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         raise HTTPException(status_code=500, detail="Model could not be parsed")
 
     return pytorch_text
@@ -297,7 +297,13 @@ async def download_builder_version(
     if task is None or task_version is None:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    pytorch_text, model = await parse_task_version_to_python(task, task_version, True)
+    try:
+        pytorch_text, model = await parse_task_version_to_python(
+            task, task_version, True
+        )
+    except Exception as e:
+        logger.exception(e)
+        raise HTTPException(status_code=500, detail="Model could not be parsed")
 
     if language == "python":
         return PlainTextResponse(content=pytorch_text, media_type="text/x-python")
@@ -326,7 +332,7 @@ async def parse_builder_version(
     try:
         pytorch_text = await parse_task_version_to_python(task, task_version)
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         raise HTTPException(status_code=500, detail="Model could not be parsed")
 
     return pytorch_text
@@ -349,7 +355,7 @@ async def get_latest_task_metrics(
             metrics = clearml_task.get_last_scalar_metrics()
             return metrics
         except Exception as e:
-            logger.error(e)
+            logger.exception(e)
             return None
     return None
 

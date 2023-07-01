@@ -67,7 +67,7 @@ class ModelEntry(ScheduleEntry):
             self.schedule = model.schedule
             logger.debug("schedule: {}".format(self.schedule))
         except Exception as e:
-            logger.error(e)
+            logger.exception(e)
             logger.error(
                 "Disabling schedule %s that was removed from database",
                 self.name,
@@ -220,10 +220,10 @@ class ModelEntry(ScheduleEntry):
             try:
                 session.commit()
             except sqlalchemy.exc.IntegrityError as exc:
-                logger.error(exc)
+                logger.exception(exc)
                 session.rollback()
             except Exception as exc:
-                logger.error(exc)
+                logger.exception(exc)
                 session.rollback()
             res = cls(periodic_task, app=app, Session=Session, session=session)
             return res
@@ -412,7 +412,7 @@ class DatabaseScheduler(Scheduler):
                 if entry.model.enabled:
                     s[name] = entry
             except Exception as exc:
-                logger.error(ADD_ENTRY_ERROR, name, exc, entry_fields)
+                logger.exception(ADD_ENTRY_ERROR, name, exc, entry_fields)
 
         # update self.schedule
         self.schedule.update(s)

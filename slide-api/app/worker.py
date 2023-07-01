@@ -108,7 +108,7 @@ def convert_slide(source_file_with_extension: str):
                 obj_in=UpdateSlide(status=SlideStatus.ERROR),
             )
 
-        logger.error(exc)
+        logger.exception(exc)
         return {"status": "error"}
     finally:
         shutil.rmtree(rf"{Config.TEMP_IMAGES_FOLDER}/{slide_uuid}")
