@@ -103,9 +103,9 @@ services:
     image: hafen.noxz.dev/patholearn-ai/ai-api-worker:${AI_API_VERSION}
     restart: unless-stopped
     networks:
-      - auth_auth-network
-      - patholearn-network
-      - ws_ws-network
+      - auth_auth-network-prod
+      - patholearn-ai-network-prod
+      - ws_ws-network-prod
     volumes:
       - ./clearml.conf:/root/clearml.conf
       - ai-api-data-prod:/data
