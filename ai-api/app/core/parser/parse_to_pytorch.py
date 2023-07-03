@@ -210,17 +210,16 @@ def parse_to_pytorch(
         edges.append(edge)
 
     imports = [
-        "import sys",
         "import multiprocessing",
         "import glob",
         "import torch",
+        "from torch.utils.data import random_split, DataLoader, Dataset",
+        "import pytorch_lightning as pl",
         "import albumentations as A",
         "from albumentations.pytorch import ToTensorV2",
         "from PIL import Image",
         "import numpy as np",
-        "import pytorch_lightning as pl",
-        "from torch.utils.data import random_split, DataLoader, Dataset",
-        "from torchvision import transforms",
+        "import torchvision",
         "import torchmetrics",
     ]
     if ignore_clearml:

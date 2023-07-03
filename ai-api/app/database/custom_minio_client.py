@@ -59,7 +59,7 @@ class MinioClient:
             )
             logger.info("✔️ {} has been created", file_name)
         except Exception as exc:
-            logger.error(
+            logger.exception(
                 "{file_name} couldn't be created: \n{err}", file_name=file_name, err=exc
             )
             raise Exception(f"{file_name} could not be created")

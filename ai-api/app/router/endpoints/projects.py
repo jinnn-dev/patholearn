@@ -3,7 +3,12 @@ from typing import List
 
 from bson import ObjectId
 from pydantic import parse_obj_as
-from app.schema.project import CreateProject, Project, ProjectWithTasks, UpdateProject
+from app.schema.project import (
+    CreateProject,
+    Project,
+    ProjectWithoutTasks,
+    UpdateProject,
+)
 from fastapi import APIRouter, Depends, HTTPException
 from supertokens_python.recipe import session
 from supertokens_python.recipe.session import SessionContainer
@@ -57,23 +62,23 @@ async def update_project(
 @router.get("", response_model=List[Project])
 async def get_projects(s: SessionContainer = Depends(verify_session())):
     result = []
-    async for element in project_collection.find():
+    async for element in project_collection.find().sort("created_at", -1):
         result.append(element)
 
     return result
 
 
-@router.get("/{project_id}", response_model=ProjectWithTasks)
+@router.get("/{project_id}", response_model=ProjectWithoutTasks)
 async def get_project(project_id: str, _: SessionContainer = Depends(verify_session())):
     project = await project_collection.find_one({"_id": ObjectId(project_id)})
+    # tasks = []
+    # async for task in task_collection.find({"project_id": project_id}).sort(
+    #     "creation_date", -1
+    # ):
+    #     tasks.append(parse_obj_as(TaskNoGraph, task))
 
-    tasks = []
-    async for task in task_collection.find({"project_id": project_id}):
-        tasks.append(task)
-
-    result = ProjectWithTasks(
+    result = ProjectWithoutTasks(
         project=project,
-        tasks=tasks,
     )
 
     return result
@@ -126,9 +131,9 @@ async def get_project_tasks(
 ):
     tasks_cursor = task_collection.find(
         {"project_id": project_id}, projection={"versions.graph": False}
-    ).sort("name")
+    ).sort("creation_date", -1)
     tasks = []
-    for task in await tasks_cursor.to_list(1000):
+    async for task in tasks_cursor:
         tasks.append(task)
     return tasks
 

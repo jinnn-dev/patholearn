@@ -27,9 +27,8 @@ class Project(BaseMongoModel):
         }
 
 
-class ProjectWithTasks(BaseModel):
+class ProjectWithoutTasks(BaseModel):
     project: Project
-    tasks: List[TaskNoGraph]
 
     class Config:
         allow_population_by_field_name = True

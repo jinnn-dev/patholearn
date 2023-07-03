@@ -43,5 +43,6 @@ export const eventSettings: EventSetting = {
   AddNode: { icon: 'arrows-merge', label: 'Add', divider: true, disableOnTraining: true },
   ConcatenateNode: { icon: 'plus-circle-new', label: 'Concatenate', disableOnTraining: true },
   OutputNode: { icon: 'flag', label: 'Output', divider: true, disableOnTraining: true },
-  MetricNode: { icon: 'chart-line', label: 'Metric', divider: true, disableOnTraining: true }
+  MetricNode: { icon: 'chart-line', label: 'Metric', divider: true, disableOnTraining: true },
+  ResNetNode: { icon: 'image', label: 'ResNet', divider: true, disableOnTraining: true }
 };

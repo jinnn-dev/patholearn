@@ -23,13 +23,13 @@ const processData = (series: any) => {
     for (let i = 0; i < current_series.x.length; i++) {
       data.push([current_series.x[i], current_series.y[i]]);
     }
-
+    const showSymbol = data.length > 2 ? false : true;
     result_series.push({
       name: current_series.name,
       type: 'line',
       data: data,
-      showSymbol: true,
-      symbolSize: 6
+      showSymbol: showSymbol,
+      symbolSize: 10
     });
   }
 

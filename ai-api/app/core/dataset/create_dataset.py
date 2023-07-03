@@ -37,7 +37,7 @@ def create_dataset_backgroud(dataset: Dataset, file: BinaryIO):
     try:
         create_dataset(dataset, file)
     except Exception as error:
-        logger.error(f"Failed creating dataset: {error}")
+        logger.exception(f"Failed creating dataset: {error}")
 
 
 def create_dataset(dataset: Dataset, file: BinaryIO):

@@ -158,7 +158,7 @@ def check_task_version(
     try:
         clearml_task: Task = Task.get_task(task_id=clearml_task_id)
     except ValueError as error:
-        logger.error(error)
+        logger.exception(error)
         periodic_task = (
             session.query(PeriodicTask).filter_by(name=clearml_task_id).first()
         )

@@ -1,5 +1,6 @@
 import {
   NodeType,
+  isArchitectureType,
   isCombineType,
   isInputType,
   isLayerType,
@@ -14,6 +15,8 @@ const INPUT_COLOR = 'emerald-800';
 const OUTPUT_COLOR = 'rose-800';
 const COMBINE_COLOR = 'amber-700';
 const METRIC_COLOR = 'indigo-800';
+const ARCHITECTURE_COLOR = 'fuchsia-600';
+
 export function getNodeColor(nodeType: NodeType) {
   if (isLayerType(nodeType)) {
     return LAYER_COLOR;
@@ -35,5 +38,9 @@ export function getNodeColor(nodeType: NodeType) {
 
   if (isMetricType(nodeType)) {
     return METRIC_COLOR;
+  }
+
+  if (isArchitectureType(nodeType)) {
+    return ARCHITECTURE_COLOR;
   }
 }

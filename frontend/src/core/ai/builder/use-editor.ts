@@ -82,6 +82,7 @@ export function useEditor() {
             ['Pooling', () => createNodeInstance('PoolingNode') as NodeProps]
           ]
         ],
+        ['Architecture', [['ResNet', () => createNodeInstance('ResNetNode') as NodeProps]]],
         [
           'Transform',
           [
@@ -91,7 +92,7 @@ export function useEditor() {
           ]
         ],
         [
-          'Cobine',
+          'Combine',
           [
             ['Add', () => createNodeInstance('AddNode') as NodeProps],
             ['Concatenate', () => createNodeInstance('ConcatenateNode') as NodeProps]

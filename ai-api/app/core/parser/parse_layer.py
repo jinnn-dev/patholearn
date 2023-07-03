@@ -1,6 +1,7 @@
 from typing import List, Tuple
 
 import torch
+import torchvision
 import numpy as np
 
 from app.core.parser.parse_graph import (
@@ -12,6 +13,7 @@ from app.core.parser.parse_graph import (
     LinearLayer,
     Node,
     PoolingLayer,
+    ResNetNode,
 )
 from app.schema.parser import ActivationFunctionModule
 from app.utils.logger import logger
@@ -127,7 +129,7 @@ def parse_flatten_node(
 def parse_dropout_node(
     layer_data: DropoutNode, in_channels: int, layer_data_shape: tuple
 ) -> Tuple[List[torch.nn.Module], int, Tuple]:
-    layer = torch.nn.Dropout(p=layer_data / 100)
+    layer = torch.nn.Dropout(p=layer_data.percentage / 100)
     return [layer], in_channels, layer_data_shape
 
 
@@ -136,6 +138,16 @@ def parse_batch_norm_node(
 ) -> Tuple[List[torch.nn.Module], int, Tuple]:
     layer = torch.nn.BatchNorm2d(in_channels, momentum=layer_data.momentum)
     return [layer], in_channels, layer_data_shape
+
+
+def parse_resnet_node(
+    layser_data: ResNetNode, in_channels: int, layer_data_shape: tuple
+) -> Tuple[List[torch.nn.Module], int, Tuple]:
+    layer = torchvision.models.resnet18(
+        weights=torchvision.models.ResNet18_Weights.IMAGENET1K_V1
+    )
+    output_shape = get_output_shape(layer, layer_data_shape)
+    return [layer], output_shape[1], output_shape
 
 
 def get_activation_function(activation_function: ActivationFunction) -> torch.nn.Module:
@@ -164,7 +176,9 @@ def parse_concatenate_layer(
 
 
 def get_output_shape(model: torch.nn.Module, layer_dim: tuple) -> tuple:
-    return model(torch.rand(*(layer_dim))).data.shape
+    model.eval()
+    output = model(torch.rand(*(layer_dim))).data.shape
+    return output
 
 
 parse_dict = {
@@ -174,6 +188,7 @@ parse_dict = {
     FlattenNode: parse_flatten_node,
     DropoutNode: parse_dropout_node,
     BatchNormNode: parse_batch_norm_node,
+    ResNetNode: parse_resnet_node,
 }
 
 

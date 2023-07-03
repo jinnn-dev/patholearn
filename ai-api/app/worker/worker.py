@@ -34,7 +34,7 @@ def create_dataset(file_path: str, dataset_id: str):
         unpack_archive(file_path, unpack_path)
         delete_osx_files(unpack_path)
     except Exception as error:
-        logger.error(f"{log_prefix} Failed unpacking: {error}")
+        logger.exception(f"{log_prefix} Failed unpacking: {error}")
         update_dataset(dataset.id, {"status": "failed"})
         return
 
@@ -49,7 +49,7 @@ def create_dataset(file_path: str, dataset_id: str):
         update_dataset(dataset.id, {"metadata": dataset.metadata.dict()})
 
     except Exception as error:
-        logger.error(f"{log_prefix} Failed parsing: {error}")
+        logger.exception(f"{log_prefix} Failed parsing: {error}")
         update_dataset(dataset.id, {"status": "failed"})
         return
 
@@ -66,7 +66,7 @@ def create_dataset(file_path: str, dataset_id: str):
         logger.info(f"{log_prefix} Adding files to dataset")
         add_files_to_dataset(clearml_dataset, unpack_path)
     except ValueError as error:
-        logger.error(f"{log_prefix} Failed adding files: {error}")
+        logger.exception(f"{log_prefix} Failed adding files: {error}")
         update_dataset_status(dataset.id, "failed")
         return
 
@@ -76,7 +76,7 @@ def create_dataset(file_path: str, dataset_id: str):
         logger.info(f"Dataset {dataset_id}: Finalizing")
         finalize_dataset(clearml_dataset)
     except Exception as error:
-        logger.error(f"{log_prefix} Failed finalizing: {error}")
+        logger.exception(f"{log_prefix} Failed finalizing: {error}")
         update_dataset_status(dataset.id, "failed")
         return
 

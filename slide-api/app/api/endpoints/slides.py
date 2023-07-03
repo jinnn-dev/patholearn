@@ -48,7 +48,7 @@ def create_slide(
         logger.info("Saving {} to disk", file_name)
         background_tasks.add_task(write_slide_to_disk, file_id, file_name, file=file)
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         crud_slide.delete(collection, entity_id_value=file_id)
         raise HTTPException(status_code=500, detail="Slide couldn't be saved")
 
@@ -117,7 +117,7 @@ def delete_slide(
         crud_slide.delete(collection, entity_id_value=slide_id)
         # slide_db.delete_slide(slide_id=slide_id)
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         raise HTTPException(status_code=500, detail="Slide could not be deleted")
 
 
@@ -127,5 +127,5 @@ def download_slide(*, slide_id: str, layer: int):
         image = app.minio_wrapper.get_slide(slide_id, layer)
         return Response(content=image, media_type="image/jpg")
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         raise HTTPException(status_code=500, detail="Slide could not be downloaded")

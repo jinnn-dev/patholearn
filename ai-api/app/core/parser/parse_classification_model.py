@@ -14,6 +14,13 @@ from app.core.parser.parse_graph import (
 )
 from app.utils.logger import logger
 import torch
+from torchvision.models import ResNet
+
+
+def get_layer_string(layer: torch.nn.Module, prefix: str = "torch.nn."):
+    if isinstance(layer, ResNet):
+        return "torchvision.models.resnet18(weights=torchvision.models.ResNet18_Weights.IMAGENET1K_V1)"
+    return prefix + str(layer)
 
 
 def get_classification_model(
@@ -39,8 +46,8 @@ def get_classification_model(
     activation_function = torch.nn.LogSoftmax(dim=1)
     result.append(classification_layer)
     result.append(activation_function)
-    result_strings.append("torch.nn." + str(classification_layer))
-    result_strings.append("torch.nn." + str(activation_function))
+    result_strings.append(get_layer_string(classification_layer))
+    result_strings.append(get_layer_string(activation_function))
 
     return torch.nn.Sequential(*result), result_strings
 
@@ -65,7 +72,7 @@ def parse_network(
                 if splitting_layer_data is not None:
                     layers += splitting_layer_data
                     for layer in splitting_layer_data:
-                        layer_strings.append("torch.nn." + str(layer))
+                        layer_strings.append(get_layer_string(layer))
 
                 path_layers = []
                 combined_in_channels = 0
@@ -87,7 +94,9 @@ def parse_network(
                             prefix = ""
                         else:
                             prefix = "torch.nn."
-                        seq_string += "    " + prefix + str(layer) + ",\n"
+                        seq_string += (
+                            "    " + get_layer_string(layer, prefix=prefix) + ",\n"
+                        )
                     seq_string += ")"
 
                     combined_in_channels += new_in_channels
@@ -108,7 +117,7 @@ def parse_network(
                 current_in_channels = channels
                 current_shape = shape
                 layers.append(combined_layer)
-                layer_strings.append(str(combined_layer))
+                layer_strings.append(get_layer_string(combined_layer))
                 # current_in_channels = combined_in_channels
                 # current_shape = new_shape
 
@@ -123,6 +132,6 @@ def parse_network(
             if layer_data is not None:
                 layers += layer_data
                 for layer in layer_data:
-                    layer_strings.append("torch.nn." + str(layer))
+                    layer_strings.append(get_layer_string(layer))
 
     return layers, layer_strings, current_in_channels, current_shape
