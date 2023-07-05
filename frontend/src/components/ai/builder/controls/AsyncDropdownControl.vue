@@ -48,8 +48,6 @@ onMounted(async () => {
 watch(
   () => props.data?.value,
   () => {
-    console.log('MOUNTING');
-
     if (props.data?.lockStatus?.lockedBy) {
       selectedValue.value = props.data?.value;
     }
@@ -57,7 +55,7 @@ watch(
 );
 </script>
 <template>
-  <div v-if="loading" class="flex items-center justify-center gap-2 h-full">
+  <div v-if="loading && !result" class="flex items-center justify-center gap-2 h-full">
     <div class="scale-75">
       <spinner></spinner>
     </div>

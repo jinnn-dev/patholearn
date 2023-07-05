@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PropType, computed, ref, watch } from 'vue';
+import { PropType, computed, onMounted, ref, watch } from 'vue';
 import CustomSelect from '../../../form/CustomSelect.vue';
 import Icon from '../../../general/Icon.vue';
 import { builderState, versionHasStatus } from '../../../../core/ai/builder/state';
@@ -20,7 +20,24 @@ const isExpanded = ref(false);
 
 const container = ref<HTMLElement | null>(null);
 
-const selectedValue = ref(props.value || (props.values !== undefined ? props.values[0] : undefined));
+const selectedValue = ref();
+
+watch(
+  () => props.values,
+  () => {
+    console.log('HERE');
+
+    if (props.values && props.values.length > 0) {
+      selectedValue.value = props.values[0] as any;
+    }
+  }
+);
+
+onMounted(() => {
+  if (props.values) {
+    selectedValue.value = props.value || (props.values ? props.values[0] : undefined);
+  }
+});
 
 const valueChanged = (change: any) => {
   selectedValue.value = change;
