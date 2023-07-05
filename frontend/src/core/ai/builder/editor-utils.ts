@@ -4,6 +4,7 @@ import { Position } from 'rete-area-plugin/_types/types';
 import { AreaPlugin } from 'rete-area-plugin';
 import { builderState } from './state';
 import { OutputNode } from './nodes';
+import { NodeType } from './nodes/types';
 
 export async function omitReteEvents<T, A extends unknown[]>(func: (...data: A) => Promise<T>, ...data: A) {
   builderState.omitEvents = true;
@@ -54,4 +55,8 @@ export function getEpochs(editor: NodeEditor<Schemes>) {
     }
   }
   return undefined;
+}
+
+export function nodeTypeExists(nodeType: NodeType, editor: NodeEditor<Schemes>) {
+  return editor.getNodes().find((node) => node.type === nodeType) !== undefined;
 }

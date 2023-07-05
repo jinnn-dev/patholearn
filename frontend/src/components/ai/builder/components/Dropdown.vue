@@ -22,17 +22,6 @@ const container = ref<HTMLElement | null>(null);
 
 const selectedValue = ref();
 
-watch(
-  () => props.values,
-  () => {
-    console.log('HERE');
-
-    if (props.values && props.values.length > 0) {
-      selectedValue.value = props.values[0] as any;
-    }
-  }
-);
-
 onMounted(() => {
   if (props.values) {
     selectedValue.value = props.value || (props.values ? props.values[0] : undefined);

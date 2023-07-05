@@ -34,6 +34,7 @@ import { PresenceChannel } from 'pusher-js';
 import { DiagramControl } from './controls/diagram-control';
 import { Socket, nodesCanConnect } from './sockets/socket';
 import { AsyncDropdownControl, MetricControl } from './controls';
+import { nodeCanBeCreated } from './node-validator';
 
 export type NodeProps = NodeClassesType;
 
@@ -190,10 +191,14 @@ export function useEditor() {
         return;
       }
 
-      if (context.type === 'connectioncreate') {
-        if (!editor.value) {
+      if (context.type === 'nodecreate') {
+        if (!nodeCanBeCreated(context.data, editor.value)) {
           return;
         }
+        return context;
+      }
+
+      if (context.type === 'connectioncreate') {
         const source = editor.value.getNode(context.data.source);
         const target = editor.value.getNode(context.data.target);
 
@@ -253,15 +258,13 @@ export function useEditor() {
     let position = { x: 0, y: 0 };
     if (container && area.value) {
       const [hw, hh] = [container.clientWidth / 2, container.clientHeight / 2];
-      console.log(hw, hh);
 
       const transform = area.value.area.transform;
       const center = [(hw - transform.x) / transform.k, (hh - transform.y) / transform.k];
-      console.log(center);
       position.x = center[0];
       position.y = center[1];
     }
-    // await editor.value.addNode(layer as NodeProps);
+
     await sync.value?.createNode(layer as NodeProps, position);
   };
 
