@@ -76,6 +76,7 @@ export class SyncPlugin {
             pushConnectionCreatedEvent(builderState.channel as PresenceChannel, context.data);
             builderState.shouldSaveEditor = true;
           }
+          this.externalConnectionCreated = false;
         }
 
         if (context.type === 'connectionremoved') {
@@ -83,6 +84,7 @@ export class SyncPlugin {
             pushConnectionRemovedEvent(builderState.channel as PresenceChannel, context.data.id);
             builderState.shouldSaveEditor = true;
           }
+          this.externalConnectionRemoved = false;
         }
       }
 
