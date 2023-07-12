@@ -41,20 +41,16 @@ onUnmounted(() => {
     >
       <div
         v-if="builderState.selectedNavigation"
-        class="w-full h-full bg-gray-800/80 backdrop-blur-md absolute z-[99] top-0 overflow-auto"
+        class="w-full h-full bg-gray-800/80 backdrop-blur-md absolute z-[99] top-0 overflow-hidden pt-4"
       >
-        <div class="flex justify-end p-4">
-          <div
-            class="cursor-pointer hover:bg-gray-500 rounded-md p-1"
-            @click="builderState.selectedNavigation = undefined"
-          >
-            <icon name="x" stroke-width="20"></icon>
-          </div>
+        <div
+          class="absolute right-4 top-4 cursor-pointer hover:bg-gray-500 rounded-md p-1"
+          @click="builderState.selectedNavigation = undefined"
+        >
+          <icon name="x" stroke-width="20"></icon>
         </div>
         <task-metrics v-if="builderState.selectedNavigation === 'metrics'"></task-metrics>
-        <div class="overflow-auto">
-          <task-console v-if="builderState.selectedNavigation === 'console'"></task-console>
-        </div>
+        <task-console v-if="builderState.selectedNavigation === 'console'"></task-console>
       </div>
     </transition>
   </div>

@@ -3,10 +3,11 @@ import { builderState } from '../../../core/ai/builder/state';
 import Metrics from '../../../components/ai/tasks/Metrics.vue';
 </script>
 <template>
-  <div class="p-8 flex justify-center w-full">
+  <div class="text-center text-4xl pb-2">Metriken</div>
+  <div class="flex flex-col justify-center h-full">
     <div v-if="!builderState.task">Loading...</div>
     <div v-else-if="!builderState.selectedVersion?.clearml_id">Training ist noch nicht gestartet</div>
-    <div v-else class="w-full">
+    <div v-else class="w-full h-full px-4 pb-32 overflow-auto">
       <Metrics :clear-ml-task-id="builderState.selectedVersion.clearml_id!"></Metrics>
     </div>
   </div>
