@@ -299,7 +299,7 @@ async def download_builder_version(
 
     try:
         pytorch_text, model = await parse_task_version_to_python(
-            task, task_version, True
+            task, task_version, False
         )
     except Exception as e:
         logger.exception(e)
