@@ -46,7 +46,7 @@ function getItems() {
       class="my-1"
       v-for="item of getItems()"
       :key="item.key"
-      @select="item.handler($event)"
+      @select="item.handler && item.handler($event)"
       :delay="0"
       @hide="$emit('hide')"
       :subitems="item.subitems"
