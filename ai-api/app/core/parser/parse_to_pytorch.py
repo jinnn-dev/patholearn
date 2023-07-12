@@ -6,11 +6,13 @@ from typing import List, Optional
 from pydantic import BaseModel
 from app.core.parser.parse_classification_model import get_classification_model
 from app.core.parser.parse_lightning import LightningModel
+from app.utils.logger import logger
 
 import networkx as nx
 
 from app.core.parser.parse_graph import (
     AddNode,
+    ArchitectureNode,
     ConcatenateNode,
     DatasetNode,
     MetricNode,
@@ -76,12 +78,22 @@ class MNISTDataModule:
 class ClassificationModel:
     def __init__(
         self,
-        layers: str,
+        layers: List[str],
+        architecture_node: Optional[ArchitectureNode],
     ) -> None:
         with open("/app/core/parser/templates/classification_model.txt", "r") as f:
             src = Template(f.read())
-
-            replacements = {"layers_string": ",\n".join(layers)}
+            if architecture_node is None:
+                combined_layers = ",\n".join(layers)
+                result_string = "torch.nn.Sequential(" + combined_layers + ")"
+                replacements = {"model": result_string, "modelfc": ""}
+            else:
+                replacements = {
+                    "model": layers[0],
+                    "modelfc": "self.model.fc = torch.nn.Sequential("
+                    + ",\n".join(layers[1:])
+                    + ")",
+                }
             self.model_class = src.substitute(replacements)
 
     def get_instance(self):
@@ -100,18 +112,22 @@ def get_model(
     graph: nx.DiGraph,
     dataset_node: DatasetNode,
     output_node: OutputNode,
+    architecture_node: Optional[ArchitectureNode],
     combine_nodes: List[str],
 ):
     path = []
     if len(dataset_node.to_nodes) > 1 or len(combine_nodes) > 0:
-        get_path_until_output(graph, dataset_node.id, path)
+        if architecture_node is None:
+            get_path_until_output(graph, dataset_node.id, path)
+        else:
+            get_path_until_output(graph, architecture_node.id, path)
+
     else:
         path = list(nx.dfs_preorder_nodes(graph, dataset_node.id))
-
     layers, layer_strings = get_classification_model(
-        graph, path, dataset_node, output_node
+        graph, path, dataset_node, architecture_node, output_node
     )
-    model = ClassificationModel(layer_strings)
+    model = ClassificationModel(layer_strings, architecture_node)
     return model.model_class, model.get_instance()
 
 
@@ -196,6 +212,7 @@ def parse_to_pytorch(
     graph: nx.DiGraph,
     dataset_node: DatasetNode,
     output_node: OutputNode,
+    architecture_node: Optional[ArchitectureNode],
     combine_nodes: List[str],
     metric_nodes: List[MetricNode],
     task: Task,
@@ -242,7 +259,9 @@ def parse_to_pytorch(
     dataset_instance = "data_module" + " = " + dataset_module_call
     nodes: List[Node] = []
 
-    model_class, model_call = get_model(graph, dataset_node, output_node, combine_nodes)
+    model_class, model_call = get_model(
+        graph, dataset_node, output_node, architecture_node, combine_nodes
+    )
     model_instance = "model" + " = " + model_call
 
     lightning_model = LightningModel(dataset_node, output_node, metric_nodes)
@@ -257,7 +276,6 @@ def parse_to_pytorch(
             src = Template(f.read())
             replacements = {"project_name": task.name, "task_name": version.id}
             clearml_string = src.substitute(replacements)
-
     pytorch_model = PytorchModel(
         import_string=format_string(import_string),
         clearml_string=None if ignore_clearml else format_string(clearml_string),
@@ -284,6 +302,7 @@ async def parse_task_version_to_python(
         parsed_graph,
         dataset_node,
         output_node,
+        architecture_node,
         combine_nodes,
         metric_nodes,
     ) = await parse_graph_to_networkx(task_version.graph)
@@ -291,6 +310,7 @@ async def parse_task_version_to_python(
         parsed_graph,
         dataset_node,
         output_node,
+        architecture_node,
         combine_nodes,
         metric_nodes,
         task,
