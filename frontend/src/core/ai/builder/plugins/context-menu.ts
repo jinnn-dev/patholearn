@@ -55,6 +55,7 @@ export function createItem<S extends BSchemes>(
       ...item,
       async handler() {
         const node = await factory();
+
         await builderState.syncPlugin?.createNode(node as NodeProps, context.area.area.pointer);
         // await context.editor.addNode(node);
 

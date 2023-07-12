@@ -48,11 +48,6 @@ export class SyncPlugin {
     this.areaPlugin = this.area.parent;
     this.editor = this.root.parent;
 
-    // this.root.parentScope()?.addPipe((context) => {
-    //   console.log('CONTEXT', context.type);
-    //   return context;
-    // });
-
     this.root.addPipe((context) => {
       if (!this.areaPlugin) {
         this.areaPlugin = this.area.parent;
@@ -172,7 +167,10 @@ export class SyncPlugin {
   }
 
   async createNode(node: NodeProps, position: { x: number; y: number } = { x: 0, y: 0 }) {
-    await this.editor.addNode(node);
+    const created = await this.editor.addNode(node);
+    if (!created) {
+      return;
+    }
     await this.areaPlugin.translate(node.id, position);
     const createdNode = this.editor.getNode(node.id);
     pushNodeCreatedEvent(builderState.channel as PresenceChannel, {
@@ -246,7 +244,6 @@ export class SyncPlugin {
             node.unlock();
             this.areaPlugin.update('node', key);
           }
-
         }
       }
     });
