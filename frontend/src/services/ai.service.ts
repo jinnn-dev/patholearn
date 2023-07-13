@@ -358,7 +358,7 @@ export class AiService {
 
   public static async getTaskMetrics(taskId: string) {
     const [_, response] = await handleError(
-      ApiService.get<any[]>({
+      ApiService.get<any>({
         resource: `/tasks/${taskId}/metrics`,
         host: AI_API_URL
       })

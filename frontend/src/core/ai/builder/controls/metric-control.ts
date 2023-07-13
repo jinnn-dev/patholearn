@@ -25,6 +25,9 @@ export type MetricInternalname =
 export type MetricsVariableName = {
   [K in MetricDisplayName]: MetricInternalname;
 };
+export type MetricsDisplayName = {
+  [K in MetricInternalname]: MetricDisplayName;
+};
 
 export const MetricVariableMapping: MetricsVariableName = {
   Accuracy: 'acc',
@@ -35,6 +38,17 @@ export const MetricVariableMapping: MetricsVariableName = {
   Precision: 'precision',
   Loss: 'loss',
   Epoch: 'epoch'
+};
+
+export const MetricDisplayMapping: MetricsDisplayName = {
+  acc: 'Accuracy',
+  roc_auc: 'ROC AUC',
+  average_precision: 'Average Precision',
+  cohen_kappa: 'Cohen Kappa',
+  f1_score: 'F1 Score',
+  precision: 'Precision',
+  loss: 'Loss',
+  epoch: 'Epoch'
 };
 
 export interface IMetricControl extends IControl {
