@@ -118,7 +118,7 @@ def enqueue_builder_task(
     session = session_maker()
     schedule = (
         session.query(IntervalSchedule)
-        .filter_by(every=1, period=IntervalSchedule.SECONDS)
+        .filter_by(every=5, period=IntervalSchedule.SECONDS)
         .first()
     )
     if not schedule:
@@ -170,7 +170,7 @@ def check_task_version(
     new_status = clearml_task.status
 
     metrics = clearml_task.get_last_scalar_metrics()
-    if metrics is not None:
+    if metrics is not None and metrics:
         websocket_result = ws_client.trigger(
             f"presence-task-{task_id}",
             "training-metrics",
