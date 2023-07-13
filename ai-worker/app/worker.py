@@ -170,11 +170,22 @@ def check_task_version(
     new_status = clearml_task.status
 
     metrics = clearml_task.get_last_scalar_metrics()
-    if metrics is not None and metrics:
+    if metrics is not None:
         websocket_result = ws_client.trigger(
             f"presence-task-{task_id}",
             "training-metrics",
             metrics,
+        )
+
+        websocket_result = ws_client.trigger(
+            f"presence-task-{task_id}",
+            "training-metrics-complete",
+            True,
+        )
+        websocket_result = ws_client.trigger(
+            f"presence-task-{task_id}",
+            "training-logs",
+            True,
         )
 
     if new_status == "completed" or new_status == "failed":

@@ -9,6 +9,8 @@ import random
 from fastapi import FastAPI, Depends
 from fastapi_socketio import SocketManager
 from starlette.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
+
 import sentry_sdk
 from supertokens_python import (
     init,
@@ -70,6 +72,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"] + get_all_cors_headers(),
 )
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+
 
 sio = SocketManager(app=app, cors_allowed_origins=[], logger=True)
 
