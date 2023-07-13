@@ -38,9 +38,14 @@ const props = defineProps({
             {{ dataset.clearml_dataset ? formatBytes(dataset.clearml_dataset?.runtime.ds_total_size, 1000) : '-' }}
           </div>
         </div>
-        <div class="flex gap-2">
+        <div class="flex gap-2 items-center">
           <icon name="image" stroke-width="0"></icon>
           <div class="text-sm font-mono">{{ dataset.metadata?.dimension.x }}x{{ dataset.metadata?.dimension.y }}</div>
+        </div>
+
+        <div class="flex gap-2 items-center">
+          <icon name="hash" stroke-width="0"></icon>
+          <div class="text-sm font-mono">{{ Object.keys(dataset.metadata?.class_map as any).length }}</div>
         </div>
       </div>
     </div>
