@@ -41,8 +41,6 @@ onUnmounted(() => {
 });
 
 const updateMetrics = async (data: any) => {
-  console.log(metrics.value);
-
   metrics.value = await AiService.getTaskMetrics(props.clearMlTaskId);
   groupMetrics();
 };
