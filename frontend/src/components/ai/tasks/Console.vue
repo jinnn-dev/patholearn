@@ -4,6 +4,7 @@ import { useService } from '../../../composables/useService';
 import { AiService } from '../../../services/ai.service';
 import LogEntry from '../../../components/ai/tasks/LogEntry.vue';
 import { onMounted, onUnmounted, ref } from 'vue';
+import { builderState } from '../../../core/ai/builder/state';
 
 const props = defineProps({
   clearMlTaskId: {
@@ -13,6 +14,14 @@ const props = defineProps({
 });
 
 const { result: logs, loading, run } = useService(AiService.getTaskLog, true, props.clearMlTaskId);
+
+onMounted(() => {
+  if (builderState.isConnected && builderState.selectedVersion?.status !== 'completed') {
+    builderState.channel?.bind('training-logs', async (data: any) => {
+      logs.value = await AiService.getTaskLog(props.clearMlTaskId);
+    });
+  }
+});
 </script>
 <template>
   <div>

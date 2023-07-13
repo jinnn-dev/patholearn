@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { onMounted } from 'vue';
 import { useService } from '../../../composables/useService';
 import { AiService } from '../../../services/ai.service';
 import Diagram from '../../general/Diagram.vue';
 import NoContent from '../../general/NoContent.vue';
+import { builderState } from '../../../core/ai/builder/state';
 
 const props = defineProps({
   clearMlTaskId: {
@@ -12,6 +14,14 @@ const props = defineProps({
 });
 
 const { result: metrics, loading, run } = useService(AiService.getTaskMetrics, true, props.clearMlTaskId);
+
+onMounted(() => {
+  if (builderState.isConnected && builderState.selectedVersion?.status !== 'completed') {
+    builderState.channel?.bind('training-metrics-complete', async (data: any) => {
+      metrics.value = await AiService.getTaskMetrics(props.clearMlTaskId);
+    });
+  }
+});
 
 const processData = (series: any) => {
   const keys = Object.keys(series);
