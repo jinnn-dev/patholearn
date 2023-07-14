@@ -182,11 +182,11 @@ def check_task_version(
             "training-metrics-complete",
             True,
         )
-        websocket_result = ws_client.trigger(
-            f"presence-task-{task_id}",
-            "training-logs",
-            True,
-        )
+    websocket_result = ws_client.trigger(
+        f"presence-task-{task_id}",
+        "training-logs",
+        True,
+    )
 
     if new_status == "completed" or new_status == "failed":
         periodic_task = (

@@ -37,6 +37,7 @@ class PytorchModel(BaseModel):
     lightning_trainer: str
     lightning_train: str
     lightning_test: str
+    lightning_checkpoint: str
     ignore_clearml: bool = False
 
     def __str__(self) -> str:
@@ -231,7 +232,8 @@ def parse_to_pytorch(
         "import glob",
         "import torch",
         "from torch.utils.data import random_split, DataLoader, Dataset",
-        "import pytorch_lightning as pl",
+        "import lightning as pl",
+        "from lightning.pytorch.callbacks import ModelCheckpoint",
         "import albumentations as A",
         "from albumentations.pytorch import ToTensorV2",
         "from PIL import Image",
@@ -245,7 +247,7 @@ def parse_to_pytorch(
         )
     else:
         imports.append(
-            "from clearml import Task, Dataset as ClearmlDataset",
+            "from clearml import Task, Dataset as ClearmlDataset, OutputModel",
         )
 
     import_string = "\n".join(imports)
@@ -267,10 +269,17 @@ def parse_to_pytorch(
     lightning_model = LightningModel(dataset_node, output_node, metric_nodes)
     lightning_model_class = lightning_model.model_class
     lightning_model_instance = lightning_model.get_instance("lightning_model", "model")
-    lightning_trainer = "trainer = " + lightning_model.trainer
+    lightning_trainer = lightning_model.trainer
     lightning_train = f"trainer.fit(model=lightning_model, datamodule=data_module)"
     lightning_test = f"trainer.test(model=lightning_model, datamodule=data_module)"
-
+    with open("/app/core/parser/templates/checkpoint.txt") as f:
+        src = Template(f.read())
+        replacements = {
+            "channels": dataset_node.channels,
+            "width": dataset_node.dimension.x,
+            "height": dataset_node.dimension.y,
+        }
+        lightning_checkpoint = src.substitute(replacements)
     if not ignore_clearml:
         with open("/app/core/parser/templates/clearml.txt", "r") as f:
             src = Template(f.read())
@@ -289,6 +298,7 @@ def parse_to_pytorch(
         lightning_trainer=format_string(lightning_trainer),
         lightning_train=format_string(lightning_train),
         lightning_test=format_string(lightning_test),
+        lightning_checkpoint=format_string(lightning_checkpoint),
     )
     formatted = str(pytorch_model)
 
