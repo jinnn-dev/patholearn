@@ -31,6 +31,7 @@ class Preprocess(object):
             dimensions["y"] = 256
         transform = A.Compose(
             [
+                A.Resize(height=dimensions["y"], width=dimensions["x"]),
                 A.Normalize((0.1307,), (0.3081,)),
                 ToTensorV2(),
             ]
