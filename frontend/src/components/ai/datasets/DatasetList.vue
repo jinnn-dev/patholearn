@@ -20,7 +20,7 @@ const { result: datasets, loading } = useService(AiService.getDatasets, true);
         ></router-link>
       </div>
 
-      <div v-if="datasets && datasets.length !== 0" class="flex gap-4 flex-wrap">
+      <div v-if="datasets && datasets.length !== 0" class="flex gap-4 flex-wrap mt-4">
         <dataset-card v-for="dataset in datasets" :dataset="dataset"></dataset-card>
       </div>
       <div v-else>
