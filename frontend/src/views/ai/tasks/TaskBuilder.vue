@@ -3,6 +3,10 @@ import { defineAsyncComponent, onUnmounted } from 'vue';
 import { builderState } from '../../../core/ai/builder/state';
 import { notifications } from '../../../utils/notification-state';
 import PingPongLoader from '../../../components/general/PingPongLoader.vue';
+import TaskMetrics from './TaskMetrics.vue';
+import TaskConsole from './TaskConsole.vue';
+import Icon from '../../../components/general/Icon.vue';
+import TaskPrediction from './TaskPrediction.vue';
 
 const NodeEditor = defineAsyncComponent(() => import('../../../components/ai/builder/editor/NodeEditor.vue'));
 
@@ -28,6 +32,29 @@ onUnmounted(() => {
       :task-id="builderState.task.id"
       :task-version="builderState.selectedVersion"
     ></node-editor>
+    <transition
+      enter-active-class="transition ease-out duration-300 transform "
+      enter-from-class="opacity-0 translate-y-10 scale-95"
+      enter-to-class="opacity-100 translate-y-0 scale-100"
+      leave-active-class="ease-in duration-200"
+      leave-from-class="opacity-100 translate-y-0 scale-100"
+      leave-to-class="opacity-0 translate-y-10 translate-y-0 scale-95"
+    >
+      <div
+        v-if="builderState.selectedNavigation"
+        class="w-full h-full bg-gray-800 absolute z-[99] top-0 overflow-hidden pt-4"
+      >
+        <div
+          class="absolute right-4 top-4 cursor-pointer hover:bg-gray-500 rounded-md p-1"
+          @click="builderState.selectedNavigation = undefined"
+        >
+          <icon name="x" stroke-width="20"></icon>
+        </div>
+        <task-metrics v-if="builderState.selectedNavigation === 'metrics'"></task-metrics>
+        <task-console v-if="builderState.selectedNavigation === 'console'"></task-console>
+        <task-prediction v-if="builderState.selectedNavigation === 'prediction'"></task-prediction>
+      </div>
+    </transition>
   </div>
 </template>
 <style scoped>

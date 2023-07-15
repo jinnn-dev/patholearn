@@ -1,13 +1,15 @@
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 from app.core.parser.parse_layer import (
     Add,
     parse_add_layer,
     parse_concatenate_layer,
     parse_layer,
+    get_output_shape,
 )
 import networkx as nx
 from app.core.parser.parse_graph import (
     AddNode,
+    ArchitectureNode,
     ConcatenateNode,
     DatasetNode,
     OutputNode,
@@ -23,10 +25,24 @@ def get_layer_string(layer: torch.nn.Module, prefix: str = "torch.nn."):
     return prefix + str(layer)
 
 
+def get_classification_layer(
+    in_channels: int, classes: int, result: List, result_strings: List
+):
+    classification_layer = torch.nn.Linear(
+        in_features=in_channels, out_features=classes
+    )
+    # activation_function = torch.nn.Softmax(dim=1)
+    result.append(classification_layer)
+    # result.append(activation_function)
+    result_strings.append(get_layer_string(classification_layer))
+    # result_strings.append(get_layer_string(activation_function))
+
+
 def get_classification_model(
     graph: nx.DiGraph,
     path: List[Union[str, dict]],
     dataset_node: DatasetNode,
+    architecture_node: Optional[ArchitectureNode],
     output_node: OutputNode,
 ):
     input_data_shape = (
@@ -36,18 +52,27 @@ def get_classification_model(
         dataset_node.dimension.y if dataset_node.dimension.y <= 256 else 256,
     )
 
+    if architecture_node is not None:
+        # result = parse_layer(
+        #     architecture_node, dataset_node.channels, layer_data_shape=input_data_shape
+        # )[0][0]
+
+        # modules = list(result.children())[:-1]
+        # model = torch.nn.Sequential(*modules, torch.nn.Flatten(start_dim=1, end_dim=-1))
+        # output_shape = get_output_shape(model, input_data_shape)
+        # logger.info(output_shape)
+        result, result_strings, in_channels, layer_data = parse_network(
+            path, graph, dataset_node.channels, layer_data_shape=input_data_shape
+        )
+        get_classification_layer(
+            in_channels, dataset_node.classes, result, result_strings
+        )
+        return torch.nn.Sequential(*result), result_strings
+
     result, result_strings, in_channels, layer_data = parse_network(
         path, graph, dataset_node.channels, layer_data_shape=input_data_shape
     )
-
-    classification_layer = torch.nn.Linear(
-        in_features=in_channels, out_features=dataset_node.classes
-    )
-    activation_function = torch.nn.LogSoftmax(dim=1)
-    result.append(classification_layer)
-    result.append(activation_function)
-    result_strings.append(get_layer_string(classification_layer))
-    result_strings.append(get_layer_string(activation_function))
+    get_classification_layer(in_channels, dataset_node.classes, result, result_strings)
 
     return torch.nn.Sequential(*result), result_strings
 
@@ -59,7 +84,6 @@ def parse_network(
     layer_strings = []
     current_in_channels = in_channels
     current_shape = layer_data_shape
-
     for element in network:
         if isinstance(element, dict):
             for node_id, paths in element.items():
@@ -117,14 +141,19 @@ def parse_network(
                 current_in_channels = channels
                 current_shape = shape
                 layers.append(combined_layer)
-                layer_strings.append(get_layer_string(combined_layer))
+
+                layer_strings.append(
+                    get_layer_string(
+                        combined_layer,
+                        prefix="" if isinstance(combined_layer, Add) else "torch.nn",
+                    )
+                )
                 # current_in_channels = combined_in_channels
                 # current_shape = new_shape
 
         else:
             node_id = element
             node_data = graph.nodes[node_id]["data"]
-
             layer_data, current_in_channels, current_shape = parse_layer(
                 node_data, current_in_channels, current_shape
             )

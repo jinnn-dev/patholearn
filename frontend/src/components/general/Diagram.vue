@@ -24,7 +24,7 @@ import {
   ToolboxComponent
 } from 'echarts/components';
 import VChart, { THEME_KEY } from 'vue-echarts';
-import { ref, watch } from 'vue';
+import { PropType, ref, watch } from 'vue';
 import theme from './theme.json';
 
 registerTheme('custom', theme);
@@ -45,7 +45,7 @@ use([
 const chart = ref();
 
 const props = defineProps({
-  data: Array,
+  data: Array as PropType<any[]>,
   name: String,
   height: {
     type: String,
@@ -114,12 +114,11 @@ const option = ref({
 watch(
   () => props.data,
   () => {
-    chart.value.setOption({
-      series: props.data
-    });
-  },
-  {
-    deep: true
+    if (props.data) {
+      chart.value.setOption({
+        series: [...props.data]
+      });
+    }
   }
 );
 </script>

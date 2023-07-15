@@ -93,22 +93,6 @@ export const routes: RouteRecordRaw[] = [
           public: true
         },
         component: () => import('../views/ai/tasks/TaskBuilder.vue')
-      },
-      {
-        path: 'metrics',
-        name: 'Task Metrics',
-        meta: {
-          public: true
-        },
-        component: () => import('../views/ai/tasks/TaskMetrics.vue')
-      },
-      {
-        path: 'console',
-        name: 'Task Console',
-        meta: {
-          public: true
-        },
-        component: () => import('../views/ai/tasks/TaskConsole.vue')
       }
     ]
   },

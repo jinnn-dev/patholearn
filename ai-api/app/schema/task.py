@@ -171,6 +171,7 @@ class TaskVersion(BaseModel):
     creation_date: datetime = Field(...)
     status: Optional[TaskVersionStatus] = None
     status_message: Optional[str] = None
+    dataset_id: Optional[str] = None
 
     class Config:
         allow_population_by_field_name = True

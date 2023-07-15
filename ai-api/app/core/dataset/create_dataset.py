@@ -61,11 +61,10 @@ def parse_extracted_folder(folder_path: str):
     classes = []
     x = None
     y = None
-    for dir in os.listdir(folder_path):
+    for dir in sorted(os.listdir(folder_path)):
         if dir not in class_map:
             if x is None:
                 image = glob.glob(os.path.join(folder_path, dir, "*.*"))[0]
-                logger.info(image)
                 im = Image.open(image)
                 width, height = im.size
                 x = width

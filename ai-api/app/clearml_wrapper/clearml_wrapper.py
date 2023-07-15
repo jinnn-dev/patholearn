@@ -3,7 +3,7 @@ from clearml import Dataset
 import httpx
 
 from app.config.config import Config
-from app.train.train_model import start_training
+from app.core.train.train_model import start_training
 
 
 def ping():

@@ -7,6 +7,9 @@ import { Task, TaskVersion } from '../../../model/ai/tasks/task';
 import { SyncPlugin } from './plugins/sync-plugin';
 import { Node } from './nodes/node';
 import { NodeEditor } from 'rete';
+
+type NavigationLinks = 'metrics' | 'console' | 'prediction';
+
 interface BuilderState {
   builderLoaded: boolean;
   initialGraphLoaded: boolean;
@@ -28,6 +31,7 @@ interface BuilderState {
   omitEvents: boolean;
   versionMetrics?: any;
   editor?: NodeEditor<Schemes>;
+  selectedNavigation?: NavigationLinks;
 }
 
 export const initialState: BuilderState = {

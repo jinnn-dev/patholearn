@@ -29,9 +29,12 @@ def unpack_archive(archive_path: str, extract_dir: str):
 
 def delete_osx_files(path: str):
     macosx_dir_path = os.path.join(path, "__MACOSX")
+    macosx_file = os.path.join(path, ".DS_Store")
     if os.path.exists(macosx_dir_path) and os.path.isdir(macosx_dir_path):
         logger.debug("Found MacOs specific files. Removing...")
         shutil.rmtree(macosx_dir_path)
+    if os.path.exists(macosx_file) and os.path.isfile(macosx_file):
+        os.remove(macosx_file)
 
 
 def contains_subdirectory(parent_dir: str):

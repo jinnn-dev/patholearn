@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import Icon from './Icon.vue';
 
 const props = defineProps({
@@ -18,6 +18,16 @@ const loaded = ref<boolean>(false);
 const url = ref(props.imageUrl);
 let tries = 0;
 
+watch(
+  () => props.imageUrl,
+  (newVal, oldVal) => {
+    if (newVal !== oldVal) {
+      url.value = newVal;
+      loaded.value = false;
+    }
+  }
+);
+
 const onLoaded = () => {
   loaded.value = true;
   emit('imageLoaded');
@@ -26,7 +36,6 @@ const onLoaded = () => {
 const handleError = () => {
   if (tries > 1) {
     imageLoadError.value = true;
-    loaded.value = true;
   }
 
   const splittedUrl = url.value.split('.');
@@ -67,6 +76,7 @@ const imageLoadError = ref(false);
     </svg>
     <div v-if="!imageLoadError" class="w-full h-full overflow-hidden flex justify-center items-center">
       <img
+        :key="url"
         :class="loaded ? 'show ' + imageClasses : ''"
         :src="url"
         alt="Lazy image"

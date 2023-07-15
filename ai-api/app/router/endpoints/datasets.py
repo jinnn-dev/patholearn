@@ -13,7 +13,8 @@ from app.database.minio_wrapper import minio_wrapper
 from app.schema.dataset import DatasetStatus, DatasetType
 from fastapi import APIRouter, Depends, Form, UploadFile, BackgroundTasks
 from supertokens_python.recipe.session import SessionContainer
-from supertokens_python.recipe.session.framework.fastapi import verify_session
+from app.utils.session import check_session
+
 import app.clearml_wrapper.clearml_wrapper as clearml_wrapper
 from app.utils.logger import logger
 import shutil
@@ -36,7 +37,7 @@ async def create_new_dataset(
     dataset_type: Annotated[DatasetType, Form()],
     is_grayscale: Annotated[str, Form()],
     file: Annotated[UploadFile, Form()] = UploadFile(...),
-    s: SessionContainer = Depends(verify_session()),
+    s: SessionContainer = Depends(check_session()),
 ):
     user_id = s.get_user_id()
 
@@ -59,18 +60,18 @@ async def create_new_dataset(
 
 
 @router.get("", response_model=List[Dataset])
-async def datasets(_: SessionContainer = Depends(verify_session())):
+async def datasets(_: SessionContainer = Depends(check_session())):
     return await get_datasets()
 
 
 @router.get("/{dataset_id}", response_model=Dataset)
-async def dataset(dataset_id: str, _: SessionContainer = Depends(verify_session())):
+async def dataset(dataset_id: str, _: SessionContainer = Depends(check_session())):
     return await get_dataset(dataset_id)
 
 
 @router.delete("/{dataset_id}", response_model=Dataset)
 async def dataset_delete(
-    dataset_id: str, _: SessionContainer = Depends(verify_session())
+    dataset_id: str, _: SessionContainer = Depends(check_session())
 ):
     dataset = await get_dataset(dataset_id)
     if dataset.clearml_dataset is not None:
@@ -95,20 +96,15 @@ async def dataset_delete(
     return dataset
 
 
-# @router.get("")
-# async def login(s: SessionContainer = Depends(verify_session())):
-#     return clearml_wrapper.get_datasets()
-
-
 @router.get("/{dataset_project_id}")
 async def get_specific_dataset(
-    dataset_project_id: str, s: SessionContainer = Depends(verify_session())
+    dataset_project_id: str, s: SessionContainer = Depends(check_session())
 ):
     return clearml_wrapper.get_specific_dataset(dataset_project_id)
 
 
 @router.get("/{dataset_id}/images")
 async def get_dataset_images(
-    dataset_id: str, _: SessionContainer = Depends(verify_session())
+    dataset_id: str, _: SessionContainer = Depends(check_session())
 ):
     return clearml_wrapper.get_datatset_debug_images(dataset_id)

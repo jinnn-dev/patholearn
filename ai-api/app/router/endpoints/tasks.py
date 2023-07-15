@@ -2,14 +2,15 @@ from datetime import datetime
 import json
 import tempfile
 from typing import Dict, List, Literal, Optional, Union
-from app.train.train_model import start_builder_training
+from app.core.train.train_model import start_task_training
 from bson import ObjectId
 from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.responses import FileResponse, PlainTextResponse, JSONResponse
 from pydantic import parse_obj_as
 from supertokens_python.recipe import session
 from supertokens_python.recipe.session import SessionContainer
-from supertokens_python.recipe.session.framework.fastapi import verify_session
+from app.utils.session import check_session
+
 from clearml import Task as ClearmlTask
 import nbformat as nbf
 import app.clearml_wrapper.clearml_wrapper as clearml_wrapper
@@ -32,6 +33,9 @@ from app.core.parser.parse_to_pytorch import (
 )
 from app.utils.logger import logger
 from app.crud.task import get_task_with_version
+from app.core.modify.task import remove_task
+from app.core.modify.task_version import remove_clearml_task_to_version
+from app.utils.session import check_session
 
 router = APIRouter()
 
@@ -42,7 +46,7 @@ router = APIRouter()
     description="Creates a new task for building and training a neural network model",
 )
 async def create_task(
-    task_data: CreateTask = Body(...), s: SessionContainer = Depends(verify_session())
+    task_data: CreateTask = Body(...), s: SessionContainer = Depends(check_session())
 ):
     user_id = s.get_user_id()
     creation_date = datetime.now()
@@ -69,14 +73,13 @@ async def create_task(
 
 @router.post("/reset", response_model=TaskVersion)
 async def reset_version(
-    update_data: Dict, _: SessionContainer = Depends(verify_session())
+    update_data: Dict, _: SessionContainer = Depends(check_session())
 ):
     task_id = update_data["task_id"]
     version_id = update_data["version_id"]
     task, version = await get_task_with_version(task_id, version_id)
-    if version.clearml_id:
-        task: ClearmlTask = ClearmlTask.get_task(task_id=version.clearml_id)
-        task.delete()
+    remove_clearml_task_to_version(version)
+
     await task_collection.update_one(
         {
             "_id": ObjectId(task_id),
@@ -96,7 +99,7 @@ async def reset_version(
 
 @router.put("", response_model=TaskNoGraph)
 async def update_task(
-    update_task: UdateTask, _: SessionContainer = Depends(verify_session())
+    update_task: UdateTask, _: SessionContainer = Depends(check_session())
 ):
     update_dict = update_task.dict(exclude_unset=True)
     update_dict.pop("id", None)
@@ -111,7 +114,7 @@ async def update_task(
 
 @router.put("/unlock")
 async def unlock_element(
-    data: LockElement = Body(...), s: SessionContainer = Depends(verify_session())
+    data: LockElement = Body(...), s: SessionContainer = Depends(check_session())
 ):
     # element = await task_collection.find_one(
     #     {
@@ -136,7 +139,7 @@ async def unlock_element(
 
 @router.delete("/unlock")
 async def unlock_elements(
-    data: UnlockElements = Body(...), s: SessionContainer = Depends(verify_session())
+    data: UnlockElements = Body(...), s: SessionContainer = Depends(check_session())
 ):
     # await task_collection.update_many(
     #     {"_id": ObjectId(data.task_id), "lockStatus": data.user_ids},
@@ -159,17 +162,14 @@ async def unlock_elements(
     response_model=Task,
     description="Returns the Task model to the given id",
 )
-async def get_task(task_id: str, _: SessionContainer = Depends(verify_session())):
+async def get_task(task_id: str, _: SessionContainer = Depends(check_session())):
     task = await task_collection.find_one({"_id": ObjectId(task_id)})
     return task
 
 
-@router.delete(
-    "/{task_id}", response_model=int, description="Deletes the task to the given id"
-)
-async def delete_task(task_id: str, _: SessionContainer = Depends(verify_session())):
-    task = await task_collection.delete_one({"_id": ObjectId(task_id)})
-    return task.deleted_count
+@router.delete("/{task_id}", description="Deletes the task to the given id")
+async def delete_task(task_id: str, _: SessionContainer = Depends(check_session())):
+    return await remove_task(task_id)
 
 
 @router.put(
@@ -179,7 +179,7 @@ async def delete_task(task_id: str, _: SessionContainer = Depends(verify_session
 async def update_task_version(
     task_id: str,
     update_data: UpdateTaskVersion = Body(...),
-    _: SessionContainer = Depends(verify_session()),
+    _: SessionContainer = Depends(check_session()),
 ):
     # updated_task = await task_collection.update_one(
     #     {
@@ -210,7 +210,7 @@ async def update_task_version(
 
 @router.put("/lock")
 async def lock_element(
-    data: LockElement = Body(...), s: SessionContainer = Depends(verify_session())
+    data: LockElement = Body(...), s: SessionContainer = Depends(check_session())
 ):
     # element = await task_collection.find_one(
     #     {
@@ -252,8 +252,8 @@ async def lock_element(
 
 
 @router.post("/{task_id}/version/{version_id}/train")
-async def start_task_training(
-    task_id: str, version_id: str, _: SessionContainer = Depends(verify_session())
+async def start_training(
+    task_id: str, version_id: str, _: SessionContainer = Depends(check_session())
 ):
     task, task_version = await get_task_with_version(task_id, version_id)
 
@@ -261,7 +261,12 @@ async def start_task_training(
         raise HTTPException(status_code=404, detail="Task not found")
 
     try:
-        pytorch_text, _ = await parse_task_version_to_python(task, task_version)
+        (
+            pytorch_text,
+            _,
+            dataset_id,
+            dataset_clearml_id,
+        ) = await parse_task_version_to_python(task, task_version)
     except Exception as e:
         logger.exception(e)
         raise HTTPException(status_code=500, detail="Model could not be parsed")
@@ -275,10 +280,12 @@ async def start_task_training(
         array_filters=[{"version.id": ObjectId(version_id)}],
     )
 
-    start_builder_training(pytorch_text, task_id, task.name, version_id)
+    start_task_training(
+        pytorch_text, task_id, task.name, version_id, dataset_clearml_id, dataset_id
+    )
 
     try:
-        pytorch_text, _ = await parse_task_version_to_python(task, task_version)
+        pytorch_text, _, _, _ = await parse_task_version_to_python(task, task_version)
     except Exception as e:
         logger.exception(e)
         raise HTTPException(status_code=500, detail="Model could not be parsed")
@@ -298,7 +305,7 @@ async def download_builder_version(
         raise HTTPException(status_code=404, detail="Task not found")
 
     try:
-        pytorch_text, model = await parse_task_version_to_python(
+        pytorch_text, model, _, _ = await parse_task_version_to_python(
             task, task_version, False
         )
     except Exception as e:
@@ -322,7 +329,7 @@ async def download_builder_version(
 
 @router.get("/{task_id}/version/{version_id}/parse")
 async def parse_builder_version(
-    task_id: str, version_id: str, s: SessionContainer = Depends(verify_session())
+    task_id: str, version_id: str, s: SessionContainer = Depends(check_session())
 ):
     task, task_version = await get_task_with_version(task_id, version_id)
 
@@ -330,7 +337,7 @@ async def parse_builder_version(
         raise HTTPException(status_code=404, detail="Task not found")
 
     try:
-        pytorch_text = await parse_task_version_to_python(task, task_version)
+        pytorch_text, _, _, _ = await parse_task_version_to_python(task, task_version)
     except Exception as e:
         logger.exception(e)
         raise HTTPException(status_code=500, detail="Model could not be parsed")
@@ -342,7 +349,7 @@ async def parse_builder_version(
     "/{task_id}/version/{version_id}/metrics/latest", response_model=Optional[Dict]
 )
 async def get_latest_task_metrics(
-    task_id: str, version_id: str, _: SessionContainer = Depends(verify_session())
+    task_id: str, version_id: str, _: SessionContainer = Depends(check_session())
 ):
     _, version = await get_task_with_version(task_id, version_id)
     parsed_version = parse_obj_as(TaskVersion, version)
@@ -362,7 +369,7 @@ async def get_latest_task_metrics(
 
 @router.post("/builder", response_model=BuilderTask, status_code=201)
 async def create_builder_task(
-    data: CreateBuilderTask = Body(...), s: SessionContainer = Depends(verify_session())
+    data: CreateBuilderTask = Body(...), s: SessionContainer = Depends(check_session())
 ):
     user_id = s.get_user_id()
     new_task = await task_collection.insert_one(
@@ -375,7 +382,7 @@ async def create_builder_task(
 
 @router.get("/builder/{task_id}", response_model=BuilderTask)
 async def create_builder_task(
-    task_id: str, s: SessionContainer = Depends(verify_session())
+    task_id: str, s: SessionContainer = Depends(check_session())
 ):
     print(task_id)
     found_task = await task_collection.find_one({"_id": ObjectId(task_id)})
@@ -383,20 +390,20 @@ async def create_builder_task(
 
 
 # @router.post("")
-# async def create_task(data: dict, _: SessionContainer = Depends(verify_session())):
+# async def create_task(data: dict, _: SessionContainer = Depends(check_session())):
 #     return clearml_wrapper.create_task_and_enque(data)
 
 
 # @router.get("/{task_id}")
-# async def get_task(task_id: str, _: SessionContainer = Depends(verify_session())):
+# async def get_task(task_id: str, _: SessionContainer = Depends(check_session())):
 #     return clearml_wrapper.get_task(task_id)
 
 
 @router.get("/{task_id}/log")
-async def get_task_log(task_id: str, _: SessionContainer = Depends(verify_session())):
+async def get_task_log(task_id: str, _: SessionContainer = Depends(check_session())):
     return clearml_wrapper.get_task_log(task_id)
 
 
 @router.get("/{task_id}/metrics")
-async def get_task_log(task_id: str, _: SessionContainer = Depends(verify_session())):
+async def get_task_log(task_id: str, _: SessionContainer = Depends(check_session())):
     return clearml_wrapper.get_task_metrics(task_id)

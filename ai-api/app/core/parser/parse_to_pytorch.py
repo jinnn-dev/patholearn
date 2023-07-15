@@ -6,11 +6,13 @@ from typing import List, Optional
 from pydantic import BaseModel
 from app.core.parser.parse_classification_model import get_classification_model
 from app.core.parser.parse_lightning import LightningModel
+from app.utils.logger import logger
 
 import networkx as nx
 
 from app.core.parser.parse_graph import (
     AddNode,
+    ArchitectureNode,
     ConcatenateNode,
     DatasetNode,
     MetricNode,
@@ -35,6 +37,7 @@ class PytorchModel(BaseModel):
     lightning_trainer: str
     lightning_train: str
     lightning_test: str
+    lightning_checkpoint: str
     ignore_clearml: bool = False
 
     def __str__(self) -> str:
@@ -76,12 +79,22 @@ class MNISTDataModule:
 class ClassificationModel:
     def __init__(
         self,
-        layers: str,
+        layers: List[str],
+        architecture_node: Optional[ArchitectureNode],
     ) -> None:
         with open("/app/core/parser/templates/classification_model.txt", "r") as f:
             src = Template(f.read())
-
-            replacements = {"layers_string": ",\n".join(layers)}
+            if architecture_node is None:
+                combined_layers = ",\n".join(layers)
+                result_string = "torch.nn.Sequential(" + combined_layers + ")"
+                replacements = {"model": result_string, "modelfc": ""}
+            else:
+                replacements = {
+                    "model": layers[0],
+                    "modelfc": "self.model.fc = torch.nn.Sequential("
+                    + ",\n".join(layers[1:])
+                    + ")",
+                }
             self.model_class = src.substitute(replacements)
 
     def get_instance(self):
@@ -89,7 +102,7 @@ class ClassificationModel:
 
 
 def get_dataset_module(dataset_node: DatasetNode, output_node: OutputNode):
-    dataset = CustomDataset(dataset_node.dataset_id)
+    dataset = CustomDataset(dataset_node.dataset_clearml_id)
     data_module = DatasetModule()
     data_module_instance = data_module.get_instance(batch_size=output_node.batch_size)
 
@@ -100,18 +113,22 @@ def get_model(
     graph: nx.DiGraph,
     dataset_node: DatasetNode,
     output_node: OutputNode,
+    architecture_node: Optional[ArchitectureNode],
     combine_nodes: List[str],
 ):
     path = []
     if len(dataset_node.to_nodes) > 1 or len(combine_nodes) > 0:
-        get_path_until_output(graph, dataset_node.id, path)
+        if architecture_node is None:
+            get_path_until_output(graph, dataset_node.id, path)
+        else:
+            get_path_until_output(graph, architecture_node.id, path)
+
     else:
         path = list(nx.dfs_preorder_nodes(graph, dataset_node.id))
-
     layers, layer_strings = get_classification_model(
-        graph, path, dataset_node, output_node
+        graph, path, dataset_node, architecture_node, output_node
     )
-    model = ClassificationModel(layer_strings)
+    model = ClassificationModel(layer_strings, architecture_node)
     return model.model_class, model.get_instance()
 
 
@@ -196,6 +213,7 @@ def parse_to_pytorch(
     graph: nx.DiGraph,
     dataset_node: DatasetNode,
     output_node: OutputNode,
+    architecture_node: Optional[ArchitectureNode],
     combine_nodes: List[str],
     metric_nodes: List[MetricNode],
     task: Task,
@@ -214,7 +232,8 @@ def parse_to_pytorch(
         "import glob",
         "import torch",
         "from torch.utils.data import random_split, DataLoader, Dataset",
-        "import pytorch_lightning as pl",
+        "import lightning as pl",
+        "from lightning.pytorch.callbacks import ModelCheckpoint",
         "import albumentations as A",
         "from albumentations.pytorch import ToTensorV2",
         "from PIL import Image",
@@ -228,7 +247,7 @@ def parse_to_pytorch(
         )
     else:
         imports.append(
-            "from clearml import Task, Dataset as ClearmlDataset",
+            "from clearml import Task, Dataset as ClearmlDataset, OutputModel",
         )
 
     import_string = "\n".join(imports)
@@ -242,22 +261,30 @@ def parse_to_pytorch(
     dataset_instance = "data_module" + " = " + dataset_module_call
     nodes: List[Node] = []
 
-    model_class, model_call = get_model(graph, dataset_node, output_node, combine_nodes)
+    model_class, model_call = get_model(
+        graph, dataset_node, output_node, architecture_node, combine_nodes
+    )
     model_instance = "model" + " = " + model_call
 
     lightning_model = LightningModel(dataset_node, output_node, metric_nodes)
     lightning_model_class = lightning_model.model_class
     lightning_model_instance = lightning_model.get_instance("lightning_model", "model")
-    lightning_trainer = "trainer = " + lightning_model.trainer
+    lightning_trainer = lightning_model.trainer
     lightning_train = f"trainer.fit(model=lightning_model, datamodule=data_module)"
     lightning_test = f"trainer.test(model=lightning_model, datamodule=data_module)"
-
+    with open("/app/core/parser/templates/checkpoint.txt") as f:
+        src = Template(f.read())
+        replacements = {
+            "channels": dataset_node.channels,
+            "width": dataset_node.dimension.x,
+            "height": dataset_node.dimension.y,
+        }
+        lightning_checkpoint = src.substitute(replacements)
     if not ignore_clearml:
         with open("/app/core/parser/templates/clearml.txt", "r") as f:
             src = Template(f.read())
             replacements = {"project_name": task.name, "task_name": version.id}
             clearml_string = src.substitute(replacements)
-
     pytorch_model = PytorchModel(
         import_string=format_string(import_string),
         clearml_string=None if ignore_clearml else format_string(clearml_string),
@@ -271,6 +298,7 @@ def parse_to_pytorch(
         lightning_trainer=format_string(lightning_trainer),
         lightning_train=format_string(lightning_train),
         lightning_test=format_string(lightning_test),
+        lightning_checkpoint=format_string(lightning_checkpoint),
     )
     formatted = str(pytorch_model)
 
@@ -284,6 +312,7 @@ async def parse_task_version_to_python(
         parsed_graph,
         dataset_node,
         output_node,
+        architecture_node,
         combine_nodes,
         metric_nodes,
     ) = await parse_graph_to_networkx(task_version.graph)
@@ -291,13 +320,14 @@ async def parse_task_version_to_python(
         parsed_graph,
         dataset_node,
         output_node,
+        architecture_node,
         combine_nodes,
         metric_nodes,
         task,
         task.versions[0],
         ignore_clearml,
     )
-    return formatted, model
+    return formatted, model, dataset_node.dataset_id, dataset_node.dataset_clearml_id
 
 
 def format_string(value: str):

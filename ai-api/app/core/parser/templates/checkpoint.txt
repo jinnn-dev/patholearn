@@ -1,0 +1,18 @@
+trained_model = LightningModel.load_from_checkpoint(trainer.checkpoint_callback.best_model_path, model=model)
+trained_model.freeze()
+trained_model.eval()
+trained_model.to_onnx(
+    "model.onnx",
+    input_sample=torch.randn(1, $channels, $width, $height, requires_grad=False),
+    export_params=True,
+    input_names=["input"],
+    opset_version=17,
+    output_names=["output"],
+    dynamic_axes={
+        "input": {0: "batch_size", 2: "width", 3: "height"},
+        "output": {0: "batch_size", 2: "width", 3: "height"},
+    },
+)
+OutputModel(
+    task=task, name="model", framework="onnx"
+).update_weights("model.onnx")

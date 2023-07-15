@@ -27,6 +27,16 @@ const connectionMatrix: { [key in SocketType]?: SocketType[] } = {
 };
 
 export function nodesCanConnect(source: NodeClassesType, target: NodeClassesType): boolean {
+  if (target.type === 'ResNetNode' && source.type !== 'DatasetNode') {
+    addNotification({
+      header: 'Nicht möglich!',
+      detail: `Es kann nur ein Dataset Node mit einem ${target.label} Node verbunden werden`,
+      level: 'warning',
+      showDate: false,
+      timeout: 10000
+    });
+    return false;
+  }
   if (source.sockets.output && target.sockets.input) {
     const possibleConnections = connectionMatrix[source.sockets.output.type];
     if (!possibleConnections) return false;
@@ -54,7 +64,7 @@ export function getWarningMessage(sourceNode: NodeClassesType, targetNode: NodeC
   }
 
   if (sourceType === 'Linear' && targetType === '2D') {
-    return `Ein ${sourceNode.label} Node produziert lineare Daten. Der ${targetNode.label} Node verarbeitet aber nur 2D-Daten. Ändere die Reihenfolge der Nodes.`;
+    return `Ein ${sourceNode.label} Node produziert lineare Daten. Der ${targetNode.label} Node verarbeitet aber nur 2D-Daten.`;
   }
 
   return `Ein ${sourceNode.label} Node kann nicht mit einem ${targetNode.label} Node verbunden werden.`;

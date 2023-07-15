@@ -10,7 +10,7 @@ ENV PYTHONPATH "${PYTHONPATH}:/app/"
 # ARG MYSQL_DATABASE
 # ENV MYSQL_DATABASE=${MYSQL_DATABASE}
 
-RUN apt-get update && apt-get install -y supervisor && apt-get install -y libvips && apt-get install -y default-mysql-client && apt-get install libgeos-dev -y
+RUN apt-get update && apt-get install -y supervisor && apt-get install -y libvips && apt-get install -y default-mysql-client && apt-get install libgeos-dev ffmpeg libsm6 libxext6  -y
 
 COPY supervisord.dev.conf /etc/supervisor/conf.d/supervisord.conf
 

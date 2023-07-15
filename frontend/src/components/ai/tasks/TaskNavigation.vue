@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { builderState } from '../../../core/ai/builder/state';
+
 defineProps({
   taskId: {
     type: String,
@@ -11,19 +13,24 @@ defineProps({
     <div
       class="flex gap-4 bg-gray-700/70 backdrop-blur-md px-8 py-1.5 rounded-full ring-[1px] ring-gray-500/70 shadow-md shadow-gray-900"
     >
-      <router-link :to="`/ai/tasks/${taskId}`" class="cursor-pointer px-4 py-1 rounded-lg hover:text-highlight-500"
-        >Builder</router-link
-      >
-      <router-link
-        :to="`/ai/tasks/${taskId}/metrics`"
+      <div
         class="cursor-pointer px-4 py-1 rounded-lg hover:text-highlight-500"
-        >Metriken</router-link
+        @click="builderState.selectedNavigation = 'metrics'"
       >
-      <router-link
-        :to="`/ai/tasks/${taskId}/console`"
+        Metriken
+      </div>
+      <div
         class="cursor-pointer px-4 py-1 rounded-lg hover:text-highlight-500"
-        >Konsole</router-link
+        @click="builderState.selectedNavigation = 'console'"
       >
+        Konsole
+      </div>
+      <div
+        class="cursor-pointer px-4 py-1 rounded-lg hover:text-highlight-500"
+        @click="builderState.selectedNavigation = 'prediction'"
+      >
+        Prediction
+      </div>
     </div>
   </div>
 </template>
