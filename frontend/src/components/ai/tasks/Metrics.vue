@@ -31,13 +31,13 @@ const metricGroups = ref<{ [x in MetricGroup]: MetricItem[] }>(intitialGroups);
 onMounted(async () => {
   await run(props.clearMlTaskId);
   if (builderState.isConnected && builderState.selectedVersion?.status !== 'completed') {
-    builderState.channel?.bind('training-metrics-complete', updateMetrics);
+    builderState.channel?.bind('training-metrics-diagram', updateMetrics);
   }
   groupMetrics();
 });
 
 onUnmounted(() => {
-  builderState.channel?.unbind('training-metrics-complete', updateMetrics);
+  builderState.channel?.unbind('training-metrics-diagram', updateMetrics);
 });
 
 const updateMetrics = async (data: any) => {
