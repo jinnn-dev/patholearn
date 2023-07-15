@@ -2,7 +2,8 @@ from typing import Optional, List
 from fastapi import APIRouter, Body, Depends
 from pydantic import BaseModel, Field
 from supertokens_python.recipe.session import SessionContainer
-from supertokens_python.recipe.session.framework.fastapi import verify_session
+from app.utils.session import check_session
+
 from app.database.database import builder_collection
 from bson import ObjectId
 
@@ -64,7 +65,7 @@ class UpdateBuilderState(BaseModel):
 
 
 @router.get("/state", response_model=BuilderState)
-async def get_state(s: SessionContainer = Depends(verify_session())):
+async def get_state(s: SessionContainer = Depends(check_session())):
     builder_state = await builder_collection.find_one(
         {"_id": ObjectId("6462829563d1dfdd7fae0846")}
     )
@@ -77,7 +78,7 @@ async def get_state(s: SessionContainer = Depends(verify_session())):
 @router.put("/state", response_model=str)
 async def updateState(
     body: UpdateBuilderState = Body(...),
-    s: SessionContainer = Depends(verify_session()),
+    s: SessionContainer = Depends(check_session()),
 ):
     await builder_collection.update_one(
         {
@@ -94,7 +95,7 @@ async def updateState(
 @router.put("/state/lock", response_model=str)
 async def updateState(
     body: UpdateBuilderState = Body(...),
-    s: SessionContainer = Depends(verify_session()),
+    s: SessionContainer = Depends(check_session()),
 ):
     await builder_collection.update_one(
         {
@@ -111,7 +112,7 @@ async def updateState(
 @router.put("/state/unlock", response_model=str)
 async def updateState(
     body: UpdateBuilderState = Body(...),
-    s: SessionContainer = Depends(verify_session()),
+    s: SessionContainer = Depends(check_session()),
 ):
     await builder_collection.update_one(
         {
@@ -128,7 +129,7 @@ async def updateState(
 @router.put("/state/unlock/user", response_model=str)
 async def updateState(
     body,
-    s: SessionContainer = Depends(verify_session()),
+    s: SessionContainer = Depends(check_session()),
 ):
     print("UPDATING USER STATE")
     await builder_collection.update_one(
@@ -144,7 +145,7 @@ async def updateState(
 
 @router.put("/graph", response_model=str)
 async def updateBuilderGraph(
-    body: dict = Body(...), s: SessionContainer = Depends(verify_session())
+    body: dict = Body(...), s: SessionContainer = Depends(check_session())
 ):
     print("UPDATING GRAPH STATE")
     await builder_collection.update_one(
