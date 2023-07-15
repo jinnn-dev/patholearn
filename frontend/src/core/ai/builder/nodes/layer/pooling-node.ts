@@ -18,7 +18,6 @@ export class PoolingNode extends Node<
   }
 > {
   width = 200;
-  height = 235;
 
   constructor() {
     super('Pooling', 'PoolingNode', { input: '2D', output: '2D' });
