@@ -1,4 +1,4 @@
-from typing import Dict, List, Literal, Optional
+from typing import Dict, List, Literal, Optional, Tuple
 from app.schema.dataset import Dataset, DatasetType
 
 from pydantic import BaseModel
@@ -39,6 +39,7 @@ class DatasetNode(Node):
     dimension: DatasetDimension
     classes: int
     dataset_type: DatasetType
+    dataset_clearml_id: str
     dataset_id: str
 
 
@@ -135,7 +136,9 @@ def find_node_by_type(nodes: List[INode], node_type: NodeType) -> Optional[INode
     return next((node for node in nodes if node[1]["data"].type == node_type), None)
 
 
-async def parse_graph_to_networkx(version_graph: Graph):
+async def parse_graph_to_networkx(
+    version_graph: Graph,
+) -> Tuple[nx.DiGraph, DatasetNode, OutputNode, ArchitectureNode, List, List]:
     nodes_dict = {node.id: node for node in version_graph.nodes}
     processed_nodes = {}
 
@@ -214,7 +217,8 @@ async def get_dataset(node: INode):
         classes=len(loaded_dataset.metadata.classes),
         dimension=loaded_dataset.metadata.dimension,
         dataset_type=loaded_dataset.dataset_type,
-        dataset_id=loaded_dataset.clearml_dataset["id"],
+        dataset_clearml_id=loaded_dataset.clearml_dataset["id"],
+        dataset_id=selected_dataset["id"],
     )
 
 

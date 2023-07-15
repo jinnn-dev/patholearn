@@ -31,11 +31,11 @@ def get_classification_layer(
     classification_layer = torch.nn.Linear(
         in_features=in_channels, out_features=classes
     )
-    activation_function = torch.nn.LogSoftmax(dim=1)
+    # activation_function = torch.nn.Softmax(dim=1)
     result.append(classification_layer)
-    result.append(activation_function)
+    # result.append(activation_function)
     result_strings.append(get_layer_string(classification_layer))
-    result_strings.append(get_layer_string(activation_function))
+    # result_strings.append(get_layer_string(activation_function))
 
 
 def get_classification_model(

@@ -102,7 +102,7 @@ class ClassificationModel:
 
 
 def get_dataset_module(dataset_node: DatasetNode, output_node: OutputNode):
-    dataset = CustomDataset(dataset_node.dataset_id)
+    dataset = CustomDataset(dataset_node.dataset_clearml_id)
     data_module = DatasetModule()
     data_module_instance = data_module.get_instance(batch_size=output_node.batch_size)
 
@@ -327,7 +327,7 @@ async def parse_task_version_to_python(
         task.versions[0],
         ignore_clearml,
     )
-    return formatted, model
+    return formatted, model, dataset_node.dataset_id, dataset_node.dataset_clearml_id
 
 
 def format_string(value: str):

@@ -5,7 +5,7 @@ from bson import ObjectId
 
 from celery import Celery
 from celery.utils.log import get_task_logger
-from clearml import Task
+from clearml import Task, Model, Dataset
 from pydantic import parse_obj_as
 from app.database.database import task_collection
 from app.scheduler.session import SessionManager
@@ -48,9 +48,25 @@ def update_version_clearml_id(task_id: str, version_id: str, clearml_id: str):
     )
 
 
+def update_version_dataset_id(task_id: str, version_id: str, dataset_id: str):
+    task_collection.update_one(
+        {
+            "_id": ObjectId(task_id),
+            "versions": {"$elemMatch": {"id": ObjectId(version_id)}},
+        },
+        {"$set": {"versions.$[version].dataset_id": dataset_id}},
+        array_filters=[{"version.id": ObjectId(version_id)}],
+    )
+
+
 @celery_app.task(name="enqueue_builder_task", queue="ai")
 def enqueue_builder_task(
-    file_contents: str, task_id: str, task_name: str, version_id: str
+    file_contents: str,
+    task_id: str,
+    task_name: str,
+    version_id: str,
+    dataset_clearml_id: str,
+    dataset_id: str,
 ):
     script_path = "/app/builder_train.py"
     file = os.open(
@@ -104,6 +120,7 @@ def enqueue_builder_task(
 
     update_version_clearml_id(task_id, version_id, task.id)
     update_version_status(task_id, version_id, task.status)
+    update_version_dataset_id(task_id, version_id, dataset_id)
     ws_client.trigger(
         f"presence-task-{task_id}",
         "training-status-changed",
@@ -137,6 +154,7 @@ def enqueue_builder_task(
                 "task_id": task_id,
                 "task_name": task_name,
                 "version_id": version_id,
+                "dataset_id": dataset_clearml_id,
             }
         ),
         queue="ai",
@@ -151,7 +169,7 @@ def enqueue_builder_task(
 
 @celery_app.task(name="check_task_status", queue="ai")
 def check_task_version(
-    clearml_task_id: str, task_id: str, task_name: str, version_id: str
+    clearml_task_id: str, task_id: str, task_name: str, version_id: str, dataset_id: str
 ):
     _, session_maker = session_manager.create_session(beat_dburi)
     session = session_maker()
@@ -220,6 +238,65 @@ def check_task_version(
             {"$set": {"versions.$[version].status": new_status}},
             array_filters=[{"version.id": ObjectId(version_id)}],
         )
+
+    if new_status == "completed":
+        dataset = Dataset.get(dataset_id=dataset_id)
+        metadata = dataset.get_metadata()
+        channels = 1 if metadata["is_grayscale"] else 3
+        num_classes = len(metadata["classes"])
+        model = Model(clearml_task.output_models_id["model"])
+        publish_result = model.publish()
+        logger.debug(publish_result)
+        logger.info(
+            f"Serving model {clearml_task.output_models_id['model']} ({task_id})"
+        )
+        logger.info(f"Num classes: {num_classes}")
+        command = [
+            "clearml-serving",
+            "model",
+            "add",
+            "--engine",
+            "triton",
+            "--input-size",
+            "-1",
+            str(channels),
+            "-1",
+            "-1",
+            "--input-type",
+            "float32",
+            "--input-name",
+            "input",
+            "--output-size",
+            "-1",
+            str(num_classes),
+            "--output-type",
+            "float32",
+            "--output-name",
+            "output",
+            "--endpoint",
+            clearml_task_id,
+            "--preprocess",
+            "/app/serving/classification_grayscale.py"
+            if channels == 1
+            else "/app/serving/classification_color.py",
+            "--model-id",
+            model.id,
+            "--aux-config",
+            'platform="onnxruntime_onnx"',
+            'default_model_filename="model.bin"',
+        ]
+        p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # Read from stdout and stderr
+        stdout, stderr = p.communicate()
+
+        exit_code = p.wait()
+        # Convert byte stream to string
+        stdout = stdout.decode("utf-8")
+        stderr = stderr.decode("utf-8")
+
+        logger.info(f"Script {task_id} stdout: {stdout}")
+        logger.error(f"Script {task_id} stderr: {stderr}")
+        logger.info(f"Script {task_id} exit code: {exit_code}")
 
     return 0
 

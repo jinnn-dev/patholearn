@@ -25,11 +25,23 @@ def start_training(data: dict):
 
 
 def start_builder_training(
-    file_contents: str, task_id: str, task_name: str, version_id: str
+    file_contents: str,
+    task_id: str,
+    task_name: str,
+    version_id: str,
+    clearml_dataset_id: str,
+    dataset_id: str,
 ):
     result = celery_app.send_task(
         name="enqueue_builder_task",
-        args=[file_contents, task_id, task_name, version_id],
+        args=[
+            file_contents,
+            task_id,
+            task_name,
+            version_id,
+            clearml_dataset_id,
+            dataset_id,
+        ],
         retries=3,
         queue="ai",
     )

@@ -76,7 +76,7 @@ async def reset_version(
     task, version = await get_task_with_version(task_id, version_id)
     if version.clearml_id:
         task: ClearmlTask = ClearmlTask.get_task(task_id=version.clearml_id)
-        task.delete()
+        task.delete(delete_artifacts_and_models=True)
     await task_collection.update_one(
         {
             "_id": ObjectId(task_id),
@@ -261,7 +261,12 @@ async def start_task_training(
         raise HTTPException(status_code=404, detail="Task not found")
 
     try:
-        pytorch_text, _ = await parse_task_version_to_python(task, task_version)
+        (
+            pytorch_text,
+            _,
+            dataset_id,
+            dataset_clearml_id,
+        ) = await parse_task_version_to_python(task, task_version)
     except Exception as e:
         logger.exception(e)
         raise HTTPException(status_code=500, detail="Model could not be parsed")
@@ -275,10 +280,12 @@ async def start_task_training(
         array_filters=[{"version.id": ObjectId(version_id)}],
     )
 
-    start_builder_training(pytorch_text, task_id, task.name, version_id)
+    start_builder_training(
+        pytorch_text, task_id, task.name, version_id, dataset_clearml_id, dataset_id
+    )
 
     try:
-        pytorch_text, _ = await parse_task_version_to_python(task, task_version)
+        pytorch_text, _, _, _ = await parse_task_version_to_python(task, task_version)
     except Exception as e:
         logger.exception(e)
         raise HTTPException(status_code=500, detail="Model could not be parsed")
@@ -298,7 +305,7 @@ async def download_builder_version(
         raise HTTPException(status_code=404, detail="Task not found")
 
     try:
-        pytorch_text, model = await parse_task_version_to_python(
+        pytorch_text, model, _, _ = await parse_task_version_to_python(
             task, task_version, False
         )
     except Exception as e:
@@ -330,7 +337,7 @@ async def parse_builder_version(
         raise HTTPException(status_code=404, detail="Task not found")
 
     try:
-        pytorch_text = await parse_task_version_to_python(task, task_version)
+        pytorch_text, _, _, _ = await parse_task_version_to_python(task, task_version)
     except Exception as e:
         logger.exception(e)
         raise HTTPException(status_code=500, detail="Model could not be parsed")
