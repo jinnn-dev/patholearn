@@ -15,12 +15,17 @@ const props = defineProps({
 
 const { result: logs, loading, run } = useService(AiService.getTaskLog, true, props.clearMlTaskId);
 
+const updateLogs = async (data: any) => {
+  logs.value = await AiService.getTaskLog(props.clearMlTaskId);
+};
 onMounted(() => {
   if (builderState.isConnected && builderState.selectedVersion?.status !== 'completed') {
-    builderState.channel?.bind('training-logs', async (data: any) => {
-      logs.value = await AiService.getTaskLog(props.clearMlTaskId);
-    });
+    builderState.channel?.bind('training-logs', updateLogs);
   }
+});
+
+onUnmounted(() => {
+  builderState.channel?.unbind('training-logs', updateLogs);
 });
 </script>
 <template>

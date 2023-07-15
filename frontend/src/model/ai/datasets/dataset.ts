@@ -11,6 +11,18 @@ export interface ClearmlDataset {
 }
 
 export type DatasetStatus = 'saving' | 'processing' | 'completed' | 'failed';
+export interface DatasetMetadata {
+  class_map: {
+    [key in string]: string;
+  };
+  is_grayscale: boolean;
+  classes: string[];
+  dimension: {
+    x: number;
+    y: number;
+  };
+}
+
 export interface Dataset {
   id: string;
   name: string;
@@ -19,17 +31,7 @@ export interface Dataset {
   status: DatasetStatus;
   created_at: string;
   creator_id: string;
-  metadata?: {
-    class_map: {
-      [key in string]: string;
-    };
-    is_grayscale: boolean;
-    classes: string[];
-    dimension: {
-      x: number;
-      y: number;
-    };
-  };
+  metadata?: DatasetMetadata;
   clearml_dataset?: {
     id: string;
     name: string;

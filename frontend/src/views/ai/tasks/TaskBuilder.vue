@@ -6,6 +6,7 @@ import PingPongLoader from '../../../components/general/PingPongLoader.vue';
 import TaskMetrics from './TaskMetrics.vue';
 import TaskConsole from './TaskConsole.vue';
 import Icon from '../../../components/general/Icon.vue';
+import TaskPrediction from './TaskPrediction.vue';
 
 const NodeEditor = defineAsyncComponent(() => import('../../../components/ai/builder/editor/NodeEditor.vue'));
 
@@ -51,6 +52,7 @@ onUnmounted(() => {
         </div>
         <task-metrics v-if="builderState.selectedNavigation === 'metrics'"></task-metrics>
         <task-console v-if="builderState.selectedNavigation === 'console'"></task-console>
+        <task-prediction v-if="builderState.selectedNavigation === 'prediction'"></task-prediction>
       </div>
     </transition>
   </div>

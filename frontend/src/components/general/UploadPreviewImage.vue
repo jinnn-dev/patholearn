@@ -20,6 +20,14 @@ const props = defineProps({
   imageName: {
     type: String
   },
+  showTools: {
+    type: Boolean,
+    default: true
+  },
+  showName: {
+    type: Boolean,
+    default: true
+  },
   preview: {
     type: Boolean,
     default: false
@@ -83,18 +91,18 @@ const updateImage = () => {
 };
 </script>
 <template>
-  <div class="flex flex-col justify-center items-center">
-    <div class="flex justify-center items-center gap-4">
+  <div class="flex flex-col justify-center items-center w-full h-full">
+    <div class="flex justify-center items-center gap-4 w-full h-full">
       <div :class="`h-${size} w-${size}`">
         <div class="h-full">
           <lazy-image
             v-viewer
-            :imageClasses="'h-full w-full object-cover cursor-pointer'"
+            :imageClasses="'h-full w-full object-contain cursor-pointer'"
             :imageUrl="imgSrc"
           ></lazy-image>
         </div>
       </div>
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col gap-2" v-if="showTools">
         <div
           class="bg-gray-600 hover:bg-gray-500 p-1 rounded-md cursor-pointer hover:ring-2 ring-gray-100 transition-all"
           @click="$emit('deleteImage')"
@@ -115,10 +123,10 @@ const updateImage = () => {
         </div>
       </div>
     </div>
-    <p :id="`previewImage-${index}`" class="mt-1 select-none">{{ truncatedName }}</p>
+    <p v-if="showName" :id="`previewImage-${index}`" class="mt-1 select-none">{{ truncatedName }}</p>
   </div>
 
-  <modal-dialog :show="showEdit" customClasses="w-[30rem]">
+  <modal-dialog :show="showEdit" customClasses="w-[30rem]" v-if="showTools">
     <h2 class="text-3xl">Bild bearbeiten</h2>
 
     <input-field v-model="newImageName" :required="true" label="Bildname" type="text"></input-field>

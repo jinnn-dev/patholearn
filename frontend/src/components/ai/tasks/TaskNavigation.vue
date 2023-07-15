@@ -25,6 +25,12 @@ defineProps({
       >
         Konsole
       </div>
+      <div
+        class="cursor-pointer px-4 py-1 rounded-lg hover:text-highlight-500"
+        @click="builderState.selectedNavigation = 'prediction'"
+      >
+        Prediction
+      </div>
     </div>
   </div>
 </template>

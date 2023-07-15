@@ -143,7 +143,7 @@ const processData = (series: any, update: boolean) => {
               <div class="animate-skeleton bg-gray-700 min-h-[400px] w-full rounded-lg"></div>
             </div>
           </div>
-          <div v-else-if="metricGroups[group as MetricGroup].length === 0">
+          <div v-else-if="metricGroups[group as MetricGroup].length === 0" class="mt-4">
             <no-content text="Noch keine Metriken vorhanden" icon-size="w-24" text-size="text-base"></no-content>
           </div>
           <div v-else class="grid grid-cols-2 2xl:grid-cols-2 gap-4">

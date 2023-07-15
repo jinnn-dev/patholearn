@@ -2,7 +2,7 @@ import { ApiService } from './api.service';
 import { AI_API_URL } from '../config';
 import { handleError } from './error-handler';
 import { Project, ProjectWithTasks, UpdateProject } from '../model/ai/projects/project';
-import { CreateDataset, Dataset } from '../model/ai/datasets/dataset';
+import { CreateDataset, Dataset, DatasetMetadata } from '../model/ai/datasets/dataset';
 import { CreateTask, Task, TaskVersion, UpdateTask } from '../model/ai/tasks/task';
 import { LogEntry } from '../model/ai/tasks/log-entry';
 import { IGraph } from '../core/ai/builder/serializable';
@@ -501,6 +501,37 @@ export class AiService {
     const [_, response] = await handleError(
       ApiService.post<Dataset>({
         resource: '/datasets',
+        data: formData,
+        config: { onUploadProgress },
+        host: AI_API_URL
+      }),
+      'Dataset could not be created'
+    );
+    return response!.data;
+  }
+
+  public static async checkServingStatus(taskId: string, versionId: string) {
+    const [_, response] = await handleError(
+      ApiService.get<any>({
+        resource: '/serve/' + taskId + '/' + versionId,
+        host: AI_API_URL
+      }),
+      'Serving status could not be loaded'
+    );
+    return response!.data;
+  }
+
+  public static async makePrediction(
+    taskId: string,
+    versionId: string,
+    file: Blob,
+    onUploadProgress?: (event: any) => void
+  ) {
+    const formData = new FormData();
+    formData.append('image', file);
+    const [_, response] = await handleError(
+      ApiService.post<{ propabilities: number[]; max_index: number; dataset: DatasetMetadata }>({
+        resource: '/serve/' + taskId + '/' + versionId,
         data: formData,
         config: { onUploadProgress },
         host: AI_API_URL

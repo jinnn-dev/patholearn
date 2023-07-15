@@ -8,7 +8,7 @@ import { SyncPlugin } from './plugins/sync-plugin';
 import { Node } from './nodes/node';
 import { NodeEditor } from 'rete';
 
-type NavigationLinks = 'metrics' | 'console';
+type NavigationLinks = 'metrics' | 'console' | 'prediction';
 
 interface BuilderState {
   builderLoaded: boolean;
