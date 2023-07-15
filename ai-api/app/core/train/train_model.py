@@ -1,12 +1,5 @@
-import os
-
-from celery import Celery
 from app.utils.logger import logger
-
-celery_app = Celery(__name__)
-celery_app.conf.broker_url = os.environ.get(
-    "CELERY_BROKER_URL", "amqp://guest:guest@rabbit:5673//"
-)
+from app.worker.celery import celery_app
 
 
 def start_training(data: dict):
@@ -24,7 +17,7 @@ def start_training(data: dict):
     print("Result", result)
 
 
-def start_builder_training(
+def start_task_training(
     file_contents: str,
     task_id: str,
     task_name: str,

@@ -7,7 +7,6 @@ import random
 
 
 from fastapi import FastAPI, Depends
-from fastapi_socketio import SocketManager
 from starlette.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 
@@ -46,6 +45,7 @@ init(
             cookie_domain=os.environ.get("COOKIE_DOMAIN", ".localhost"),
             cookie_secure=True,
             anti_csrf=os.environ.get("ANTI_CSRF", "VIA_TOKEN"),
+            session_expired_status_code=401,
         ),
         usermetadata.init(),
     ],
@@ -73,9 +73,6 @@ app.add_middleware(
     allow_headers=["*"] + get_all_cors_headers(),
 )
 app.add_middleware(GZipMiddleware, minimum_size=1000)
-
-
-sio = SocketManager(app=app, cors_allowed_origins=[], logger=True)
 
 
 @app.get("/")

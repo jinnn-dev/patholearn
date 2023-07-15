@@ -26,3 +26,7 @@ def get_prediction_to_version(
         logger.error(data)
         raise HTTPException(status_code=403, detail="Did not work")
     return data["propabilities"][0]
+
+
+def remove_prediction_endpoint(version: TaskVersion):
+    pass

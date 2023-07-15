@@ -2,7 +2,7 @@ from datetime import datetime
 import json
 import tempfile
 from typing import Dict, List, Literal, Optional, Union
-from app.train.train_model import start_builder_training
+from app.core.train.train_model import start_task_training
 from bson import ObjectId
 from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.responses import FileResponse, PlainTextResponse, JSONResponse
@@ -32,6 +32,8 @@ from app.core.parser.parse_to_pytorch import (
 )
 from app.utils.logger import logger
 from app.crud.task import get_task_with_version
+from app.core.modify.task import remove_task
+from app.core.modify.task_version import remove_clearml_task_to_version
 
 router = APIRouter()
 
@@ -74,9 +76,8 @@ async def reset_version(
     task_id = update_data["task_id"]
     version_id = update_data["version_id"]
     task, version = await get_task_with_version(task_id, version_id)
-    if version.clearml_id:
-        task: ClearmlTask = ClearmlTask.get_task(task_id=version.clearml_id)
-        task.delete(delete_artifacts_and_models=True)
+    remove_clearml_task_to_version(version)
+
     await task_collection.update_one(
         {
             "_id": ObjectId(task_id),
@@ -164,12 +165,9 @@ async def get_task(task_id: str, _: SessionContainer = Depends(verify_session())
     return task
 
 
-@router.delete(
-    "/{task_id}", response_model=int, description="Deletes the task to the given id"
-)
+@router.delete("/{task_id}", description="Deletes the task to the given id")
 async def delete_task(task_id: str, _: SessionContainer = Depends(verify_session())):
-    task = await task_collection.delete_one({"_id": ObjectId(task_id)})
-    return task.deleted_count
+    return await remove_task(task_id)
 
 
 @router.put(
@@ -252,7 +250,7 @@ async def lock_element(
 
 
 @router.post("/{task_id}/version/{version_id}/train")
-async def start_task_training(
+async def start_training(
     task_id: str, version_id: str, _: SessionContainer = Depends(verify_session())
 ):
     task, task_version = await get_task_with_version(task_id, version_id)
@@ -280,7 +278,7 @@ async def start_task_training(
         array_filters=[{"version.id": ObjectId(version_id)}],
     )
 
-    start_builder_training(
+    start_task_training(
         pytorch_text, task_id, task.name, version_id, dataset_clearml_id, dataset_id
     )
 

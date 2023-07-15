@@ -31,6 +31,7 @@ recipe_list = [
         cookie_domain=os.environ.get("COOKIE_DOMAIN", ".localhost"),
         cookie_secure=True,
         cookie_same_site="lax",
+        session_expired_status_code=401,
     ),
     dashboard.init(),
     usermetadata.init(),

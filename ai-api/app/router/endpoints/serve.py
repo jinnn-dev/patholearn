@@ -9,7 +9,7 @@ from clearml import Task as ClearmlTask, Model
 from app.crud.task import get_task_with_version
 from app.crud.dataset import get_dataset
 from app.schema.task import TaskVersion, Task
-from app.core.serve.get_prediction import get_prediction_to_version
+from app.core.serve.prediction import get_prediction_to_version
 
 router = APIRouter()
 
