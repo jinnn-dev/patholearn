@@ -18,7 +18,7 @@ class CustomDataset(Dataset):
         for class_path in class_folder_list:
             class_name = class_path.split("/")[-1]
 
-            for img_path in glob.glob(f"{class_path}/*.png"):
+            for img_path in glob.glob(f"{class_path}/*.[jp][pn]g"):
                 self.y.append(self.class_map[class_name])
                 self.x.append(img_path)
 
