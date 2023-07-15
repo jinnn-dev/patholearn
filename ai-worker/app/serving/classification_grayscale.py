@@ -8,6 +8,8 @@ import torch
 from clearml import StorageManager
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
+from io import BytesIO
+import base64
 
 
 # Notice Preprocess class Must be named "Preprocess"
@@ -17,23 +19,16 @@ class Preprocess(object):
         pass
 
     def preprocess(
-        self, body: Union[bytes, dict], state: dict, collect_custom_statistics_fn=None
+        self, body: dict, state: dict, collect_custom_statistics_fn=None
     ) -> Any:
-        # we expect to get two valid on the dict x0, and x1
-        if isinstance(body, bytes):
-            # we expect to get a stream of encoded image bytes
-            try:
-                image = Image.open(io.BytesIO(body)).convert("L")
-            except Exception:
-                # value error would return 404, we want to return 500 so any other exception
-                raise RuntimeError("Image could not be decoded")
-
-        if isinstance(body, dict) and "url" in body.keys():
-            # image is given as url, and is fetched
-            url = body.get("url")
-            local_file = StorageManager.get_local_copy(remote_url=url)
-            image = Image.open(local_file)
+        image = Image.open(BytesIO(base64.b64decode(body["image"]))).convert("L")
+        dataset_metadata = body["metadata"]
+        dimensions = dataset_metadata["dimension"]
+        # image is given as url, and is fetched
         image_numpy = np.array(image)
+        if dimensions["x"] > 256 or dimensions["y"] > 256:
+            dimensions["x"] = 256
+            dimensions["y"] = 256
         transform = A.Compose(
             [
                 A.Normalize((0.1307,), (0.3081,)),

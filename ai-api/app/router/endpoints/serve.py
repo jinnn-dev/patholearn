@@ -19,7 +19,7 @@ async def get_prediction(task_id: str, version_id: str, image: UploadFile):
     _, version = await get_task_with_version(task_id, version_id)
     dataset = await get_dataset(dataset_id=version.dataset_id)
     propabilities = get_prediction_to_version(
-        version=version, image_data=image.file.read()
+        version=version, image_data=image.file.read(), dataset=dataset
     )
     dataset.metadata.class_map = {v: k for k, v in dataset.metadata.class_map.items()}
 
