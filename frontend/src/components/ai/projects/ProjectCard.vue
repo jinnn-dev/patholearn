@@ -43,7 +43,7 @@ const editProject = async () => {
   </modal-dialog>
   <div class="bg-gray-700 p-2 rounded-lg min-w-[150px] max-w-[300px]">
     <div class="flex gap-2 items-center justify-between">
-      <div class="text-xl">{{ project.name }}</div>
+      <div class="text-xl text-ellipsis overflow-hidden">{{ project.name }}</div>
       <spinner v-if="loading"></spinner>
       <dot-menu-complete v-else @delete="deleteProject" @edit="editProject"></dot-menu-complete>
     </div>

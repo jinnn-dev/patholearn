@@ -20,7 +20,7 @@ const deleteDataset = async () => {
 <template>
   <content-container :loading="loading" back-route="/ai/datasets" back-text="Datensätze">
     <template #header>
-      <div>{{ dataset?.name }}</div>
+      <div class="break-all">{{ dataset?.name }}</div>
       <div class="w-full flex justify-center items-center gap-4 text-base mt-4" v-if="dataset">
         <dataset-status :status="dataset?.status"></dataset-status>
       </div>

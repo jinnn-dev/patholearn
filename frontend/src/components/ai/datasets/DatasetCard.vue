@@ -16,9 +16,9 @@ const props = defineProps({
 // const { result } = useService(AiService.getSpecificDataset, true, props.dataset.id);
 </script>
 <template>
-  <div class="bg-gray-700 p-2 rounded-lg min-w-[150px]">
+  <div class="bg-gray-700 p-2 rounded-lg min-w-[150px] max-w-[300px]">
     <div class="flex gap-2 justify-between">
-      <div class="text-xl">{{ dataset.name }}</div>
+      <div class="text-xl text-ellipsis overflow-hidden">{{ dataset.name }}</div>
       <router-link :to="`/ai/datasets/${dataset.id}`"><icon name="arrow-right"></icon></router-link>
     </div>
     <div class="text-sm text-gray-200 mb-2">{{ new Date(dataset.created_at).toLocaleDateString() }}</div>
