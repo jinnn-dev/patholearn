@@ -66,7 +66,9 @@ async def datasets(_: SessionContainer = Depends(verify_session())):
 
 
 @router.get("/{dataset_id}", response_model=Dataset)
-async def dataset(dataset_id: str, _: SessionContainer = Depends(verify_session())):
+async def get_specific_dataset(
+    dataset_id: str, _: SessionContainer = Depends(verify_session())
+):
     return await get_dataset(dataset_id)
 
 
@@ -97,15 +99,11 @@ async def dataset_delete(
     return dataset
 
 
-@router.get("/{dataset_project_id}")
-async def get_specific_dataset(
-    dataset_project_id: str, s: SessionContainer = Depends(verify_session())
-):
-    return clearml_wrapper.get_specific_dataset(dataset_project_id)
-
-
 @router.get("/{dataset_id}/images")
 async def get_dataset_images(
     dataset_id: str, _: SessionContainer = Depends(verify_session())
 ):
-    return clearml_wrapper.get_datatset_debug_images(dataset_id)
+    dataset = await get_dataset(dataset_id)
+    if dataset.clearml_dataset:
+        return clearml_wrapper.get_datatset_debug_images(dataset.clearml_dataset["id"])
+    return None
