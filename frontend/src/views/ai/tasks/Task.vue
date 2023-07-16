@@ -8,7 +8,6 @@ import Icon from '../../../components/general/Icon.vue';
 import UserListIndicator from '../../../components/ws/UserListIndicator.vue';
 import { builderState, resetBuilderState } from '../../../core/ai/builder/state';
 import TaskNavigation from '../../../components/ai/tasks/TaskNavigation.vue';
-import { addNotification } from '../../../utils/notification-state';
 const route = useRoute();
 
 const { loading, result: task, run } = useService(AiService.getTask);
@@ -36,13 +35,6 @@ onMounted(async () => {
       if (builderState.selectedVersion) {
         builderState.selectedVersion.clearml_id = clearmlId;
       }
-      addNotification({
-        header: 'ClearML created',
-        detail: clearmlId,
-        level: 'info',
-        showDate: true,
-        timeout: 4000
-      });
     });
   }
 });

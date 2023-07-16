@@ -31,6 +31,9 @@ onMounted(() => {
 const valueChanged = (change: any) => {
   selectedValue.value = change;
   container.value?.blur();
+  if (selectedValue.value === change) {
+    return;
+  }
   emit('valueChanged', change);
 };
 
@@ -83,7 +86,7 @@ const computedClasses = computed(() => {
     class="relative focus:outline-none focus:ring-2 focus:ring-highlight-500 rounded-lg"
     tabindex="0"
     @focusout="onFocusOut"
-    @click="onFocus"
+    @click.prevent="onFocus"
   >
     <div
       class="flex justify-between ring-gray-400 w-full bg-gray-500 py-0.5 items-center px-2 rounded-lg focus:ring-highlight-500 focus:ring-2 focus:outline-none"
@@ -98,7 +101,7 @@ const computedClasses = computed(() => {
       v-if="isExpanded && values && values?.length > 0"
       class="absolute shadow-lg shadow-gray-800 z-10 w-full overflow-hidden bg-gray-500 top-9 rounded-lg ring-1 ring-gray-300"
     >
-      <div v-for="value in values" class="px-2 py-0.5 hover:bg-gray-400" @click="valueChanged(value)">
+      <div v-for="value in values" class="px-2 py-0.5 hover:bg-gray-400" @click.stop="valueChanged(value)">
         {{ displayField ? (value as any)[displayField] : value }}
       </div>
     </div>
