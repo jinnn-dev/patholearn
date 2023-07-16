@@ -12,7 +12,7 @@ from app.schema.project import (
 from fastapi import APIRouter, Depends, HTTPException
 from supertokens_python.recipe import session
 from supertokens_python.recipe.session import SessionContainer
-from app.utils.session import check_session
+from supertokens_python.recipe.session.framework.fastapi import verify_session
 
 import app.clearml_wrapper.clearml_wrapper as clearml_wrapper
 from app.database.database import task_collection
@@ -25,7 +25,7 @@ router = APIRouter()
 
 @router.post("", response_model=Project)
 async def create_project(
-    create_project: CreateProject, s: SessionContainer = Depends(check_session())
+    create_project: CreateProject, s: SessionContainer = Depends(verify_session())
 ):
     new_project = await project_collection.insert_one(
         {
@@ -46,7 +46,7 @@ async def create_project(
 
 @router.put("", response_model=Project)
 async def update_project(
-    update_project: UpdateProject, _: SessionContainer = Depends(check_session())
+    update_project: UpdateProject, _: SessionContainer = Depends(verify_session())
 ):
     update_dict = update_project.dict(exclude_unset=True)
     update_dict.pop("id", None)
@@ -61,7 +61,7 @@ async def update_project(
 
 
 @router.get("", response_model=List[Project])
-async def get_projects(s: SessionContainer = Depends(check_session())):
+async def get_projects(s: SessionContainer = Depends(verify_session())):
     result = []
     async for element in project_collection.find().sort("created_at", -1):
         result.append(element)
@@ -70,7 +70,7 @@ async def get_projects(s: SessionContainer = Depends(check_session())):
 
 
 @router.get("/{project_id}", response_model=ProjectWithoutTasks)
-async def get_project(project_id: str, _: SessionContainer = Depends(check_session())):
+async def get_project(project_id: str, _: SessionContainer = Depends(verify_session())):
     project = await project_collection.find_one({"_id": ObjectId(project_id)})
     # tasks = []
     # async for task in task_collection.find({"project_id": project_id}).sort(
@@ -87,7 +87,7 @@ async def get_project(project_id: str, _: SessionContainer = Depends(check_sessi
 
 @router.delete("/{project_id}")
 async def delete_project(
-    project_id: str, _: SessionContainer = Depends(check_session())
+    project_id: str, _: SessionContainer = Depends(verify_session())
 ):
     project_delete_result = await project_collection.delete_one(
         {"_id": ObjectId(project_id)}
@@ -98,7 +98,7 @@ async def delete_project(
 
 @router.post("/clearml")
 async def create_clearml_project(
-    create_body: dict, s: SessionContainer = Depends(check_session())
+    create_body: dict, s: SessionContainer = Depends(verify_session())
 ):
     project = clearml_wrapper.create_project(
         project_name=create_body["project_name"],
@@ -110,25 +110,25 @@ async def create_clearml_project(
 
 
 @router.get("/clearml")
-async def get_projects_clearml(s: SessionContainer = Depends(check_session())):
+async def get_projects_clearml(s: SessionContainer = Depends(verify_session())):
     return clearml_wrapper.get_projects()
 
 
 @router.get("/clearml/{project_id}")
-async def get_project(project_id: str, _: SessionContainer = Depends(check_session())):
+async def get_project(project_id: str, _: SessionContainer = Depends(verify_session())):
     return clearml_wrapper.get_project(project_id)
 
 
 @router.delete("/clearml/{project_id}")
 async def delete_project_clearml(
-    project_id: str, _: SessionContainer = Depends(check_session())
+    project_id: str, _: SessionContainer = Depends(verify_session())
 ):
     return clearml_wrapper.delete_project(project_id)
 
 
 @router.get("/{project_id}/tasks", response_model=List[TaskNoGraph])
 async def get_project_tasks(
-    project_id: str, _: SessionContainer = Depends(check_session())
+    project_id: str, _: SessionContainer = Depends(verify_session())
 ):
     tasks_cursor = task_collection.find(
         {"project_id": project_id}, projection={"versions.graph": False}
@@ -141,6 +141,6 @@ async def get_project_tasks(
 
 # @router.get("/{project_id}/tasks")
 # async def get_project_tasks(
-#     project_id: str, s: SessionContainer = Depends(check_session()
+#     project_id: str, s: SessionContainer = Depends(verify_session()
 # ):
 #     return clearml_wrapper.get_tasks_to_project(project_id)
