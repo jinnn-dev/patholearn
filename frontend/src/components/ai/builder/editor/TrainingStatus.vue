@@ -6,13 +6,13 @@ import { TaskVersionStatus } from '../../../../model/ai/tasks/task';
 import PingPongLoader from '../../../general/PingPongLoader.vue';
 
 const statusTextMapping: { [type in TaskVersionStatus]?: string } = {
-  queued: 'Training wurde eingereiht!',
-  creating: 'Training wird vorbereitet',
-  created: 'Alles für das Training wurde erstellt! Warte auf Trainingstart...',
-  failed: 'Training ist fehlgeschlagen!',
-  in_progress: 'Das Training läuft',
-  completed: 'Training ist abgeschlossen!',
-  stopped: 'Training wurde gestoppt'
+  queued: 'Training enqueued',
+  creating: 'Training is being prepared',
+  created: 'Everythin is prepared! Waiting for trainig start',
+  failed: 'Training failed!',
+  in_progress: 'Training is running',
+  completed: 'Training completet',
+  stopped: 'Training stopped'
 };
 
 const statusClasses: { [type in TaskVersionStatus]?: string } = {
