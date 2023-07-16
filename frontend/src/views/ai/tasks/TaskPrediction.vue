@@ -55,6 +55,7 @@ onUnmounted(() => {
 
 const updateServe = (data: boolean) => {
   isAvailable.value = data;
+  builderState.channel?.unbind('serve-is-available', updateServe);
 };
 </script>
 <template>
@@ -65,7 +66,7 @@ const updateServe = (data: boolean) => {
     </div>
     <div v-else-if="availabilityLoading" class="flex gap-2"><spinner></spinner>Loading</div>
     <div
-      v-else-if="!isAvailable && isAvailable !== undefined"
+      v-else-if="builderState.selectedVersion?.clearml_id && !isAvailable"
       class="flex justify-center items-center gap-4 text-3xl text-center text-gray-300 font-semibold w-full"
     >
       <spinner></spinner>Prediction model is being prepared
