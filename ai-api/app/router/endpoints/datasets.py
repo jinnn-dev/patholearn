@@ -25,6 +25,7 @@ from app.schema.dataset import Dataset
 from app.database.database import dataset_collection
 from app.core.dataset.create_dataset import create_dataset, create_dataset_backgroud
 from clearml import Dataset as ClearmlDataset
+import json
 
 router = APIRouter()
 
@@ -32,24 +33,24 @@ router = APIRouter()
 @router.post("")
 async def create_new_dataset(
     background_tasks: BackgroundTasks,
-    name: Annotated[str, Form()],
-    description: Annotated[str, Form()],
+    data: Annotated[str, Form()],
     dataset_type: Annotated[DatasetType, Form()],
-    is_grayscale: Annotated[str, Form()],
     file: Annotated[UploadFile, Form()] = UploadFile(...),
     s: SessionContainer = Depends(verify_session()),
 ):
     user_id = s.get_user_id()
-
+    parsed_data = json.loads(data)
     new_dataset = await dataset_collection.insert_one(
         {
             "creator_id": user_id,
-            "name": name,
-            "description": description,
+            "name": parsed_data["name"],
+            "description": parsed_data["description"]
+            if "description" in parsed_data
+            else None,
             "dataset_type": dataset_type,
             "created_at": datetime.now(),
             "status": "saving",
-            "metadata": {"is_grayscale": is_grayscale == "true"},
+            "metadata": {},
         }
     )
 
