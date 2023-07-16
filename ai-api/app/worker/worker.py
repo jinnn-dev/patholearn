@@ -46,6 +46,7 @@ def create_dataset(file_path: str, dataset_id: str):
         dataset.metadata.dimension = DatasetDimension(
             x=metadata["dimension"]["x"], y=metadata["dimension"]["y"]
         )
+        dataset.metadata.is_grayscale = metadata["is_grayscale"]
         update_dataset(dataset.id, {"metadata": dataset.metadata.dict()})
 
     except Exception as error:
