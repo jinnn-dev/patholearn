@@ -164,17 +164,8 @@ const deleteImage = () => {
         @change="onFileChange"
       />
     </form-field>
-    <div v-if="image" class="flex gap-4 bottom-0 z-10 right-2 pr-2 pb-2">
-      <div>
-        <label
-          class="cursor-pointer flex justify-center bg-gray-500 hover:bg-gray-400 transition-all w-44 rounded-lg py-1"
-          for="info-image_select"
-        >
-          <Icon class="mr-1" name="cloud-arrow-up" />
-          <span>Bild auswählen</span>
-        </label>
-      </div>
-      <div>
+    <div class="flex gap-4 bottom-0 z-10 right-2 pr-2 pb-2">
+      <div v-if="image">
         <div
           @click="deleteImage()"
           class="cursor-pointer flex justify-center bg-red-800/20 hover:bg-red-500/20 ring-1 ring-red-500 text-red-500 font-semibold transition-all w-44 rounded-lg py-1"

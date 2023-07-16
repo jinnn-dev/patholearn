@@ -11,8 +11,9 @@ from app.database.database import task_collection
 from app.scheduler.session import SessionManager
 from app.scheduler.models import IntervalSchedule, PeriodicTask
 from app.ws.client import trigger_ws_task_event, trigger_ws_task_status_changed
-from app.core.serve import serve_model, remove_model
-from app.scheduler.modify import remove_periodic_task
+from app.core.serve import serve_model, remove_model, check_if_model_available
+
+from app.scheduler.modify import remove_periodic_task, create_periodic_task
 
 from app.crud.task_version import (
     update_version_clearml_id,
@@ -81,37 +82,18 @@ def enqueue_builder_task(
 
     update_version_dataset_id(task_id, version_id, dataset_id)
 
-    _, session_maker = session_manager.create_session(beat_dburi)
-    session = session_maker()
-    schedule = (
-        session.query(IntervalSchedule)
-        .filter_by(every=5, period=IntervalSchedule.SECONDS)
-        .first()
+    create_periodic_task(
+        peridodic_task_name=task.id,
+        task_name="check_task_status",
+        data={
+            "clearml_task_id": task.id,
+            "task_id": task_id,
+            "version_id": version_id,
+            "dataset_id": dataset_clearml_id,
+        },
     )
-    if not schedule:
-        schedule = IntervalSchedule(every=5, period=IntervalSchedule.SECONDS)
-        session.add(schedule)
-        session.commit()
-    logger.info(f"Schedule to use: {schedule}")
 
-    task = PeriodicTask(
-        interval=schedule,
-        name=task.id,
-        task="check_task_status",
-        kwargs=json.dumps(
-            {
-                "clearml_task_id": task.id,
-                "task_id": task_id,
-                "version_id": version_id,
-                "dataset_id": dataset_clearml_id,
-            }
-        ),
-        queue="ai",
-    )
-    session.add(task)
-    session.commit()
-
-    logger.info(f"Created Periodic task: {task}")
+    logger.info(f"Created Periodic task: {task.id}")
 
     return 0
 
@@ -126,12 +108,7 @@ def check_task_version(
         clearml_task: Task = Task.get_task(task_id=clearml_task_id)
     except ValueError as error:
         logger.exception(error)
-        periodic_task = (
-            session.query(PeriodicTask).filter_by(name=clearml_task_id).first()
-        )
-        if periodic_task is not None:
-            session.delete(periodic_task)
-            session.commit()
+        remove_periodic_task(clearml_task_id, session)
         return
 
     new_status = clearml_task.status
@@ -168,7 +145,28 @@ def check_task_version(
         logger.error(f"Script Serving {task_id} stderr: {stderr}")
         logger.info(f"Script Serving {task_id} exit code: {exit_code}")
         remove_periodic_task(clearml_task.id, session)
+        create_periodic_task(
+            peridodic_task_name=clearml_task_id,
+            task_name="check_serve_endpoint",
+            data={
+                "task_id": task_id,
+                "clearml_task_id": clearml_task.id,
+                "dataset_id": dataset_id,
+            },
+            session=session,
+        )
+
     return 0
+
+
+@celery_app.task(name="check_serve_endpoint", queue="ai")
+def check_serve_endpoint(task_id: str, clearml_task_id: str, dataset_id: str):
+    is_available = check_if_model_available(clearml_task_id, dataset_id)
+    logger.info(f"Serve is available: {is_available}")
+    if is_available:
+        trigger_ws_task_event(task_id, "serve-is-available", True)
+        remove_periodic_task(clearml_task_id)
+    pass
 
 
 @celery_app.task(name="remove_serve_endpoint", queue="ai")

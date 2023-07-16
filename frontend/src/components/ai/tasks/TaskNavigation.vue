@@ -17,13 +17,13 @@ defineProps({
         class="cursor-pointer px-4 py-1 rounded-lg hover:text-highlight-500"
         @click="builderState.selectedNavigation = 'metrics'"
       >
-        Metriken
+        Metrics
       </div>
       <div
         class="cursor-pointer px-4 py-1 rounded-lg hover:text-highlight-500"
         @click="builderState.selectedNavigation = 'console'"
       >
-        Konsole
+        Logs
       </div>
       <div
         class="cursor-pointer px-4 py-1 rounded-lg hover:text-highlight-500"

@@ -521,6 +521,16 @@ export class AiService {
     return response!.data;
   }
 
+  public static async checkIfPredictionIsAvailable(taskId: string, versionId: string) {
+    const [_, response] = await handleError(
+      ApiService.get<any>({
+        resource: '/serve/' + taskId + '/' + versionId,
+        host: AI_API_URL
+      }),
+      'Loading prediction model failed'
+    );
+    return response!.data;
+  }
   public static async makePrediction(
     taskId: string,
     versionId: string,
@@ -536,7 +546,7 @@ export class AiService {
         config: { onUploadProgress },
         host: AI_API_URL
       }),
-      'Dataset could not be created'
+      'Prediction failed'
     );
     return response!.data;
   }

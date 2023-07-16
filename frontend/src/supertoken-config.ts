@@ -9,7 +9,7 @@ export const SuperTokensWebJSConfig = {
   recipeList: [
     Session.init({
       sessionTokenFrontendDomain: '.' + import.meta.env.VITE_AUTH_FRONTEND_DOMAIN,
-      sessionExpiredStatusCode: 401
+      sessionTokenBackendDomain: '.' + import.meta.env.VITE_AUTH_FRONTEND_DOMAIN
     }),
     EmailPassword.init()
   ]

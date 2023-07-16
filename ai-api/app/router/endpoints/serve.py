@@ -34,11 +34,24 @@ async def get_prediction(task_id: str, version_id: str, image: UploadFile):
 @router.get("/{task_id}/{version_id}")
 async def get_serving(task_id: str, version_id: str):
     _, version = await get_task_with_version(task_id, version_id)
+    dataset = await get_dataset(dataset_id=version.dataset_id)
+
     try:
-        # imarray = np.random.rand(100, 100, 3) * 255
-        # im = Image.fromarray(imarray.astype("uint8")).convert("RGBA")
-        propabilities = get_prediction_to_version(version=version, image_data=None)
-        return {"status": "OK"}
+        if dataset.metadata.is_grayscale:
+            imarray = np.random.rand(100, 100) * 255
+        else:
+            imarray = (
+                np.random.rand(100, 100, 1 if dataset.metadata.is_grayscale else 3)
+                * 255
+            )
+        im = Image.fromarray(imarray.astype("uint8")).convert("RGBA")
+        im_bytes = BytesIO()
+        im.save(im_bytes, "PNG")
+        get_prediction_to_version(
+            version=version, image_data=im_bytes.getvalue(), dataset=dataset
+        )
+        return True
 
     except Exception as e:
-        return {"status": e}
+        logger.error(e)
+        return False
