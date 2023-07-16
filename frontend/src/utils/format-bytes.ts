@@ -1,4 +1,5 @@
-export function formatBytes(bytes: number, base: 1000 | 1024 = 1000, decimals = 2) {
+export function formatBytes(bytes?: number, base: 1000 | 1024 = 1000, decimals = 2) {
+  if (!bytes) return undefined;
   if (!+bytes) return '0 Bytes';
 
   const k = base;
