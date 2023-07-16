@@ -31,9 +31,7 @@ onMounted(() => {
 const valueChanged = (change: any) => {
   selectedValue.value = change;
   container.value?.blur();
-  if (selectedValue.value === change) {
-    return;
-  }
+
   emit('valueChanged', change);
 };
 
@@ -86,7 +84,7 @@ const computedClasses = computed(() => {
     class="relative focus:outline-none focus:ring-2 focus:ring-highlight-500 rounded-lg"
     tabindex="0"
     @focusout="onFocusOut"
-    @click.prevent="onFocus"
+    @focus="onFocus"
   >
     <div
       class="flex justify-between ring-gray-400 w-full bg-gray-500 py-0.5 items-center px-2 rounded-lg focus:ring-highlight-500 focus:ring-2 focus:outline-none"
