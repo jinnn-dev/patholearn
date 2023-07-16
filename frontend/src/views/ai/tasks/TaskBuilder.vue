@@ -42,7 +42,7 @@ onUnmounted(() => {
     >
       <div
         v-if="builderState.selectedNavigation"
-        class="w-full h-full bg-gray-800 absolute z-[99] top-0 overflow-hidden pt-4"
+        class="w-full h-full bg-gray-800/80 backdrop-blur-xl absolute z-[99] top-0 overflow-hidden pt-4"
       >
         <div
           class="absolute right-4 top-4 cursor-pointer hover:bg-gray-500 rounded-md p-1"
