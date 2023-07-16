@@ -24,6 +24,10 @@ module.exports = {
       width: {
         'fit-content': 'fit-content'
       },
+      screens: {
+        '3xl': '2000px',
+        '4xl': '3000px'
+      },
       colors: {
         gray: {
           100: '#DEE3EA',
