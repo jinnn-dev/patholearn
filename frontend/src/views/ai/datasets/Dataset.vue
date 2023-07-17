@@ -8,6 +8,10 @@ import DatasetStatus from '../../../components/ai/datasets/DatasetStatus.vue';
 import LazyImage from '../../../components/general/LazyImage.vue';
 import Spinner from '../../../components/general/Spinner.vue';
 import DatasetMetadata from '../../../components/ai/datasets/DatasetMetadata.vue';
+import { addNotification } from '../../../utils/notification-state';
+import ConfirmDialog from '../../../components/general/ConfirmDialog.vue';
+
+import { ref } from 'vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -19,14 +23,36 @@ const { result: images, loading: imagesLoading } = useService(
   route.params.id as string
 );
 
-const { run, loading: deleteLoading } = useService(AiService.deleteDataset);
+const { run, result: deleteResult, loading: deleteLoading } = useService(AiService.deleteDataset);
+
+const showDelete = ref(false);
 
 const deleteDataset = async () => {
   await run(dataset.value!.id);
-  router.push('/ai/datasets');
+  if (deleteResult.value === null) {
+    addNotification({
+      header: 'Kann nicht gelöscht werden',
+      detail: 'Datensatz wird von Aufgaben verwendet',
+      level: 'info',
+      showDate: false,
+      timeout: 5000
+    });
+  } else {
+    router.push('/ai/datasets');
+  }
+  showDelete.value = false;
 };
 </script>
 <template>
+  <confirm-dialog
+    :show="showDelete"
+    custom-classes="w-96"
+    header="Datensatz löschen?"
+    :loading="deleteLoading"
+    @confirmation="deleteDataset"
+    @reject="showDelete = false"
+  ></confirm-dialog>
+
   <content-container :loading="loading" back-route="/ai/datasets" back-text="Datensätze">
     <template #header>
       <div class="break-all">{{ dataset?.name }}</div>
@@ -38,7 +64,7 @@ const deleteDataset = async () => {
       <div class="flex justify-end items-center">
         <save-button
           class="w-32"
-          @click="deleteDataset"
+          @click="showDelete = true"
           :loading="deleteLoading"
           name="Löschen"
           bg-color="bg-red-500"
