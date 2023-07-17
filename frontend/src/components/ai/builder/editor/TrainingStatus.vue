@@ -25,7 +25,7 @@ function statusChanged(data: { old: TaskVersionStatus; new: TaskVersionStatus })
   builderState.selectedVersion!.status = data.new;
   addNotification({
     header: 'Training Status changed',
-    detail: `Changed from ${data.old} to ${data.new}`,
+    detail: `Changed from ${[statusTextMapping[data.old]]} to ${statusTextMapping[data.new]}`,
     level: 'info',
     showDate: true,
     timeout: 3000

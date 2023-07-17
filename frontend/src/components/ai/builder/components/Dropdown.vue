@@ -31,6 +31,7 @@ onMounted(() => {
 const valueChanged = (change: any) => {
   selectedValue.value = change;
   container.value?.blur();
+
   emit('valueChanged', change);
 };
 
@@ -43,7 +44,7 @@ const onFocusOut = () => {
 };
 
 const onFocus = () => {
-  if (isDisbaled.value) {
+  if (isDisbaled.value || isExpanded.value) {
     container.value?.blur();
 
     return;
@@ -90,14 +91,17 @@ const computedClasses = computed(() => {
       :style="lockStatus?.lockedControlId === id ? `--tw-ring-color: ${lockStatus?.lockedBy.info.color};` : ''"
       :class="computedClasses"
     >
-      <div>{{ selectedValue ? (displayField ? (selectedValue as any)[displayField] : selectedValue) : '' }}</div>
+      <div v-if="!values || values.length === 0" class="text-gray-200">No data available</div>
+      <div v-else class="text-ellipsis overflow-hidden">
+        {{ selectedValue ? (displayField ? (selectedValue as any)[displayField] : selectedValue) : '' }}
+      </div>
       <icon name="caret-up-down" stroke-width="0" size="16"></icon>
     </div>
     <div
-      v-if="isExpanded"
+      v-if="isExpanded && values && values?.length > 0"
       class="absolute shadow-lg shadow-gray-800 z-10 w-full overflow-hidden bg-gray-500 top-9 rounded-lg ring-1 ring-gray-300"
     >
-      <div v-for="value in values" class="px-2 py-0.5 hover:bg-gray-400" @click="valueChanged(value)">
+      <div v-for="value in values" class="px-2 py-0.5 hover:bg-gray-400 break-all" @click.stop="valueChanged(value)">
         {{ displayField ? (value as any)[displayField] : value }}
       </div>
     </div>

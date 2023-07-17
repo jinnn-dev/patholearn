@@ -492,11 +492,9 @@ export class AiService {
 
   public static async createDataset(createDataset: CreateDataset, onUploadProgress?: (event: any) => void) {
     const formData = new FormData();
-    formData.append('name', createDataset.name);
-    formData.append('description', createDataset.description || '');
+    formData.append('data', JSON.stringify({ name: createDataset.name, description: createDataset.description }));
     formData.append('file', createDataset.file!);
     formData.append('dataset_type', createDataset.type);
-    formData.append('is_grayscale', createDataset.is_grascale + '');
 
     const [_, response] = await handleError(
       ApiService.post<Dataset>({

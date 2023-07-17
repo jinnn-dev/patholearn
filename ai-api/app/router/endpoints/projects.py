@@ -19,6 +19,8 @@ from app.database.database import task_collection
 from app.schema.task import Task, TaskNoGraph
 from app.database.database import project_collection
 from app.utils.logger import logger
+from app.crud.task import get_tasks_to_project
+from app.core.modify.task import remove_tasks
 
 router = APIRouter()
 
@@ -89,11 +91,16 @@ async def get_project(project_id: str, _: SessionContainer = Depends(verify_sess
 async def delete_project(
     project_id: str, _: SessionContainer = Depends(verify_session())
 ):
+    db_project = await project_collection.find_one({"_id": ObjectId(project_id)})
+    if db_project is None:
+        return 0
+
+    tasks = await get_tasks_to_project(project_id)
+    await remove_tasks(tasks)
     project_delete_result = await project_collection.delete_one(
         {"_id": ObjectId(project_id)}
     )
-    task_delete_result = await task_collection.delete_many({"project_id": project_id})
-    return project_delete_result.deleted_count + task_delete_result.deleted_count
+    return project_delete_result.deleted_count
 
 
 @router.post("/clearml")

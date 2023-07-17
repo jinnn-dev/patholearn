@@ -62,5 +62,4 @@ export interface CreateDataset {
   description?: string;
   type: DatasetType;
   file?: File;
-  is_grascale: boolean;
 }

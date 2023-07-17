@@ -61,11 +61,17 @@ def parse_extracted_folder(folder_path: str):
     classes = []
     x = None
     y = None
+    is_grayscale = False
     for dir in sorted(os.listdir(folder_path)):
         if dir not in class_map:
             if x is None:
                 image = glob.glob(os.path.join(folder_path, dir, "*.*"))[0]
                 im = Image.open(image)
+                color_count = im.getcolors()
+                if color_count:
+                    is_grayscale = True
+                else:
+                    False
                 width, height = im.size
                 x = width
                 y = height
@@ -73,4 +79,9 @@ def parse_extracted_folder(folder_path: str):
             classes.append(class_index)
             class_index += 1
 
-    return {"class_map": class_map, "classes": classes, "dimension": {"x": x, "y": y}}
+    return {
+        "class_map": class_map,
+        "classes": classes,
+        "dimension": {"x": x, "y": y},
+        "is_grayscale": is_grayscale,
+    }

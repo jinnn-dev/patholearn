@@ -68,7 +68,7 @@ const computedStatus = computed(() => {
   <div class="bg-gray-700 p-2 flex justify-between flex-col rounded-lg min-w-[150px] max-w-[300px]">
     <div>
       <div class="flex justify-between">
-        <div class="text-xl">{{ task.name }}</div>
+        <div class="text-xl text-ellipsis overflow-hidden">{{ task.name }}</div>
         <spinner v-if="loading"></spinner>
         <dot-menu-complete v-else @delete="deleteTask" @edit="$emit('edit')"></dot-menu-complete>
       </div>

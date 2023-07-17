@@ -66,8 +66,10 @@ const updateServe = (data: boolean) => {
     </div>
     <div v-else-if="availabilityLoading" class="flex gap-2"><spinner></spinner>Loading</div>
     <div
-      v-else-if="builderState.selectedVersion?.clearml_id && !isAvailable"
-      class="flex justify-center items-center gap-4 text-3xl text-center text-gray-300 font-semibold w-full"
+      v-else-if="
+        builderState.selectedVersion?.clearml_id && !isAvailable && builderState.selectedVersion?.status === 'completed'
+      "
+      class="flex justify-center items-center gap-4 text-3xl text-center text-gray-300 w-full"
     >
       <spinner></spinner>Prediction model is being prepared
     </div>

@@ -8,7 +8,7 @@ import { AsyncDropdownControl } from '../../controls';
 export interface IDatasetNode extends INode {}
 
 export class DatasetNode extends Node<IDatasetNode, {}, { dataset: Socket }, { dataset: AsyncDropdownControl }> {
-  width = 200;
+  width = 250;
 
   constructor() {
     super('Dataset', 'DatasetNode', { output: '2D' });

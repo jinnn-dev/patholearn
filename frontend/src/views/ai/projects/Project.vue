@@ -20,7 +20,7 @@ const taskCreated = async (task: any) => {
 <template>
   <content-container :loading="loading" margin="mt-0" back-route="/ai/projects" back-text="Projekte">
     <template #header>
-      <div>{{ projectWithTasks?.project.name }}</div>
+      <div class="break-all">{{ projectWithTasks?.project.name }}</div>
     </template>
     <template #content>
       <!-- <div class="mb-4">

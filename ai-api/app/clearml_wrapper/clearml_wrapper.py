@@ -91,10 +91,16 @@ def get_datatset_debug_images(dataset_id: str):
     with httpx.Client() as client:
         response = client.post(
             f"{Config.CLEARML_API}/events.debug_images",
-            json={"metrics": [{"task": dataset_id, "metric": None}], "iters": 10},
+            json={
+                "metrics": [
+                    {
+                        "task": dataset_id,
+                    }
+                ],
+                "iters": 10,
+            },
             auth=(Config.CLEARML_API_ACCESS_KEY, Config.CLEARML_API_SECRET_KEY),
         )
-    print(len(response.json()["data"]["metrics"][0]["iterations"]))
     events = response.json()["data"]["metrics"][0]["iterations"][0]["events"]
     urls = []
     for event in events:

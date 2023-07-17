@@ -4,12 +4,11 @@ import { PropType, reactive, ref } from 'vue';
 import Icon from '../../general/Icon.vue';
 import { useService } from '../../../composables/useService';
 import { AiService } from '../../../services/ai.service';
-import { addNotification } from '../../../utils/notification-state';
 import Spinner from '../../general/Spinner.vue';
 import DotMenuComplete from '../../general/DotMenuComplete.vue';
 import ModalDialog from '../../containers/ModalDialog.vue';
 
-const { result, loading, run } = useService(AiService.deleteProject);
+const { loading, run } = useService(AiService.deleteProject);
 
 const props = defineProps({
   project: {
@@ -24,13 +23,7 @@ const emit = defineEmits(['delete', 'edit']);
 
 const deleteProject = async () => {
   await run(props.project.id);
-  addNotification({
-    header: 'Projekt gelöscht',
-    detail: result.value as string,
-    level: 'info',
-    showDate: false,
-    timeout: 2000
-  });
+
   emit('delete', props.project.id);
 };
 
@@ -50,7 +43,7 @@ const editProject = async () => {
   </modal-dialog>
   <div class="bg-gray-700 p-2 rounded-lg min-w-[150px] max-w-[300px]">
     <div class="flex gap-2 items-center justify-between">
-      <div class="text-xl">{{ project.name }}</div>
+      <div class="text-xl text-ellipsis overflow-hidden">{{ project.name }}</div>
       <spinner v-if="loading"></spinner>
       <dot-menu-complete v-else @delete="deleteProject" @edit="editProject"></dot-menu-complete>
     </div>
