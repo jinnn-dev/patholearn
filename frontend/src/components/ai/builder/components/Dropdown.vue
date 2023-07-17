@@ -24,7 +24,8 @@ const selectedValue = ref();
 
 onMounted(() => {
   if (props.values) {
-    selectedValue.value = props.value || (props.values ? props.values[0] : undefined);
+    selectedValue.value = props.value;
+    emit('valueChanged', selectedValue.value);
   }
 });
 
@@ -63,6 +64,15 @@ watch(
   }
 );
 
+watch(
+  () => props.values,
+  () => {
+    if (props.lockStatus?.lockedBy && props.value) {
+      selectedValue.value = props.value;
+    }
+  }
+);
+
 const computedClasses = computed(() => {
   const classes = [];
   if (props.lockStatus?.lockedControlId === props?.id) {
@@ -93,7 +103,7 @@ const computedClasses = computed(() => {
     >
       <div v-if="!values || values.length === 0" class="text-gray-200">No data available</div>
       <div v-else class="text-ellipsis overflow-hidden">
-        {{ selectedValue ? (displayField ? (selectedValue as any)[displayField] : selectedValue) : '' }}
+        {{ selectedValue ? (displayField ? (selectedValue as any)[displayField] : selectedValue) : '-' }}
       </div>
       <icon name="caret-up-down" stroke-width="0" size="16"></icon>
     </div>

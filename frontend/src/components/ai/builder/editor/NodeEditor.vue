@@ -2,7 +2,7 @@
 import { PropType, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useService } from '../../../../composables/useService';
 import { AiService } from '../../../../services/ai.service';
-import { useEditor } from '../../../../core/ai/builder/use-editor';
+import { Schemes, useEditor } from '../../../../core/ai/builder/use-editor';
 
 import EditorTools from './EditorTools.vue';
 import ModalDialog from '../../../containers/ModalDialog.vue';
@@ -22,7 +22,10 @@ import {
 import TaskStatus from '../../../../components/ai/builder/editor/TrainingStatus.vue';
 import { downloadFile } from '../../../../utils/download-file';
 import { pushTrainingReset } from '../../../../core/ai/builder/sync';
+import { graphHasValidDatasetNode } from '../../../../core/ai/builder/node-validator';
 import { PresenceChannel } from 'pusher-js';
+import { NodeEditor } from 'rete';
+import { addNotification } from '../../../../utils/notification-state';
 
 const props = defineProps({
   taskId: {
@@ -133,10 +136,21 @@ const parseEditor = async () => {
 };
 
 const startEditorTraining = async () => {
+  if (!graphHasValidDatasetNode(builderState.editor as NodeEditor<Schemes>)) {
+    addNotification({
+      header: 'Dataset Node not valid',
+      detail: 'Dataset Node has no dataset selected',
+      level: 'warning',
+      showDate: false,
+      timeout: 5000
+    });
+    return;
+  }
+  builderState.editor?.getNodes();
   await startVersionTraining(props.taskId, props.taskVersion.id);
-  if (builderState.selectedVersion) {
-    builderState.selectedVersion.status = 'creating';
+  if (builderState.selectedVersion && versionTrainingResult.value) {
     startTraining();
+    builderState.selectedVersion.status = 'creating';
   }
 };
 
