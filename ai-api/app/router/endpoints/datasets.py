@@ -6,6 +6,7 @@ from app.crud.dataset import (
     update_dataset_status,
     delete_dataset,
 )
+from app.crud.task import get_tasks_to_dataset
 
 from pydantic import parse_obj_as
 
@@ -72,10 +73,15 @@ async def get_specific_dataset(
     return await get_dataset(dataset_id)
 
 
-@router.delete("/{dataset_id}", response_model=Dataset)
+@router.delete("/{dataset_id}", response_model=Optional[Dataset])
 async def dataset_delete(
     dataset_id: str, _: SessionContainer = Depends(verify_session())
 ):
+    result = await get_tasks_to_dataset(dataset_id)
+    logger.info(len(result))
+    if len(result) > 0:
+        return None
+
     dataset = await get_dataset(dataset_id)
     if dataset.clearml_dataset is not None:
         clearml_id = dataset.clearml_dataset["id"]

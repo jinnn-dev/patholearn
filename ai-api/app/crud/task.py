@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, List
 from bson import ObjectId
 from pydantic import parse_obj_as
 
@@ -27,5 +27,16 @@ async def get_tasks_to_project(project_id: str):
     )
     tasks = []
     async for task in tasks_cursor:
+        tasks.append(parse_obj_as(TaskNoGraph, task))
+    return tasks
+
+
+async def get_tasks_to_dataset(dataset_id: str):
+    db_tasks = task_collection.find(
+        {"versions": {"$elemMatch": {"dataset_id": dataset_id}}},
+        projection={"versions.graph": False},
+    )
+    tasks = []
+    async for task in db_tasks:
         tasks.append(parse_obj_as(TaskNoGraph, task))
     return tasks
