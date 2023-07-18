@@ -44,3 +44,10 @@ function checkNodeIsUnique(node: NodeClassesType, validationElement: ValidationI
 
   return true;
 }
+
+export function graphHasValidDatasetNode(editor: NodeEditor<Schemes>) {
+  const datasetNode = editor.getNodes().find((node) => node.type === 'DatasetNode');
+  const selectedValue = (datasetNode?.controls as any)['dataset'].value;
+
+  return selectedValue !== undefined && selectedValue !== null;
+}
