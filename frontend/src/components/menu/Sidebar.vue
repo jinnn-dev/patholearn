@@ -45,11 +45,7 @@ const sidebarRoutes = ref<SidebarRoute[]>([
       }
     ]
   },
-  {
-    to: '/live',
-    icon: 'broadcast',
-    label: 'Live (Demo)'
-  },
+
   {
     to: '/status',
     icon: 'pulse',
