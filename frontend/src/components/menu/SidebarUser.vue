@@ -6,7 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { useService } from '../../composables/useService';
 import Spinner from '../general/Spinner.vue';
 import { useRouter } from 'vue-router';
-import { wsClient } from '../../services/ws.service';
+import { disconnect, wsClient } from '../../services/ws.service';
 
 const { loading, run: logout } = useService(AuthService.logout);
 const router = useRouter();
@@ -20,7 +20,7 @@ defineProps({
 const doLogout = async () => {
   await logout();
   await router.push('/login');
-  wsClient.value?.disconnect();
+  disconnect();
 };
 
 const nameString = computed(() => {

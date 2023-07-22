@@ -7,8 +7,9 @@ import { useRoute } from 'vue-router';
 import Sidebar from './components/menu/Sidebar.vue';
 import AppLoading from './components/AppLoading.vue';
 import { appState } from './utils/app.state';
-import { initWebsocket, registerConnectionEvents, wsClient } from './services/ws.service';
+import { connect, initWebsocket, registerConnectionEvents, wsClient } from './services/ws.service';
 import { addNotification } from './utils/notification-state';
+import { builderState } from './core/ai/builder/state';
 
 const route = useRoute();
 
@@ -50,6 +51,7 @@ watch(
     if (route.path !== '/login' && route.path !== '/register') {
       if (initWebsocket()) {
         registerConnectionEvents();
+        connect()
       }
     }
   }
