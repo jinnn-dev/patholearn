@@ -84,7 +84,7 @@ const updateServe = (data: boolean) => {
       <image-dropzone v-if="isAvailable" @images-dropped="makePrediction"></image-dropzone>
       <div v-if="!predictionFile && isAvailable" class="flex items-center w-full">
         <icon name="arrow-left" class="text-gray-300" size="56"></icon>
-        <div class="text-3xl text-gray-300 font-semibold w-full">Add an image to ge a prediction</div>
+        <div class="text-3xl text-gray-300 font-semibold w-full">Add an image to get a prediction</div>
       </div>
       <div v-if="predictionFile && isAvailable" class="transition-all w-full max-h-[70%] flex flex-col justify-center">
         <div class="max-h-full overflow-auto pr-2" v-if="result && result.dataset.class_map">
