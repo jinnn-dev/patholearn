@@ -6,7 +6,7 @@ import NotificationBar from './components/general/NotificationBar.vue';
 import { useRoute } from 'vue-router';
 import Sidebar from './components/menu/Sidebar.vue';
 import AppLoading from './components/AppLoading.vue';
-import { appState } from './utils/app.state';
+import { appState, wsIsConnected } from './utils/app.state';
 import { connect, initWebsocket, registerConnectionEvents, wsClient } from './services/ws.service';
 import { addNotification } from './utils/notification-state';
 import { builderState } from './core/ai/builder/state';
@@ -51,7 +51,9 @@ watch(
     if (route.path !== '/login' && route.path !== '/register') {
       if (initWebsocket()) {
         registerConnectionEvents();
-        connect()
+      }
+      if (!wsIsConnected.value) {
+        connect();
       }
     }
   }
