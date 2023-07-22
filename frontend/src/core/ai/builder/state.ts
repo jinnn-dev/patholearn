@@ -83,5 +83,8 @@ export function getLockedBy(elementId: string): Member | undefined {
 }
 
 export const versionHasStatus = computed(
-  () => builderState.selectedVersion?.status !== null || builderState.selectedVersion.clearml_id !== null
+  () =>
+    builderState.selectedVersion &&
+    ((builderState.selectedVersion?.status !== undefined && builderState.selectedVersion?.status !== null) ||
+      builderState.selectedVersion.clearml_id !== null)
 );

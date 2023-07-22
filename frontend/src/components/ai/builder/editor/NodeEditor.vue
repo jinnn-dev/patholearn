@@ -146,11 +146,13 @@ const startEditorTraining = async () => {
     });
     return;
   }
-  builderState.editor?.getNodes();
+  startTraining();
   await startVersionTraining(props.taskId, props.taskVersion.id);
   if (builderState.selectedVersion && versionTrainingResult.value) {
-    startTraining();
     builderState.selectedVersion.status = 'creating';
+  } else {
+    pushTrainingReset(builderState.channel as PresenceChannel, builderState.selectedVersion);
+    builderState.selectedVersion!.status = undefined;
   }
 };
 
