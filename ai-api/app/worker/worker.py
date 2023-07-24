@@ -1,4 +1,7 @@
 import os
+import requests
+import shutil
+
 from app.schema.dataset import DatasetDimension
 
 from celery import Celery
@@ -22,6 +25,33 @@ celery_app.conf.broker_url = os.environ.get(
 )
 
 logger = get_task_logger(__name__)
+
+
+@celery_app.task(name="create_own_dataset", queue="ai_api")
+def create_dataset_own(data: dict, dataset_id: str, cookies: dict):
+    # dataset = get_dataset(dataset_id)
+    # logger.info(data)
+    for data in data["tasks"]:
+        task_id = data["task"]["id"]
+        url = f"""http://lern_api:8000/tasks/task/{task_id}/mask"""
+        logger.info(url)
+        response = requests.get(
+            url,
+            cookies=cookies,
+        )
+        with open(f"/data/{str(task_id)}.png", "wb") as out_file:
+            shutil.copyfileobj(response.raw, out_file)
+
+        slide_id = data["baseTask"]["slide_id"]
+        logger.info(slide_id)
+        slide_url = f"""http://slide_api:8000/slides/{slide_id}/download/-1"""
+        response = requests.get(
+            slide_url,
+            cookies=cookies,
+        )
+        logger.info(response)
+        with open(f"/data/{str(slide_id)}.png", "wb") as out_file:
+            shutil.copyfileobj(response.raw, out_file)
 
 
 @celery_app.task(name="create_dataset", queue="ai_api")

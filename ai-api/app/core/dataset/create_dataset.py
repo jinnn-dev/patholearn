@@ -40,11 +40,28 @@ def create_dataset_backgroud(dataset: Dataset, file: BinaryIO):
         logger.exception(f"Failed creating dataset: {error}")
 
 
+def create_own_dataset_backgroud(dataset: Dataset, cookies: dict, data: dict):
+    try:
+        create_own_dataset(dataset, cookies, data)
+    except Exception as error:
+        logger.exception(f"Failed creating dataset: {error}")
+
+
 def create_dataset(dataset: Dataset, file: BinaryIO):
     temp_file_path = write_temporary_file(file=file, file_type="zip")
     result = celery_app.send_task(
         name="create_dataset",
         args=[temp_file_path, str(dataset.id)],
+        retries=3,
+        queue="ai_api",
+    )
+    logger.debug(result)
+
+
+def create_own_dataset(dataset: Dataset, cookies: dict, data: dict):
+    result = celery_app.send_task(
+        name="create_own_dataset",
+        args=[data, str(""), cookies],
         retries=3,
         queue="ai_api",
     )
