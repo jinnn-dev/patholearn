@@ -19,7 +19,6 @@ export class OutputNode extends Node<
   }
 > {
   width = 250;
-  height = 370;
 
   constructor() {
     super('Output', 'OutputNode', { input: 'All', output: 'Metric' });
@@ -52,7 +51,7 @@ export class OutputNode extends Node<
         'Cross-Entropy'
       )
     );
-    this.addControl('learningRate', new NumberControl(0, 10, 'Learning Rate', '0,00', 0.01));
+    this.addControl('learningRate', new NumberControl(0, 10, 'Learning Rate', '0,00', 0.001));
     this.addControl('epochs', new NumberControl(0, 10000, 'Epochs', '10', 10));
     this.addControl('batchSize', new NumberControl(0, 10000, 'Batch Size', '32', 32));
   }
