@@ -20,8 +20,12 @@ class FlattenNode(Node):
     pass
 
 
+ResNetVersion = Literal["resnet18", "resnet34", "resnet50", "resnet101", "resnet152"]
+
+
 class ArchitectureNode(Node):
-    pass
+    version: ResNetVersion
+    pretrained: bool
 
 
 class ResNetNode(ArchitectureNode):
@@ -296,7 +300,11 @@ async def get_metric_node(node: INode):
 
 
 async def get_resnet_node(node: INode):
-    return ResNetNode(id=node.id)
+    return ResNetNode(
+        id=node.id,
+        version=node.controls[0].value,
+        pretrained=True if node.controls[1].value == "Yes" else False,
+    )
 
 
 def get_to_nodes(node: INode, connections: List[IConnection]):

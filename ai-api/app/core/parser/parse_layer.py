@@ -140,13 +140,14 @@ def parse_batch_norm_node(
 
 
 def parse_resnet_node(
-    layser_data: ResNetNode, in_channels: int, layer_data_shape: tuple
+    layer_data: ResNetNode, in_channels: int, layer_data_shape: tuple
 ) -> Tuple[List[torch.nn.Module], int, Tuple]:
-    pretrained_layer = torchvision.models.resnet18(
-        weights=torchvision.models.ResNet18_Weights.IMAGENET1K_V1
+    pretrained_layer = torchvision.models.get_model(
+        layer_data.version, weights="DEFAULT" if layer_data.pretrained else None
     )
+
     modules = list(pretrained_layer.children())[:-1]
-    layer = torch.nn.Sequential(*modules, torch.nn.Flatten(start_dim=1, end_dim=-1))
+    layer = torch.nn.Sequential(*modules)
     output_shape = get_output_shape(layer, layer_data_shape)
     return [pretrained_layer], output_shape[1], output_shape
 

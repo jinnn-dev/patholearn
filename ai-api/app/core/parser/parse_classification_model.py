@@ -13,15 +13,19 @@ from app.core.parser.parse_graph import (
     ConcatenateNode,
     DatasetNode,
     OutputNode,
+    Node,
 )
 from app.utils.logger import logger
 import torch
 from torchvision.models import ResNet
 
 
-def get_layer_string(layer: torch.nn.Module, prefix: str = "torch.nn."):
-    if isinstance(layer, ResNet):
-        return "torchvision.models.resnet18(weights=torchvision.models.ResNet18_Weights.IMAGENET1K_V1)"
+def get_layer_string(
+    layer: torch.nn.Module, node_data: Node = None, prefix: str = "torch.nn."
+):
+    logger.info(node_data)
+    if isinstance(node_data, ArchitectureNode):
+        return f"""torchvision.models.get_model(name="{node_data.version}", weights={'"DEFAULT"' if node_data.pretrained else None})"""
     return prefix + str(layer)
 
 
@@ -96,7 +100,7 @@ def parse_network(
                 if splitting_layer_data is not None:
                     layers += splitting_layer_data
                     for layer in splitting_layer_data:
-                        layer_strings.append(get_layer_string(layer))
+                        layer_strings.append(get_layer_string(layer, node_data))
 
                 path_layers = []
                 combined_in_channels = 0
@@ -119,7 +123,9 @@ def parse_network(
                         else:
                             prefix = "torch.nn."
                         seq_string += (
-                            "    " + get_layer_string(layer, prefix=prefix) + ",\n"
+                            "    "
+                            + get_layer_string(layer, node_data, prefix=prefix)
+                            + ",\n"
                         )
                     seq_string += ")"
 
@@ -145,6 +151,7 @@ def parse_network(
                 layer_strings.append(
                     get_layer_string(
                         combined_layer,
+                        node_data,
                         prefix="" if isinstance(combined_layer, Add) else "torch.nn",
                     )
                 )
@@ -161,6 +168,6 @@ def parse_network(
             if layer_data is not None:
                 layers += layer_data
                 for layer in layer_data:
-                    layer_strings.append(get_layer_string(layer))
+                    layer_strings.append(get_layer_string(layer, node_data))
 
     return layers, layer_strings, current_in_channels, current_shape
