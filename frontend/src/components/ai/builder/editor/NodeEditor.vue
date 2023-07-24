@@ -184,10 +184,10 @@ const itemClicked = async (event: EventName) => {
     await saveEditor();
   }
 
-  // if (event === 'parse') {
-  //   loadingText.value = 'Parsing';
-  //   await parseEditor();
-  // }
+  if (event === 'parse') {
+    loadingText.value = 'Parsing';
+    await parseEditor();
+  }
 
   if (event === 'train') {
     loadingText.value = 'Starting Training';
