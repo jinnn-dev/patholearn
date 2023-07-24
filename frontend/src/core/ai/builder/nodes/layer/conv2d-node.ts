@@ -5,6 +5,7 @@ import { DimensionControl } from '../../controls/dimension-control';
 import { ActivationControl } from '../../controls/activation-control';
 import { Node } from '../node';
 import { Socket } from '../../sockets/socket';
+import { DropdownControl } from '../../controls';
 
 export interface IConv2DNode extends INode {}
 
@@ -16,11 +17,11 @@ export class Conv2DNode extends Node<
     filters: NumberControl;
     kernel: DimensionControl;
     stride: DimensionControl;
+    padding: DropdownControl;
     activation: ActivationControl;
   }
 > {
   width = 200;
-  height = 290;
 
   constructor() {
     super('Conv2D', 'Conv2DNode', { input: '2D', output: '2D' });
@@ -32,6 +33,7 @@ export class Conv2DNode extends Node<
       // @ts-ignore
       node.controls[key] = control.duplicate();
     }
+    node.sockets = this.sockets;
     node.addInput('in', new ClassicPreset.Input(node.sockets.input!, 'in'));
     node.addOutput('out', new ClassicPreset.Output(node.sockets.output!, 'out'));
     return node;
@@ -60,6 +62,7 @@ export class Conv2DNode extends Node<
         { x: 1, y: 1 }
       )
     );
+    this.addControl('padding', new DropdownControl(['none', 'same'], 'Padding', 'padding', 'none'));
     this.addControl('activation', new ActivationControl());
   }
 }
