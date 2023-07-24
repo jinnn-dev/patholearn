@@ -101,10 +101,10 @@ class MinioWrapper:
             bucket_name=MinioWrapper.pyramid_bucket, object_path=f"{slide_id}/dzi.dzi"
         )
 
-        tree = ET.parse(ET.fromstring(dzi_file))
+        tree = ET.ElementTree(ET.fromstring(dzi_file))
         root = tree.getroot()
         for child in root:
-            print(child.attrib)
+            logger.info(child.attrib)
 
         logger.info(dzi_file)
 
