@@ -84,6 +84,7 @@ class LinearLayer(Layer):
 class Conv2dLayer(Layer):
     kernel_size: tuple
     stride: tuple
+    padding: Literal[0, "same"]
 
 
 class PoolingLayer(Node):
@@ -240,11 +241,12 @@ async def get_conv_node(node: INode):
         id=node.id,
         in_features=1,
         out_features=node.controls[0].value,
-        activation_function=ActivationFunction(node.controls[3].value),
+        activation_function=ActivationFunction(node.controls[4].value),
         kernel_size=(
             node.controls[1].value["x"],
             node.controls[1].value["y"],
         ),
+        padding=0 if node.controls[3].value == "none" else node.controls[3].value,
         stride=(node.controls[2].value["x"], node.controls[2].value["y"]),
     )
 
