@@ -1,3 +1,8 @@
+import { Course } from '../../course';
+import { BaseTask } from '../../task/baseTask';
+import { Task } from '../../task/task';
+import { TaskGroup } from '../../task/taskGroup';
+
 export interface ClearmlDataset {
   id: string;
   name: string;
@@ -62,4 +67,16 @@ export interface CreateDataset {
   description?: string;
   type: DatasetType;
   file?: File;
+}
+
+export interface CreateOwnDataset {
+  name: string;
+  description?: string;
+  type: DatasetType;
+  tasks: {
+    course: Course;
+    taskGroup: TaskGroup;
+    baseTask: BaseTask;
+    task: Task;
+  }[];
 }
