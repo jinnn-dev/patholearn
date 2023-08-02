@@ -61,7 +61,7 @@ def create_dataset(dataset: Dataset, file: BinaryIO):
 def create_own_dataset(dataset: Dataset, cookies: dict, data: dict):
     result = celery_app.send_task(
         name="create_own_dataset",
-        args=[data, str(""), cookies],
+        args=[data, str(dataset.id), cookies],
         retries=3,
         queue="ai_api",
     )

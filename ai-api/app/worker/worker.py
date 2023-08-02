@@ -1,6 +1,10 @@
 import os
 import requests
 import shutil
+import uuid
+import cv2
+import numpy as np
+from patchify import patchify
 
 from app.schema.dataset import DatasetDimension
 
@@ -29,29 +33,140 @@ logger = get_task_logger(__name__)
 
 @celery_app.task(name="create_own_dataset", queue="ai_api")
 def create_dataset_own(data: dict, dataset_id: str, cookies: dict):
-    # dataset = get_dataset(dataset_id)
-    # logger.info(data)
-    for data in data["tasks"]:
-        task_id = data["task"]["id"]
-        url = f"""http://lern_api:8000/tasks/task/{task_id}/mask"""
-        logger.info(url)
-        response = requests.get(
-            url,
-            cookies=cookies,
-        )
-        with open(f"/data/{str(task_id)}.png", "wb") as out_file:
-            shutil.copyfileobj(response.raw, out_file)
+    dataset = get_dataset(dataset_id)
+    log_prefix = f"Dataset {dataset_id}: "
+    dataset_folder = f"/data/{dataset_id}/"
+    os.makedirs(dataset_folder, exist_ok=True)
 
-        slide_id = data["baseTask"]["slide_id"]
+    downloaded_slides = []
+    mask_paths = []
+    image_paths = []
+    task_ids = []
+    for selected_task in data["tasks"]:
+        task_id = selected_task["task"]["id"]
+        task_ids.append(task_id)
+        url = f"""http://lern_api:8000/tasks/task/{task_id}/mask"""
+        response = requests.get(url, cookies=cookies, stream=True)
+        mask_path = f"{dataset_folder}/{str(task_id)}.png"
+        mask_paths.append(mask_path)
+        with open(mask_path, "wb") as out_file:
+            for chunk in response.iter_content(chunk_size=1024):
+                if chunk:
+                    out_file.write(chunk)
+
+        slide_id = selected_task["baseTask"]["slide_id"]
         logger.info(slide_id)
-        slide_url = f"""http://slide_api:8000/slides/{slide_id}/download/-1"""
-        response = requests.get(
-            slide_url,
-            cookies=cookies,
-        )
-        logger.info(response)
-        with open(f"/data/{str(slide_id)}.png", "wb") as out_file:
-            shutil.copyfileobj(response.raw, out_file)
+        if slide_id not in downloaded_slides:
+            slide_url = f"""http://slide_api:8000/slides/{slide_id}/download/-1"""
+            response = requests.get(slide_url, cookies=cookies, stream=True)
+            downloaded_slides.append(slide_id)
+            image_path = f"{dataset_folder}/{str(slide_id)}.png"
+            image_paths.append(image_path)
+            with open(image_path, "wb") as out_file:
+                for chunk in response.iter_content(chunk_size=1024):
+                    if chunk:
+                        out_file.write(chunk)
+
+    image_output_folder = f"{dataset_folder}/images/"
+    mask_output_folder = f"{dataset_folder}/masks/"
+
+    os.makedirs(image_output_folder, exist_ok=True)
+    os.makedirs(mask_output_folder, exist_ok=True)
+
+    rescale = data["patchMagnification"]
+    patch_size = data["patchSize"]
+    stride = patch_size
+    all_image_patches = []
+
+    for path in image_paths:
+        image = cv2.imread(path, cv2.COLOR_BGR2RGB)
+        logger.info(image.shape)
+        image = rescale_image(image, rescale)
+        image_patches = patchify(image, (patch_size, patch_size, 3), step=stride)
+        all_image_patches.append(image_patches)
+        os.remove(path)
+    logger.info("Mask")
+    all_mask_patches = []
+    for mask_path in mask_paths:
+        im_gray = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
+        logger.info(im_gray.shape)
+        resized = rescale_image(im_gray, rescale)
+        thresh = 1
+        mask_image = cv2.threshold(resized, thresh, 255, cv2.THRESH_BINARY)[1]
+        result_mask = np.asarray(mask_image)
+        mask_patches = patchify(result_mask, (patch_size, patch_size), step=stride)
+        all_mask_patches.append(mask_patches)
+        os.remove(mask_path)
+
+    for index, image_patches in enumerate(all_image_patches):
+        for i in range(image_patches.shape[0]):
+            for j in range(image_patches.shape[1]):
+                single_patch_img = image_patches[i, j, 0, :, :]
+                cv2.imwrite(
+                    image_output_folder
+                    + str(index)
+                    + "_"
+                    + str(i)
+                    + "_"
+                    + str(j)
+                    + ".png",
+                    single_patch_img,
+                )
+
+    for index, mask_patches in enumerate(all_mask_patches):
+        for i in range(mask_patches.shape[0]):
+            for j in range(mask_patches.shape[1]):
+                single_patch_img = mask_patches[i, j, :, :]
+                cv2.imwrite(
+                    mask_output_folder
+                    + str(index)
+                    + "_"
+                    + str(i)
+                    + "_"
+                    + str(j)
+                    + ".png",
+                    single_patch_img,
+                )
+    try:
+        logger.info(f"{log_prefix} Parsing folder")
+        dataset.metadata.dimension = DatasetDimension(x=patch_size, y=patch_size)
+        dataset.metadata.patch_size = patch_size
+        dataset.metadata.patch_magnification = rescale
+        dataset.metadata.task_ids = task_ids
+        update_dataset(dataset.id, {"metadata": dataset.metadata.dict()})
+    except Exception as error:
+        logger.exception(f"{log_prefix} Failed parsing: {error}")
+        update_dataset(dataset.id, {"status": "failed"})
+        return
+    clearml_dataset: ClearmlDataset = create_clearml_dataset(
+        dataset_name=dataset.name,
+        dataset_description=dataset.description,
+        dataset_project="Datasets",
+        dataset_tags=[dataset.dataset_type],
+    )
+
+    try:
+        logger.info(f"{log_prefix} Adding files to dataset")
+        add_files_to_dataset(clearml_dataset, dataset_folder)
+    except ValueError as error:
+        logger.exception(f"{log_prefix} Failed adding files: {error}")
+        update_dataset_status(dataset.id, "failed")
+        return
+
+    set_metadata_of_dataset(clearml_dataset, dataset.metadata.dict())
+    try:
+        logger.info(f"Dataset {dataset_id}: Finalizing")
+        finalize_dataset(clearml_dataset)
+    except Exception as error:
+        logger.exception(f"{log_prefix} Failed finalizing: {error}")
+        update_dataset_status(dataset.id, "failed")
+        return
+
+    clearml_dataset = get_dataset_task(clearml_dataset)
+    update_dataset(dataset_id=dataset.id, fields={"clearml_dataset": clearml_dataset})
+
+    delete_folder(dataset_folder)
+    update_dataset_status(dataset.id, "completed")
 
 
 @celery_app.task(name="create_dataset", queue="ai_api")
@@ -115,5 +230,11 @@ def create_dataset(file_path: str, dataset_id: str):
     update_dataset(dataset_id=dataset.id, fields={"clearml_dataset": clearml_dataset})
 
     delete_folder(unpack_path)
-
     update_dataset_status(dataset.id, "completed")
+
+
+def rescale_image(image: np.ndarray, rescale: float):
+    width = int(image.shape[1] * rescale)
+    height = int(image.shape[0] * rescale)
+    dim = (width, height)
+    return cv2.resize(image, dim, interpolation=cv2.INTER_AREA)

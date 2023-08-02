@@ -19,6 +19,9 @@ class DatasetMetadata(BaseModel):
     classes: Optional[List]
     is_grayscale: Optional[bool]
     dimension: Optional[DatasetDimension]
+    patch_size: Optional[int]
+    patch_magnification: Optional[float]
+    task_ids: Optional[List[int]]
 
 
 class Dataset(BaseMongoModel):
@@ -26,7 +29,7 @@ class Dataset(BaseMongoModel):
     creator_id: str = Field(...)
     name: str = Field(...)
     description: Optional[str] = None
-    dataset_type: DatasetType = Field(default="Classification")
+    dataset_type: DatasetType = Field(default="classification")
     created_at: datetime.datetime = Field(...)
     status: Optional[DatasetStatus]
     clearml_dataset: Optional[Dict]

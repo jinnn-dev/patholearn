@@ -9,6 +9,8 @@ import numpy as np
 from cv2 import cv2
 from loguru import logger
 import xml.etree.ElementTree as ET
+import math
+import re
 
 
 class MinioWrapper:
@@ -88,14 +90,25 @@ class MinioWrapper:
             bucket_name=MinioWrapper.pyramid_bucket, object_path=object_path
         )
 
-        # if slide is not None:
-        #     logger.info("Slide is cached")
-        #     return slide
+        if slide is not None:
+            logger.info("Slide is cached")
+            return slide
         logger.info("Slide is not cached")
         result = self.minio_client.get_objects_in_folder(
             bucket_name=MinioWrapper.pyramid_bucket,
             folder_path=f"{slide_id}/dzi_files/{layer}",
         )
+
+        tiles = {}
+        for f in result:
+            # Get the tile name and parse the x, y coordinates
+            tile_name = Path(f["name"]).stem
+            x, y = map(int, re.match(r"(\d+)_(\d+)", tile_name).groups())
+
+            # Get the tile data, convert it to an image, and add it to the tiles dictionary
+            tile_data = f["data"]
+            tile_image = Image.open(io.BytesIO(tile_data))
+            tiles[(x, y)] = tile_image
 
         dzi_file = self.minio_client.get_object(
             bucket_name=MinioWrapper.pyramid_bucket, object_path=f"{slide_id}/dzi.dzi"
@@ -103,74 +116,115 @@ class MinioWrapper:
 
         tree = ET.ElementTree(ET.fromstring(dzi_file))
         root = tree.getroot()
-        for child in root:
-            logger.info(child.attrib)
 
-        logger.info(dzi_file)
+        namespace = "{http://schemas.microsoft.com/deepzoom/2008}"
+        image = root
 
-        data = {}
+        # Extract the attributes from the .dzi file
+        format_ = image.attrib["Format"]
+        overlap = int(image.attrib["Overlap"])
+        tile_size = int(image.attrib["TileSize"])
 
-        max_width = 0
-        max_height = 0
-        max_x = -1
-        max_y = -1
+        # Extract the size information
+        size = image.find(f"{namespace}Size")
+        width = int(size.attrib["Width"])
+        height = int(size.attrib["Height"])
 
-        for image in result:
-            base_name = Path(image["name"]).stem
-            parsed_image = np.fromstring(image["data"], np.uint8)
-            parsed_image = cv2.imdecode(parsed_image, cv2.COLOR_BGR2RGB)
-            splitted = base_name.split("_")
-            x = int(splitted[0])
-            y = int(splitted[1])
-            height = parsed_image.shape[0]
-            width = parsed_image.shape[1]
-            if x == 0:
-                max_height += height
-            if y == 0:
-                max_width += width
-            if x > max_x:
-                max_x = x
-            if y > max_y:
-                max_y = y
-            data[base_name] = parsed_image
+        # Calculate the number of tiles in each dimension for the max level
+        tiles_x = math.ceil(width / tile_size)
+        tiles_y = math.ceil(height / tile_size)
 
-        logger.info(
-            f"{str(len(result))}, {str(max_x)}, {str(max_width)}, {str(max_y)}, {str(max_height)}"
-        )
+        # Initialize an empty image
+        full_image = np.zeros((height, width, 3), dtype=np.uint8)
 
-        output_image = np.zeros(
-            (max_height - max_y + 1, max_width - max_x + 1, 3), dtype=np.uint8
-        )
-        curr_x = 0
-        for x in range(max_x + 1):
-            update_x = 0
-            curr_y = 0
-            for y in range(max_y + 1):
-                image = data[f"{str(x)}_{str(y)}"]
-                height = image.shape[0]
-                width = image.shape[1]
+        # Assuming 'tiles' is a dictionary of tiles with keys in the form of (x, y)
+        for (x, y), tile in tiles.items():
+            # Calculate the position where this tile fits into the full image
+            pos_x = x * (tile_size - overlap)
+            pos_y = y * (tile_size - overlap)
 
-                output_image[
-                    curr_y : curr_y + height,
-                    curr_x : curr_x + width,
-                ] = image
+            # Convert PIL Image to OpenCV format
+            tile_image = cv2.cvtColor(np.array(tile), cv2.COLOR_RGB2BGR)
 
-                curr_y += height - 1
-                update_x = width - (1 if x > 0 else 0)
+            # Paste the tile into the full image
+            full_image[
+                pos_y : pos_y + tile_image.shape[0], pos_x : pos_x + tile_image.shape[1]
+            ] = tile_image
 
-            curr_x += update_x
-        _, im_jpg = cv2.imencode(".jpg", output_image)
-
+        # Save the final image
+        _, im_jpg = cv2.imencode(".jpeg", full_image)
         file_name = f"{layer}.jpeg"
-        cv2.imwrite(file_name, output_image)
-
+        with open(file_name, "wb") as f:
+            f.write(im_jpg.tobytes())
         self.minio_client.create_object(
             bucket_name=MinioWrapper.pyramid_bucket,
             file_name=f"{slide_id}/{file_name}",
             file_content=file_name,
             content_type="image/jpeg",
         )
-
-        os.remove(file_name)
-
         return im_jpg.tobytes()
+
+        # data = {}
+
+        # max_width = 0
+        # max_height = 0
+        # max_x = -1
+        # max_y = -1
+
+        # for image in result:
+        #     base_name = Path(image["name"]).stem
+        #     parsed_image = np.fromstring(image["data"], np.uint8)
+        #     parsed_image = cv2.imdecode(parsed_image, cv2.COLOR_BGR2RGB)
+        #     splitted = base_name.split("_")
+        #     x = int(splitted[0])
+        #     y = int(splitted[1])
+        #     height = parsed_image.shape[0]
+        #     width = parsed_image.shape[1]
+        #     if x == 0:
+        #         max_height += height
+        #     if y == 0:
+        #         max_width += width
+        #     if x > max_x:
+        #         max_x = x
+        #     if y > max_y:
+        #         max_y = y
+        #     data[base_name] = parsed_image
+
+        # logger.info(
+        #     f"{str(len(result))}, {str(max_x)}, {str(max_width)}, {str(max_y)}, {str(max_height)}"
+        # )
+
+        # output_image = np.zeros(
+        #     (max_height - max_y + 1, max_width - max_x + 1, 3), dtype=np.uint8
+        # )
+        # curr_x = 0
+        # for x in range(max_x + 1):
+        #     update_x = 0
+        #     curr_y = 0
+        #     for y in range(max_y + 1):
+        #         image = data[f"{str(x)}_{str(y)}"]
+        #         height = image.shape[0]
+        #         width = image.shape[1]
+
+        #         output_image[
+        #             curr_y : curr_y + height,
+        #             curr_x : curr_x + width,
+        #         ] = image
+
+        #         curr_y += height - 1
+        #         update_x = width - (1 if x > 0 else 0)
+
+        #     curr_x += update_x
+        # _, im_jpg = cv2.imencode(".jpg", output_image)
+
+        # file_name = f"{layer}.jpeg"
+        # cv2.imwrite(file_name, output_image)
+
+        # self.minio_client.create_object(
+        #     bucket_name=MinioWrapper.pyramid_bucket,
+        #     file_name=f"{slide_id}/{file_name}",
+        #     file_content=file_name,
+        #     content_type="image/jpeg",
+        # )
+
+        # os.remove(file_name)

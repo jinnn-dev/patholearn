@@ -73,37 +73,28 @@ async def create_new_own_dataset(
     body: dict,
     s: SessionContainer = Depends(verify_session()),
 ):
-    # for data in body["tasks"]:
-    #     task_id = data["task"]["id"]
-    #     url = f"""http://lern_api:8000/tasks/task/{task_id}/mask"""
-    #     logger.debug(url)
-    #     response = requests.get(
-    #         url,
-    #         cookies=request.cookies,
-    #     )
-    #     with open(f"/app/{str(task_id)}.png", "wb") as out_file:
-    #         shutil.copyfileobj(response.raw, out_file)
     user_id = s.get_user_id()
-    # new_dataset = await dataset_collection.insert_one(
-    #     {
-    #         "creator_id": user_id,
-    #         "name": body["name"],
-    #         "description": body["description"] if "description" in body else None,
-    #         "dataset_type": "segmentation",
-    #         "created_at": datetime.now(),
-    #         "status": "saving",
-    #         "metadata": {},
-    #     }
-    # )
-    # dataset = await get_dataset(dataset_id=str(new_dataset.inserted_id))
-    # await update_dataset_status(dataset_id=dataset.id, status="processing")
-    background_tasks.add_task(
-        create_own_dataset_backgroud, data=body, cookies=request.cookies, dataset=None
+    new_dataset = await dataset_collection.insert_one(
+        {
+            "creator_id": user_id,
+            "name": body["name"],
+            "description": body["description"] if "description" in body else None,
+            "dataset_type": "segmentation",
+            "created_at": datetime.now(),
+            "status": "saving",
+            "metadata": {},
+            "type": body["type"],
+        }
     )
-    return None
-    # requests.post("http://lern_api:8000/tasks", cookies=request.cookies)
-
-    # logger.info(data)
+    dataset = await get_dataset(dataset_id=str(new_dataset.inserted_id))
+    await update_dataset_status(dataset_id=dataset.id, status="processing")
+    background_tasks.add_task(
+        create_own_dataset_backgroud,
+        data=body,
+        cookies=request.cookies,
+        dataset=dataset,
+    )
+    return dataset
 
 
 @router.get("", response_model=List[Dataset])

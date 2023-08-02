@@ -16,3 +16,6 @@ python-multipart==0.0.6
 minio==7.1.15
 boto3==1.26.131
 asgiref==3.7.2
+opencv-python==4.8.0.74
+patchify==0.2.3
+watchdog==3.0.0

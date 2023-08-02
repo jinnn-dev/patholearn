@@ -67,7 +67,7 @@ services:
     restart: unless-stopped
     ports:
       - '8001:8000'
-    command: uvicorn app.app:app --host 0.0.0.0 --port 8000 --no-server-header
+    command: uvicorn app.app:app --reload --host 0.0.0.0 --port 8000 --no-server-header
     environment:
       - CELERY_BROKER_URL=amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@${RABBIT_IP}:${RABBIT_PORT}//
       - DATABASE_URL=${MONGO_DRIVER}://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:${MONGO_PORT}
@@ -205,7 +205,7 @@ services:
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
       - MINIO_SECURE=${MINIO_SECURE}
       - MINIO_URL=${MINIO_URL}
-    command: celery --app worker.worker.celery_app worker --loglevel=info --without-gossip --without-mingle --without-heartbeat -Ofair -Q ai_api
+    command: watchmedo auto-restart --recursive --directory="./app" --patterns="*.py" -- celery --app worker.worker.celery_app worker --loglevel=info --without-gossip --without-mingle --without-heartbeat -Ofair -Q ai_api
 
   ai_worker:
     build:
