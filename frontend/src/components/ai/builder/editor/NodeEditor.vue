@@ -6,6 +6,7 @@ import { Schemes, useEditor } from '../../../../core/ai/builder/use-editor';
 
 import EditorTools from './EditorTools.vue';
 import ModalDialog from '../../../containers/ModalDialog.vue';
+import ConfirmDialog from '../../../general/ConfirmDialog.vue';
 import SaveButton from '../../../general/SaveButton.vue';
 import CodeHighlight from '../../../containers/CodeHighlight.vue';
 import Icon from '../../../general/Icon.vue';
@@ -56,6 +57,9 @@ const rete = ref();
 
 const loading = ref(false);
 const loadingText = ref('Loading');
+
+const showClearWarning = ref();
+
 onMounted(async () => {
   builderState.versionId = props.taskVersion.id;
   loading.value = true;
@@ -179,9 +183,7 @@ const itemClicked = async (event: EventName) => {
   }
 
   if (event === 'clear') {
-    loadingText.value = 'Clearing';
-    await clear();
-    await saveEditor();
+    showClearWarning.value = true;
   }
 
   if (event === 'parse') {
@@ -218,6 +220,15 @@ const itemClicked = async (event: EventName) => {
   loading.value = false;
 };
 
+const onClear = async () => {
+  loading.value = true;
+  loadingText.value = 'Clearing';
+  await clear();
+  await saveEditor();
+  showClearWarning.value = false;
+  loading.value = false;
+};
+
 onUnmounted(() => {
   resetNodeEditorState();
 });
@@ -233,6 +244,16 @@ onUnmounted(() => {
       <code-highlight>{{ result }}</code-highlight>
     </div>
   </modal-dialog>
+
+  <confirm-dialog
+    :show="showClearWarning"
+    header="Everything will be deleted!"
+    @confirmation="onClear()"
+    confirm-text="Ok"
+    @reject="showClearWarning = false"
+    reject-text="Abort"
+    :loading="loading"
+  ></confirm-dialog>
 
   <task-status v-if="builderState.selectedVersion?.status"></task-status>
 

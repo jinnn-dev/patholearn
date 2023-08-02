@@ -1,4 +1,4 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import ModalDialog from '../containers/ModalDialog.vue';
 import ConfirmButtons from './ConfirmButtons.vue';
 
@@ -8,7 +8,9 @@ defineProps({
   show: Boolean,
   loading: Boolean,
   header: String,
-  detail: String
+  detail: String,
+  confirmText: String,
+  rejectText: String
 });
 
 const confirm = () => {
@@ -20,13 +22,20 @@ const reject = () => {
 };
 </script>
 <template>
-  <modal-dialog :show='show'>
-    <div class='relative'>
-      <h1 class='text-2xl'>{{ header }}</h1>
-      <h2 v-if='detail' class='mt-4'>
+  <modal-dialog :show="show">
+    <div class="relative">
+      <h1 class="text-2xl">{{ header }}</h1>
+      <h2 v-if="detail" class="mt-4">
         {{ detail }}
       </h2>
-      <confirm-buttons :loading='loading' class='mt-4' @confirm='confirm' @reject='reject'></confirm-buttons>
+      <confirm-buttons
+        :confirm-text="confirmText"
+        :reject-text="rejectText"
+        :loading="loading"
+        class="mt-4"
+        @confirm="confirm"
+        @reject="reject"
+      ></confirm-buttons>
     </div>
   </modal-dialog>
 </template>
