@@ -23,7 +23,6 @@ import {
 import TaskStatus from '../../../../components/ai/builder/editor/TrainingStatus.vue';
 import { downloadFile } from '../../../../utils/download-file';
 import { pushTrainingReset } from '../../../../core/ai/builder/sync';
-import { graphHasValidDatasetNode } from '../../../../core/ai/builder/node-validator';
 import { PresenceChannel } from 'pusher-js';
 import { NodeEditor } from 'rete';
 import { addNotification } from '../../../../utils/notification-state';
@@ -39,8 +38,19 @@ const props = defineProps({
   }
 });
 
-const { arrangeLayout, zoomAt, init, addNode, download, importGraph, clear, area, registerEvents, startTraining } =
-  useEditor();
+const {
+  arrangeLayout,
+  zoomAt,
+  init,
+  validate,
+  addNode,
+  download,
+  importGraph,
+  clear,
+  area,
+  registerEvents,
+  startTraining
+} = useEditor();
 const { run: updateGraph } = useService(AiService.updateTaskVersion);
 
 const { run: parseGraph, result } = useService(AiService.parseTaskVersion);
@@ -140,7 +150,7 @@ const parseEditor = async () => {
 };
 
 const startEditorTraining = async () => {
-  if (!graphHasValidDatasetNode(builderState.editor as NodeEditor<Schemes>)) {
+  if (!validate()) {
     addNotification({
       header: 'Dataset Node not valid',
       detail: 'Dataset Node has no dataset selected',
@@ -277,3 +287,4 @@ onUnmounted(() => {
     <div class="rete w-full h-full bg-gray-900 text-lg" ref="rete"></div>
   </div>
 </template>
+../../../../core/ai/builder/validators/node-validator

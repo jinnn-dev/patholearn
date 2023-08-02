@@ -25,6 +25,8 @@ export abstract class Node<
   implements Serializable<T extends ISerializable ? any : any>
 {
   public sockets: { input?: Socket; output?: Socket } = {};
+  width?: number;
+  height?: number;
 
   public type: NodeType;
   constructor(label: string, type: NodeType, socketConfig: SocketConfig, public lockStatus?: LockStatus) {

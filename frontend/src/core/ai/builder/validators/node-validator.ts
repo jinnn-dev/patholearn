@@ -1,8 +1,8 @@
 import { NodeEditor } from 'rete';
-import { NodeClassesType, NodeType } from './nodes/types';
-import { Schemes } from './use-editor';
-import { nodeTypeExists } from './editor-utils';
-import { addNotification } from '../../../utils/notification-state';
+import { NodeClassesType, NodeType } from '../nodes/types';
+import { Schemes } from '../use-editor';
+import { nodeTypeExists } from '../editor-utils';
+import { addNotification } from '../../../../utils/notification-state';
 
 interface ValidationItems {
   unique?: boolean;
@@ -50,4 +50,8 @@ export function graphHasValidDatasetNode(editor: NodeEditor<Schemes>) {
   const selectedValue = (datasetNode?.controls as any)['dataset'].value;
 
   return selectedValue !== undefined && selectedValue !== null;
+}
+
+export function validateNodes(editor: NodeEditor<Schemes>) {
+  return graphHasValidDatasetNode(editor);
 }

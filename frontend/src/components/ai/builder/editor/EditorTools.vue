@@ -8,7 +8,7 @@ import { NodeType, getNodeGroup } from '../../../../core/ai/builder/nodes/types'
 import { versionHasStatus } from '../../../../core/ai/builder/state';
 import { builderState } from '../../../../core/ai/builder/state';
 
-const toolsOpen = ref(false);
+const toolsOpen = ref(true);
 
 const emit = defineEmits<{ (e: 'selected', value: EventName): void }>();
 </script>
