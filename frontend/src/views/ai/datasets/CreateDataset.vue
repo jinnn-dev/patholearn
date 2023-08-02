@@ -58,7 +58,9 @@ const createDatasetForm = reactive<CreateDataset>({
 const createOwnDatasetForm = reactive<CreateOwnDataset>({
   name: '',
   type: selectedItem.value,
-  tasks: []
+  tasks: [],
+  patchSize: 256,
+  patchMagnification: 1.0
 });
 
 const progress = ref();
@@ -75,13 +77,13 @@ const uploadDataset = async () => {
   } else {
     await runCreateDataset(createDatasetForm, updateProgress);
   }
-  // if (createDatasetResult.value || createOwnDatasetResult.value) {
-  //   router.push(
-  //     `/ai/datasets/${
-  //       datasetTypeSelection.value === 'own' ? createOwnDatasetResult.value!.id : createDatasetResult.value!.id
-  //     }`
-  //   );
-  // }
+  if (createDatasetResult.value || createOwnDatasetResult.value) {
+    router.push(
+      `/ai/datasets/${
+        datasetTypeSelection.value === 'own' ? createOwnDatasetResult.value!.id : createDatasetResult.value!.id
+      }`
+    );
+  }
 };
 </script>
 <template>
@@ -143,7 +145,13 @@ const uploadDataset = async () => {
           :progress="progress"
           @file-selected="createDatasetForm.file = $event"
         ></DatasetUpload>
-        <DatasetOwn v-else :progress="progress" @tasks-changed="createOwnDatasetForm.tasks = $event"></DatasetOwn>
+        <DatasetOwn
+          v-else
+          :progress="progress"
+          @tasks-changed="createOwnDatasetForm.tasks = $event"
+          @patch-magnification-changed="createOwnDatasetForm.patchMagnification = $event"
+          @patch-size-changed="createOwnDatasetForm.patchSize = $event"
+        ></DatasetOwn>
         <div class="flex justify-end">
           <save-button
             class="w-48"

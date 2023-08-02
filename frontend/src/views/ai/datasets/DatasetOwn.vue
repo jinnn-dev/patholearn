@@ -10,6 +10,7 @@ import { TaskGroup } from '../../../model/task/taskGroup';
 import { BaseTask } from '../../../model/task/baseTask';
 import { Task } from '../../../model/task/task';
 import Spinner from '../../../components/general/Spinner.vue';
+import { PatchSize, PatchMagnification } from '../../../model/ai/datasets/dataset';
 
 const { result, loading: coursesLoading, run: getCourses } = useService(CourseService.getAllCoursesToUser, true);
 const {
@@ -20,13 +21,26 @@ const {
 const { result: taskGroup, loading: taskGroupLoading, run: getTaskGroup } = useService(TaskGroupService.getTaskGroup);
 const { result: baseTask, loading: baseTaskLoading, run: getBaseTask } = useService(TaskService.getBaseTask);
 
+const selectedPatchSize = ref<PatchSize>(256);
+const selectedPatchMagnification = ref<PatchMagnification>(1.0);
+
 const selectedTasks = ref<{ course: Course; taskGroup: TaskGroup; baseTask: BaseTask; task: Task }[]>([]);
 
 const selectedCourse = ref<Course>();
 const selectedTaskGroup = ref<TaskGroup>();
 const selectedBaseTask = ref<BaseTask>();
 
-const emit = defineEmits(['tasksChanged']);
+const emit = defineEmits(['tasksChanged', 'patchSizeChanged', 'patchMagnificationChanged']);
+
+const patchSizeChanged = (size: PatchSize) => {
+  emit('patchSizeChanged', size);
+  selectedPatchSize.value = size;
+};
+
+const patchMagnificationChanged = (magnification: PatchMagnification) => {
+  emit('patchMagnificationChanged', magnification);
+  selectedPatchMagnification.value = magnification;
+};
 
 const goToCourse = async (course: Course) => {
   selectedCourse.value = course;
@@ -179,6 +193,58 @@ const removeSelectedTask = (index: number) => {
           >
             {{ task.task_question }}
           </div>
+        </div>
+      </div>
+    </div>
+    <div class="mt-4 text-xl">Auf welche größen sollen die WSI skaliert werden?</div>
+    <div class="flex w-full justify-evenly items-center">
+      <div class="flex items-center ring-2 ring-gray-500 rounded-lg h-10 overflow-hidden">
+        <div
+          class="flex items-center justify-center px-4 h-16 ring-3 hover:cursor-pointer"
+          :class="selectedPatchMagnification === 0.2 ? 'bg-gray-500' : 'bg-gray-700'"
+          @click="patchMagnificationChanged(0.2)"
+        >
+          0.2x
+        </div>
+        <div
+          class="flex items-center justify-center px-4 h-16 ring-3 hover:cursor-pointer"
+          :class="selectedPatchMagnification === 0.5 ? 'bg-gray-500' : 'bg-gray-700'"
+          @click="patchMagnificationChanged(0.5)"
+        >
+          0.5x
+        </div>
+        <div
+          class="flex items-center justify-center px-4 h-16 ring-3 hover:cursor-pointer"
+          :class="selectedPatchMagnification === 1.0 ? 'bg-gray-500' : 'bg-gray-700'"
+          @click="patchMagnificationChanged(1.0)"
+        >
+          1.0x
+        </div>
+      </div>
+    </div>
+    <div class="mt-4 text-xl">Wie groß soll eine Bildkachel sein?</div>
+    <div class="flex w-full justify-evenly items-center">
+      <div class="flex items-center ring-2 ring-gray-500 rounded-lg h-10 overflow-hidden">
+        <div
+          class="flex items-center justify-center px-4 h-16 ring-3 hover:cursor-pointer"
+          :class="selectedPatchSize === 128 ? 'bg-gray-500' : 'bg-gray-700'"
+          @click="patchSizeChanged(128)"
+        >
+          128
+        </div>
+        <div
+          class="flex items-center justify-center px-4 h-16 ring-3 hover:cursor-pointer"
+          :class="selectedPatchSize === 256 ? 'bg-gray-500' : 'bg-gray-700'"
+          @click="patchSizeChanged(256)"
+        >
+          256
+        </div>
+        <div
+          class="flex items-center justify-center px-4 h-16 ring-3 hover:cursor-pointer"
+          :class="selectedPatchSize === 512 ? 'bg-gray-500' : 'bg-gray-700'"
+          @click="patchSizeChanged(512)"
+        >
+          512
         </div>
       </div>
     </div>

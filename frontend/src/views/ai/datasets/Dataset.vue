@@ -91,7 +91,7 @@ const deleteDataset = async () => {
           </div>
         </div>
         <div class="w-1/3 bg-gray-900/50 rounded-lg ring-1 ring-gray-500 p-4">
-          <dataset-metadata v-if="dataset.metadata?.classes" size="big" :dataset="dataset"></dataset-metadata>
+          <dataset-metadata v-if="dataset.metadata" size="big" :dataset="dataset"></dataset-metadata>
           <div v-else class="text-center text-gray-300">Keine Daten</div>
         </div>
       </div>

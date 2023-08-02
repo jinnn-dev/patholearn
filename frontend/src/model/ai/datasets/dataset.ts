@@ -26,13 +26,16 @@ export interface DatasetMetadata {
     x: number;
     y: number;
   };
+  patch_size: number;
+  patch_magnification: number;
+  task_ids: number[];
 }
 
 export interface Dataset {
   id: string;
   name: string;
   description?: string;
-  type: DatasetType;
+  dataset_type: DatasetType;
   status: DatasetStatus;
   created_at: string;
   creator_id: string;
@@ -62,6 +65,9 @@ export interface Dataset {
 
 export type DatasetType = 'classification' | 'detection' | 'segmentation';
 
+export type PatchSize = 128 | 256 | 512;
+export type PatchMagnification = 0.2 | 0.5 | 1.0;
+
 export interface CreateDataset {
   name: string;
   description?: string;
@@ -73,6 +79,8 @@ export interface CreateOwnDataset {
   name: string;
   description?: string;
   type: DatasetType;
+  patchSize: PatchSize;
+  patchMagnification: PatchMagnification;
   tasks: {
     course: Course;
     taskGroup: TaskGroup;
