@@ -150,7 +150,7 @@ const parseEditor = async () => {
 };
 
 const startEditorTraining = async () => {
-  if (!validate()) {
+  if (!(await validate())) {
     addNotification({
       header: 'Dataset Node not valid',
       detail: 'Dataset Node has no dataset selected',

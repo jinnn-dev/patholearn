@@ -36,6 +36,7 @@
     "rete-connection-plugin": "^2.0.0",
     "rete-context-menu-plugin": "^2.0.0",
     "rete-render-utils": "^2.0.1",
+    "rete-structures": "^2.0.0",
     "rete-vue-plugin": "^2.0.2",
     "supertokens-web-js": "^0.6.0",
     "swiper": "^7.0.7",

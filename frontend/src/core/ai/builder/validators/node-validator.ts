@@ -1,7 +1,7 @@
 import { NodeEditor } from 'rete';
 import { NodeClassesType, NodeType } from '../nodes/types';
 import { Schemes } from '../use-editor';
-import { nodeTypeExists } from '../editor-utils';
+import { getNodeByType, nodeTypeExists } from '../editor-utils';
 import { addNotification } from '../../../../utils/notification-state';
 
 interface ValidationItems {
@@ -46,8 +46,11 @@ function checkNodeIsUnique(node: NodeClassesType, validationElement: ValidationI
 }
 
 export function graphHasValidDatasetNode(editor: NodeEditor<Schemes>) {
-  const datasetNode = editor.getNodes().find((node) => node.type === 'DatasetNode');
-  const selectedValue = (datasetNode?.controls as any)['dataset'].value;
+  const datasetNode = getNodeByType('DatasetNode', editor);
+  if (!datasetNode) {
+    return false;
+  }
+  const selectedValue = (datasetNode.controls as any)['dataset'].value;
 
   return selectedValue !== undefined && selectedValue !== null;
 }

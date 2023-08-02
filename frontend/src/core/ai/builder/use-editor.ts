@@ -281,6 +281,9 @@ export function useEditor() {
     }
     const nodesAreValid = validateNodes(editor.value);
     const editorIsValid = validateEditor(editor.value);
+    console.log(editorIsValid);
+
+    return editorIsValid;
   };
 
   const download = (): IGraph => {
