@@ -29,8 +29,18 @@ const connectionMatrix: { [key in SocketType]?: SocketType[] } = {
 export function nodesCanConnect(source: NodeClassesType, target: NodeClassesType): boolean {
   if (target.type === 'ResNetNode' && source.type !== 'DatasetNode') {
     addNotification({
-      header: 'Nicht möglich!',
-      detail: `Es kann nur ein Dataset Node mit einem ${target.label} Node verbunden werden`,
+      header: 'Not possible!',
+      detail: `Only a dataset node can be connected with a ${target.label} node`,
+      level: 'warning',
+      showDate: false,
+      timeout: 10000
+    });
+    return false;
+  }
+  if (target.type === 'OutputNode' && source.type === 'DatasetNode') {
+    addNotification({
+      header: 'Not possible!',
+      detail: `A dataset node can not be connected to an output node. Add layers inbetween.`,
       level: 'warning',
       showDate: false,
       timeout: 10000
@@ -60,12 +70,12 @@ export function getWarningMessage(sourceNode: NodeClassesType, targetNode: NodeC
   const targetType = targetNode.sockets.input?.type;
 
   if (sourceType === '2D' && targetType === 'Linear') {
-    return `Ein ${targetNode.label} Node kann nur lineare Daten verarbeiten. Es muss ein Flatten Node zwischen gefügt werden.`;
+    return `A ${targetNode.label} node can only process linear data. A Flatten node has to be added.`;
   }
 
   if (sourceType === 'Linear' && targetType === '2D') {
-    return `Ein ${sourceNode.label} Node produziert lineare Daten. Der ${targetNode.label} Node verarbeitet aber nur 2D-Daten.`;
+    return `A ${sourceNode.label} node outputs linear data. The ${targetNode.label} node only processes 2D data.`;
   }
 
-  return `Ein ${sourceNode.label} Node kann nicht mit einem ${targetNode.label} Node verbunden werden.`;
+  return `A connection between a ${sourceNode.label} node and a ${targetNode.label} node is not possible.`;
 }

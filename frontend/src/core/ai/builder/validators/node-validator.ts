@@ -33,8 +33,8 @@ function checkNodeIsUnique(node: NodeClassesType, validationElement: ValidationI
 
   if (validationElement.unique && nodeExits) {
     addNotification({
-      header: 'Nicht möglich',
-      detail: `Es kann nur einen ${node.label} Node geben!`,
+      header: 'Not possible',
+      detail: `Only one ${node.label} node can exist!`,
       level: 'warning',
       showDate: false,
       timeout: 10000
