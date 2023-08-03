@@ -32,7 +32,7 @@ import { selectableNodes, selector } from './trackedSelector';
 import { pushTrainingStarted } from './sync';
 import { PresenceChannel } from 'pusher-js';
 import { DiagramControl } from './controls/diagram-control';
-import { Socket, nodesCanConnect } from './sockets/socket';
+import { nodesCanConnect } from './validators/socket-validator';
 import { AsyncDropdownControl, MetricControl } from './controls';
 import { nodeCanBeCreated, validateNodes } from './validators/node-validator';
 import { validateEditor } from './validators/graph-validator';
