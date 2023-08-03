@@ -35,7 +35,7 @@ import { DiagramControl } from './controls/diagram-control';
 import { nodesCanConnect } from './validators/socket-validator';
 import { AsyncDropdownControl, MetricControl } from './controls';
 import { nodeCanBeCreated, validateNodes } from './validators/node-validator';
-import { validateEditor } from './validators/graph-validator';
+import { validateConnections } from './validators/connection-validator';
 
 export type NodeProps = NodeClassesType;
 
@@ -280,10 +280,9 @@ export function useEditor() {
       return;
     }
     const nodesAreValid = validateNodes(editor.value);
-    const editorIsValid = validateEditor(editor.value);
-    console.log(editorIsValid);
+    const connectionsAreValid = validateConnections(editor.value);
 
-    return editorIsValid;
+    return nodesAreValid && connectionsAreValid;
   };
 
   const download = (): IGraph => {

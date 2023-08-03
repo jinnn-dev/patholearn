@@ -144,20 +144,17 @@ const saveEditor = async () => {
 };
 
 const parseEditor = async () => {
-  await parseGraph(props.taskId, props.taskVersion.id);
+  const isValid = await validate();
+  if (isValid) {
+    await parseGraph(props.taskId, props.taskVersion.id);
+  }
   // builderState.selectedVersion!.status = 'CREATING';
   // startTraining();
 };
 
 const startEditorTraining = async () => {
-  if (!(await validate())) {
-    addNotification({
-      header: 'Dataset Node not valid',
-      detail: 'Dataset Node has no dataset selected',
-      level: 'warning',
-      showDate: false,
-      timeout: 5000
-    });
+  const isValid = await validate();
+  if (!isValid) {
     return;
   }
   startTraining();
@@ -213,14 +210,20 @@ const itemClicked = async (event: EventName) => {
 
   if (event === 'downloadPython') {
     loadingText.value = 'Downloading Python File';
-    await runDownloadFile(builderState.task!.id, builderState.selectedVersion!.id, 'python');
-    downloadFile(downloadResult.value, builderState.selectedVersion!.id + '.py');
+    const isValid = await validate();
+    if (isValid) {
+      await runDownloadFile(builderState.task!.id, builderState.selectedVersion!.id, 'python');
+      downloadFile(downloadResult.value, builderState.selectedVersion!.id + '.py');
+    }
   }
 
   if (event === 'downloadJupyter') {
     loadingText.value = 'Downloading Jupyter Notebook';
-    await runDownloadFile(builderState.task!.id, builderState.selectedVersion!.id, 'jupyter');
-    downloadFile(JSON.stringify(downloadResult.value), builderState.selectedVersion!.id + '.ipynb');
+    const isValid = await validate();
+    if (isValid) {
+      await runDownloadFile(builderState.task!.id, builderState.selectedVersion!.id, 'jupyter');
+      downloadFile(JSON.stringify(downloadResult.value), builderState.selectedVersion!.id + '.ipynb');
+    }
   }
 
   if (isNode(event)) {

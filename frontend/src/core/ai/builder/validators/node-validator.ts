@@ -45,6 +45,21 @@ function checkNodeIsUnique(node: NodeClassesType, validationElement: ValidationI
   return true;
 }
 
+export function validateMustExist(nodeType: NodeType, editor: NodeEditor<Schemes>) {
+  const nodeExists = getNodeByType('OutputNode', editor);
+  if (!nodeExists) {
+    addNotification({
+      header: 'Node missing!',
+      detail: `${nodeType} node must exist!`,
+      level: 'error',
+      showDate: false,
+      timeout: 10000
+    });
+    return false;
+  }
+  return true;
+}
+
 export function graphHasValidDatasetNode(editor: NodeEditor<Schemes>) {
   const datasetNode = getNodeByType('DatasetNode', editor);
   if (!datasetNode) {
@@ -56,5 +71,5 @@ export function graphHasValidDatasetNode(editor: NodeEditor<Schemes>) {
 }
 
 export function validateNodes(editor: NodeEditor<Schemes>) {
-  return graphHasValidDatasetNode(editor);
+  return graphHasValidDatasetNode(editor) && validateMustExist('OutputNode', editor);
 }
