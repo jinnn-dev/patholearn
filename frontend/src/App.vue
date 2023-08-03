@@ -51,6 +51,7 @@ watch(
     if (route.path !== '/login' && route.path !== '/register') {
       if (initWebsocket()) {
         registerConnectionEvents();
+        connect()
       }
       if (!wsIsConnected.value) {
         connect();
