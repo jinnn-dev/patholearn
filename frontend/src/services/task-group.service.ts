@@ -15,7 +15,7 @@ export class TaskGroupService {
   public static async createTaskGroup(name: string, courseId: number): Promise<TaskGroup> {
     const [_, response] = await handleError(
       ApiService.post<TaskGroup>({
-        resource: this._apiUrl,
+        resource: TaskGroupService._apiUrl,
         data: {
           name,
           course_id: courseId
@@ -35,7 +35,7 @@ export class TaskGroupService {
   public static async getTaskGroups(courseId: number): Promise<TaskGroup[]> {
     const [_, response] = await handleError(
       ApiService.get<TaskGroup[]>({
-        resource: this._apiUrl,
+        resource: TaskGroupService._apiUrl,
         data: { course_id: courseId }
       }),
       'Task groups could not be loaded'
@@ -52,7 +52,7 @@ export class TaskGroupService {
   public static async getTaskGroup(shortName: string): Promise<TaskGroup> {
     const [_, response] = await handleError(
       ApiService.get<TaskGroup>({
-        resource: this._apiUrl + '/' + shortName
+        resource: TaskGroupService._apiUrl + '/' + shortName
       }),
       'Task group could not be loaded'
     );
@@ -68,7 +68,7 @@ export class TaskGroupService {
   public static async removeTaskGroup(short_name: string): Promise<TaskGroup> {
     const [_, response] = await handleError(
       ApiService.delete<TaskGroup>({
-        resource: this._apiUrl + '/' + short_name
+        resource: TaskGroupService._apiUrl + '/' + short_name
       }),
       'Task group could not be removed'
     );
@@ -78,7 +78,7 @@ export class TaskGroupService {
   public static async editTaskGroup(updateTaskGroup: UpdateTaskGroup): Promise<TaskGroup> {
     const [_, response] = await handleError(
       ApiService.put<TaskGroup>({
-        resource: this._apiUrl,
+        resource: TaskGroupService._apiUrl,
         data: updateTaskGroup
       }),
       'Task group could not be updated'
@@ -90,7 +90,7 @@ export class TaskGroupService {
     const [_, response] = await handleError(
       ApiService.get<any>(
         {
-          resource: this._apiUrl + '/' + short_name + '/userSolution/download'
+          resource: TaskGroupService._apiUrl + '/' + short_name + '/userSolution/download'
         },
         'arraybuffer'
       ),

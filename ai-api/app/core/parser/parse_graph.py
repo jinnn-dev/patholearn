@@ -20,8 +20,12 @@ class FlattenNode(Node):
     pass
 
 
+ResNetVersion = Literal["resnet18", "resnet34", "resnet50", "resnet101", "resnet152"]
+
+
 class ArchitectureNode(Node):
-    pass
+    version: ResNetVersion
+    pretrained: bool
 
 
 class ResNetNode(ArchitectureNode):
@@ -80,6 +84,7 @@ class LinearLayer(Layer):
 class Conv2dLayer(Layer):
     kernel_size: tuple
     stride: tuple
+    padding: Literal[0, "same"]
 
 
 class PoolingLayer(Node):
@@ -236,11 +241,12 @@ async def get_conv_node(node: INode):
         id=node.id,
         in_features=1,
         out_features=node.controls[0].value,
-        activation_function=ActivationFunction(node.controls[3].value),
+        activation_function=ActivationFunction(node.controls[4].value),
         kernel_size=(
             node.controls[1].value["x"],
             node.controls[1].value["y"],
         ),
+        padding=0 if node.controls[3].value == "none" else node.controls[3].value,
         stride=(node.controls[2].value["x"], node.controls[2].value["y"]),
     )
 
@@ -296,7 +302,11 @@ async def get_metric_node(node: INode):
 
 
 async def get_resnet_node(node: INode):
-    return ResNetNode(id=node.id)
+    return ResNetNode(
+        id=node.id,
+        version=node.controls[0].value,
+        pretrained=True if node.controls[1].value == "Yes" else False,
+    )
 
 
 def get_to_nodes(node: INode, connections: List[IConnection]):

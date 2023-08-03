@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from sqlalchemy import func
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.crud.base import CRUDBase
@@ -96,6 +97,11 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
         :return: All Courses of the owner
         """
         return db.query(self.model).filter(Course.owner_id == owner_id).all()
+
+    def get_multi_by_owner_or_member(
+        self, db: Session, *, user_id: int
+    ) -> List[Course]:
+        return db.query(self.model).filter(Course.owner_id == user_id).distinct().all()
 
     def get_multi_by_user(self, db: Session, *, user_id: str) -> List[CourseDetail]:
         """

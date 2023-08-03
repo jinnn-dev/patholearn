@@ -19,53 +19,9 @@ export class Socket extends ClassicPreset.Socket {
   }
 }
 
-const connectionMatrix: { [key in SocketType]?: SocketType[] } = {
+export const ConnectionMatrix: { [key in SocketType]?: SocketType[] } = {
   Linear: ['Linear', 'All'],
   '2D': ['2D', 'All'],
   All: ['Linear', '2D', 'All'],
   Metric: ['Metric']
 };
-
-export function nodesCanConnect(source: NodeClassesType, target: NodeClassesType): boolean {
-  if (target.type === 'ResNetNode' && source.type !== 'DatasetNode') {
-    addNotification({
-      header: 'Nicht möglich!',
-      detail: `Es kann nur ein Dataset Node mit einem ${target.label} Node verbunden werden`,
-      level: 'warning',
-      showDate: false,
-      timeout: 10000
-    });
-    return false;
-  }
-  if (source.sockets.output && target.sockets.input) {
-    const possibleConnections = connectionMatrix[source.sockets.output.type];
-    if (!possibleConnections) return false;
-    if (!possibleConnections.includes(target.sockets.input.type)) {
-      addNotification({
-        header: 'Nicht möglich!',
-        detail: getWarningMessage(source, target),
-        level: 'warning',
-        showDate: false,
-        timeout: 10000
-      });
-      return false;
-    }
-    return true;
-  }
-  return false;
-}
-
-export function getWarningMessage(sourceNode: NodeClassesType, targetNode: NodeClassesType) {
-  const sourceType = sourceNode.sockets.output?.type;
-  const targetType = targetNode.sockets.input?.type;
-
-  if (sourceType === '2D' && targetType === 'Linear') {
-    return `Ein ${targetNode.label} Node kann nur lineare Daten verarbeiten. Es muss ein Flatten Node zwischen gefügt werden.`;
-  }
-
-  if (sourceType === 'Linear' && targetType === '2D') {
-    return `Ein ${sourceNode.label} Node produziert lineare Daten. Der ${targetNode.label} Node verarbeitet aber nur 2D-Daten.`;
-  }
-
-  return `Ein ${sourceNode.label} Node kann nicht mit einem ${targetNode.label} Node verbunden werden.`;
-}

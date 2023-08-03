@@ -23,7 +23,6 @@ const props = defineProps({
       <router-link :to="`/ai/datasets/${dataset.id}`"><icon name="arrow-right"></icon></router-link>
     </div>
     <div class="text-sm text-gray-200 mb-2">{{ new Date(dataset.created_at).toLocaleDateString() }}</div>
-
     <div class="flex flex-col gap-4 items-center">
       <dataset-status :status="dataset.status"></dataset-status>
       <dataset-metadata :dataset="dataset"></dataset-metadata>

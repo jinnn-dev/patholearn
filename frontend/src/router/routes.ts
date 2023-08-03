@@ -124,13 +124,6 @@ export const routes: RouteRecordRaw[] = [
     ]
   },
   {
-    path: '/live',
-    meta: {
-      public: true
-    },
-    component: () => import('../views/LiveSyncro.vue')
-  },
-  {
     path: '/status',
     name: 'Status',
     meta: {

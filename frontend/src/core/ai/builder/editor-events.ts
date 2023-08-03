@@ -6,7 +6,7 @@ export type EventName =
   | 'center'
   | 'save'
   | 'clear'
-  // | 'parse'
+  | 'parse'
   | 'train'
   | 'abort'
   | 'downloadPython'
@@ -30,8 +30,9 @@ export const eventSettings: EventSetting = {
   clear: { icon: 'broom', label: 'Clear', disableOnTraining: true },
   train: { icon: 'barbell', label: 'Start', header: 'Training', divider: true, disableOnTraining: true },
   abort: { icon: 'stop', label: 'Reset / Stop' },
-  // parse: { icon: 'brain', label: 'Parse Model', divider: true },
-  downloadPython: { icon: 'code', label: 'Python', divider: true, header: 'Download' },
+  parse: { icon: 'code', label: 'Show code', divider: true, header: 'Download' },
+
+  downloadPython: { icon: 'code', label: 'Python' },
   downloadJupyter: { icon: 'notebook', label: 'Jupyter Notebook' },
   DatasetNode: { icon: 'images', label: 'Dataset', divider: true, disableOnTraining: true },
   Conv2DNode: { icon: 'stack', label: 'Conv2D', divider: true, disableOnTraining: true },

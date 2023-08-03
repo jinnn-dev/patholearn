@@ -20,7 +20,7 @@ export class TaskService {
   public static async getBaseTask(shortName: string): Promise<BaseTask> {
     const [_, response] = await handleError(
       ApiService.get<BaseTask>({
-        resource: this._apiUrl('/' + shortName)
+        resource: TaskService._apiUrl('/' + shortName)
       }),
       'Base task could not be loaded'
     );

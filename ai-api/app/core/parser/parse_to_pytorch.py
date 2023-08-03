@@ -240,6 +240,7 @@ def parse_to_pytorch(
         "import numpy as np",
         "import torchvision",
         "import torchmetrics",
+        "import math",
     ]
     if ignore_clearml:
         imports.append(

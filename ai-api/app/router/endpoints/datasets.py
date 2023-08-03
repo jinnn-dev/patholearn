@@ -1,4 +1,5 @@
 from datetime import datetime
+import shutil
 from typing import Annotated, List, Optional
 from app.crud.dataset import (
     get_dataset,
@@ -12,7 +13,7 @@ from pydantic import parse_obj_as
 
 from app.database.minio_wrapper import minio_wrapper
 from app.schema.dataset import DatasetStatus, DatasetType
-from fastapi import APIRouter, Depends, Form, UploadFile, BackgroundTasks
+from fastapi import APIRouter, Depends, Form, UploadFile, BackgroundTasks, Request
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
 
@@ -24,9 +25,13 @@ import tempfile
 import os
 from app.schema.dataset import Dataset
 from app.database.database import dataset_collection
-from app.core.dataset.create_dataset import create_dataset, create_dataset_backgroud
+from app.core.dataset.create_dataset import (
+    create_dataset_backgroud,
+    create_own_dataset_backgroud,
+)
 from clearml import Dataset as ClearmlDataset
 import json
+import requests
 
 router = APIRouter()
 
@@ -58,6 +63,37 @@ async def create_new_dataset(
     dataset = await get_dataset(dataset_id=str(new_dataset.inserted_id))
     await update_dataset_status(dataset_id=dataset.id, status="processing")
     background_tasks.add_task(create_dataset_backgroud, dataset=dataset, file=file.file)
+    return dataset
+
+
+@router.post("/own")
+async def create_new_own_dataset(
+    background_tasks: BackgroundTasks,
+    request: Request,
+    body: dict,
+    s: SessionContainer = Depends(verify_session()),
+):
+    user_id = s.get_user_id()
+    new_dataset = await dataset_collection.insert_one(
+        {
+            "creator_id": user_id,
+            "name": body["name"],
+            "description": body["description"] if "description" in body else None,
+            "dataset_type": "segmentation",
+            "created_at": datetime.now(),
+            "status": "saving",
+            "metadata": {},
+            "type": body["type"],
+        }
+    )
+    dataset = await get_dataset(dataset_id=str(new_dataset.inserted_id))
+    await update_dataset_status(dataset_id=dataset.id, status="processing")
+    background_tasks.add_task(
+        create_own_dataset_backgroud,
+        data=body,
+        cookies=request.cookies,
+        dataset=dataset,
+    )
     return dataset
 
 

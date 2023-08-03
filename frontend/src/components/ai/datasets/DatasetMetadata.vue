@@ -19,7 +19,7 @@ defineProps({
 });
 </script>
 <template>
-  <div class="w-full flex flex-col gap-2">
+  <div class="w-full flex flex-col gap-2" v-if="dataset.metadata?.classes || dataset.metadata?.dimension">
     <dataset-metadata-item
       icon-name="images"
       :metadata="dataset.clearml_dataset?.runtime.ds_file_count"
@@ -36,8 +36,15 @@ defineProps({
       :size="size"
     ></dataset-metadata-item>
     <dataset-metadata-item
+      v-if="dataset.dataset_type === 'classification'"
       icon-name="hash"
       :metadata="Object.keys(dataset.metadata?.class_map as any).length"
+      :size="size"
+    ></dataset-metadata-item>
+    <dataset-metadata-item
+      v-if="dataset.dataset_type === 'segmentation'"
+      icon-name="image"
+      :metadata="dataset.metadata.patch_magnification"
       :size="size"
     ></dataset-metadata-item>
   </div>

@@ -6,6 +6,7 @@ import { Schemes, useEditor } from '../../../../core/ai/builder/use-editor';
 
 import EditorTools from './EditorTools.vue';
 import ModalDialog from '../../../containers/ModalDialog.vue';
+import ConfirmDialog from '../../../general/ConfirmDialog.vue';
 import SaveButton from '../../../general/SaveButton.vue';
 import CodeHighlight from '../../../containers/CodeHighlight.vue';
 import Icon from '../../../general/Icon.vue';
@@ -22,7 +23,6 @@ import {
 import TaskStatus from '../../../../components/ai/builder/editor/TrainingStatus.vue';
 import { downloadFile } from '../../../../utils/download-file';
 import { pushTrainingReset } from '../../../../core/ai/builder/sync';
-import { graphHasValidDatasetNode } from '../../../../core/ai/builder/node-validator';
 import { PresenceChannel } from 'pusher-js';
 import { NodeEditor } from 'rete';
 import { addNotification } from '../../../../utils/notification-state';
@@ -38,8 +38,19 @@ const props = defineProps({
   }
 });
 
-const { arrangeLayout, zoomAt, init, addNode, download, importGraph, clear, area, registerEvents, startTraining } =
-  useEditor();
+const {
+  arrangeLayout,
+  zoomAt,
+  init,
+  validate,
+  addNode,
+  download,
+  importGraph,
+  clear,
+  area,
+  registerEvents,
+  startTraining
+} = useEditor();
 const { run: updateGraph } = useService(AiService.updateTaskVersion);
 
 const { run: parseGraph, result } = useService(AiService.parseTaskVersion);
@@ -56,6 +67,9 @@ const rete = ref();
 
 const loading = ref(false);
 const loadingText = ref('Loading');
+
+const showClearWarning = ref();
+
 onMounted(async () => {
   builderState.versionId = props.taskVersion.id;
   loading.value = true;
@@ -130,27 +144,26 @@ const saveEditor = async () => {
 };
 
 const parseEditor = async () => {
-  await parseGraph(props.taskId, props.taskVersion.id);
+  const isValid = await validate();
+  if (isValid) {
+    await parseGraph(props.taskId, props.taskVersion.id);
+  }
   // builderState.selectedVersion!.status = 'CREATING';
   // startTraining();
 };
 
 const startEditorTraining = async () => {
-  if (!graphHasValidDatasetNode(builderState.editor as NodeEditor<Schemes>)) {
-    addNotification({
-      header: 'Dataset Node not valid',
-      detail: 'Dataset Node has no dataset selected',
-      level: 'warning',
-      showDate: false,
-      timeout: 5000
-    });
+  const isValid = await validate();
+  if (!isValid) {
     return;
   }
-  builderState.editor?.getNodes();
+  startTraining();
   await startVersionTraining(props.taskId, props.taskVersion.id);
   if (builderState.selectedVersion && versionTrainingResult.value) {
-    startTraining();
     builderState.selectedVersion.status = 'creating';
+  } else {
+    pushTrainingReset(builderState.channel as PresenceChannel, builderState.selectedVersion);
+    builderState.selectedVersion!.status = undefined;
   }
 };
 
@@ -177,15 +190,13 @@ const itemClicked = async (event: EventName) => {
   }
 
   if (event === 'clear') {
-    loadingText.value = 'Clearing';
-    await clear();
-    await saveEditor();
+    showClearWarning.value = true;
   }
 
-  // if (event === 'parse') {
-  //   loadingText.value = 'Parsing';
-  //   await parseEditor();
-  // }
+  if (event === 'parse') {
+    loadingText.value = 'Parsing';
+    await parseEditor();
+  }
 
   if (event === 'train') {
     loadingText.value = 'Starting Training';
@@ -199,20 +210,35 @@ const itemClicked = async (event: EventName) => {
 
   if (event === 'downloadPython') {
     loadingText.value = 'Downloading Python File';
-    await runDownloadFile(builderState.task!.id, builderState.selectedVersion!.id, 'python');
-    downloadFile(downloadResult.value, builderState.selectedVersion!.id + '.py');
+    const isValid = await validate();
+    if (isValid) {
+      await runDownloadFile(builderState.task!.id, builderState.selectedVersion!.id, 'python');
+      downloadFile(downloadResult.value, builderState.selectedVersion!.id + '.py');
+    }
   }
 
   if (event === 'downloadJupyter') {
     loadingText.value = 'Downloading Jupyter Notebook';
-    await runDownloadFile(builderState.task!.id, builderState.selectedVersion!.id, 'jupyter');
-    downloadFile(JSON.stringify(downloadResult.value), builderState.selectedVersion!.id + '.ipynb');
+    const isValid = await validate();
+    if (isValid) {
+      await runDownloadFile(builderState.task!.id, builderState.selectedVersion!.id, 'jupyter');
+      downloadFile(JSON.stringify(downloadResult.value), builderState.selectedVersion!.id + '.ipynb');
+    }
   }
 
   if (isNode(event)) {
     await addNode(event as NodeType);
   }
 
+  loading.value = false;
+};
+
+const onClear = async () => {
+  loading.value = true;
+  loadingText.value = 'Clearing';
+  await clear();
+  await saveEditor();
+  showClearWarning.value = false;
   loading.value = false;
 };
 
@@ -231,6 +257,16 @@ onUnmounted(() => {
       <code-highlight>{{ result }}</code-highlight>
     </div>
   </modal-dialog>
+
+  <confirm-dialog
+    :show="showClearWarning"
+    header="Everything will be deleted!"
+    @confirmation="onClear()"
+    confirm-text="Ok"
+    @reject="showClearWarning = false"
+    reject-text="Abort"
+    :loading="loading"
+  ></confirm-dialog>
 
   <task-status v-if="builderState.selectedVersion?.status"></task-status>
 
@@ -254,3 +290,4 @@ onUnmounted(() => {
     <div class="rete w-full h-full bg-gray-900 text-lg" ref="rete"></div>
   </div>
 </template>
+../../../../core/ai/builder/validators/node-validator

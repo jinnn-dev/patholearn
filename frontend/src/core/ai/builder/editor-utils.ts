@@ -58,5 +58,9 @@ export function getEpochs(editor: NodeEditor<Schemes>) {
 }
 
 export function nodeTypeExists(nodeType: NodeType, editor: NodeEditor<Schemes>) {
-  return editor.getNodes().find((node) => node.type === nodeType) !== undefined;
+  return getNodeByType(nodeType, editor) !== undefined;
+}
+
+export function getNodeByType(nodeType: NodeType, editor: NodeEditor<Schemes>) {
+  return editor.getNodes().find((node) => node.type === nodeType);
 }

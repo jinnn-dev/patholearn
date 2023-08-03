@@ -1,19 +1,29 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue';
 import ContentContainer from '../../../components/containers/ContentContainer.vue';
-import Icon from '../../../components/general/Icon.vue';
-import FileInput from '../../../components/form/FileInput.vue';
+
 import InputField from '../../../components/form/InputField.vue';
 import InputArea from '../../../components/form/InputArea.vue';
 import SaveButton from '../../../components/general/SaveButton.vue';
-import { DatasetType, CreateDataset } from '../../../model/ai/datasets/dataset';
+import { DatasetType, CreateDataset, CreateOwnDataset } from '../../../model/ai/datasets/dataset';
 import { useService } from '../../../composables/useService';
 import { AiService } from '../../../services/ai.service';
 import { useRouter } from 'vue-router';
+import DatasetUpload from './DatasetUpload.vue';
+import DatasetOwn from './DatasetOwn.vue';
 
 const router = useRouter();
 
-const { run, loading, result } = useService(AiService.createDataset);
+const {
+  run: runCreateDataset,
+  loading: createDatasetLoading,
+  result: createDatasetResult
+} = useService(AiService.createDataset);
+const {
+  run: runCreatOwnDataset,
+  loading: createOwnDatasetLoading,
+  result: createOwnDatasetResult
+} = useService(AiService.createOwnDataset);
 
 const items: { [type in DatasetType]: { description: string; commingSoon: boolean } } = {
   classification: {
@@ -36,22 +46,43 @@ const DatasetTypeDisplayValue: { [type in DatasetType]: string } = {
   segmentation: 'Segmentierung'
 };
 
+const datasetTypeSelection = ref<'upload' | 'own'>('own');
+
 const selectedItem = ref<DatasetType>('classification');
 const createDatasetForm = reactive<CreateDataset>({
   name: '',
   type: selectedItem.value,
   file: undefined
 });
-const progress = ref();
 
+const createOwnDatasetForm = reactive<CreateOwnDataset>({
+  name: '',
+  type: selectedItem.value,
+  tasks: [],
+  patchSize: 256,
+  patchMagnification: 1.0
+});
+
+const progress = ref();
 const updateProgress = (event: any) => {
   progress.value = Math.round((100 * event.loaded) / event.total);
 };
 
 const uploadDataset = async () => {
-  await run(createDatasetForm, updateProgress);
-  if (result.value) {
-    router.push(`/ai/datasets/${result.value.id}`);
+  if (datasetTypeSelection.value === 'own') {
+    createOwnDatasetForm.name = createDatasetForm.name;
+    createOwnDatasetForm.description = createDatasetForm.description;
+    createOwnDatasetForm.type = createDatasetForm.type;
+    await runCreatOwnDataset(createOwnDatasetForm);
+  } else {
+    await runCreateDataset(createDatasetForm, updateProgress);
+  }
+  if (createDatasetResult.value || createOwnDatasetResult.value) {
+    router.push(
+      `/ai/datasets/${
+        datasetTypeSelection.value === 'own' ? createOwnDatasetResult.value!.id : createDatasetResult.value!.id
+      }`
+    );
   }
 };
 </script>
@@ -91,83 +122,43 @@ const uploadDataset = async () => {
             ></input-area>
           </div>
         </div>
-        <div>
-          <div class="text-xl mb-4">3. Lade den Datensatz als zip-Datei hier hoch</div>
-          <div>
-            <div>Die zip-Datei muss folgende Struktur haben:</div>
-            <ul class="font-mono my-4 p-4 bg-gray-900 rounded-lg">
-              <div class="flex gap-2">
-                <icon name="file-zip" stroke-width="0" class="text-gray-200"></icon>
-                <div>example.zip</div>
-              </div>
-
-              <li class="ml-[10px] gap-1">
-                <div class="flex gap-1">
-                  <div class="h-4 w-4 border-l-[3px] border-b-[3px] border-gray-500"></div>
-                  <div class="flex gap-1 items-center justify-center">
-                    <icon name="folder" stroke-width="0" class="text-gray-200"></icon>
-                    <div>x</div>
-                  </div>
-                </div>
-                <div class="flex ml-8 gap-1">
-                  <div class="h-4 w-4 border-l-[3px] border-b-[3px] border-gray-500"></div>
-                  <div class="flex gap-1 items-center justify-center">
-                    <icon name="image" stroke-width="0" class="text-gray-200"></icon>
-                    <div>abc.jpg</div>
-                  </div>
-                </div>
-                <div class="flex ml-8 gap-1">
-                  <div class="h-4 w-4 border-l-[3px] border-b-[3px] border-gray-500"></div>
-                  <div class="flex gap-1 items-center justify-center">
-                    <icon name="image" stroke-width="0" class="text-gray-200"></icon>
-                    <div>def.jpg</div>
-                  </div>
-                </div>
-              </li>
-              <li class="ml-[10px] gap-1">
-                <div class="flex">
-                  <div class="h-4 w-4 border-l-[3px] border-b-[3px] border-gray-500"></div>
-                  <div class="flex gap-1 items-center justify-center">
-                    <icon name="folder" stroke-width="0" class="text-gray-200"></icon>
-                    <div>y</div>
-                  </div>
-                </div>
-                <div class="flex ml-8 gap-1">
-                  <div class="h-4 w-4 border-l-[3px] border-b-[3px] border-gray-500"></div>
-                  <div class="flex gap-1 items-center justify-center">
-                    <icon name="image" stroke-width="0" class="text-gray-200"></icon>
-                    <div>ghi.jpg</div>
-                  </div>
-                </div>
-                <div class="flex ml-8 gap-1">
-                  <div class="h-4 w-4 border-l-[3px] border-b-[3px] border-gray-500"></div>
-                  <div class="flex gap-1 items-center justify-center">
-                    <icon name="image" stroke-width="0" class="text-gray-200"></icon>
-                    <div>jkl.jpg</div>
-                  </div>
-                </div>
-              </li>
-            </ul>
-            <div>
-              Die Ordner <span class="font-mono bg-gray-900 px-2 rounded-md">x</span> und
-              <span class="font-mono bg-gray-900 px-2 rounded-md">y</span> sind dabei die Namen der Klassen. Alle Bilder
-              die sich innerhalb eines Ordners befinden, gehören zu dieser Klasse. Die Ordneranzahl muss entsprechend
-              der gewünschten Klassenanzahl entsprechen. Innerhalb der Ordner dürfen keine weiteren Ordner sein.
+        <div class="flex w-full justify-evenly items-center">
+          <div class="flex items-center ring-2 ring-gray-500 rounded-lg h-16 overflow-hidden">
+            <div
+              class="flex items-center justify-center px-4 h-16 ring-3 hover:cursor-pointer"
+              :class="datasetTypeSelection === 'upload' ? 'bg-gray-500' : 'bg-gray-700'"
+              @click="datasetTypeSelection = 'upload'"
+            >
+              Hochladen
+            </div>
+            <div
+              class="flex items-center justify-center text-center px-4 h-16 ring-3 hover:cursor-pointer"
+              :class="datasetTypeSelection === 'own' ? 'bg-gray-500' : 'bg-gray-700'"
+              @click="datasetTypeSelection = 'own'"
+            >
+              Aus Kursaufgaben erstellen
             </div>
           </div>
-
-          <div>
-            <file-input
-              v-model="createDatasetForm.file"
-              label="Datensatz als Zip-Datei"
-              accept=".zip"
-              icon="file-zip"
-              :progress="progress"
-            ></file-input>
-          </div>
         </div>
+        <DatasetUpload
+          v-if="datasetTypeSelection === 'upload'"
+          :progress="progress"
+          @file-selected="createDatasetForm.file = $event"
+        ></DatasetUpload>
+        <DatasetOwn
+          v-else
+          :progress="progress"
+          @tasks-changed="createOwnDatasetForm.tasks = $event"
+          @patch-magnification-changed="createOwnDatasetForm.patchMagnification = $event"
+          @patch-size-changed="createOwnDatasetForm.patchSize = $event"
+        ></DatasetOwn>
         <div class="flex justify-end">
-          <save-button class="w-48" :loading="loading" name="Hochladen" @click="uploadDataset"></save-button>
+          <save-button
+            class="w-48"
+            :loading="createDatasetLoading || createOwnDatasetLoading"
+            name="Hochladen"
+            @click="uploadDataset"
+          ></save-button>
         </div>
       </div>
     </template>

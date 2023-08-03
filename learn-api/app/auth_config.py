@@ -31,6 +31,8 @@ recipe_list = [
     session.init(
         cookie_domain=os.environ.get("COOKIE_DOMAIN", ".localhost"),
         cookie_secure=True,
+        anti_csrf=os.environ.get("ANTI_CSRF", "VIA_TOKEN"),
+        session_expired_status_code=401,
     ),
     dashboard.init(),
     usermetadata.init(),

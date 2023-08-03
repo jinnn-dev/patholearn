@@ -1,7 +1,7 @@
 import { NodeEditor, GetSchemes, ClassicPreset } from 'rete';
 import { AreaPlugin, AreaExtensions } from 'rete-area-plugin';
 import { ConnectionPlugin, Presets as ConnectionPresets } from 'rete-connection-plugin';
-import { VueRenderPlugin, Presets, VueArea2D } from 'rete-vue-render-plugin';
+import { VuePlugin, Presets, VueArea2D } from 'rete-vue-plugin';
 import { AutoArrangePlugin, ArrangeAppliers } from 'rete-auto-arrange-plugin';
 
 import CustomNodeVue from '../../../components/ai/builder/CustomNode.vue';
@@ -32,9 +32,10 @@ import { selectableNodes, selector } from './trackedSelector';
 import { pushTrainingStarted } from './sync';
 import { PresenceChannel } from 'pusher-js';
 import { DiagramControl } from './controls/diagram-control';
-import { Socket, nodesCanConnect } from './sockets/socket';
+import { nodesCanConnect } from './validators/socket-validator';
 import { AsyncDropdownControl, MetricControl } from './controls';
-import { nodeCanBeCreated } from './node-validator';
+import { nodeCanBeCreated, validateNodes } from './validators/node-validator';
+import { validateConnections } from './validators/connection-validator';
 
 export type NodeProps = NodeClassesType;
 
@@ -50,13 +51,13 @@ export function useEditor() {
 
   const area: Ref<AreaPlugin<Schemes, AreaExtra> | undefined> = ref();
   const connection: Ref<ConnectionPlugin<Schemes, AreaExtra> | undefined> = ref();
-  const render: Ref<VueRenderPlugin<Schemes> | undefined> = ref();
+  const render: Ref<VuePlugin<Schemes> | undefined> = ref();
   const editor: Ref<NodeEditor<Schemes> | undefined> = ref();
   const contextMenu: Ref<ContextMenuPlugin<Schemes> | undefined> = ref();
   const sync: Ref<SyncPlugin | undefined> = ref();
   const mousePlugin: Ref<MousePlugin<Schemes> | undefined> = ref();
-  const arrange: Ref<AutoArrangePlugin<Schemes> | undefined> = ref();
-  const animationApplier: Ref<ArrangeAppliers.TransitionApplier<Schemes, never> | undefined> = ref();
+  const arrange: Ref<AutoArrangePlugin<any> | undefined> = ref();
+  const animationApplier: Ref<ArrangeAppliers.TransitionApplier<any, never> | undefined> = ref();
 
   const loading = ref(false);
 
@@ -67,7 +68,7 @@ export function useEditor() {
     editor.value = new NodeEditor<Schemes>();
     area.value = new AreaPlugin<Schemes, AreaExtra>(container);
     connection.value = new ConnectionPlugin<Schemes, AreaExtra>();
-    render.value = new VueRenderPlugin<Schemes>();
+    render.value = new VuePlugin<Schemes>();
     sync.value = new SyncPlugin();
 
     builderState.syncPlugin = sync.value;
@@ -106,9 +107,9 @@ export function useEditor() {
 
     mousePlugin.value = new MousePlugin();
 
-    arrange.value = new AutoArrangePlugin<Schemes>();
+    arrange.value = new AutoArrangePlugin<any>();
 
-    animationApplier.value = new ArrangeAppliers.TransitionApplier<Schemes, never>({
+    animationApplier.value = new ArrangeAppliers.TransitionApplier<any, never>({
       duration: 300,
       timingFunction: (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
     });
@@ -116,7 +117,6 @@ export function useEditor() {
     selectableNodes(area.value, selector(), { accumulating: AreaExtensions.accumulateOnCtrl() });
 
     const presets = Presets.classic.setup({
-      area,
       customize: {
         // @ts-ignore
         node(data) {
@@ -275,6 +275,16 @@ export function useEditor() {
     await AreaExtensions.zoomAt(area.value, editor.value.getNodes());
   };
 
+  const validate = async () => {
+    if (!editor.value) {
+      return;
+    }
+    const nodesAreValid = validateNodes(editor.value);
+    const connectionsAreValid = validateConnections(editor.value);
+
+    return nodesAreValid && connectionsAreValid;
+  };
+
   const download = (): IGraph => {
     const nodeData: INode[] = [];
     const nodePositions: INodePositions[] = [];
@@ -375,6 +385,7 @@ export function useEditor() {
     init,
     clear,
     addNode,
+    validate,
     area,
     registerEvents,
     startTraining,

@@ -11,7 +11,7 @@ const statusTextMapping: { [type in TaskVersionStatus]?: string } = {
   created: 'Everythin is prepared! Waiting for trainig start',
   failed: 'Training failed!',
   in_progress: 'Training is running',
-  completed: 'Training completet',
+  completed: 'Training is complete',
   stopped: 'Training stopped'
 };
 

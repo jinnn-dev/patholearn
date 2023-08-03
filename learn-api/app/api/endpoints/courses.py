@@ -95,6 +95,15 @@ def get_owned_courses(
     return courses
 
 
+@router.get("/all", response_model=List[CourseSchema])
+def get_all_courses_to_user(
+    db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)
+):
+    courses = crud_course.get_multi_by_owner_or_member(db, user_id=current_user.id)
+    logger.info(courses)
+    return courses
+
+
 @router.get("/{short_name}", response_model=Union[CourseAdmin, CourseDetail])
 def get_specific_course(
     *,

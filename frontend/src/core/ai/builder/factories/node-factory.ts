@@ -1,7 +1,7 @@
 import { INode } from '../serializable';
 
 import * as Nodes from '../nodes';
-import { Presets } from 'rete-vue-render-plugin';
+import { Presets } from 'rete-vue-plugin';
 import { NodeType } from '../nodes/types';
 import { builderState, getLockedBy } from '../state';
 import { NodeProps } from '../use-editor';

@@ -9,6 +9,8 @@ from supertokens_python import (
     SupertokensConfig,
     InputAppInfo,
 )
+from supertokens_python.framework.fastapi.fastapi_middleware import get_middleware
+
 import sentry_sdk
 
 from app.api.api import api_router
@@ -43,6 +45,7 @@ sentry_sdk.init(
 )
 
 app.add_middleware(GZipMiddleware, minimum_size=500)
+app.add_middleware(get_middleware())
 
 minio_client.create_bucket(MinioClient.hint_bucket)
 minio_client.create_bucket(MinioClient.task_bucket)
