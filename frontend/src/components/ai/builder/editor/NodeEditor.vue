@@ -21,11 +21,15 @@ import {
   resetNodeEditorState
 } from '../../../../core/ai/builder/state';
 import TaskStatus from '../../../../components/ai/builder/editor/TrainingStatus.vue';
+import ModelGenerator from '../../../../components/ai/builder/editor/ModelGenerator.vue';
 import { downloadFile } from '../../../../utils/download-file';
-import { pushTrainingReset } from '../../../../core/ai/builder/sync';
+import { pushGeneratedModel, pushTrainingReset } from '../../../../core/ai/builder/sync';
 import { PresenceChannel } from 'pusher-js';
 import { NodeEditor } from 'rete';
 import { addNotification } from '../../../../utils/notification-state';
+import { ModelComplexity, generateModel } from '../../../../core/ai/builder/model-generator';
+import { Dataset } from '../../../../model/ai/datasets/dataset';
+import { omitSyncEvents } from '../../../../core/ai/builder/editor-utils';
 
 const props = defineProps({
   taskId: {
@@ -69,6 +73,7 @@ const loading = ref(false);
 const loadingText = ref('Loading');
 
 const showClearWarning = ref();
+const showGenerateModel = ref();
 
 onMounted(async () => {
   builderState.versionId = props.taskVersion.id;
@@ -225,12 +230,24 @@ const itemClicked = async (event: EventName) => {
       downloadFile(JSON.stringify(downloadResult.value), builderState.selectedVersion!.id + '.ipynb');
     }
   }
+  if (event === 'generate') {
+    showGenerateModel.value = true;
+  }
 
   if (isNode(event)) {
     await addNode(event as NodeType);
   }
 
   loading.value = false;
+};
+
+const runGenerateModel = async (data: { dataset: Dataset; complexity: ModelComplexity }) => {
+  loading.value = true;
+  await generateModel(builderState.editor as NodeEditor<Schemes>, data.dataset, data.complexity);
+  pushGeneratedModel(builderState.channel as PresenceChannel, download());
+  loading.value = false;
+  builderState.shouldSaveEditor = true;
+  showGenerateModel.value = false;
 };
 
 const onClear = async () => {
@@ -256,6 +273,15 @@ onUnmounted(() => {
     <div>
       <code-highlight>{{ result }}</code-highlight>
     </div>
+  </modal-dialog>
+
+  <modal-dialog :show="showGenerateModel">
+    <model-generator
+      v-if="showGenerateModel"
+      :loading="loading"
+      @generate-model="runGenerateModel"
+      @abort="showGenerateModel = false"
+    ></model-generator>
   </modal-dialog>
 
   <confirm-dialog

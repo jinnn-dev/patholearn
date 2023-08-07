@@ -189,7 +189,9 @@ const outputs = computed(() => {
       :key="key"
       :ref="(el: any) => onRef(el, key, control, 'control')"
       :data-testid="'control-' + key"
-    ></div>
+    >
+      {{ control.id }}
+    </div>
 
     <span
       v-if="data?.lockStatus?.externalLock"

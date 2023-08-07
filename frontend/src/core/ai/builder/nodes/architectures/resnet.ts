@@ -4,7 +4,7 @@ import { Socket } from '../../sockets/socket';
 import { Node } from '../node';
 import { DropdownControl } from '../../controls';
 
-const resnetVersions = ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152'];
+export const ResnetVersions = ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152'];
 
 export interface IResnetNode extends INode {}
 
@@ -32,10 +32,10 @@ export class ResNetNode extends Node<
     return node;
   }
 
-  public addElements(): void {
+  public addElements(value?: any): void {
     this.addInput('dataset', new ClassicPreset.Input(this.sockets.input!, 'dataset'));
     this.addOutput('fc', new ClassicPreset.Output(this.sockets.output!, 'fc'));
-    this.addControl('version', new DropdownControl(resnetVersions, 'Version', 'version', 'resnet18'));
+    this.addControl('version', new DropdownControl(ResnetVersions, 'Version', 'version', value || 'resnet18'));
     this.addControl('pretrained', new DropdownControl(['Yes', 'No'], 'Pretrained', 'pretrained', 'Yes'));
   }
 }

@@ -6,6 +6,7 @@ export type EventName =
   | 'center'
   | 'save'
   | 'clear'
+  | 'generate'
   | 'parse'
   | 'train'
   | 'abort'
@@ -28,10 +29,10 @@ export const eventSettings: EventSetting = {
   center: { icon: 'arrow-counter-clockwise', label: 'Center' },
   save: { icon: 'floppy-disk', label: 'Save', disableOnTraining: true },
   clear: { icon: 'broom', label: 'Clear', disableOnTraining: true },
+  generate: { icon: 'magic-stick', label: 'Generate', divider: true, header: 'Model Creation' },
   train: { icon: 'barbell', label: 'Start', header: 'Training', divider: true, disableOnTraining: true },
   abort: { icon: 'stop', label: 'Reset / Stop' },
   parse: { icon: 'code', label: 'Show code', divider: true, header: 'Download' },
-
   downloadPython: { icon: 'code', label: 'Python' },
   downloadJupyter: { icon: 'notebook', label: 'Jupyter Notebook' },
   DatasetNode: { icon: 'images', label: 'Dataset', divider: true, disableOnTraining: true },

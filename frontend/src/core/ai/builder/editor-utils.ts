@@ -6,10 +6,17 @@ import { builderState } from './state';
 import { OutputNode } from './nodes';
 import { NodeType } from './nodes/types';
 
-export async function omitReteEvents<T, A extends unknown[]>(func: (...data: A) => Promise<T>, ...data: A) {
-  builderState.omitEvents = true;
+export async function omitSyncEvents<T, A extends unknown[]>(func: (...data: A) => Promise<T>, ...data: A) {
+  builderState.omitSyncEvents = true;
   const result = await func(...data);
-  builderState.omitEvents = false;
+  builderState.omitSyncEvents = false;
+  return result;
+}
+
+export async function omitReteEvents<T, A extends unknown[]>(func: (...data: A) => Promise<T>, ...data: A) {
+  builderState.omitSyncEvents = true;
+  const result = await func(...data);
+  builderState.omitSyncEvents = false;
   return result;
 }
 
