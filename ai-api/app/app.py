@@ -106,37 +106,6 @@ async def ping_clearml():
     return clearml_wrapper.ping()
 
 
-@app.post("/auth")
-async def ws_login(body: dict, s: SessionContainer = Depends(verify_session())):
-    channel_name: str = body["channel_name"]
-
-    user_id = s.get_user_id()
-    metadataResult = await get_user_metadata(user_id)
-
-    socket_user_id = str(uuid.uuid4())
-
-    if "private-" in channel_name:
-        auth = ws_client.authenticate(
-            channel=channel_name,
-            socket_id=body["socket_id"],
-        )
-    else:
-        auth = ws_client.authenticate(
-            channel=channel_name,
-            socket_id=body["socket_id"],
-            custom_data={
-                "user_id": socket_user_id,
-                "user_info": {
-                    "id": user_id,
-                    "color": "#"
-                    + "".join([random.choice("0123456789ABCDEF") for j in range(6)]),
-                    **(metadataResult.metadata),
-                },
-            },
-        )
-    return auth
-
-
 @app.get("/sessioninfo")
 async def secure_api(
     s: SessionContainer = Depends(verify_session()),
