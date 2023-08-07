@@ -1,5 +1,9 @@
 import os
 from typing import Dict
+import uuid
+import random
+import sentry_sdk
+import httpx
 
 from fastapi import FastAPI, Depends
 from starlette.middleware.cors import CORSMiddleware
@@ -10,10 +14,11 @@ from supertokens_python.recipe.session.framework.fastapi import verify_session
 from supertokens_python.recipe.usermetadata.asyncio import (
     update_user_metadata,
 )
+from supertokens_python.recipe.usermetadata.asyncio import get_user_metadata
 
-import sentry_sdk
-import httpx
+
 import app.config as config
+from app.ws.client import ws_client
 
 init(
     supertokens_config=config.supertokens_config,
@@ -59,6 +64,37 @@ async def set_user_metadata(
     data = metadata["metadata"]
     result = await update_user_metadata(user_id, data)
     return result
+
+
+@app.post("/ws")
+async def ws_login(body: dict, s: SessionContainer = Depends(verify_session())):
+    channel_name: str = body["channel_name"]
+
+    user_id = s.get_user_id()
+    metadataResult = await get_user_metadata(user_id)
+
+    socket_user_id = str(uuid.uuid4())
+
+    if "private-" in channel_name:
+        auth = ws_client.authenticate(
+            channel=channel_name,
+            socket_id=body["socket_id"],
+        )
+    else:
+        auth = ws_client.authenticate(
+            channel=channel_name,
+            socket_id=body["socket_id"],
+            custom_data={
+                "user_id": socket_user_id,
+                "user_info": {
+                    "id": user_id,
+                    "color": "#"
+                    + "".join([random.choice("0123456789ABCDEF") for j in range(6)]),
+                    **(metadataResult.metadata),
+                },
+            },
+        )
+    return auth
 
 
 app = CORSMiddleware(
