@@ -36,6 +36,9 @@ export class ResNetNode extends Node<
     this.addInput('dataset', new ClassicPreset.Input(this.sockets.input!, 'dataset'));
     this.addOutput('fc', new ClassicPreset.Output(this.sockets.output!, 'fc'));
     this.addControl('version', new DropdownControl(ResnetVersions, 'Version', 'version', value || 'resnet18'));
-    this.addControl('pretrained', new DropdownControl(['Yes', 'No'], 'Pretrained', 'pretrained', 'Yes'));
+    this.addControl(
+      'pretrained',
+      new DropdownControl(['General', 'Medical', 'No'], 'Pretrained', 'pretrained', 'General')
+    );
   }
 }

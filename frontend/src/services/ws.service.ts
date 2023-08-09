@@ -13,6 +13,7 @@ import Pusher, {
 } from 'pusher-js';
 import axios from 'axios';
 import { DeprecatedAuthorizerOptions } from 'pusher-js/types/src/core/auth/deprecated_channel_authorizer';
+import { AuthService } from './auth.service';
 
 export let wsClient = ref<Pusher | undefined>(undefined);
 
@@ -34,7 +35,7 @@ export function initWebsocket() {
       authorizer: (channel: Channel, options: DeprecatedAuthorizerOptions) => {
         return {
           authorize: (socketId: string, callback: ChannelAuthorizationCallback) => {
-            AiService.wsLogin({
+            AuthService.wsLogin({
               channel_name: channel.name,
               socket_id: socketId
             })

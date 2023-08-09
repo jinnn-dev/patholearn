@@ -69,6 +69,17 @@ export class AuthService {
 
     return response!.data;
   }
+  public static async wsLogin(body: any) {
+    const [_, response] = await handleError(
+      ApiService.post<any>({
+        resource: '/ws',
+        data: body,
+        host: AUTH_API_URL
+      }),
+      'WS login fehlgeschlagen'
+    );
+    return response!.data;
+  }
 
   public static async loginUser(loginData: LoginUser) {
     const [_, response] = await handleError(

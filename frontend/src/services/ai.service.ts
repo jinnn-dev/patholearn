@@ -32,18 +32,6 @@ export class AiService {
     return response!.data;
   }
 
-  public static async wsLogin(body: any) {
-    const [_, response] = await handleError(
-      ApiService.post<any>({
-        resource: '/auth',
-        data: body,
-        host: AI_API_URL
-      }),
-      'WS login fehlgeschlagen'
-    );
-    return response!.data;
-  }
-
   public static async getDatasets() {
     const [_, response] = await handleError(
       ApiService.get<Dataset[]>({
