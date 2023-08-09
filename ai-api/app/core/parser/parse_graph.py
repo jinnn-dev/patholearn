@@ -21,11 +21,12 @@ class FlattenNode(Node):
 
 
 ResNetVersion = Literal["resnet18", "resnet34", "resnet50", "resnet101", "resnet152"]
+PretrainedOptions = Literal["General", "Medical", "No"]
 
 
 class ArchitectureNode(Node):
     version: ResNetVersion
-    pretrained: bool
+    pretrained: PretrainedOptions
 
 
 class ResNetNode(ArchitectureNode):
@@ -302,7 +303,7 @@ async def get_resnet_node(node: INode):
     return ResNetNode(
         id=node.id,
         version=node.controls[0].value,
-        pretrained=True if node.controls[1].value == "Yes" else False,
+        pretrained=node.controls[1].value,
     )
 
 
