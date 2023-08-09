@@ -188,7 +188,7 @@ def parse_resnet_node(
     layer_data: ResNetNode, in_channels: int, layer_data_shape: tuple
 ) -> Tuple[List[torch.nn.Module], int, Tuple]:
     pretrained_layer = torchvision.models.get_model(
-        layer_data.version, weights="DEFAULT" if layer_data.pretrained else None
+        layer_data.version, weights=None if layer_data.pretrained == "No" else "DEFAULT"
     )
 
     modules = list(pretrained_layer.children())[:-1]

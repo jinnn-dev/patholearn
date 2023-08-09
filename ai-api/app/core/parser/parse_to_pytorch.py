@@ -91,10 +91,20 @@ class ClassificationModel:
             else:
                 replacements = {
                     "model": layers[0],
+                    "weights_download": f"""path = StorageManager.get_local_copy(remote_url="s3://10.168.2.83:9000/clearml/weights/{architecture_node.version}_bhi.ckpt")"""
+                    if architecture_node.pretrained == "Medical"
+                    else "",
+                    "weights_load": "model_weights = torch.load(path)"
+                    if architecture_node.pretrained == "Medical"
+                    else "",
+                    "weights_replace": "self.model.load_state_dict(model_weights, strict=False)"
+                    if architecture_node.pretrained == "Medical"
+                    else "",
                     "modelfc": "self.model.fc = torch.nn.Sequential("
                     + ",\n".join(layers[1:])
                     + ")",
                 }
+
             self.model_class = src.substitute(replacements)
 
     def get_instance(self):
@@ -244,11 +254,11 @@ def parse_to_pytorch(
     ]
     if ignore_clearml:
         imports.append(
-            "from clearml import Dataset as ClearmlDataset",
+            "from clearml import Dataset as ClearmlDataset, StorageManager",
         )
     else:
         imports.append(
-            "from clearml import Task, Dataset as ClearmlDataset, OutputModel",
+            "from clearml import Task, Dataset as ClearmlDataset, OutputModel, StorageManager",
         )
 
     import_string = "\n".join(imports)

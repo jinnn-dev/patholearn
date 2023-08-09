@@ -46,6 +46,9 @@ class ClassificationModel(torch.nn.Module):
     def __init__(self):
         super().__init__()
         self.model = $model
+        $weights_download
+        $weights_load
+        $weights_replace
         $modelfc
 
     def forward(self, x):
