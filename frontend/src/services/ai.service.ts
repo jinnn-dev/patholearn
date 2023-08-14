@@ -32,18 +32,6 @@ export class AiService {
     return response!.data;
   }
 
-  public static async wsLogin(body: any) {
-    const [_, response] = await handleError(
-      ApiService.post<any>({
-        resource: '/auth',
-        data: body,
-        host: AI_API_URL
-      }),
-      'WS login fehlgeschlagen'
-    );
-    return response!.data;
-  }
-
   public static async getDatasets() {
     const [_, response] = await handleError(
       ApiService.get<Dataset[]>({
@@ -83,6 +71,20 @@ export class AiService {
         resource: `/datasets/${dataset_id}/images`,
         host: AI_API_URL
       }),
+      'Bilder konnten nicht gealden werden'
+    );
+    return response!.data;
+  }
+
+  public static async getRandomDatasetImage(dataset_id: string) {
+    const [_, response] = await handleError(
+      ApiService.get<any>(
+        {
+          resource: `/datasets/${dataset_id}/images/random`,
+          host: AI_API_URL
+        },
+        'arraybuffer'
+      ),
       'Bilder konnten nicht gealden werden'
     );
     return response!.data;

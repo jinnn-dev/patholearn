@@ -60,6 +60,7 @@ export abstract class Node<
 
   public lock(lockStatus: LockStatus) {
     this.lockStatus = lockStatus;
+
     for (const control of Object.values(this.controls)) {
       if (control) {
         control.lockStatus = lockStatus;

@@ -28,7 +28,7 @@ interface BuilderState {
   areaZoom: number;
   controlToNode: Map<string, NodeProps>;
   selectedVersion?: TaskVersion;
-  omitEvents: boolean;
+  omitSyncEvents: boolean;
   versionMetrics?: any;
   editor?: NodeEditor<Schemes>;
   selectedNavigation?: NavigationLinks;
@@ -46,7 +46,7 @@ export const initialState: BuilderState = {
   memberAddedCallbacks: [],
   memberRemovedCallbacks: [],
   controlToNode: new Map(),
-  omitEvents: false
+  omitSyncEvents: false
 };
 
 export const builderState = reactive<BuilderState>(initialState);
@@ -67,7 +67,7 @@ export function resetNodeEditorState() {
   builderState.shouldSaveEditor = false;
   builderState.areaZoom = 1;
   builderState.controlToNode = new Map();
-  builderState.omitEvents = false;
+  builderState.omitSyncEvents = false;
   builderState.versionMetrics = undefined;
 }
 

@@ -1,5 +1,5 @@
 from datetime import datetime
-import shutil
+import random
 from typing import Annotated, List, Optional
 from app.crud.dataset import (
     get_dataset,
@@ -13,7 +13,16 @@ from pydantic import parse_obj_as
 
 from app.database.minio_wrapper import minio_wrapper
 from app.schema.dataset import DatasetStatus, DatasetType
-from fastapi import APIRouter, Depends, Form, UploadFile, BackgroundTasks, Request
+from fastapi import (
+    APIRouter,
+    Depends,
+    Form,
+    HTTPException,
+    Response,
+    UploadFile,
+    BackgroundTasks,
+    Request,
+)
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
 
@@ -25,6 +34,7 @@ import tempfile
 import os
 from app.schema.dataset import Dataset
 from app.database.database import dataset_collection
+from app.core.dataset.get_dataset import fetch_dataset_images
 from app.core.dataset.create_dataset import (
     create_dataset_backgroud,
     create_own_dataset_backgroud,
@@ -146,14 +156,25 @@ async def get_dataset_images(
     dataset_id: str, _: SessionContainer = Depends(verify_session())
 ):
     dataset = await get_dataset(dataset_id)
-    if dataset.clearml_dataset:
-        debug_images = clearml_wrapper.get_datatset_debug_images(
-            dataset.clearml_dataset["id"]
+    return fetch_dataset_images(dataset)
+
+
+@router.get("/{dataset_id}/images/random")
+async def get_random_dataset_image(
+    dataset_id: str, _: SessionContainer = Depends(verify_session())
+):
+    dataset = await get_dataset(dataset_id)
+    images = fetch_dataset_images(dataset)
+    image_index = random.randint(0, len(images) - 1)
+
+    response = requests.get(images[image_index])
+
+    if response.status_code == 200 and "image" in response.headers["content-type"]:
+        return Response(
+            content=response.content, media_type=response.headers["content-type"]
         )
-        replace_string = os.environ.get("AI_STORAGE_INTERNAL_URL")
-        object_storage = os.environ.get("AI_STORAGE_PUBLIC_URL")
-        debug_images = [
-            image.replace(replace_string, object_storage) for image in debug_images
-        ]
-        return debug_images
-    return None
+    else:
+        raise HTTPException(
+            status_code=400,
+            detail="Failed to download image or the URL does not point to an image.",
+        )

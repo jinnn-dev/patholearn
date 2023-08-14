@@ -57,10 +57,7 @@ class Optimizer(Enum):
 
 class LossFunction(Enum):
     CrossEntropy = "Cross-Entropy"
-    Mae = "MAE (L1)"
-    Mse = "MSE"
     Hinge = "Hinge"
-    Nll = "NLL"
 
 
 class ActivationFunction(Enum):

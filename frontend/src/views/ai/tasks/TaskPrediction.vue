@@ -9,13 +9,21 @@ import SaveButton from '../../../components/general/SaveButton.vue';
 import Icon from '../../../components/general/Icon.vue';
 import { TempUploadImage } from '../../../model/tempUploadImage';
 import Spinner from '../../../components/general/Spinner.vue';
-
+import { getSelectedDataset } from '../../../core/ai/builder/editor-utils';
+import { NodeEditor } from 'rete';
+import { Schemes } from '../../../core/ai/builder/use-editor';
 const { result, loading, run } = useService(AiService.makePrediction);
 const {
   result: isAvailable,
   loading: availabilityLoading,
   run: checkAvailability
 } = useService(AiService.checkIfPredictionIsAvailable);
+
+const {
+  result: exampleImageResult,
+  loading: exampleImageLoading,
+  run: exampleImageRun
+} = useService(AiService.getRandomDatasetImage);
 
 const progress = ref();
 const predictionFile = ref<TempUploadImage>();
@@ -57,6 +65,16 @@ const updateServe = (data: boolean) => {
   isAvailable.value = data;
   builderState.channel?.unbind('serve-is-available', updateServe);
 };
+
+const randomImage = ref<File>();
+
+const getRandomImageFromDataset = async () => {
+  const dataset = getSelectedDataset(builderState.editor as NodeEditor<Schemes>);
+  await exampleImageRun(dataset.id);
+  const byteArray = new Uint8Array(exampleImageResult.value);
+  const blob = new Blob([byteArray], { type: 'image/png' });
+  randomImage.value = new File([blob], 'exampleImage.png');
+};
 </script>
 <template>
   <div class="text-center text-4xl pb-2">Prediction</div>
@@ -81,7 +99,17 @@ const updateServe = (data: boolean) => {
     </div>
 
     <div v-else class="flex gap-12 w-full xl:w-2/3 4xl:w-1/3 items-center justify-center h-full px-4 pb-24">
-      <image-dropzone v-if="isAvailable" @images-dropped="makePrediction"></image-dropzone>
+      <div>
+        <image-dropzone v-if="isAvailable" @images-dropped="makePrediction" :image="randomImage"></image-dropzone>
+        <div class="mt-4">
+          <save-button
+            :loading="exampleImageLoading"
+            bg-color="bg-gray-500"
+            name="Random image from dataset"
+            @click="getRandomImageFromDataset"
+          ></save-button>
+        </div>
+      </div>
       <div v-if="!predictionFile && isAvailable" class="flex items-center w-full">
         <icon name="arrow-left" class="text-gray-300" size="56"></icon>
         <div class="text-3xl text-gray-300 font-semibold w-full">Add an image to get a prediction</div>

@@ -29,37 +29,38 @@ export function parseNode(nodeData: INode) {
   const lockedBy = getLockedBy(node.id);
   const externalLock = lockedBy?.id !== builderState.me?.id;
   let lockedControl = undefined;
+  node.parse(nodeData);
+
   if (builderState.task?.lockStatus) {
     for (const elementId of Object.keys(builderState.task.lockStatus)) {
       const control = node.getControl(elementId);
+
       if (control) {
         lockedControl = control.id;
       }
     }
   }
-  node.parse(nodeData);
-
   cacheControlsMapping(node);
 
   if (lockedBy) {
     node.lock({
       lockedBy: lockedBy,
       externalLock: externalLock,
-      controlId: lockedControl
+      lockedControlId: lockedControl
     });
   }
 
   return node;
 }
 
-export function createNodeInstance(node: NodeType) {
+export function createNodeInstance(node: NodeType, value?: any) {
   const nodeClass = getNodeClass(node);
   if (!nodeClass) {
     return undefined;
   }
   const instance = new nodeClass();
 
-  instance.addElements();
+  instance.addElements(value);
   cacheControlsMapping(instance as NodeProps);
   return instance;
 }

@@ -29,13 +29,14 @@ import { createNodeInstance, parseNode } from './factories/node-factory';
 import { builderState } from './state';
 import { MousePlugin, setupMousePlugin } from './plugins/mouse-plugin';
 import { selectableNodes, selector } from './trackedSelector';
-import { pushTrainingStarted } from './sync';
+import { pushClearEditor, pushTrainingStarted } from './sync';
 import { PresenceChannel } from 'pusher-js';
 import { DiagramControl } from './controls/diagram-control';
 import { nodesCanConnect } from './validators/socket-validator';
 import { AsyncDropdownControl, MetricControl } from './controls';
 import { nodeCanBeCreated, validateNodes } from './validators/node-validator';
 import { validateConnections } from './validators/connection-validator';
+import { omitSyncEvents } from './editor-utils';
 
 export type NodeProps = NodeClassesType;
 
@@ -288,6 +289,7 @@ export function useEditor() {
   const download = (): IGraph => {
     const nodeData: INode[] = [];
     const nodePositions: INodePositions[] = [];
+    console.log('DOWNLOAD');
 
     const nodes = editor.value?.getNodes();
     for (const node of nodes || []) {
@@ -361,9 +363,12 @@ export function useEditor() {
     pushTrainingStarted(builderState.channel as PresenceChannel, 'creating');
   };
 
-  const clear = async () => {
+  const clear = async (sync: boolean = true) => {
     await editor.value?.clear();
     await zoomAt();
+    if (sync) {
+      pushClearEditor(builderState.channel as PresenceChannel, builderState.me!.id);
+    }
   };
 
   const registerEvents = () => {
@@ -372,6 +377,15 @@ export function useEditor() {
     }
 
     sync.value?.registerEvents();
+
+    builderState.channel?.bind('client-model-generated', async (data: IGraph) => {
+      await importGraph(data);
+    });
+
+    builderState.channel?.bind('client-editor-clear', async (userId: string) => {
+      await omitSyncEvents(clear, false);
+    });
+
     eventsRegisterd.value = true;
   };
 

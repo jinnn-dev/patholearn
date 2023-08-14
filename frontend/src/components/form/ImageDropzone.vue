@@ -28,7 +28,8 @@ const props = defineProps({
   reset: {
     type: Boolean,
     default: false
-  }
+  },
+  image: File
 });
 
 const fileRef = ref<HTMLInputElement>();
@@ -44,6 +45,16 @@ watch(
   () => {
     image.value = undefined;
     emit('imagesDropped', image.value);
+  }
+);
+
+watch(
+  () => props.image,
+  () => {
+    if (props.image) {
+      addFile(props.image);
+      emit('imagesDropped', image.value);
+    }
   }
 );
 
@@ -76,6 +87,8 @@ const dropHandler = (event: DragEvent) => {
 };
 
 const addFile = (file: File) => {
+  console.log(URL.createObjectURL(file));
+
   image.value = {
     file: file,
     fileUrl: URL.createObjectURL(file)

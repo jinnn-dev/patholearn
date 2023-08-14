@@ -197,7 +197,7 @@ const removeSelectedTask = (index: number) => {
       </div>
     </div>
     <div class="mt-4 text-xl">Auf welche größen sollen die WSI skaliert werden?</div>
-    <div class="flex w-full justify-evenly items-center">
+    <div class="flex w-full justify-evenly items-center mt-4">
       <div class="flex items-center ring-2 ring-gray-500 rounded-lg h-10 overflow-hidden">
         <div
           class="flex items-center justify-center px-4 h-16 ring-3 hover:cursor-pointer"
@@ -223,7 +223,7 @@ const removeSelectedTask = (index: number) => {
       </div>
     </div>
     <div class="mt-4 text-xl">Wie groß soll eine Bildkachel sein?</div>
-    <div class="flex w-full justify-evenly items-center">
+    <div class="flex w-full justify-evenly items-center mt-4">
       <div class="flex items-center ring-2 ring-gray-500 rounded-lg h-10 overflow-hidden">
         <div
           class="flex items-center justify-center px-4 h-16 ring-3 hover:cursor-pointer"

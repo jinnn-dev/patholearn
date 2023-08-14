@@ -1,6 +1,6 @@
 import { useRateLimit } from '../../../composables/useRateLimit';
-import { Channel, PresenceChannel } from 'pusher-js';
-import { INode } from './serializable';
+import { PresenceChannel } from 'pusher-js';
+import { IGraph, INode } from './serializable';
 import { ConnProps } from './use-editor';
 import { Member } from '../../../composables/ws/usePresenceChannel';
 import { AiService } from '../../../services/ai.service';
@@ -107,4 +107,12 @@ export function pushTrainingStarted(channel: PresenceChannel, status: TaskVersio
 
 export function pushTrainingReset(channel: PresenceChannel, resetedVersion?: TaskVersion) {
   channel.trigger('client-training-reseted', resetedVersion);
+}
+
+export function pushGeneratedModel(channel: PresenceChannel, data: IGraph) {
+  channel.trigger('client-model-generated', data);
+}
+
+export function pushClearEditor(channel: PresenceChannel, clientId: string) {
+  channel.trigger('client-editor-clear', clientId);
 }

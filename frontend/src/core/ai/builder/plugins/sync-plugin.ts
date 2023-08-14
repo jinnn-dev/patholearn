@@ -19,10 +19,10 @@ import { Channel, PresenceChannel } from 'pusher-js';
 import { AreaExtra, ConnProps, NodeProps, Schemes } from '../use-editor';
 import { INode } from '../serializable';
 import { cacheControlsMapping, createNodeInstance, parseNode } from '../factories/node-factory';
-import { Produces } from 'rete-vue-render-plugin';
+import { Produces } from 'rete-vue-plugin';
 import { Member } from '../../../../composables/ws/usePresenceChannel';
 import { animateBetweenTwoPoints, calculatePointsBetween } from '../../../../utils/animate';
-import { addNodeAtPosition, cloneNodeAndAdd, omitReteEvents, removeNodeAndConnections } from '../editor-utils';
+import { addNodeAtPosition, cloneNodeAndAdd, omitSyncEvents, removeNodeAndConnections } from '../editor-utils';
 import { TaskVersion, TaskVersionStatus } from '../../../../model/ai/tasks/task';
 
 export class SyncPlugin {
@@ -54,6 +54,9 @@ export class SyncPlugin {
       }
       if (!this.editor) {
         this.editor = this.root.parent;
+      }
+      if (builderState.omitSyncEvents) {
+        return context;
       }
       if (
         builderState.builderLoaded &&
@@ -91,6 +94,9 @@ export class SyncPlugin {
       return context;
     });
     this.area.addPipe((context) => {
+      if (builderState.omitSyncEvents) {
+        return context;
+      }
       if (builderState.builderLoaded && builderState.initialGraphLoaded) {
         // if (context.type === 'nodepicked' && builderState.channel && !this.externalPicked) {
         //   const node = this.editor.getNode(context.data.id);
@@ -124,7 +130,7 @@ export class SyncPlugin {
         }
 
         if (context.type === 'nodetranslated') {
-          if (!builderState.omitEvents && !this.externalDrag && this.nodeChangedPosition) {
+          if (!this.externalDrag && this.nodeChangedPosition) {
             pushNodeTranslatedEvent(builderState.channel as PresenceChannel, {
               userId: builderState.me!.id,
               nodeId: context.data.id,
@@ -183,7 +189,7 @@ export class SyncPlugin {
   }
 
   async cloneNode(nodeId: string) {
-    const { clonedNode, position } = await omitReteEvents(cloneNodeAndAdd, this.editor, this.areaPlugin, nodeId);
+    const { clonedNode, position } = await omitSyncEvents(cloneNodeAndAdd, this.editor, this.areaPlugin, nodeId);
     cacheControlsMapping(clonedNode);
     pushNodeCreatedEvent(builderState.channel as PresenceChannel, {
       node: clonedNode.serialize(),
@@ -279,7 +285,7 @@ export class SyncPlugin {
       'client-node-created',
       async (data: { node: INode; position: { x: number; y: number } }) => {
         console.log('NODE CREATED EVENT', data.node, data.position);
-        await omitReteEvents(addNodeAtPosition, this.editor, this.areaPlugin, parseNode(data.node), data.position);
+        await omitSyncEvents(addNodeAtPosition, this.editor, this.areaPlugin, parseNode(data.node), data.position);
       }
     );
 
