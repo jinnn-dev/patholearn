@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { builderState } from '../../../../core/ai/builder/state';
 import Dropdown from '../components/Dropdown.vue';
 import AnimatedNumber from '../components/AnimatedNumber.vue';
@@ -14,13 +14,37 @@ const props = defineProps({
 
 const isNotTripeMetric = computed(() => selectedValue.value === 'Epoch');
 
-const selectedValue = ref<MetricDisplayName>(props.data?.value || props.data?.values[0]);
+const selectedValue = ref<MetricDisplayName>(props.data?.value);
+
+const values = ref<any[]>([]);
 
 const valueChanged = (change: any) => {
   props.data!.setValue(change);
   selectedValue.value = change;
   builderState.syncPlugin?.controlChanged(props.data!.id, change);
 };
+
+const updateValues = () => {
+  console.log(props.data?.value);
+
+  if (builderState.selectedDatasset) {
+    values.value = props.data?.conditionalMap[builderState.selectedDatasset.dataset_type]!;
+    if (!values.value.includes(selectedValue.value)) {
+      valueChanged(values.value[0]);
+    }
+  }
+};
+
+onMounted(() => {
+  updateValues();
+});
+
+watch(
+  () => builderState.selectedDatasset,
+  () => {
+    updateValues();
+  }
+);
 
 const onFocusOut = () => {
   builderState.syncPlugin?.unselectControl(props.data!.id);
@@ -34,14 +58,15 @@ const onFocus = () => {
   <div class="flex flex-col h-full">
     <dropdown
       :id="data?.id"
-      :values="data?.values"
+      :values="values"
       :value="data?.value"
       :lock-status="data?.lockStatus"
+      no-select-string="Pick a dataset first"
       @value-changed="valueChanged"
       @on-focus="onFocus"
       @on-focus-out="onFocusOut"
     ></dropdown>
-    <div class="h-full flex justify-center items-center">
+    <div class="h-full flex justify-center items-center" v-if="selectedValue">
       <epoch-metric v-if="isNotTripeMetric"></epoch-metric>
       <triple-metric v-else :metric-key="MetricVariableMapping[selectedValue]"></triple-metric>
     </div>

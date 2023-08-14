@@ -91,6 +91,9 @@ const groupMetrics = () => {
     processPrefixMetric('test_', metricName, 'Test');
     processMetric(metricName, ':monitor:gpu', 'Monitor', 'GPU');
     processMetric(metricName, 'epoch', 'General', 'Epoch');
+    if (metricName.includes('lr-')) {
+      processMetric(metricName, metricName, 'General', 'Learning Rate');
+    }
   }
 };
 

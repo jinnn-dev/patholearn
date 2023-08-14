@@ -3,8 +3,7 @@ import { INode } from '../../serializable';
 import { Socket } from '../../sockets/socket';
 import { Node } from '../node';
 import { DropdownControl } from '../../controls';
-
-export const ResnetVersions = ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152'];
+import { ResnetVersions } from './versions';
 
 export interface IResnetNode extends INode {}
 

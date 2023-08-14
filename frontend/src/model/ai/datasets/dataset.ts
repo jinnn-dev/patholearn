@@ -88,3 +88,7 @@ export interface CreateOwnDataset {
     task: Task;
   }[];
 }
+
+export type ConditionalDatasetMap<T> = {
+  [key in DatasetType]: T[];
+};

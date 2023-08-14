@@ -13,7 +13,7 @@ import DropdownControlVue from '../../../components/ai/builder/controls/Dropdown
 import AsyncDropdownControlVue from '../../../components/ai/builder/controls/AsyncDropdownControl.vue';
 import DiagramControlVue from '../../../components/ai/builder/controls/DiagramControl.vue';
 import MetricControlVue from '../../../components/ai/builder/controls/MetricControl.vue';
-
+import ConditionalDropdownControlVue from '../../../components/ai/builder/controls/ConditionalDropdownControl.vue';
 import { DropdownControl } from './controls/dropdown-control';
 import { NumberControl } from './controls/number-control';
 import { Ref, ref } from 'vue';
@@ -33,7 +33,7 @@ import { pushClearEditor, pushTrainingStarted } from './sync';
 import { PresenceChannel } from 'pusher-js';
 import { DiagramControl } from './controls/diagram-control';
 import { nodesCanConnect } from './validators/socket-validator';
-import { AsyncDropdownControl, MetricControl } from './controls';
+import { AsyncDropdownControl, ConditionalDropdownControl, MetricControl } from './controls';
 import { nodeCanBeCreated, validateNodes } from './validators/node-validator';
 import { validateConnections } from './validators/connection-validator';
 import { omitSyncEvents } from './editor-utils';
@@ -141,6 +141,9 @@ export function useEditor() {
           }
           if (data.payload instanceof DropdownControl) {
             return DropdownControlVue;
+          }
+          if (data.payload instanceof ConditionalDropdownControl) {
+            return ConditionalDropdownControlVue;
           }
           if (data.payload instanceof AsyncDropdownControl) {
             return AsyncDropdownControlVue;
@@ -289,7 +292,6 @@ export function useEditor() {
   const download = (): IGraph => {
     const nodeData: INode[] = [];
     const nodePositions: INodePositions[] = [];
-    console.log('DOWNLOAD');
 
     const nodes = editor.value?.getNodes();
     for (const node of nodes || []) {

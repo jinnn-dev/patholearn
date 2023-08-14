@@ -1,8 +1,9 @@
 import { ClassicPreset } from 'rete';
 import { INode } from '../../serializable';
 import { Node } from '../node';
-import { DropdownControl, NumberControl } from '../../controls';
+import { ConditionalDropdownControl, DropdownControl, NumberControl } from '../../controls';
 import { Socket } from '../../sockets/socket';
+import { ConditionalDatasetMap } from '../../../../../model/ai/datasets/dataset';
 
 export interface IOutputNode extends INode {}
 
@@ -12,7 +13,7 @@ export class OutputNode extends Node<
   { metrics: Socket },
   {
     optimizer: DropdownControl;
-    loss: DropdownControl;
+    loss: ConditionalDropdownControl;
     learningRate: NumberControl;
     epochs: NumberControl;
     batchSize: NumberControl;
@@ -42,7 +43,14 @@ export class OutputNode extends Node<
       'optimizer',
       new DropdownControl(['SGD', 'RMSprop', 'Adagrad', 'Adam'], 'Optimizer', 'optimizer', 'Adam')
     );
-    this.addControl('loss', new DropdownControl(['Cross-Entropy', 'Hinge'], 'Loss Function', 'loss', 'Cross-Entropy'));
+
+    const lossMap: ConditionalDatasetMap<string> = {
+      classification: ['Cross-Entropy', 'Hinge'],
+      detection: ['Jaccard', 'Dice'],
+      segmentation: ['Jaccard', 'Dice']
+    };
+
+    this.addControl('loss', new ConditionalDropdownControl('Loss Function', 'loss', lossMap));
     this.addControl('learningRate', new NumberControl(0, 10, 'Learning Rate', '0,00', 0.001));
     this.addControl('epochs', new NumberControl(0, 10000, 'Epochs', '10', 10));
     this.addControl('batchSize', new NumberControl(0, 10000, 'Batch Size', '32', 32));

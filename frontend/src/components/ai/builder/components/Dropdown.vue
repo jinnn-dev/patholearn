@@ -11,7 +11,11 @@ const props = defineProps({
   values: Array,
   value: [String, Object],
   displayField: String,
-  lockStatus: Object as PropType<LockStatus>
+  lockStatus: Object as PropType<LockStatus>,
+  noSelectString: {
+    type: String,
+    default: '-'
+  }
 });
 
 const emit = defineEmits(['valueChanged', 'onFocus', 'onFocusOut']);
@@ -58,9 +62,7 @@ const isDisbaled = computed(() => props.lockStatus?.externalLock !== undefined |
 watch(
   () => props.value,
   () => {
-    if (props.lockStatus?.lockedBy && props.value) {
-      selectedValue.value = props.value;
-    }
+    selectedValue.value = props.value;
   }
 );
 
@@ -103,10 +105,11 @@ const computedClasses = computed(() => {
     >
       <div v-if="!values || values.length === 0" class="text-gray-200">No data available</div>
       <div v-else class="text-ellipsis overflow-hidden">
-        {{ selectedValue ? (displayField ? (selectedValue as any)[displayField] : selectedValue) : '-' }}
+        {{ selectedValue ? (displayField ? (selectedValue as any)[displayField] : selectedValue) : noSelectString }}
       </div>
       <icon name="caret-up-down" stroke-width="0" size="16"></icon>
     </div>
+
     <div
       v-if="isExpanded && values && values?.length > 0"
       class="absolute shadow-lg shadow-gray-800 z-10 w-full overflow-hidden bg-gray-500 top-9 rounded-lg ring-1 ring-gray-300"

@@ -3,22 +3,7 @@ import { NodeClassesType, NodeType } from '../nodes/types';
 import { Schemes } from '../use-editor';
 import { getNodeByType, nodeTypeExists } from '../editor-utils';
 import { addNotification } from '../../../../utils/notification-state';
-
-interface ValidationItems {
-  unique?: boolean;
-}
-
-const NodeValidation: { [type in NodeType]?: ValidationItems } = {
-  DatasetNode: {
-    unique: true
-  },
-  OutputNode: {
-    unique: true
-  },
-  ResNetNode: {
-    unique: true
-  }
-};
+import { NodeValidation, ValidationItems } from './validation-settings';
 
 export function nodeCanBeCreated(node: NodeClassesType, editor: NodeEditor<Schemes>) {
   const validationElement = NodeValidation[node.type];

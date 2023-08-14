@@ -3,6 +3,8 @@ import { IControl, ISerializable, Serializable } from '../serializable';
 import { Control } from './control';
 import { ControlType } from './types';
 import { AiService } from '../../../../services/ai.service';
+import { builderState } from '../state';
+import { Dataset } from '../../../../model/ai/datasets/dataset';
 
 export interface IAsyncDropdownControl extends IControl {
   label: string;
@@ -31,8 +33,10 @@ export class AsyncDropdownControl extends Control<IAsyncDropdownControl> {
     this.type = type;
   }
 
-  public setValue(value: any) {
+  public setValue(value: Dataset) {
     this.value = value;
+    builderState.selectedDatasset = value;
+    console.log('SELECTED DATASET', builderState.selectedDatasset);
   }
 
   public static parse(data: IAsyncDropdownControl): AsyncDropdownControl {

@@ -7,6 +7,7 @@ import { Task, TaskVersion } from '../../../model/ai/tasks/task';
 import { SyncPlugin } from './plugins/sync-plugin';
 import { Node } from './nodes/node';
 import { NodeEditor } from 'rete';
+import { Dataset } from '../../../model/ai/datasets/dataset';
 
 type NavigationLinks = 'metrics' | 'console' | 'prediction';
 
@@ -32,6 +33,7 @@ interface BuilderState {
   versionMetrics?: any;
   editor?: NodeEditor<Schemes>;
   selectedNavigation?: NavigationLinks;
+  selectedDatasset?: Dataset;
 }
 
 export const initialState: BuilderState = {
@@ -69,6 +71,7 @@ export function resetNodeEditorState() {
   builderState.controlToNode = new Map();
   builderState.omitSyncEvents = false;
   builderState.versionMetrics = undefined;
+  builderState.selectedDatasset = undefined;
 }
 
 export function getLockedBy(elementId: string): Member | undefined {
