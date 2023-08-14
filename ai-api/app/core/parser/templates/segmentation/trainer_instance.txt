@@ -1,0 +1,17 @@
+checkpoint_callback = ModelCheckpoint(
+    dirpath="checkpoints",
+    filename="best",
+    save_top_k=1,
+    verbose=False,
+    monitor="valid_loss",
+    mode="min",
+)
+
+# Training
+trainer = pl.Trainer(
+    max_epochs=${epochs},
+    accelerator="auto",  # Uses GPUs or TPUs if available
+    devices="auto",  # Uses all available GPUs/TPUs if applicable
+    log_every_n_steps=10,
+    callbacks=[LearningRateMonitor(logging_interval="epoch"), checkpoint_callback],
+)

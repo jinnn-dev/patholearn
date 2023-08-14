@@ -1,4 +1,4 @@
-from typing import Dict, List, Literal, Optional, Tuple
+from typing import Dict, List, Literal, Optional, Tuple, Union
 from app.schema.dataset import Dataset, DatasetType
 
 from pydantic import BaseModel
@@ -23,14 +23,21 @@ class FlattenNode(Node):
 ResNetVersion = Literal["resnet18", "resnet34", "resnet50", "resnet101", "resnet152"]
 PretrainedOptions = Literal["General", "Medical", "No"]
 
+SegmentationModels = Literal["UNet", "UNet++"]
+SegmentationEncoderVersions = Literal["resnet18", "resnext50_32x4d"]
+
 
 class ArchitectureNode(Node):
-    version: ResNetVersion
+    version: Union[ResNetVersion, SegmentationModels]
     pretrained: PretrainedOptions
 
 
 class ResNetNode(ArchitectureNode):
     pass
+
+
+class SegmentationNode(ArchitectureNode):
+    encoderVersion: SegmentationEncoderVersions
 
 
 class DatasetDimension(BaseModel):
@@ -58,6 +65,8 @@ class Optimizer(Enum):
 class LossFunction(Enum):
     CrossEntropy = "Cross-Entropy"
     Hinge = "Hinge"
+    Jaccard = "Jaccard"
+    Dice = "Dice"
 
 
 class ActivationFunction(Enum):
@@ -124,6 +133,8 @@ Metric = Literal[
     "Precision",
     "Loss",
     "Epoch",
+    "Per Image IOU",
+    "Dataset IOU",
 ]
 
 
@@ -144,7 +155,6 @@ async def parse_graph_to_networkx(
 ) -> Tuple[nx.DiGraph, DatasetNode, OutputNode, ArchitectureNode, List, List]:
     nodes_dict = {node.id: node for node in version_graph.nodes}
     processed_nodes = {}
-
     # parse node type to enum
     for node in version_graph.nodes:
         node.type = NodeType(node.type)
@@ -217,7 +227,9 @@ async def get_dataset(node: INode):
         id=node.id,
         name=loaded_dataset.name,
         channels=1 if loaded_dataset.metadata.is_grayscale else 3,
-        classes=len(loaded_dataset.metadata.classes),
+        classes=len(loaded_dataset.metadata.classes)
+        if loaded_dataset.dataset_type == "classification"
+        else 0,
         dimension=loaded_dataset.metadata.dimension,
         dataset_type=loaded_dataset.dataset_type,
         dataset_clearml_id=loaded_dataset.clearml_dataset["id"],
@@ -307,6 +319,15 @@ async def get_resnet_node(node: INode):
     )
 
 
+async def get_segmentation_node(node: INode):
+    return SegmentationNode(
+        id=node.id,
+        version=node.controls[0].value,
+        pretrained="General",
+        encoderVersion=node.controls[1].value,
+    )
+
+
 def get_to_nodes(node: INode, connections: List[IConnection]):
     to_nodes = []
     for connection in connections:
@@ -336,6 +357,7 @@ node_type_map = {
     NodeType.ConcatenateNode: get_concatenate_node,
     NodeType.MetricNode: get_metric_node,
     NodeType.ResNetNode: get_resnet_node,
+    NodeType.SegmentationNode: get_segmentation_node,
 }
 
 

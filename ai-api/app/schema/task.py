@@ -22,6 +22,7 @@ class NodeType(Enum):
     OutputNode = "OutputNode"
     MetricNode = "MetricNode"
     ResNetNode = "ResNetNode"
+    SegmentationNode = "SegmentationNode"
 
 
 class ControlType(Enum):
@@ -29,6 +30,7 @@ class ControlType(Enum):
     DimensionControl = "DimensionControl"
     DropdownControl = "DropdownControl"
     AsyncDropdownControl = "AsyncDropdownControl"
+    ConditionalDropdownControl = "ConditionalDropdownControl"
     NumberControl = "NumberControl"
     MetricConrol = "MetricControl"
 
@@ -95,6 +97,15 @@ class IAsyncDropdownControl(IControl):
     asyncFunction: str
 
 
+class IConditionalDropdownControl(IControl):
+    label: str
+    conditionalMap: dict
+
+
+class IMetricControl(IControl):
+    conditionalMap: dict
+
+
 class INumberControl(IControl):
     min: int
     max: int
@@ -104,11 +115,13 @@ class INumberControl(IControl):
 
 ControlType = TypeVar(
     "ControlType",
+    IConditionalDropdownControl,
     IAsyncDropdownControl,
     IDropdownControl,
     IDimensionControl,
     INumberControl,
     IInputControl,
+    IMetricControl,
     IControl,
 )
 

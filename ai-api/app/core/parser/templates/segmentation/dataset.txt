@@ -1,0 +1,113 @@
+def build_rgb_to_int_mapping(mask_paths):
+    """
+    Build a mapping from RGB values to integers.
+
+    Args:
+    - mask_paths (list of str): Paths to all mask images in your dataset.
+
+    Returns:
+    - dict: A dictionary mapping RGB values to unique integers.
+    """
+    unique_colors = set()
+
+    # Iterate over all masks and collect unique RGB values
+    for mask_path in tqdm(mask_paths):
+        mask = np.array(Image.open(mask_path))
+        unique_colors_in_mask = set(tuple(m2) for m2 in mask.reshape(-1, 3))
+        unique_colors.update(unique_colors_in_mask)
+
+    # Map each unique RGB value to a unique integer
+    color_to_int = {color: idx for idx, color in enumerate(unique_colors)}
+    return color_to_int
+
+class MaskDataset(Dataset):
+    def __init__(
+        self,
+        *,
+        transform: A.Compose = None,
+        split="train",
+        rgb_to_int_map=None,
+        random_seed=1234,
+    ):
+        self.transform = transform
+        self.split = split
+        self.data = None
+        self.random_seed = random_seed
+        self.x_paths = []
+        self.y_paths = []
+        self.init_dataset(rgb_to_int_map)
+
+    def init_dataset(self, rgb_to_int_map=None):
+        dataset = ClearMlDataset.get(
+            dataset_id="${dataset_id}",
+            alias="${dataset_id}",
+        )
+        dataset_path = dataset.get_local_copy()
+        self.train_paths = np.array(glob.glob(f"{dataset_path}/images/*.png"))
+        self.mask_paths = np.array(glob.glob(f"{dataset_path}/masks/*.png"))
+
+        train_ratio = 0.75
+        validation_ratio = 0.15
+        test_ratio = 0.10
+
+        # train is now 75% of the entire data set
+        x_train, x_test, y_train, y_test = train_test_split(
+            self.train_paths,
+            self.mask_paths,
+            test_size=1 - train_ratio,
+            random_state=self.random_seed,
+        )
+
+        # test is now 10% of the initial data set
+        # validation is now 15% of the initial data set
+        x_val, x_test, y_val, y_test = train_test_split(
+            x_test,
+            y_test,
+            test_size=test_ratio / (test_ratio + validation_ratio),
+            random_state=self.random_seed,
+        )
+
+        if self.split == "train":
+            self.x_paths = x_train
+            self.y_paths = y_train
+        elif self.split == "val":
+            self.x_paths = x_val
+            self.y_paths = y_val
+        else:
+            self.x_paths = x_test
+            self.y_paths = y_test
+        if not rgb_to_int_map:
+            self.rgb_to_int_map = build_rgb_to_int_mapping(self.y_paths)
+        else:
+            self.rgb_to_int_map = rgb_to_int_map
+
+    def mask_to_onehot(self, mask):
+        """Convert an RGB mask to a one-hot encoded mask."""
+        onehot_mask = np.zeros(
+            (*mask.shape[:2], len(self.rgb_to_int_map)), dtype=np.uint8
+        )
+
+        for i, (rgb, int_val) in enumerate(self.rgb_to_int_map.items()):
+            onehot_mask[(mask == rgb).all(axis=2), i] = 1
+
+        return onehot_mask
+
+    def __len__(self):
+        return len(self.x_paths)
+
+    def __getitem__(self, idx):
+        img_path = self.x_paths[idx]
+        mask_path = self.y_paths[idx]
+        img = Image.open(img_path).convert("RGB")
+        mask = Image.open(mask_path)
+
+        mask = np.array(mask)
+        onehot_mask = self.mask_to_onehot(mask)
+
+        # Apply transformations using Albumentations
+        if self.transform:
+            transformed = self.transform(image=np.array(img), mask=onehot_mask)
+            img = transformed["image"].float()
+            mask_single_channel = transformed["mask"].float()
+
+        return img, mask_single_channel

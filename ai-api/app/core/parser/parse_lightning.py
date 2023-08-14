@@ -1,8 +1,18 @@
 from string import Template
 from typing import List
 
-from app.schema.parser import LossFunctionString, OptimizerString, LossFunctionModule
-from app.core.parser.parse_graph import DatasetNode, MetricNode, OutputNode
+from app.schema.parser import (
+    LossFunctionString,
+    OptimizerString,
+    LossFunctionModule,
+    ArchitectureString,
+)
+from app.core.parser.parse_graph import (
+    DatasetNode,
+    MetricNode,
+    OutputNode,
+    SegmentationNode,
+)
 from app.utils.logger import logger
 
 
@@ -23,6 +33,36 @@ metrics_variable_name = {
     "F1 Score": "f1_score",
     "Precision": "precision",
 }
+
+
+class SegmentationModel:
+    def __init__(self, output_node: OutputNode):
+        self.learning_rate = output_node.learning_rate
+
+        with open("/app/core/parser/templates/segmentation/model.txt", "r") as f:
+            src = Template(f.read())
+
+            replacements = {
+                "learning_rate": self.learning_rate,
+                "loss": LossFunctionString._member_map_[
+                    output_node.loss_function.name
+                ].value,
+                "optimizer": OptimizerString._member_map_[
+                    output_node.optimizer.name
+                ].value,
+            }
+        result = src.substitute(replacements)
+        self.model_class = result
+        with open(
+            "/app/core/parser/templates/segmentation/trainer_instance.txt", "r"
+        ) as f:
+            src = Template(f.read())
+            replacements = {"epochs": output_node.epoch}
+            result = src.substitute(replacements)
+            self.trainer = result
+
+    def get_instance(self, variable_name: str, segmentation_node: SegmentationNode):
+        return f"""{variable_name} = MaskModel(arch="{ArchitectureString[segmentation_node.version]}", encoder_name="{segmentation_node.encoderVersion}", in_channels=3, out_classes=len(data_module.data_train.rgb_to_int_map.values()))"""
 
 
 class LightningModel:
