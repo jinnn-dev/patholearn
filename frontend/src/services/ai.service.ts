@@ -76,6 +76,20 @@ export class AiService {
     return response!.data;
   }
 
+  public static async getRandomDatasetImage(dataset_id: string) {
+    const [_, response] = await handleError(
+      ApiService.get<any>(
+        {
+          resource: `/datasets/${dataset_id}/images/random`,
+          host: AI_API_URL
+        },
+        'arraybuffer'
+      ),
+      'Bilder konnten nicht gealden werden'
+    );
+    return response!.data;
+  }
+
   public static async getSpecificDataset(datasetId: string) {
     const [_, response] = await handleError(
       ApiService.get<Dataset>({

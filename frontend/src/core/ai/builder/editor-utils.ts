@@ -3,8 +3,9 @@ import { AreaExtra, NodeProps, Schemes } from './use-editor';
 import { Position } from 'rete-area-plugin/_types/types';
 import { AreaPlugin } from 'rete-area-plugin';
 import { builderState } from './state';
-import { OutputNode } from './nodes';
-import { NodeType } from './nodes/types';
+import { DatasetNode, OutputNode } from './nodes';
+import { NodeClassesType, NodeType } from './nodes/types';
+import { Dataset } from '../../../model/ai/datasets/dataset';
 
 export async function omitSyncEvents<T, A extends unknown[]>(func: (...data: A) => Promise<T>, ...data: A) {
   builderState.omitSyncEvents = true;
@@ -68,6 +69,12 @@ export function nodeTypeExists(nodeType: NodeType, editor: NodeEditor<Schemes>) 
   return getNodeByType(nodeType, editor) !== undefined;
 }
 
-export function getNodeByType(nodeType: NodeType, editor: NodeEditor<Schemes>) {
+export function getNodeByType(nodeType: NodeType, editor: NodeEditor<Schemes>): NodeClassesType {
   return editor.getNodes().find((node) => node.type === nodeType);
+}
+
+export function getSelectedDataset(editor: NodeEditor<Schemes>): Dataset {
+  const datasetNode = getNodeByType('DatasetNode', editor) as DatasetNode;
+  const dataset = datasetNode.controls.dataset.value;
+  return dataset;
 }

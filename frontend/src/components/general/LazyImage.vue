@@ -33,7 +33,9 @@ const onLoaded = () => {
   emit('imageLoaded');
 };
 
-const handleError = () => {
+const handleError = (error: any) => {
+  console.log(error);
+
   if (tries > 1) {
     imageLoadError.value = true;
   }
