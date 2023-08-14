@@ -36,7 +36,6 @@ export class AsyncDropdownControl extends Control<IAsyncDropdownControl> {
   public setValue(value: Dataset) {
     this.value = value;
     builderState.selectedDatasset = value;
-    console.log('SELECTED DATASET', builderState.selectedDatasset);
   }
 
   public static parse(data: IAsyncDropdownControl): AsyncDropdownControl {

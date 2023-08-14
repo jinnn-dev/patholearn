@@ -25,8 +25,6 @@ const valueChanged = (change: any) => {
 };
 
 const updateValues = () => {
-  console.log(props.data?.value);
-
   if (builderState.selectedDatasset) {
     values.value = props.data?.conditionalMap[builderState.selectedDatasset.dataset_type]!;
     if (!values.value.includes(selectedValue.value)) {

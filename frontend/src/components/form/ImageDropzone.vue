@@ -87,8 +87,6 @@ const dropHandler = (event: DragEvent) => {
 };
 
 const addFile = (file: File) => {
-  console.log(URL.createObjectURL(file));
-
   image.value = {
     file: file,
     fileUrl: URL.createObjectURL(file)
