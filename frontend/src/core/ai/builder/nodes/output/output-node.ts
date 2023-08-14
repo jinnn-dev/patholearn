@@ -42,15 +42,7 @@ export class OutputNode extends Node<
       'optimizer',
       new DropdownControl(['SGD', 'RMSprop', 'Adagrad', 'Adam'], 'Optimizer', 'optimizer', 'Adam')
     );
-    this.addControl(
-      'loss',
-      new DropdownControl(
-        ['Cross-Entropy', 'MAE (L1)', 'MSE', 'Hinge', 'NLL'],
-        'Loss Function',
-        'loss',
-        'Cross-Entropy'
-      )
-    );
+    this.addControl('loss', new DropdownControl(['Cross-Entropy', 'Hinge'], 'Loss Function', 'loss', 'Cross-Entropy'));
     this.addControl('learningRate', new NumberControl(0, 10, 'Learning Rate', '0,00', 0.001));
     this.addControl('epochs', new NumberControl(0, 10000, 'Epochs', '10', 10));
     this.addControl('batchSize', new NumberControl(0, 10000, 'Batch Size', '32', 32));
