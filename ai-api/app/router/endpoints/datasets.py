@@ -147,5 +147,13 @@ async def get_dataset_images(
 ):
     dataset = await get_dataset(dataset_id)
     if dataset.clearml_dataset:
-        return clearml_wrapper.get_datatset_debug_images(dataset.clearml_dataset["id"])
+        debug_images = clearml_wrapper.get_datatset_debug_images(
+            dataset.clearml_dataset["id"]
+        )
+        replace_string = os.environ.get("AI_STORAGE_INTERNAL_URL")
+        object_storage = os.environ.get("AI_STORAGE_PUBLIC_URL")
+        debug_images = [
+            image.replace(replace_string, object_storage) for image in debug_images
+        ]
+        return debug_images
     return None
