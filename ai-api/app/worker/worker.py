@@ -88,19 +88,26 @@ def create_dataset_own(data: dict, dataset_id: str, cookies: dict):
     logger.info("Mask")
     all_mask_patches = []
     for mask_path in mask_paths:
-        im_gray = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
+        im_gray = cv2.imread(mask_path)
         logger.info(im_gray.shape)
-        resized = rescale_image(im_gray, rescale)
-        thresh = 1
-        mask_image = cv2.threshold(resized, thresh, 255, cv2.THRESH_BINARY)[1]
-        result_mask = np.asarray(mask_image)
-        mask_patches = patchify(result_mask, (patch_size, patch_size), step=stride)
+        resized = rescale_image(im_gray, rescale, interpolate=False)
+        result_mask = np.asarray(resized)
+        mask_patches = patchify(result_mask, (patch_size, patch_size, 3), step=stride)
         all_mask_patches.append(mask_patches)
         os.remove(mask_path)
 
-    for index, image_patches in enumerate(all_image_patches):
-        for i in range(image_patches.shape[0]):
-            for j in range(image_patches.shape[1]):
+    for index, (image_patches, mask_patches) in enumerate(
+        zip(all_image_patches, all_mask_patches)
+    ):
+        for i in range(mask_patches.shape[0]):
+            for j in range(mask_patches.shape[1]):
+                single_patch_mask = mask_patches[i, j, 0, :, :]
+
+                # Check if the mask patch only contains the background (0, 0, 0)
+                if np.all(single_patch_mask == [0, 0, 0]):
+                    continue  # If true, skip this iteration and don't save the image or mask patch
+
+                # Save the corresponding image patch if the mask patch is valid
                 single_patch_img = image_patches[i, j, 0, :, :]
                 cv2.imwrite(
                     image_output_folder
@@ -113,10 +120,7 @@ def create_dataset_own(data: dict, dataset_id: str, cookies: dict):
                     single_patch_img,
                 )
 
-    for index, mask_patches in enumerate(all_mask_patches):
-        for i in range(mask_patches.shape[0]):
-            for j in range(mask_patches.shape[1]):
-                single_patch_img = mask_patches[i, j, :, :]
+                # Save the mask patch
                 cv2.imwrite(
                     mask_output_folder
                     + str(index)
@@ -125,7 +129,7 @@ def create_dataset_own(data: dict, dataset_id: str, cookies: dict):
                     + "_"
                     + str(j)
                     + ".png",
-                    single_patch_img,
+                    single_patch_mask,
                 )
     try:
         logger.info(f"{log_prefix} Parsing folder")
@@ -233,8 +237,10 @@ def create_dataset(file_path: str, dataset_id: str):
     update_dataset_status(dataset.id, "completed")
 
 
-def rescale_image(image: np.ndarray, rescale: float):
+def rescale_image(image: np.ndarray, rescale: float, interpolate: bool = True):
     width = int(image.shape[1] * rescale)
     height = int(image.shape[0] * rescale)
     dim = (width, height)
-    return cv2.resize(image, dim, interpolation=cv2.INTER_AREA)
+    return cv2.resize(
+        image, dim, interpolation=cv2.INTER_AREA if interpolate else cv2.INTER_NEAREST
+    )
