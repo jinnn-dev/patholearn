@@ -25,24 +25,24 @@ const {
   result: createOwnDatasetResult
 } = useService(AiService.createOwnDataset);
 
-const items: { [type in DatasetType]: { description: string; commingSoon: boolean } } = {
+const items: { [type in DatasetType]?: { description: string; commingSoon: boolean } } = {
   classification: {
     description: 'Bei einer Klassifikation....',
     commingSoon: false
   },
-  detection: {
-    description: 'Bei einer Detektierung....',
-    commingSoon: true
-  },
+  // detection: {
+  //   description: 'Bei einer Detektierung....',
+  //   commingSoon: true
+  // },
   segmentation: {
     description: 'Bei einer Segmentierung...',
-    commingSoon: true
+    commingSoon: false
   }
 };
 
-const DatasetTypeDisplayValue: { [type in DatasetType]: string } = {
+const DatasetTypeDisplayValue: { [type in DatasetType]?: string } = {
   classification: 'Klassifikation',
-  detection: 'Detektion',
+  // detection: 'Detektion',
   segmentation: 'Segmentierung'
 };
 
@@ -122,7 +122,7 @@ const uploadDataset = async () => {
             ></input-area>
           </div>
         </div>
-        <div class="flex w-full justify-evenly items-center">
+        <!-- <div class="flex w-full justify-evenly items-center">
           <div class="flex items-center ring-2 ring-gray-500 rounded-lg h-16 overflow-hidden">
             <div
               class="flex items-center justify-center px-4 h-16 ring-3 hover:cursor-pointer"
@@ -139,9 +139,9 @@ const uploadDataset = async () => {
               Aus Kursaufgaben erstellen
             </div>
           </div>
-        </div>
+        </div> -->
         <DatasetUpload
-          v-if="datasetTypeSelection === 'upload'"
+          v-if="selectedItem === 'classification'"
           :progress="progress"
           @file-selected="createDatasetForm.file = $event"
         ></DatasetUpload>
