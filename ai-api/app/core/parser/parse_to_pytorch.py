@@ -23,6 +23,7 @@ from app.core.parser.parse_graph import (
 )
 from app.schema.task import Graph, Task, TaskVersion
 import black
+import random
 
 
 class PytorchModel(BaseModel):
@@ -264,7 +265,7 @@ def parse_to_pytorch(
         )
         dataset_instance = "data_module" + " = " + dataset_module_call
 
-        lightning_model = SegmentationModel(output_node)
+        lightning_model = SegmentationModel(output_node, metric_nodes)
         lightning_model_class = lightning_model.model_class
         lightning_model_instance = lightning_model.get_instance(
             "lightning_model", architecture_node
@@ -277,7 +278,7 @@ def parse_to_pytorch(
             replacements = {
                 "arch": ArchitectureString[architecture_node.version],
                 "encoder": architecture_node.encoderVersion,
-                "channels": dataset_node.channels,
+                "channels": 3,
                 "width": dataset_node.dimension.x,
                 "height": dataset_node.dimension.y,
             }

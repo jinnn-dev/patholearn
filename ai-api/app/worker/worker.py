@@ -137,6 +137,7 @@ def create_dataset_own(data: dict, dataset_id: str, cookies: dict):
         dataset.metadata.patch_size = patch_size
         dataset.metadata.patch_magnification = rescale
         dataset.metadata.task_ids = task_ids
+        dataset.metadata.dataset_type = dataset.dataset_type
         update_dataset(dataset.id, {"metadata": dataset.metadata.dict()})
     except Exception as error:
         logger.exception(f"{log_prefix} Failed parsing: {error}")
@@ -196,6 +197,7 @@ def create_dataset(file_path: str, dataset_id: str):
             x=metadata["dimension"]["x"], y=metadata["dimension"]["y"]
         )
         dataset.metadata.is_grayscale = metadata["is_grayscale"]
+        dataset.metadata.dataset_type = dataset.dataset_type
         update_dataset(dataset.id, {"metadata": dataset.metadata.dict()})
 
     except Exception as error:

@@ -133,8 +133,7 @@ Metric = Literal[
     "Precision",
     "Loss",
     "Epoch",
-    "Per Image IOU",
-    "Dataset IOU",
+    "IOU",
 ]
 
 
