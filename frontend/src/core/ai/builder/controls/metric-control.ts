@@ -12,11 +12,10 @@ export type MetricDisplayName =
   | 'Precision'
   | 'Loss'
   | 'Epoch'
-  | 'Per Image IOU'
-  | 'Dataset IOU';
+  | 'IOU';
 
 export type MetricInternalname =
-  | 'acc'
+  | 'accuracy'
   | 'roc_auc'
   | 'average_precision'
   | 'cohen_kappa'
@@ -24,8 +23,7 @@ export type MetricInternalname =
   | 'precision'
   | 'loss'
   | 'epoch'
-  | 'per_image_iou'
-  | 'dataset_iou';
+  | 'iou';
 
 export type MetricsVariableName = {
   [K in MetricDisplayName]: MetricInternalname;
@@ -35,7 +33,7 @@ export type MetricsDisplayName = {
 };
 
 export const MetricVariableMapping: MetricsVariableName = {
-  Accuracy: 'acc',
+  Accuracy: 'accuracy',
   'ROC AUC': 'roc_auc',
   'Average Precision': 'average_precision',
   'Cohen Kappa': 'cohen_kappa',
@@ -43,12 +41,11 @@ export const MetricVariableMapping: MetricsVariableName = {
   Precision: 'precision',
   Loss: 'loss',
   Epoch: 'epoch',
-  'Per Image IOU': 'per_image_iou',
-  'Dataset IOU': 'dataset_iou'
+  IOU: 'iou'
 };
 
 export const MetricDisplayMapping: MetricsDisplayName = {
-  acc: 'Accuracy',
+  accuracy: 'Accuracy',
   roc_auc: 'ROC AUC',
   average_precision: 'Average Precision',
   cohen_kappa: 'Cohen Kappa',
@@ -56,8 +53,7 @@ export const MetricDisplayMapping: MetricsDisplayName = {
   precision: 'Precision',
   loss: 'Loss',
   epoch: 'Epoch',
-  per_image_iou: 'Per Image IOU',
-  dataset_iou: 'Dataset IOU'
+  iou: 'IOU'
 };
 
 export interface IMetricControl extends IControl {

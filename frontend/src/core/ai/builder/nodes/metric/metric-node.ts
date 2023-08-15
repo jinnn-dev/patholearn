@@ -39,8 +39,8 @@ export class MetricNode extends Node<IMetricNode, { in: Socket }, {}, { metric: 
         'Loss',
         'Epoch'
       ],
-      detection: ['Accuracy', 'F1 Score', 'Per Image IOU', 'Dataset IOU', 'Precision'],
-      segmentation: ['Accuracy', 'F1 Score', 'Per Image IOU', 'Dataset IOU', 'Precision', 'Epoch', 'Loss']
+      detection: ['Accuracy', 'F1 Score', 'IOU', 'Precision'],
+      segmentation: ['Accuracy', 'F1 Score', 'IOU', 'Precision', 'Epoch', 'Loss']
     };
     this.addControl('metric', new MetricControl('metric', metricMap));
   }
