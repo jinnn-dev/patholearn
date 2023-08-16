@@ -12,6 +12,7 @@ import Spinner from '../../../components/general/Spinner.vue';
 import { getSelectedDataset } from '../../../core/ai/builder/editor-utils';
 import { NodeEditor } from 'rete';
 import { Schemes } from '../../../core/ai/builder/use-editor';
+import LazyImage from '../../../components/general/LazyImage.vue';
 const { result, loading, run } = useService(AiService.makePrediction);
 const {
   result: isAvailable,
@@ -36,7 +37,13 @@ const makePrediction = async (image: TempUploadImage) => {
     return;
   }
 
-  await run(builderState.task!.id, builderState.selectedVersion!.id, predictionFile.value.file, updateProgress);
+  await run(
+    builderState.task!.id,
+    builderState.selectedVersion!.id,
+    predictionFile.value.file,
+    builderState.selectedDatasset?.dataset_type === 'classification' ? false : true,
+    updateProgress
+  );
   progress.value = undefined;
 };
 
@@ -67,14 +74,25 @@ const updateServe = (data: boolean) => {
 };
 
 const randomImage = ref<File>();
-
 const getRandomImageFromDataset = async () => {
   const dataset = getSelectedDataset(builderState.editor as NodeEditor<Schemes>);
   await exampleImageRun(dataset.id);
   const byteArray = new Uint8Array(exampleImageResult.value);
+
   const blob = new Blob([byteArray], { type: 'image/png' });
   randomImage.value = new File([blob], 'exampleImage.png');
 };
+
+const prediction = computed(() => {
+  if (builderState.selectedDatasset?.dataset_type === 'classification') {
+    return result;
+  }
+  const byteArray = new Uint8Array(result.value as any);
+  const blob = new Blob([byteArray], { type: 'image/png' });
+  const file = new File([blob], 'exampleImage.png');
+  const objecturl = URL.createObjectURL(file);
+  return objecturl;
+});
 </script>
 <template>
   <div class="text-center text-4xl pb-2">Prediction</div>
@@ -114,17 +132,23 @@ const getRandomImageFromDataset = async () => {
         <icon name="arrow-left" class="text-gray-300" size="56"></icon>
         <div class="text-3xl text-gray-300 font-semibold w-full">Add an image to get a prediction</div>
       </div>
-      <div v-if="predictionFile && isAvailable" class="transition-all w-full max-h-[70%] flex flex-col justify-center">
-        <div class="max-h-full overflow-auto pr-2" v-if="result && result.dataset.class_map">
-          <div class="flex flex-col w-full justify-center gap-1 my-4" v-for="label_index in result?.dataset.classes">
-            <div class="font-mono font-bold text-xl">{{ result.dataset.class_map[label_index] }}</div>
+      <div
+        v-if="predictionFile && isAvailable && builderState.selectedDatasset?.dataset_type === 'classification'"
+        class="transition-all w-full max-h-[70%] flex flex-col justify-center"
+      >
+        <div class="max-h-full overflow-auto pr-2" v-if="prediction && prediction.dataset.class_map">
+          <div
+            class="flex flex-col w-full justify-center gap-1 my-4"
+            v-for="label_index in prediction?.dataset.classes"
+          >
+            <div class="font-mono font-bold text-xl">{{ prediction.dataset.class_map[label_index] }}</div>
             <div class="flex gap-2 w-full">
               <div
-                :style="`width: ${getRoundedPercentage(result.propabilities[+label_index] * 100)}%`"
+                :style="`width: ${getRoundedPercentage(prediction.propabilities[+label_index] * 100)}%`"
                 class="h-6 bg-green-500 transition-all rounded-sm"
               ></div>
               <div class="font-mono flex-shrink-0">
-                {{ getRoundedPercentage(result.propabilities[+label_index] * 100) }}%
+                {{ getRoundedPercentage(prediction.propabilities[+label_index] * 100) }}%
               </div>
             </div>
           </div>
@@ -134,17 +158,21 @@ const getRandomImageFromDataset = async () => {
             <spinner></spinner>
             <div class="font-normal">Predicting</div>
           </div>
-          <div v-if="!loading && result && result.propabilities" class="flex gap-8 items-baseline text-base">
-            <span class="font-mono text-4xl">{{ result?.dataset.class_map[result.max_index + ''] }}</span>
+          <div v-if="!loading && prediction && prediction.propabilities" class="flex gap-8 items-baseline text-base">
+            <span class="font-mono text-4xl">{{ prediction?.dataset.class_map[prediction.max_index + ''] }}</span>
             <div class="font-normal">
               with
               <span class="font-mono font-bold text-xl"
-                >{{ getRoundedPercentage(result.propabilities[result.max_index] * 100) }}%</span
+                >{{ getRoundedPercentage(prediction.propabilities[prediction.max_index] * 100) }}%</span
               >
               confidence
             </div>
           </div>
         </div>
+      </div>
+
+      <div v-else class="h-full">
+        <lazy-image v-viewer :imageClasses="'h-full w-full object-contain cursor-pointer'" :imageUrl="prediction" />
       </div>
     </div>
   </div>

@@ -547,16 +547,19 @@ export class AiService {
     taskId: string,
     versionId: string,
     file: Blob,
+    isImage: boolean = false,
     onUploadProgress?: (event: any) => void
   ) {
     const formData = new FormData();
     formData.append('image', file);
+
     const [_, response] = await handleError(
       ApiService.post<{ propabilities: number[]; max_index: number; dataset: DatasetMetadata }>({
         resource: '/serve/' + taskId + '/' + versionId,
         data: formData,
         config: { onUploadProgress },
-        host: AI_API_URL
+        host: AI_API_URL,
+        responseType: isImage ? 'arraybuffer' : 'json'
       }),
       'Prediction failed'
     );
