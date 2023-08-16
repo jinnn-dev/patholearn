@@ -49,6 +49,7 @@ class LossFunctionString(Enum):
     Hinge = "torch.nn.functional.hinge_embedding_loss"
     Nll = "torch.nn.functional.nll_loss"
     Jaccard = " smp.losses.JaccardLoss"
+    Dice = "smp.losses.DiceLoss"
 
 
 class OptimizerModule(Enum):

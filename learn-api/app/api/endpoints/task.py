@@ -314,6 +314,17 @@ def add_task_annotation(
     return {"Status": "OK"}
 
 
+@router.get("/{task_id}/annotationGroup", response_model=List[AnnotationGroup])
+def get_annotation_groups(
+    *,
+    db: Session = Depends(get_db),
+    task_id: int,
+    current_user: User = Depends(get_current_active_superuser),
+):
+    task = crud_task.get(db, id=task_id)
+    return task.annotation_groups
+
+
 @router.get("/{task_id}/mask", response_model=Any)
 def download_mask(
     *,

@@ -25,6 +25,7 @@ class Preprocess(object):
         dimensions = dataset_metadata["dimension"]
         transform = A.Compose(
             [
+                A.Resize(height=256, width=256),
                 ToTensorV2(),
             ]
         )
@@ -39,22 +40,14 @@ class Preprocess(object):
         if not isinstance(data, np.ndarray):
             # this should not happen
             return dict(digit=-1)
-
         binary_masks = (data > 0.5).astype(np.uint8)
-        color_mapping = {
-            (0, 255, 255): 0,
-            (0, 0, 0): 1,
-            (255, 150, 0): 2,
-            (100, 100, 0): 3,
-            (0, 0, 255): 4,
-            (255, 0, 255): 5,
-        }
-        label_to_rgb = {v: k for k, v in color_mapping.items()}
         pred = binary_masks[0]
-        composite_mask = np.zeros(
-            (binary_masks.shape[1], pred.shape[2], 3), dtype=np.uint8
+        return dict(
+            propabilities=[
+                dict(
+                    mask=base64.b64encode(binary_masks).decode(),
+                    width=pred.shape[1],
+                    height=pred.shape[2],
+                )
+            ]
         )
-        for label, color in label_to_rgb.items():
-            channel_mask = pred[label]  # Use label as index
-            composite_mask[channel_mask == 1] = color
-        return composite_mask

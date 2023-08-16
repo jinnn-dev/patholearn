@@ -10,6 +10,7 @@ from app.crud.task import get_task_with_version
 from app.crud.dataset import get_dataset
 from app.schema.task import TaskVersion, Task
 from app.core.serve.prediction import get_prediction_to_version
+import base64
 
 router = APIRouter()
 
@@ -18,16 +19,44 @@ router = APIRouter()
 async def get_prediction(task_id: str, version_id: str, image: UploadFile):
     _, version = await get_task_with_version(task_id, version_id)
     dataset = await get_dataset(dataset_id=version.dataset_id)
+
     propabilities = get_prediction_to_version(
         version=version, image_data=image.file.read(), dataset=dataset
     )
-    dataset.metadata.class_map = {v: k for k, v in dataset.metadata.class_map.items()}
 
-    data = {
-        "propabilities": propabilities,
-        "max_index": propabilities.index(max(propabilities)),
-        "dataset": dataset.metadata,
-    }
+    if dataset.dataset_type == "classification":
+        dataset.metadata.class_map = {
+            v: k for k, v in dataset.metadata.class_map.items()
+        }
+
+        data = {
+            "propabilities": propabilities,
+            "max_index": propabilities.index(max(propabilities)),
+            "dataset": dataset.metadata,
+        }
+    else:
+        class_map = dataset.metadata.class_map
+
+        label_to_rgb = {}
+        for name in class_map.keys():
+            color = class_map[name]["color"]
+            label_to_rgb[class_map[name]["index"]] = (color[0], color[1], color[2])
+
+        image_bytes = base64.b64decode(propabilities["mask"])
+        pred = np.frombuffer(image_bytes, dtype=np.uint8).reshape(
+            len(class_map.keys()), propabilities["width"], propabilities["height"]
+        )
+        composite_mask = np.zeros((pred.shape[1], pred.shape[2], 3), dtype=np.uint8)
+        for label, color in label_to_rgb.items():
+            channel_mask = pred[label]  # Use label as index
+            composite_mask[channel_mask == 1] = color
+
+        image = Image.fromarray(composite_mask).convert("RGB")
+        png_stream = BytesIO()
+        image.save(png_stream, format="PNG")
+        png_stream.seek(0)
+        return StreamingResponse(content=png_stream, media_type="image/png")
+
     return data
 
 

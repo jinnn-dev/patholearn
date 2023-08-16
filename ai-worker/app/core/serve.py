@@ -113,6 +113,7 @@ def check_if_model_available(clearml_task_id: str, dataset_id: str):
     dataset = Dataset.get(dataset_id=dataset_id)
     metadata = dataset.get_metadata()
     channels = 1 if metadata["is_grayscale"] else 3
+
     if channels == 1:
         imarray = np.random.rand(100, 100) * 255
     else:
