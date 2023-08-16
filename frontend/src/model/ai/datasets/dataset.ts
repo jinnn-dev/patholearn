@@ -66,7 +66,7 @@ export interface Dataset {
 export type DatasetType = 'classification' | 'detection' | 'segmentation';
 
 export type PatchSize = 128 | 256 | 512;
-export type PatchMagnification = 0.2 | 0.5 | 1.0;
+export type PatchMagnification = 0.1 | 0.2 | 0.5 | 1.0;
 
 export interface CreateDataset {
   name: string;

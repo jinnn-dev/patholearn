@@ -12,7 +12,7 @@ export class OutputNode extends Node<
   { in: Socket },
   { metrics: Socket },
   {
-    optimizer: DropdownControl;
+    optimizer: ConditionalDropdownControl;
     loss: ConditionalDropdownControl;
     learningRate: NumberControl;
     epochs: NumberControl;
@@ -39,10 +39,14 @@ export class OutputNode extends Node<
   public addElements(): void {
     this.addInput('in', new ClassicPreset.Input(this.sockets.input!, 'in'));
     this.addOutput('metrics', new ClassicPreset.Output(this.sockets.output!, 'metrics'));
-    this.addControl(
-      'optimizer',
-      new DropdownControl(['SGD', 'RMSprop', 'Adagrad', 'Adam'], 'Optimizer', 'optimizer', 'Adam')
-    );
+
+    const optimizerMap: ConditionalDatasetMap<string> = {
+      classification: ['SGD', 'RMSprop', 'Adagrad', 'Adam'],
+      detection: ['SGD'],
+      segmentation: ['SGD']
+    };
+
+    this.addControl('optimizer', new ConditionalDropdownControl('Optimizer', 'optimizer', optimizerMap));
 
     const lossMap: ConditionalDatasetMap<string> = {
       classification: ['Cross-Entropy', 'Hinge'],

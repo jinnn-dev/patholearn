@@ -171,7 +171,7 @@ const prediction = computed(() => {
         </div>
       </div>
 
-      <div v-else class="h-full">
+      <div v-else class="h-full" v-if="prediction">
         <lazy-image v-viewer :imageClasses="'h-full w-full object-contain cursor-pointer'" :imageUrl="prediction" />
       </div>
     </div>
