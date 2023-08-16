@@ -66,7 +66,7 @@ class MaskDataset(Dataset):
 
     def mask_to_onehot(self, mask):
         """Convert an RGB mask to a one-hot encoded mask."""
-        onehot_mask = np.zeros(
+np.zeros(
             (*mask.shape[:2], len(self.rgb_to_int_map)), dtype=np.uint8
         )
 
