@@ -109,7 +109,7 @@ $metrics
         return self.shared_epoch_end("test")
 
     def configure_optimizers(self):
-        optimizer = ${optimizer}(self.parameters(), lr=self.learning_rate)
+        optimizer = ${optimizer}(self.parameters(), lr=self.learning_rate, weight_decay=0.001, momentum=0.9)
         scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
             optimizer, 3, 1, 0.0000001, verbose=True
         )

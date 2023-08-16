@@ -70,7 +70,9 @@ class DatasetModule:
             self.dataset_module = f.read()
 
     def get_instance(self, batch_size: int = 32):
-        return f"""DataModule(batch_size={batch_size})"""
+        random_seed = random.randint(0, 10000)
+
+        return f"""DataModule(batch_size={batch_size}, split_seed={random_seed})"""
 
 
 class MNISTDataModule:
@@ -79,7 +81,7 @@ class MNISTDataModule:
             self.dataset_module = f.read()
 
     def get_instance(self, data_dir: str = "./", batch_size: int = 32):
-        return f"""MNISTDataModule(data_dir="{data_dir}", batch_size={batch_size})"""
+        return f"""MNISTDataModule(data_dir="{data_dir})"""
 
 
 class ClassificationModel:

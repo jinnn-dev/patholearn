@@ -66,4 +66,8 @@ class OptimizerString(Enum):
     Adam = "torch.optim.Adam"
 
 
-ArchitectureString = {"UNet++": "unetplusplus", "UNet": "unet"}
+ArchitectureString = {
+    "UNet++": "unetplusplus",
+    "UNet": "unet",
+    "DeepLab V3 Plus": "DeepLabV3Plus",
+}

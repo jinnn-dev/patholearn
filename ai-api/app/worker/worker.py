@@ -105,12 +105,19 @@ def create_dataset_own(data: dict, dataset_id: str, cookies: dict):
             for j in range(mask_patches.shape[1]):
                 single_patch_mask = mask_patches[i, j, 0, :, :]
 
-                # Check if the mask patch only contains the background (0, 0, 0)
-                if np.all(single_patch_mask == [0, 0, 0]):
-                    continue  # If true, skip this iteration and don't save the image or mask patch
+                # # Check if the mask patch only contains the background (0, 0, 0)
+                # if np.all(single_patch_mask == [0, 0, 0]):
+                #     continue  # If true, skip this iteration and don't save the image or mask patch
 
                 # Save the corresponding image patch if the mask patch is valid
                 single_patch_img = image_patches[i, j, 0, :, :]
+
+                image_shape = single_patch_img.shape
+                mask_shape = single_patch_mask.shape
+                logger.info(f"Image: {image_shape}")
+                logger.info(f"Mask: {mask_shape}")
+                if image_shape[0] != image_shape[1] or mask_shape[0] != mask_shape[1]:
+                    continue
                 cv2.imwrite(
                     image_output_folder
                     + str(index)

@@ -25,7 +25,7 @@ class Preprocess(object):
         dimensions = dataset_metadata["dimension"]
         transform = A.Compose(
             [
-                A.Resize(height=256, width=256),
+                A.Resize(height=dimensions["y"], width=dimensions["x"]),
                 ToTensorV2(),
             ]
         )

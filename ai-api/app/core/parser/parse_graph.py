@@ -23,12 +23,14 @@ class FlattenNode(Node):
 ResNetVersion = Literal["resnet18", "resnet34", "resnet50", "resnet101", "resnet152"]
 PretrainedOptions = Literal["General", "Medical", "No"]
 
-SegmentationModels = Literal["UNet", "UNet++"]
-SegmentationEncoderVersions = Literal["resnet18", "resnext50_32x4d"]
+SegmentationModels = Literal["UNet", "UNet++", "DeepLab V3 Plus"]
+SegmentationEncoderVersions = Literal[
+    "resnet18", "resnext50_32x4d", "timm-efficientnet-b8", "timm-efficientnet-b3"
+]
 
 
 class ArchitectureNode(Node):
-    version: Union[ResNetVersion, SegmentationModels]
+    version: Union[SegmentationModels, ResNetVersion]
     pretrained: PretrainedOptions
 
 
