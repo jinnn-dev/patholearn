@@ -46,7 +46,7 @@ def create_dataset_own(data: dict, dataset_id: str, cookies: dict):
     for selected_task in data["tasks"]:
         task_id = selected_task["task"]["id"]
         task_ids.append(task_id)
-        url = f"""http://lern_api:8000/tasks/task/{task_id}/mask"""
+        url = f"""http://{os.environ.get('LEARN_API_HOST', 'learn_api')}:{os.environ.get('LEARN_API_PORT', '8000')}/tasks/task/{task_id}/mask"""
         response = requests.get(url, cookies=cookies, stream=True)
         mask_path = f"{dataset_folder}/{str(task_id)}.png"
         mask_paths.append(mask_path)
@@ -59,7 +59,7 @@ def create_dataset_own(data: dict, dataset_id: str, cookies: dict):
         slide_id = selected_task["baseTask"]["slide_id"]
         logger.info(slide_id)
         if slide_id not in downloaded_slides:
-            slide_url = f"""http://slide_api:8000/slides/{slide_id}/download/-1"""
+            slide_url = f"""http://{os.environ.get('SLIDE_API_HOST', 'slide_api')}:{os.environ.get('SLIDE_API_PORT', '8000')}/slides/{slide_id}/download/-1"""
             response = requests.get(slide_url, cookies=cookies, stream=True)
             downloaded_slides.append(slide_id)
             image_path = f"{dataset_folder}/{str(slide_id)}.png"
