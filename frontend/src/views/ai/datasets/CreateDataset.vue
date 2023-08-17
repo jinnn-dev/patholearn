@@ -77,10 +77,11 @@ const uploadDataset = async () => {
   } else {
     await runCreateDataset(createDatasetForm, updateProgress);
   }
+
   if (createDatasetResult.value || createOwnDatasetResult.value) {
-    router.push(
+    await router.push(
       `/ai/datasets/${
-        datasetTypeSelection.value === 'own' ? createOwnDatasetResult.value!.id : createDatasetResult.value!.id
+        selectedItem.value === 'segmentation' ? createOwnDatasetResult.value!.id : createDatasetResult.value!.id
       }`
     );
   }
