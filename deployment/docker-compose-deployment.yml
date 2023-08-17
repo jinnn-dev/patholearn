@@ -9,7 +9,7 @@ services:
     ports:
       - "81:80"
   
-  learn_api:
+  lern_api:
     image: hafen.noxz.dev/patholearn-ai/learn-api:${LEARN_API_VERSION}
     container_name: learn-api-prod
     restart: unless-stopped
