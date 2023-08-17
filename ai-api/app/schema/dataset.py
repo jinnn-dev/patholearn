@@ -22,6 +22,7 @@ class DatasetMetadata(BaseModel):
     patch_size: Optional[int]
     patch_magnification: Optional[float]
     task_ids: Optional[List[int]]
+    dataset_type: Optional[DatasetType]
 
 
 class Dataset(BaseMongoModel):

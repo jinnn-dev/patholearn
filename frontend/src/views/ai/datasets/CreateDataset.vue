@@ -69,7 +69,7 @@ const updateProgress = (event: any) => {
 };
 
 const uploadDataset = async () => {
-  if (datasetTypeSelection.value === 'own') {
+  if (selectedItem.value === 'segmentation') {
     createOwnDatasetForm.name = createDatasetForm.name;
     createOwnDatasetForm.description = createDatasetForm.description;
     createOwnDatasetForm.type = createDatasetForm.type;
@@ -99,7 +99,7 @@ const uploadDataset = async () => {
                 v-for="(item, index) in (Object.keys(items) as DatasetType[])"
                 class="flex items-center justify-center w-48 h-16 ring-3 hover:cursor-pointer"
                 :class="selectedItem === item ? 'bg-gray-500' : 'bg-gray-700'"
-                @click="!items[item].commingSoon ? (selectedItem = item) : null"
+                @click="!items[item]!.commingSoon ? (selectedItem = item) : null"
               >
                 <div>{{ DatasetTypeDisplayValue[item] }}</div>
               </div>

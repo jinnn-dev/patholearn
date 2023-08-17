@@ -1,1 +1,2 @@
-export * from './resnet';
+export * from './resnet-node';
+export * from './segmentation-node';

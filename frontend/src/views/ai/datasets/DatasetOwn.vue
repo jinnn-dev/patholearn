@@ -201,6 +201,13 @@ const removeSelectedTask = (index: number) => {
       <div class="flex items-center ring-2 ring-gray-500 rounded-lg h-10 overflow-hidden">
         <div
           class="flex items-center justify-center px-4 h-16 ring-3 hover:cursor-pointer"
+          :class="selectedPatchMagnification === 0.1 ? 'bg-gray-500' : 'bg-gray-700'"
+          @click="patchMagnificationChanged(0.1)"
+        >
+          0.1x
+        </div>
+        <div
+          class="flex items-center justify-center px-4 h-16 ring-3 hover:cursor-pointer"
           :class="selectedPatchMagnification === 0.2 ? 'bg-gray-500' : 'bg-gray-700'"
           @click="patchMagnificationChanged(0.2)"
         >

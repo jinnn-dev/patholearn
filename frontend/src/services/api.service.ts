@@ -8,6 +8,7 @@ interface Post {
   data?: unknown;
   config?: any;
   host?: string;
+  responseType?: string;
 }
 
 interface Get {
@@ -88,8 +89,14 @@ export class ApiService {
    * @param host The host of the post request
    * @returns The Promise with the return data
    */
-  public static post<T>({ resource, data, config, host = BASE_API_URL }: Post): Promise<AxiosResponse<T>> {
-    return axios.post(host + resource, data, { ...config, withCredentials: true });
+  public static post<T>({
+    resource,
+    data,
+    config,
+    host = BASE_API_URL,
+    responseType = 'json'
+  }: Post): Promise<AxiosResponse<T>> {
+    return axios.post(host + resource, data, { ...config, withCredentials: true, responseType: responseType });
   }
 
   /**
@@ -102,9 +109,6 @@ export class ApiService {
    */
   public static put<T>({ resource, data, host = BASE_API_URL }: Put): Promise<AxiosResponse<T>> {
     return axios.put(host + resource, data, {
-      headers: {
-        'Content-Type': 'application/json'
-      },
       withCredentials: true
     });
   }
@@ -153,12 +157,12 @@ export class ApiService {
           await router.push('/login');
           throw error;
         }
-        if (error.request.status === 401) {
-          this.removeHeader();
-          TokenService.removeToken();
-          TokenService.removeRefreshToken();
-          await router.push('/logout');
-        }
+        // if (error.request.status === 401) {
+        //   this.removeHeader();
+        //   TokenService.removeToken();
+        //   TokenService.removeRefreshToken();
+        //   await router.push('/logout');
+        // }
         if (error.request.status === 403) {
           this.removeHeader();
           TokenService.removeToken();

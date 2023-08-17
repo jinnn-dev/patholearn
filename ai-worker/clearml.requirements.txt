@@ -10,3 +10,4 @@ torchaudio==2.0.2
 boto3==1.26.131
 urllib3==1.26.15
 onnx==1.14.0
+segmentation-models-pytorch==0.3.3

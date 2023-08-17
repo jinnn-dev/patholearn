@@ -1,0 +1,119 @@
+
+class MaskModel(pl.LightningModule):
+    def __init__(self, arch, encoder_name, in_channels, out_classes, **kwargs):
+        super().__init__()
+        self.model = smp.create_model(
+            arch,
+            encoder_name=encoder_name,
+            in_channels=in_channels,
+            classes=out_classes,
+        )
+        self.out_classes = out_classes
+        self.learning_rate = $learning_rate
+
+        params = smp.encoders.get_preprocessing_params(encoder_name)
+        self.register_buffer("std", torch.tensor(params["std"]).view(1, 3, 1, 1))
+        self.register_buffer("mean", torch.tensor(params["mean"]).view(1, 3, 1, 1))
+
+        self.loss_fn = $loss("multilabel", from_logits=True)
+        self.train_outputs = []
+        self.val_outputs = []
+        self.test_outputs = []
+
+    @property
+    def num_classes(self) -> int:
+        return self.out_classes
+
+    def forward(self, image):
+        image = (image - self.mean) / self.std
+        mask = self.model(image)
+        return mask
+
+    def shared_step(self, batch, stage):
+        image, mask = batch
+        mask = mask.permute(0, 3, 1, 2)
+
+        logits_mask = self.forward(image)
+
+        loss = self.loss_fn(logits_mask, mask)
+        self.log_dict(
+            {f"{stage}_loss": loss}, on_epoch=True, on_step=False
+        )
+
+        prob_mask = logits_mask.sigmoid()
+        pred_mask = (prob_mask > 0.5).float()
+
+        tp, fp, fn, tn = smp.metrics.get_stats(
+            pred_mask.long(), mask.long(), mode="multilabel"
+        )
+
+        result = {
+            "loss": loss,
+            "tp": tp,
+            "fp": fp,
+            "fn": fn,
+            "tn": tn,
+        }
+        if stage == "train":
+            self.train_outputs.append(result)
+        elif stage == "valid":
+            self.val_outputs.append(result)
+        else:
+            self.test_outputs.append(result)
+        return result
+
+    def shared_epoch_end(self, stage):
+        if stage == "train":
+            outputs = self.train_outputs
+        elif stage == "valid":
+            outputs = self.val_outputs
+        else:
+            outputs = self.test_outputs
+
+        # aggregate step metics
+        tp = torch.cat([x["tp"] for x in outputs])
+        fp = torch.cat([x["fp"] for x in outputs])
+        fn = torch.cat([x["fn"] for x in outputs])
+        tn = torch.cat([x["tn"] for x in outputs])
+
+        $metric_calls
+
+        metrics = {
+$metrics
+        }
+
+        self.log_dict(metrics, on_epoch=True, on_step=False)
+        if stage == "train":
+            self.train_outputs.clear()
+        elif stage == "valid":
+            self.val_outputs.clear()
+        else:
+            self.test_outputs.clear()
+
+    def training_step(self, batch, batch_idx):
+        return self.shared_step(batch, "train")
+
+    def on_train_epoch_end(self):
+        return self.shared_epoch_end("train")
+
+    def validation_step(self, batch, batch_idx):
+        return self.shared_step(batch, "valid")
+
+    def on_validation_epoch_end(self):
+        return self.shared_epoch_end("valid")
+
+    def test_step(self, batch, batch_idx):
+        return self.shared_step(batch, "test")
+
+    def on_test_epoch_end(self):
+        return self.shared_epoch_end("test")
+
+    def configure_optimizers(self):
+        optimizer = ${optimizer}(self.parameters(), lr=self.learning_rate, weight_decay=0.001, momentum=0.9)
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
+            optimizer, 3, 1, 0.0000001, verbose=True
+        )
+        return {
+            "optimizer": optimizer,
+            "lr_scheduler": {"scheduler": scheduler, "monitor": "valid_loss"},
+        }

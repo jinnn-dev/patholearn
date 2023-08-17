@@ -1,0 +1,26 @@
+trained_model = MaskModel.load_from_checkpoint(
+    trainer.checkpoint_callback.best_model_path,
+    arch="${arch}",
+    encoder_name="${encoder}",
+    in_channels=3,
+    out_classes=len(
+        data_module.data_train.rgb_to_int_map.values()
+    ),
+)
+trained_model.freeze()
+trained_model.eval()
+trained_model.to_onnx(
+    "model.onnx",
+    input_sample=torch.randn(1, $channels, $width, $height, requires_grad=False),
+    export_params=True,
+    input_names=["input"],
+    opset_version=17,
+    output_names=["output"],
+    dynamic_axes={
+        "input": {0: "batch_size", 2: "width", 3: "height"},
+        "output": {0: "batch_size", 2: "width", 3: "height"},
+    },
+)
+OutputModel(
+    task=task, name="model", framework="onnx"
+).update_weights("model.onnx")

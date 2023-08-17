@@ -42,6 +42,7 @@ def create_dataset_own(data: dict, dataset_id: str, cookies: dict):
     mask_paths = []
     image_paths = []
     task_ids = []
+    annotation_groups = []
     for selected_task in data["tasks"]:
         task_id = selected_task["task"]["id"]
         task_ids.append(task_id)
@@ -49,6 +50,7 @@ def create_dataset_own(data: dict, dataset_id: str, cookies: dict):
         response = requests.get(url, cookies=cookies, stream=True)
         mask_path = f"{dataset_folder}/{str(task_id)}.png"
         mask_paths.append(mask_path)
+
         with open(mask_path, "wb") as out_file:
             for chunk in response.iter_content(chunk_size=1024):
                 if chunk:
@@ -103,12 +105,19 @@ def create_dataset_own(data: dict, dataset_id: str, cookies: dict):
             for j in range(mask_patches.shape[1]):
                 single_patch_mask = mask_patches[i, j, 0, :, :]
 
-                # Check if the mask patch only contains the background (0, 0, 0)
-                if np.all(single_patch_mask == [0, 0, 0]):
-                    continue  # If true, skip this iteration and don't save the image or mask patch
+                # # Check if the mask patch only contains the background (0, 0, 0)
+                # if np.all(single_patch_mask == [0, 0, 0]):
+                #     continue  # If true, skip this iteration and don't save the image or mask patch
 
                 # Save the corresponding image patch if the mask patch is valid
                 single_patch_img = image_patches[i, j, 0, :, :]
+
+                image_shape = single_patch_img.shape
+                mask_shape = single_patch_mask.shape
+                logger.info(f"Image: {image_shape}")
+                logger.info(f"Mask: {mask_shape}")
+                if image_shape[0] != image_shape[1] or mask_shape[0] != mask_shape[1]:
+                    continue
                 cv2.imwrite(
                     image_output_folder
                     + str(index)
@@ -132,11 +141,34 @@ def create_dataset_own(data: dict, dataset_id: str, cookies: dict):
                     single_patch_mask,
                 )
     try:
+        groups = {}
+        for internal_task_id in task_ids:
+            annotation_groups_url = (
+                f"http://lern_api:8000/tasks/task/{internal_task_id}/annotationGroup"
+            )
+            response = requests.get(annotation_groups_url, cookies=cookies)
+            annotation_groups.append(response.json())
+        # [{"name":"invasive tumor","color":"#FF00FF"},{"name":"intraepithelial neoplasia","color":"#ff9600"},{"name":"extralobular duct","color":"#0000ff"},{"name":"lobule (including intralobular ducts)","color":"#00ffff"},{"name":"necrosis","color":"#646400"}]
+        groups["background"] = {"index": 0, "color": [0, 0, 0]}
+        current_index = 1
+        for annotation_group in annotation_groups:
+            for group in annotation_group:
+                logger.info(group)
+                color = tuple(
+                    int(group["color"].lstrip("#")[i : i + 2], 16) for i in (0, 2, 4)
+                )
+                name = group["name"]
+                if name not in groups:
+                    groups[name] = {"index": current_index, "color": color}
+                    current_index += 1
+        logger.info(f"{log_prefix} Groups: {groups}")
         logger.info(f"{log_prefix} Parsing folder")
+        dataset.metadata.class_map = groups
         dataset.metadata.dimension = DatasetDimension(x=patch_size, y=patch_size)
         dataset.metadata.patch_size = patch_size
         dataset.metadata.patch_magnification = rescale
         dataset.metadata.task_ids = task_ids
+        dataset.metadata.dataset_type = dataset.dataset_type
         update_dataset(dataset.id, {"metadata": dataset.metadata.dict()})
     except Exception as error:
         logger.exception(f"{log_prefix} Failed parsing: {error}")
@@ -196,6 +228,7 @@ def create_dataset(file_path: str, dataset_id: str):
             x=metadata["dimension"]["x"], y=metadata["dimension"]["y"]
         )
         dataset.metadata.is_grayscale = metadata["is_grayscale"]
+        dataset.metadata.dataset_type = dataset.dataset_type
         update_dataset(dataset.id, {"metadata": dataset.metadata.dict()})
 
     except Exception as error:

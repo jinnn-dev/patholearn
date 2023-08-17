@@ -5,9 +5,9 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 from app.core.parser.parse_classification_model import get_classification_model
-from app.core.parser.parse_lightning import LightningModel
+from app.core.parser.parse_lightning import LightningModel, SegmentationModel
 from app.utils.logger import logger
-
+from app.schema.parser import ArchitectureString
 import networkx as nx
 
 from app.core.parser.parse_graph import (
@@ -17,11 +17,13 @@ from app.core.parser.parse_graph import (
     DatasetNode,
     MetricNode,
     Node,
+    SegmentationNode,
     OutputNode,
     parse_graph_to_networkx,
 )
 from app.schema.task import Graph, Task, TaskVersion
 import black
+import random
 
 
 class PytorchModel(BaseModel):
@@ -29,9 +31,9 @@ class PytorchModel(BaseModel):
     clearml_string: Optional[str]
     dataset_class: str
     dataset_module_class: str
-    model_class: str
+    model_class: Optional[str]
     lightning_model_class: str
-    model_instance: str
+    model_instance: Optional[str]
     dataset_instance: str
     lightning_model_instance: str
     lightning_trainer: str
@@ -51,20 +53,26 @@ class PytorchModel(BaseModel):
 
 
 class CustomDataset:
-    def __init__(self, dataset_id: str) -> None:
-        with open("/app/core/parser/templates/dataset.txt", "r") as f:
+    def __init__(self, dataset: DatasetNode) -> None:
+        with open(
+            f"/app/core/parser/templates/{dataset.dataset_type}/dataset.txt", "r"
+        ) as f:
             src = Template(f.read())
-            replacements = {"dataset_id": dataset_id}
+            replacements = {"dataset_id": dataset.dataset_clearml_id}
             self.dataset = src.substitute(replacements)
 
 
 class DatasetModule:
-    def __init__(self) -> None:
-        with open("/app/core/parser/templates/data_module.txt", "r") as f:
+    def __init__(self, dataset: DatasetNode) -> None:
+        with open(
+            f"/app/core/parser/templates/{dataset.dataset_type}/data_module.txt", "r"
+        ) as f:
             self.dataset_module = f.read()
 
     def get_instance(self, batch_size: int = 32):
-        return f"""DataModule(batch_size={batch_size})"""
+        random_seed = random.randint(0, 10000)
+
+        return f"""DataModule(batch_size={batch_size}, split_seed={random_seed})"""
 
 
 class MNISTDataModule:
@@ -73,7 +81,7 @@ class MNISTDataModule:
             self.dataset_module = f.read()
 
     def get_instance(self, data_dir: str = "./", batch_size: int = 32):
-        return f"""MNISTDataModule(data_dir="{data_dir}", batch_size={batch_size})"""
+        return f"""MNISTDataModule(data_dir="{data_dir})"""
 
 
 class ClassificationModel:
@@ -112,8 +120,8 @@ class ClassificationModel:
 
 
 def get_dataset_module(dataset_node: DatasetNode, output_node: OutputNode):
-    dataset = CustomDataset(dataset_node.dataset_clearml_id)
-    data_module = DatasetModule()
+    dataset = CustomDataset(dataset=dataset_node)
+    data_module = DatasetModule(dataset=dataset_node)
     data_module_instance = data_module.get_instance(batch_size=output_node.batch_size)
 
     return dataset.dataset, data_module.dataset_module, data_module_instance
@@ -126,6 +134,8 @@ def get_model(
     architecture_node: Optional[ArchitectureNode],
     combine_nodes: List[str],
 ):
+    if dataset_node.dataset_type == "segmentation":
+        return
     path = []
     if len(dataset_node.to_nodes) > 1 or len(combine_nodes) > 0:
         if architecture_node is None:
@@ -230,6 +240,73 @@ def parse_to_pytorch(
     version: TaskVersion,
     ignore_clearml: bool = False,
 ):
+    if architecture_node is not None and isinstance(
+        architecture_node, SegmentationNode
+    ):
+        imports = [
+            "import multiprocessing",
+            "import lightning as pl",
+            "import torch",
+            "from clearml import Task, Dataset as ClearMlDataset, OutputModel",
+            "from torch.utils.data import DataLoader, Dataset",
+            "import albumentations as A",
+            "import numpy as np",
+            "import glob",
+            "from sklearn.model_selection import train_test_split",
+            "from PIL import Image",
+            "from albumentations.pytorch import ToTensorV2",
+            "from tqdm import tqdm",
+            "import segmentation_models_pytorch as smp",
+            "from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint",
+        ]
+
+        import_string = "\n".join(imports)
+
+        dataset_class, dataset_module_class, dataset_module_call = get_dataset_module(
+            dataset_node, output_node
+        )
+        dataset_instance = "data_module" + " = " + dataset_module_call
+
+        lightning_model = SegmentationModel(output_node, metric_nodes)
+        lightning_model_class = lightning_model.model_class
+        lightning_model_instance = lightning_model.get_instance(
+            "lightning_model", architecture_node
+        )
+        lightning_trainer = lightning_model.trainer
+        lightning_train = f"trainer.fit(model=lightning_model, datamodule=data_module)"
+        lightning_test = f"trainer.test(model=lightning_model, datamodule=data_module)"
+        with open("/app/core/parser/templates/segmentation/checkpoint.txt") as f:
+            src = Template(f.read())
+            replacements = {
+                "arch": ArchitectureString[architecture_node.version],
+                "encoder": architecture_node.encoderVersion,
+                "channels": 3,
+                "width": dataset_node.dimension.x,
+                "height": dataset_node.dimension.y,
+            }
+            lightning_checkpoint = src.substitute(replacements)
+        if not ignore_clearml:
+            with open("/app/core/parser/templates/clearml.txt", "r") as f:
+                src = Template(f.read())
+                replacements = {"project_name": task.name, "task_name": version.id}
+                clearml_string = src.substitute(replacements)
+        pytorch_model = PytorchModel(
+            import_string=format_string(import_string),
+            clearml_string=None if ignore_clearml else format_string(clearml_string),
+            dataset_class=format_string(dataset_class),
+            dataset_module_class=format_string(dataset_module_class),
+            model_class=None,
+            lightning_model_class=format_string(lightning_model_class),
+            model_instance=None,
+            dataset_instance=format_string(dataset_instance),
+            lightning_model_instance=format_string(lightning_model_instance),
+            lightning_trainer=format_string(lightning_trainer),
+            lightning_train=format_string(lightning_train),
+            lightning_test=format_string(lightning_test),
+            lightning_checkpoint=format_string(lightning_checkpoint),
+        )
+        formatted = str(pytorch_model)
+        return formatted, pytorch_model
     nodes = []
     for node in graph.nodes(data=True):
         nodes.append(node)
@@ -327,6 +404,7 @@ async def parse_task_version_to_python(
         combine_nodes,
         metric_nodes,
     ) = await parse_graph_to_networkx(task_version.graph)
+
     formatted, model = parse_to_pytorch(
         parsed_graph,
         dataset_node,

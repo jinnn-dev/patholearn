@@ -24,6 +24,7 @@ watch(
     if (newVal !== oldVal) {
       url.value = newVal;
       loaded.value = false;
+      imageLoadError.value = false;
     }
   }
 );
@@ -34,8 +35,6 @@ const onLoaded = () => {
 };
 
 const handleError = (error: any) => {
-  console.log(error);
-
   if (tries > 1) {
     imageLoadError.value = true;
   }

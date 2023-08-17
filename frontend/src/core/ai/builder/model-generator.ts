@@ -1,10 +1,10 @@
 import { ClassicPreset, NodeEditor } from 'rete';
-import { NodeProps, Schemes } from './use-editor';
+import { ConnProps, NodeProps, Schemes } from './use-editor';
 import { Dataset } from 'model/ai/datasets/dataset';
 import { createNodeInstance } from './factories/node-factory';
-import { ResnetVersions } from './nodes';
 import { builderState } from './state';
 import { omitSyncEvents } from './editor-utils';
+import { DatasetNode, OutputNode, ResNetNode } from './nodes';
 
 export type ModelComplexity = 'low' | 'medium' | 'high';
 
@@ -23,15 +23,15 @@ export async function generateModel(
 }
 
 async function generateNodes(editor: NodeEditor<Schemes>, selectedDataset: Dataset, complexity: ModelComplexity) {
-  const dataset = createNodeInstance('DatasetNode', selectedDataset);
-  const resnetNode = createNodeInstance('ResNetNode', ComplexityToVersion[complexity]);
-  const outputNode = createNodeInstance('OutputNode');
+  const dataset = createNodeInstance('DatasetNode', selectedDataset) as DatasetNode;
+  const resnetNode = createNodeInstance('ResNetNode', ComplexityToVersion[complexity]) as ResNetNode;
+  const outputNode = createNodeInstance('OutputNode') as OutputNode;
 
-  await editor.addNode(dataset as NodeProps);
+  await editor.addNode(dataset);
   await editor.addNode(resnetNode);
   await editor.addNode(outputNode);
-  await editor.addConnection(new ClassicPreset.Connection(dataset, 'dataset', resnetNode, 'dataset'));
-  await editor.addConnection(new ClassicPreset.Connection(resnetNode, 'fc', outputNode, 'in'));
+  await editor.addConnection(new ClassicPreset.Connection(dataset, 'dataset', resnetNode, 'dataset') as ConnProps);
+  await editor.addConnection(new ClassicPreset.Connection(resnetNode, 'fc', outputNode, 'in') as ConnProps);
 
   await builderState.area?.translate(dataset.id, { x: -400, y: 0 });
   await builderState.area?.translate(resnetNode.id, { x: 0, y: 0 });

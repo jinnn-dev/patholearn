@@ -1,0 +1,65 @@
+class DataModule(pl.LightningDataModule):
+    def __init__(
+        self,
+        batch_size: int = 32,
+        split_seed: int = 12345,
+    ):
+        super().__init__()
+
+        self.save_hyperparameters(logger=False)
+        self.train_transform = A.Compose(
+            [
+                A.VerticalFlip(p=0.5),
+                A.HorizontalFlip(p=0.5),
+                A.RandomRotate90(p=0.5),
+                ToTensorV2(),
+            ]
+        )
+        self.rest_transform = A.Compose(
+            [
+                ToTensorV2(),
+            ]
+        )
+        self.data_train = MaskDataset(
+            transform=self.train_transform,
+            split="train",
+            random_seed=split_seed,
+        )
+        self.data_val = MaskDataset(
+            transform=self.rest_transform,
+            split="val",
+            rgb_to_int_map=self.data_train.rgb_to_int_map,
+            random_seed=split_seed,
+        )
+        self.data_test = MaskDataset(
+            transform=self.rest_transform,
+            split="test",
+            rgb_to_int_map=self.data_train.rgb_to_int_map,
+            random_seed=split_seed,
+        )
+
+    def collate(self, batch):
+        return tuple(zip(*batch))
+
+    def train_dataloader(self):
+        return DataLoader(
+            dataset=self.data_train,
+            batch_size=self.hparams.batch_size,
+            num_workers=multiprocessing.cpu_count(),
+            shuffle=True,
+        )
+
+    def val_dataloader(self):
+        return DataLoader(
+            dataset=self.data_val,
+            batch_size=self.hparams.batch_size,
+            num_workers=multiprocessing.cpu_count(),
+        )
+
+    def test_dataloader(self):
+        return DataLoader(
+            dataset=self.data_test,
+            batch_size=self.hparams.batch_size,
+            num_workers=multiprocessing.cpu_count(),
+            shuffle=False,
+        )

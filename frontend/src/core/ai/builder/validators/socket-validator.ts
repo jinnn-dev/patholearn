@@ -2,11 +2,32 @@ import { Node } from '../nodes/node';
 import { NodeClassesType } from '../nodes/types';
 import { addNotification } from '../../../../utils/notification-state';
 import { ConnectionMatrix } from '../sockets/socket';
+import { DatasetNode } from '../nodes';
+import { Dataset } from 'model/ai/datasets/dataset';
+import { NodeValidation } from './validation-settings';
 
 export function nodesCanConnect(source: NodeClassesType, target: NodeClassesType): boolean {
   if (target.type === 'ResNetNode' && source.type !== 'DatasetNode') {
     newSocketNotification(`Only a dataset node can be connected with a ${target.label} node`);
     return false;
+  }
+
+  if ((target.type === 'ResNetNode' || target.type === 'SegmentationNode') && source.type === 'DatasetNode') {
+    const datasetNode = source as DatasetNode;
+    const selectedDataset = datasetNode.controls.dataset.value as Dataset | undefined;
+    if (!selectedDataset) {
+      newSocketNotification('You must select a dataset first');
+      return false;
+    }
+
+    const nodeInputDatasetType = NodeValidation[target.type]?.datasetType;
+    if (selectedDataset.dataset_type !== nodeInputDatasetType) {
+      newSocketNotification(
+        `You can only connect ${nodeInputDatasetType} datasets to a ${source.label} Node. The selected dataset is a ${selectedDataset.dataset_type} dataset`
+      );
+      return false;
+    }
+    return true;
   }
 
   if (target.type === 'OutputNode' && source.type === 'DatasetNode') {

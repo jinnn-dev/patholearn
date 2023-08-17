@@ -1,8 +1,9 @@
 import { ClassicPreset } from 'rete';
-import { MetricControl } from '../../controls';
+import { MetricControl, MetricDisplayName } from '../../controls';
 import { INode } from '../../serializable';
 import { Socket } from '../../sockets/socket';
 import { Node } from '../node';
+import { ConditionalDatasetMap } from '../../../../../model/ai/datasets/dataset';
 
 export interface IMetricNode extends INode {}
 
@@ -26,6 +27,21 @@ export class MetricNode extends Node<IMetricNode, { in: Socket }, {}, { metric: 
 
   public addElements(): void {
     this.addInput('in', new ClassicPreset.Input(this.sockets.input!, 'in'));
-    this.addControl('metric', new MetricControl('metric'));
+
+    const metricMap: ConditionalDatasetMap<MetricDisplayName> = {
+      classification: [
+        'Accuracy',
+        'ROC AUC',
+        'Average Precision',
+        'Cohen Kappa',
+        'F1 Score',
+        'Precision',
+        'Loss',
+        'Epoch'
+      ],
+      detection: ['Accuracy', 'F1 Score', 'IOU', 'Precision'],
+      segmentation: ['Accuracy', 'F1 Score', 'IOU', 'Precision', 'Epoch', 'Loss']
+    };
+    this.addControl('metric', new MetricControl('metric', metricMap));
   }
 }

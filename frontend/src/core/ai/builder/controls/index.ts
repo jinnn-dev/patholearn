@@ -6,3 +6,4 @@ export * from './diagram-control';
 export * from './metric-control';
 export * from './control';
 export * from './async-dropdown-control';
+export * from './conditional-dropdown-control';

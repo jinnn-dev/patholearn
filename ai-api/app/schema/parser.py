@@ -48,6 +48,8 @@ class LossFunctionString(Enum):
     Mse = "torch.nn.functional.mse_loss"
     Hinge = "torch.nn.functional.hinge_embedding_loss"
     Nll = "torch.nn.functional.nll_loss"
+    Jaccard = " smp.losses.JaccardLoss"
+    Dice = "smp.losses.DiceLoss"
 
 
 class OptimizerModule(Enum):
@@ -62,3 +64,10 @@ class OptimizerString(Enum):
     RmsProp = "torch.optim.RMSprop"
     Adagrad = "torch.optim.Adagrad"
     Adam = "torch.optim.Adam"
+
+
+ArchitectureString = {
+    "UNet++": "unetplusplus",
+    "UNet": "unet",
+    "DeepLab V3 Plus": "DeepLabV3Plus",
+}
