@@ -9,85 +9,85 @@ from io import BytesIO
 
 def serve_model(clearml_task: Task, dataset_id: str):
     dataset = Dataset.get(dataset_id=dataset_id)
-    dataset_type = dataset.tags[0]
 
     model = Model(clearml_task.output_models_id["model"])
     model.publish()
 
     metadata = dataset.get_metadata()
     channels = 1 if metadata["is_grayscale"] else 3
-    # if dataset_type == "segmentation":
-    command = [
-        "clearml-serving",
-        "model",
-        "add",
-        "--engine",
-        "triton",
-        "--input-size",
-        "-1",
-        "3",
-        "-1",
-        "-1",
-        "--input-type",
-        "float32",
-        "--input-name",
-        "input",
-        "--output-size",
-        "-1",
-        "6",
-        "-1",
-        "-1",
-        "--output-type",
-        "float32",
-        "--output-name",
-        "output",
-        "--endpoint",
-        clearml_task.id,
-        "--preprocess",
-        "/app/serving/segmentation.py",
-        "--model-id",
-        model.id,
-        "--aux-config",
-        'platform="onnxruntime_onnx"',
-        'default_model_filename="model.bin"',
-    ]
-    # else:
-    #     num_classes = len(metadata["classes"])
+    dataset_type = metadata["dataset_type"]
+    if dataset_type == "segmentation":
+        command = [
+            "clearml-serving",
+            "model",
+            "add",
+            "--engine",
+            "triton",
+            "--input-size",
+            "-1",
+            "3",
+            "-1",
+            "-1",
+            "--input-type",
+            "float32",
+            "--input-name",
+            "input",
+            "--output-size",
+            "-1",
+            "6",
+            "-1",
+            "-1",
+            "--output-type",
+            "float32",
+            "--output-name",
+            "output",
+            "--endpoint",
+            clearml_task.id,
+            "--preprocess",
+            "/app/serving/segmentation.py",
+            "--model-id",
+            model.id,
+            "--aux-config",
+            'platform="onnxruntime_onnx"',
+            'default_model_filename="model.bin"',
+        ]
+    else:
+        num_classes = len(metadata["classes"])
 
-    #     command = [
-    #         "clearml-serving",
-    #         "model",
-    #         "add",
-    #         "--engine",
-    #         "triton",
-    #         "--input-size",
-    #         "-1",
-    #         str(channels),
-    #         "-1",
-    #         "-1",
-    #         "--input-type",
-    #         "float32",
-    #         "--input-name",
-    #         "input",
-    #         "--output-size",
-    #         "-1",
-    #         str(num_classes),
-    #         "--output-type",
-    #         "float32",
-    #         "--output-name",
-    #         "output",
-    #         "--endpoint",
-    #         clearml_task.id,
-    #         "--preprocess",
-    #         "/app/serving/classification_grayscale.py"
-    #         if channels == 1
-    #         else "/app/serving/classification_color.py",
-    #         "--model-id",
-    #         model.id,
-    #         "--aux-config",
-    #         'platform="onnxruntime_onnx"',
-    #         'default_model_filename="model.bin"',
-    #     ]
+        command = [
+            "clearml-serving",
+            "model",
+            "add",
+            "--engine",
+            "triton",
+            "--input-size",
+            "-1",
+            str(channels),
+            "-1",
+            "-1",
+            "--input-type",
+            "float32",
+            "--input-name",
+            "input",
+            "--output-size",
+            "-1",
+            str(num_classes),
+            "--output-type",
+            "float32",
+            "--output-name",
+            "output",
+            "--endpoint",
+            clearml_task.id,
+            "--preprocess",
+            "/app/serving/classification_grayscale.py"
+            if channels == 1
+            else "/app/serving/classification_color.py",
+            "--model-id",
+            model.id,
+            "--aux-config",
+            'platform="onnxruntime_onnx"',
+            'default_model_filename="model.bin"',
+        ]
     return run_command(command)
 
 

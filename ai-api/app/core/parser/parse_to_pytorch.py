@@ -69,10 +69,12 @@ class DatasetModule:
         ) as f:
             self.dataset_module = f.read()
 
-    def get_instance(self, batch_size: int = 32):
+    def get_instance(self, batch_size: int = 32, inlcude_seed: bool = False):
         random_seed = random.randint(0, 10000)
-
-        return f"""DataModule(batch_size={batch_size}, split_seed={random_seed})"""
+        if inlcude_seed:
+            return f"""DataModule(batch_size={batch_size}, split_seed={random_seed})"""
+        else:
+            return f"""DataModule(batch_size={batch_size})"""
 
 
 class MNISTDataModule:
