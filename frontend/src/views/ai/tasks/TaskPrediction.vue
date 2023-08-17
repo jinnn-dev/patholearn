@@ -133,12 +133,7 @@ const prediction = computed(() => {
         <div class="text-3xl text-gray-300 font-semibold w-full">Add an image to get a prediction</div>
       </div>
       <div
-        v-if="
-          prediction &&
-          predictionFile &&
-          isAvailable &&
-          builderState.selectedDatasset?.dataset_type === 'classification'
-        "
+        v-if="predictionFile && isAvailable && builderState.selectedDatasset?.dataset_type === 'classification'"
         class="transition-all w-full max-h-[70%] flex flex-col justify-center"
       >
         <div class="max-h-full overflow-auto pr-2" v-if="prediction && prediction.dataset.class_map">
