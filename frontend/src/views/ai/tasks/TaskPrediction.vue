@@ -85,7 +85,7 @@ const getRandomImageFromDataset = async () => {
 
 const prediction = computed(() => {
   if (builderState.selectedDatasset?.dataset_type === 'classification') {
-    return result;
+    return result.value;
   }
   const byteArray = new Uint8Array(result.value as any);
   const blob = new Blob([byteArray], { type: 'image/png' });
@@ -133,7 +133,12 @@ const prediction = computed(() => {
         <div class="text-3xl text-gray-300 font-semibold w-full">Add an image to get a prediction</div>
       </div>
       <div
-        v-if="predictionFile && isAvailable && builderState.selectedDatasset?.dataset_type === 'classification'"
+        v-if="
+          prediction &&
+          predictionFile &&
+          isAvailable &&
+          builderState.selectedDatasset?.dataset_type === 'classification'
+        "
         class="transition-all w-full max-h-[70%] flex flex-col justify-center"
       >
         <div class="max-h-full overflow-auto pr-2" v-if="prediction && prediction.dataset.class_map">
@@ -171,7 +176,7 @@ const prediction = computed(() => {
         </div>
       </div>
 
-      <div v-else class="h-full" v-if="prediction">
+      <div class="h-full" v-if="prediction && builderState.selectedDatasset?.dataset_type === 'segmentation'">
         <lazy-image v-viewer :imageClasses="'h-full w-full object-contain cursor-pointer'" :imageUrl="prediction" />
       </div>
     </div>
