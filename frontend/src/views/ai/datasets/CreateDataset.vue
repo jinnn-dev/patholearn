@@ -69,7 +69,7 @@ const updateProgress = (event: any) => {
 };
 
 const uploadDataset = async () => {
-  if (datasetTypeSelection.value === 'own') {
+  if (selectedItem.value === 'segmentation') {
     createOwnDatasetForm.name = createDatasetForm.name;
     createOwnDatasetForm.description = createDatasetForm.description;
     createOwnDatasetForm.type = createDatasetForm.type;
