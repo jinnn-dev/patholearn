@@ -9,7 +9,7 @@ services:
     ports:
       - "81:80"
   
-  lern_api:
+  learn_api:
     image: hafen.noxz.dev/patholearn-ai/learn-api:${LEARN_API_VERSION}
     container_name: learn-api-prod
     restart: unless-stopped
@@ -113,6 +113,7 @@ services:
   ai_api_worker:
     image: hafen.noxz.dev/patholearn-ai/ai-api-worker:${AI_API_VERSION}
     restart: unless-stopped
+    container_name: ai-api-worker
     networks:
       - patholearn-ai-network-prod
       - ws_ws-network-prod
