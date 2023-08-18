@@ -84,6 +84,9 @@ const getRandomImageFromDataset = async () => {
 };
 
 const prediction = computed(() => {
+  if (!result.value) {
+    return undefined;
+  }
   if (builderState.selectedDatasset?.dataset_type === 'classification') {
     return result.value;
   }
@@ -171,8 +174,28 @@ const prediction = computed(() => {
         </div>
       </div>
 
-      <div class="h-full" v-if="prediction && builderState.selectedDatasset?.dataset_type === 'segmentation'">
-        <lazy-image v-viewer :imageClasses="'h-full w-full object-contain cursor-pointer'" :imageUrl="prediction" />
+      <div
+        class="w-full h-full flex items-center justify-center gap-12 mb-24"
+        v-if="builderState.selectedDatasset?.dataset_type === 'segmentation' && predictionFile"
+      >
+        <div
+          class="h-full w-1/2 flex-shrink-0"
+          v-if="prediction && predictionFile && builderState.selectedDatasset?.dataset_type === 'segmentation'"
+        >
+          <lazy-image v-viewer :imageClasses="'h-full w-full object-contain cursor-pointer'" :imageUrl="prediction" />
+        </div>
+        <div v-if="builderState.selectedDatasset.metadata?.class_map" class="w-full space-y-4">
+          <div
+            class="flex gap-4"
+            v-for="[key, value] in Object.entries(builderState.selectedDatasset.metadata?.class_map)"
+          >
+            <div
+              class="w-6 h-6 rounded-full flex-shrink-0"
+              :style="`background-color: rgb(${value.color[0]}, ${value.color[1]}, ${value.color[2]})`"
+            ></div>
+            <div>{{ key }}</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

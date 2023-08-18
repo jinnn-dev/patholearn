@@ -75,6 +75,7 @@ const imageLoadError = ref(false);
         fill="currentColor"
       ></path>
     </svg>
+
     <div v-if="!imageLoadError" class="w-full h-full overflow-hidden flex justify-center items-center">
       <img
         :key="url"

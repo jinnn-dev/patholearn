@@ -4,6 +4,7 @@ export const SegmentationModelVersions = ['UNet', 'UNet++', 'DeepLab V3 Plus'];
 
 export const SegmentationEcoderVersions = [
   'resnet18',
+  'resnet34',
   'resnext50_32x4d',
   'timm-efficientnet-b8',
   'timm-efficientnet-b3'

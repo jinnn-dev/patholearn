@@ -13,7 +13,7 @@ export class SegmentationNode extends Node<
   { output: Socket },
   { model: DropdownControl; encoder: DropdownControl }
 > {
-  width = 220;
+  width = 250;
 
   constructor() {
     super('Segmentation', 'SegmentationNode', { input: '2D', output: 'Output' });
@@ -31,13 +31,13 @@ export class SegmentationNode extends Node<
     return node;
   }
 
-  public addElements(value?: any): void {
+  public addElements(...value: any[]): void {
     this.addInput('dataset', new ClassicPreset.Input(this.sockets.input!, 'dataset'));
     this.addOutput('output', new ClassicPreset.Output(this.sockets.output!, 'output'));
-    this.addControl('model', new DropdownControl(SegmentationModelVersions, 'Model', 'model', value || 'UNet'));
+    this.addControl('model', new DropdownControl(SegmentationModelVersions, 'Model', 'model', value[0] || 'UNet'));
     this.addControl(
       'encoder',
-      new DropdownControl(SegmentationEcoderVersions, 'Encoder', 'encoder', value || 'resnet18')
+      new DropdownControl(SegmentationEcoderVersions, 'Encoder', 'encoder', value[1] || 'resnet18')
     );
   }
 }
