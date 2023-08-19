@@ -93,11 +93,18 @@ class ClassificationModel:
         architecture_node: Optional[ArchitectureNode],
     ) -> None:
         with open("/app/core/parser/templates/classification_model.txt", "r") as f:
+            logger.info(architecture_node)
             src = Template(f.read())
             if architecture_node is None:
                 combined_layers = ",\n".join(layers)
                 result_string = "torch.nn.Sequential(" + combined_layers + ")"
-                replacements = {"model": result_string, "modelfc": ""}
+                replacements = {
+                    "model": result_string,
+                    "modelfc": "",
+                    "weights_download": "",
+                    "weights_load": "",
+                    "weights_replace": "",
+                }
             else:
                 replacements = {
                     "model": layers[0],
@@ -279,12 +286,15 @@ def parse_to_pytorch(
         lightning_test = f"trainer.test(model=lightning_model, datamodule=data_module)"
         with open("/app/core/parser/templates/segmentation/checkpoint.txt") as f:
             src = Template(f.read())
+            width = dataset_node.dimension.x
+            height = dataset_node.dimension.y
+
             replacements = {
                 "arch": ArchitectureString[architecture_node.version],
                 "encoder": architecture_node.encoderVersion,
                 "channels": 3,
-                "width": dataset_node.dimension.x,
-                "height": dataset_node.dimension.y,
+                "width": width if width <= 256 else 256,
+                "height": height if height <= 256 else 256,
             }
             lightning_checkpoint = src.substitute(replacements)
         if not ignore_clearml:
@@ -364,10 +374,12 @@ def parse_to_pytorch(
     lightning_test = f"trainer.test(model=lightning_model, datamodule=data_module)"
     with open("/app/core/parser/templates/checkpoint.txt") as f:
         src = Template(f.read())
+        width = dataset_node.dimension.x
+        height = dataset_node.dimension.y
         replacements = {
             "channels": dataset_node.channels,
-            "width": dataset_node.dimension.x,
-            "height": dataset_node.dimension.y,
+            "width": width if width <= 256 else 256,
+            "height": height if height <= 256 else 256,
         }
         lightning_checkpoint = src.substitute(replacements)
     if not ignore_clearml:
