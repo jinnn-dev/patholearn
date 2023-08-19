@@ -55,7 +55,7 @@ export class OutputNode extends Node<
     };
 
     this.addControl('loss', new ConditionalDropdownControl('Loss Function', 'loss', lossMap));
-    this.addControl('learningRate', new NumberControl(0, 10, 'Learning Rate', '0,00', 0.01));
+    this.addControl('learningRate', new NumberControl(0, 10, 'Learning Rate', '0,00', 0.001));
     this.addControl('epochs', new NumberControl(0, 10000, 'Epochs', '10', 30));
     this.addControl('batchSize', new NumberControl(0, 10000, 'Batch Size', '32', 16));
   }
