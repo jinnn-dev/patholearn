@@ -1,5 +1,4 @@
 import { ClassicPreset } from 'rete';
-import { DropdownControl } from '../../controls/dropdown-control';
 import { INode } from '../../serializable';
 import { Node } from '../node';
 import { Socket } from '../../sockets/socket';
@@ -25,8 +24,8 @@ export class DatasetNode extends Node<IDatasetNode, {}, { dataset: Socket }, { d
     return node;
   }
 
-  public addElements(value?: any) {
-    this.addControl('dataset', new AsyncDropdownControl('Dataset', 'dataset', 'datasets', value));
+  public addElements(...value: any[]) {
+    this.addControl('dataset', new AsyncDropdownControl('Dataset', 'dataset', 'datasets', value[0]));
     this.addOutput('dataset', new ClassicPreset.Output(this.sockets.output!, 'Dataset'));
   }
 }

@@ -1,15 +1,10 @@
 <script setup lang="ts">
 import { PropType, computed, onMounted, ref, watch } from 'vue';
 import CustomSelect from '../../../form/CustomSelect.vue';
-import Icon from '../../../general/Icon.vue';
-import { builderState, versionHasStatus } from '../../../../core/ai/builder/state';
+import { builderState } from '../../../../core/ai/builder/state';
 import Dropdown from '../components/Dropdown.vue';
 import { LockStatus } from '../../../../core/ai/builder/sync';
-import { AsyncFunctionName, asyncFunctionMapping } from '../../../../core/ai/builder/controls/async-dropdown-control';
-import { useService } from '../../../../composables/useService';
-import Spinner from '../../../general/Spinner.vue';
 import { ConditionalDatasetMap } from '../../../../model/ai/datasets/dataset';
-import { validateUserSolutionAnnotations } from 'core/viewer/helper/validateAnnotations';
 interface DataInterface {
   id: string;
   label: string;

@@ -143,7 +143,7 @@ def create_dataset_own(data: dict, dataset_id: str, cookies: dict):
     try:
         groups = {}
         for internal_task_id in task_ids:
-            annotation_groups_url = f"http://{os.environ.get('LEARN_API_HOST', 'slide_api')}:{os.environ.get('LEARN_API_HOST', '8000')}/tasks/task/{internal_task_id}/annotationGroup"
+            annotation_groups_url = f"http://{os.environ.get('LEARN_API_HOST', 'slide_api')}:{os.environ.get('LEARN_API_PORT', '8000')}/tasks/task/{internal_task_id}/annotationGroup"
             response = requests.get(annotation_groups_url, cookies=cookies)
             annotation_groups.append(response.json())
         # [{"name":"invasive tumor","color":"#FF00FF"},{"name":"intraepithelial neoplasia","color":"#ff9600"},{"name":"extralobular duct","color":"#0000ff"},{"name":"lobule (including intralobular ducts)","color":"#00ffff"},{"name":"necrosis","color":"#646400"}]

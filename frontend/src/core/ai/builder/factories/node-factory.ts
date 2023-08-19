@@ -53,14 +53,16 @@ export function parseNode(nodeData: INode) {
   return node;
 }
 
-export function createNodeInstance(node: NodeType, value?: any) {
+export function createNodeInstance(node: NodeType, ...value: any) {
+  console.log(value);
+
   const nodeClass = getNodeClass(node);
   if (!nodeClass) {
     return undefined;
   }
   const instance = new nodeClass();
 
-  instance.addElements(value);
+  instance.addElements(...value);
   cacheControlsMapping(instance as NodeProps);
   return instance;
 }

@@ -31,10 +31,10 @@ export class ResNetNode extends Node<
     return node;
   }
 
-  public addElements(value?: any): void {
+  public addElements(...value: any[]): void {
     this.addInput('dataset', new ClassicPreset.Input(this.sockets.input!, 'dataset'));
     this.addOutput('fc', new ClassicPreset.Output(this.sockets.output!, 'fc'));
-    this.addControl('version', new DropdownControl(ResnetVersions, 'Version', 'version', value || 'resnet18'));
+    this.addControl('version', new DropdownControl(ResnetVersions, 'Version', 'version', value[0] || 'resnet18'));
     this.addControl(
       'pretrained',
       new DropdownControl(['General', 'Medical', 'No'], 'Pretrained', 'pretrained', 'General')

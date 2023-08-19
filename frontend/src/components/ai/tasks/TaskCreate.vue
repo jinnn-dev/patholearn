@@ -44,12 +44,12 @@ const createTask = async () => {
 <template>
   <div class="flex justify-end items-center">
     <div>
-      <primary-button bg-color="bg-gray-500" name="Neue Aufgabe" @click="openDialog"></primary-button>
+      <primary-button bg-color="bg-gray-500" name="Neues Experiment" @click="openDialog"></primary-button>
     </div>
   </div>
 
   <modal-dialog :show="showCreate" custom-classes="w-96">
-    <div class="text-xl">Aufgabe erstellen</div>
+    <div class="text-xl">Experiment erstellen</div>
     <input-field
       v-model:model-value="createTaskData.name"
       label="Name"

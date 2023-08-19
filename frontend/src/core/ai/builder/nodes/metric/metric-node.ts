@@ -25,23 +25,23 @@ export class MetricNode extends Node<IMetricNode, { in: Socket }, {}, { metric: 
     return node;
   }
 
-  public addElements(): void {
+  public addElements(...value: any[]): void {
     this.addInput('in', new ClassicPreset.Input(this.sockets.input!, 'in'));
 
     const metricMap: ConditionalDatasetMap<MetricDisplayName> = {
       classification: [
+        'Epoch',
+        'Loss',
         'Accuracy',
         'ROC AUC',
         'Average Precision',
         'Cohen Kappa',
         'F1 Score',
-        'Precision',
-        'Loss',
-        'Epoch'
+        'Precision'
       ],
       detection: ['Accuracy', 'F1 Score', 'IOU', 'Precision'],
-      segmentation: ['Accuracy', 'F1 Score', 'IOU', 'Precision', 'Epoch', 'Loss']
+      segmentation: ['Epoch', 'Loss', 'Accuracy', 'F1 Score', 'IOU', 'Precision', 'Epoch']
     };
-    this.addControl('metric', new MetricControl('metric', metricMap));
+    this.addControl('metric', new MetricControl('metric', metricMap, value[0] || undefined));
   }
 }
