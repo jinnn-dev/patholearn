@@ -172,7 +172,7 @@ def check_serve_endpoint(task_id: str, clearml_task_id: str, dataset_id: str):
 @celery_app.task(name="remove_serve_endpoint", queue="ai")
 def remove_model_serve_endpoint(clearml_task_id: str):
     stdout, stderr, exit_code = remove_model(clearml_task_id)
-
+    remove_periodic_task(clearml_task_id)
     logger.info(f"Script Serving {clearml_task_id} stdout: {stdout}")
     logger.error(f"Script Serving {clearml_task_id} stderr: {stderr}")
     logger.info(f"Script Serving {clearml_task_id} exit code: {exit_code}")
