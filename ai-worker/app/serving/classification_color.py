@@ -25,8 +25,9 @@ class Preprocess(object):
         dimensions = dataset_metadata["dimension"]
         # image is given as url, and is fetched
         image_numpy = np.array(image)
-        if dimensions["x"] > 256 or dimensions["y"] > 256:
+        if dimensions["x"] > 256:
             dimensions["x"] = 256
+        if dimensions["y"] > 256:
             dimensions["y"] = 256
         transform = A.Compose(
             [
