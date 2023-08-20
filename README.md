@@ -8,7 +8,7 @@ To get started clone the repository. Afterwards the environmental veriables need
 
 ### Development
 
-To make the frontend work, additional environment variables need to be set. A `.env.sample` can be found in the frontend folder. Normally all APIs should be available under `localhost` and their corresponding ports.
+To make the frontend work, additional environment variables need to be set. An `.env.sample` can be found in the frontend folder. Normally all APIs should be available under `localhost` and their corresponding ports.
 
 To start the development environment run
 
