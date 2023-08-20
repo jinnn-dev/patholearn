@@ -54,8 +54,6 @@ export function parseNode(nodeData: INode) {
 }
 
 export function createNodeInstance(node: NodeType, ...value: any) {
-  console.log(value);
-
   const nodeClass = getNodeClass(node);
   if (!nodeClass) {
     return undefined;
