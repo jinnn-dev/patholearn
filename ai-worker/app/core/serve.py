@@ -113,11 +113,22 @@ def check_if_model_available(clearml_task_id: str, dataset_id: str):
     dataset = Dataset.get(dataset_id=dataset_id)
     metadata = dataset.get_metadata()
     channels = 1 if metadata["is_grayscale"] else 3
-
+    width = metadata["dimension"]["x"]
+    height = metadata["dimension"]["y"]
     if channels == 1:
-        imarray = np.random.rand(100, 100) * 255
+        imarray = (
+            np.random.rand(
+                width if width <= 256 else 256, height if height <= 256 else 256
+            )
+            * 255
+        )
     else:
-        imarray = np.random.rand(100, 100, 3) * 255
+        imarray = (
+            np.random.rand(
+                width if width <= 256 else 256, height if height <= 256 else 256, 3
+            )
+            * 255
+        )
     im = Image.fromarray(imarray.astype("uint8")).convert("RGBA")
     im_bytes = BytesIO()
     im.save(im_bytes, "PNG")

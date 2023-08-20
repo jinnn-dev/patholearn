@@ -20,5 +20,17 @@ export const NodeValidation: { [type in NodeType]?: ValidationItems } = {
   SegmentationNode: {
     unique: true,
     datasetType: 'segmentation'
+  },
+  Conv2DNode: {
+    datasetType: 'classification'
+  },
+  BatchNormNode: {
+    datasetType: 'classification'
+  },
+  PoolingNode: {
+    datasetType: 'classification'
+  },
+  DropoutNode: {
+    datasetType: 'classification'
   }
 };

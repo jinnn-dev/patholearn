@@ -20,11 +20,11 @@ interface ComplexityItem {
 const ComplexityMapping: { [key in ModelComplexity]: ComplexityItem } = {
   low: {
     speed: 1,
-    featureCapturing: 0.2
+    featureCapturing: 0.7
   },
   medium: {
     speed: 0.5,
-    featureCapturing: 0.5
+    featureCapturing: 0.85
   },
   high: {
     speed: 0.2,

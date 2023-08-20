@@ -111,7 +111,7 @@ const computedClasses = computed(() => {
     </div>
 
     <div
-      v-if="isExpanded && values && values?.length > 0"
+      v-if="isExpanded && values && values?.length > 0 && !isDisbaled"
       class="absolute shadow-lg shadow-gray-800 z-10 w-full overflow-hidden bg-gray-500 top-9 rounded-lg ring-1 ring-gray-300"
     >
       <div v-for="value in values" class="px-2 py-0.5 hover:bg-gray-400 break-all" @click.stop="valueChanged(value)">

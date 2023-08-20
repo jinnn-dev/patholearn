@@ -12,8 +12,6 @@ const router = useRouter();
 const { result: projectWithTasks, loading } = useService(AiService.getProject, true, route.params.id as string);
 
 const taskCreated = async (task: any) => {
-  console.log(task.value._id);
-
   await router.push(`/ai/builder/${task.value._id}`);
 };
 </script>

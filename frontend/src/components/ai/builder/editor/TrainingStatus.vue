@@ -4,6 +4,7 @@ import { builderState } from '../../../../core/ai/builder/state';
 import { addNotification } from '../../../../utils/notification-state';
 import { TaskVersionStatus } from '../../../../model/ai/tasks/task';
 import PingPongLoader from '../../../general/PingPongLoader.vue';
+import Icon from '../../../general/Icon.vue';
 
 const statusTextMapping: { [type in TaskVersionStatus]?: string } = {
   queued: 'Training enqueued',
@@ -62,15 +63,12 @@ const showSpinner = computed(
 </script>
 <template>
   <div
-    class="fixed flex flex-col top-24 z-10 left-1/2 -translate-x-1/2 backdrop-blur-md shadow-md overflow-hidden shadow-gray-900 rounded-lg ring-1 ring-gray-500"
+    class="fixed flex flex-col justify-center items-center top-32 z-10 left-1/2 -translate-x-1/2 backdrop-blur-md shadow-md overflow-hidden shadow-gray-900 rounded-lg ring-1 ring-gray-500"
     :class="computedClasses"
   >
-    <div class="flex justify-center items-center p-2">
-      {{
-        builderState.selectedVersion?.status &&
-        (statusTextMapping[builderState.selectedVersion?.status] || builderState.selectedVersion?.status)
-      }}
+    <div class="flex justify-center items-center p-2" v-if="builderState.selectedVersion?.status">
+      {{ statusTextMapping[builderState.selectedVersion?.status] || builderState.selectedVersion?.status }}
     </div>
-    <div v-if="showSpinner"><ping-pong-loader background-color="bg-sky-700"></ping-pong-loader></div>
+    <div v-if="showSpinner" class="w-full h-1"><ping-pong-loader background-color="bg-sky-700"></ping-pong-loader></div>
   </div>
 </template>

@@ -28,7 +28,6 @@ export function validTraversal(editor: NodeEditor<Schemes>) {
   }
 
   const outputNodeIncomers = graph.traverse.incomers(outputNode.id);
-  console.log(outputNodeIncomers.nodes());
 
   if (outputNodeIncomers.nodes().length === 0) {
     addMessage('Output Node must be connected!');
