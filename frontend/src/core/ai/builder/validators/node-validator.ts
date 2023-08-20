@@ -14,7 +14,12 @@ export function nodeCanBeCreated(node: NodeClassesType, editor: NodeEditor<Schem
 }
 
 function checkNodeIsUnique(node: NodeClassesType, validationElement: ValidationItems, editor: NodeEditor<Schemes>) {
-  const nodeExits = nodeTypeExists(node.type, editor);
+  let nodeExits = nodeTypeExists(node.type, editor);
+  if (node.type === 'ResNetNode' || node.type === 'SegmentationNode') {
+    const resnetExists = nodeTypeExists('ResNetNode', editor);
+    const segmentationExists = nodeTypeExists('SegmentationNode', editor);
+    nodeExits = resnetExists || segmentationExists;
+  }
 
   if (validationElement.unique && nodeExits) {
     addNotification({

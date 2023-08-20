@@ -73,4 +73,16 @@ watch(
     @on-focus="onFocus"
     @on-focus-out="onFocusOut"
   ></dropdown>
+
+  <div class="flex gap-4 mt-2">
+    <div>
+      {{ builderState.selectedDatasset?.dataset_type }}
+    </div>
+    <div class="flex items-center gap-2">
+      <icon name="images" stroke-width="0"></icon>
+      <div>
+        {{ builderState.selectedDatasset?.clearml_dataset?.runtime.ds_file_count }}
+      </div>
+    </div>
+  </div>
 </template>

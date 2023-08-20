@@ -243,6 +243,7 @@ const itemClicked = async (event: EventName) => {
 
 const runGenerateModel = async (data: { dataset: Dataset; complexity: ModelComplexity }) => {
   loading.value = true;
+  await onClear();
   await generateModel(builderState.editor as NodeEditor<Schemes>, data.dataset, data.complexity);
   pushGeneratedModel(builderState.channel as PresenceChannel, download());
   loading.value = false;
@@ -254,6 +255,7 @@ const onClear = async () => {
   loading.value = true;
   loadingText.value = 'Clearing';
   await clear();
+
   await saveEditor();
   showClearWarning.value = false;
   loading.value = false;
@@ -295,7 +297,27 @@ onUnmounted(() => {
   ></confirm-dialog>
 
   <task-status v-if="builderState.selectedVersion?.status"></task-status>
-
+  <div
+    class="fixed flex justify-center items-center bg-gray-700/80 top-20 z-10 left-1/2 -translate-x-1/2 backdrop-blur-md shadow-md overflow-hidden shadow-gray-900 rounded-lg ring-1 ring-gray-500"
+    v-if="!versionHasStatus || builderState.selectedVersion?.clearml_id"
+  >
+    <div
+      class="flex justify-center items-center gap-2 px-2 py-1 hover:bg-gray-500 cursor-pointer"
+      v-if="!versionHasStatus"
+      @click="itemClicked('train')"
+    >
+      <icon name="play" stroke-width="0"></icon>
+      <div>Start</div>
+    </div>
+    <div
+      class="flex justify-center items-center gap-2 py-1 px-2 hover:bg-gray-500 cursor-pointer"
+      v-if="builderState.selectedVersion?.clearml_id"
+      @click="itemClicked('abort')"
+    >
+      <icon name="arrow-counter-clockwise" stroke-width="0"></icon>
+      <div>Stop / Reset</div>
+    </div>
+  </div>
   <div class="relative h-full overflow-hidden">
     <div class="flex justify-start">
       <!-- <primary-button name="Arrange" @click="arrangeLayout"></primary-button>
@@ -316,4 +338,3 @@ onUnmounted(() => {
     <div class="rete w-full h-full bg-gray-900 text-lg" ref="rete"></div>
   </div>
 </template>
-../../../../core/ai/builder/validators/node-validator

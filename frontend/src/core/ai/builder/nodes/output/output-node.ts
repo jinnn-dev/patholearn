@@ -49,7 +49,7 @@ export class OutputNode extends Node<
     this.addControl('optimizer', new ConditionalDropdownControl('Optimizer', 'optimizer', optimizerMap));
 
     const lossMap: ConditionalDatasetMap<string> = {
-      classification: ['Cross-Entropy', 'Hinge'],
+      classification: ['Cross-Entropy'],
       detection: ['Jaccard', 'Dice'],
       segmentation: ['Jaccard', 'Dice']
     };
