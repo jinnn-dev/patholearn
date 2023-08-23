@@ -38,10 +38,16 @@ def delete_osx_files(path: str):
 
 
 def contains_subdirectory(parent_dir: str):
+    if not os.path.isdir(parent_dir):
+        return False
     for name in os.listdir(parent_dir):
         if os.path.isdir(os.path.join(parent_dir, name)):
             return True
     return False
+
+
+def path_exists(folder, element):
+    return os.path.exists(os.path.join(folder, element))
 
 
 def delete_folder(folder_path: str):

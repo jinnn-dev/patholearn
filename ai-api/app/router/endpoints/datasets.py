@@ -38,6 +38,7 @@ from app.core.dataset.get_dataset import fetch_dataset_images
 from app.core.dataset.create_dataset import (
     create_dataset_backgroud,
     create_own_dataset_backgroud,
+    create_segmentation_dataset_background,
 )
 from clearml import Dataset as ClearmlDataset
 import json
@@ -74,6 +75,36 @@ async def create_new_dataset(
     await update_dataset_status(dataset_id=dataset.id, status="processing")
     background_tasks.add_task(create_dataset_backgroud, dataset=dataset, file=file.file)
     return dataset
+
+
+@router.post("/segmentation")
+async def segmentation(
+    background_tasks: BackgroundTasks,
+    data: Annotated[str, Form()],
+    dataset_type: Annotated[DatasetType, Form()],
+    file: Annotated[UploadFile, Form()] = UploadFile(...),
+    s: SessionContainer = Depends(verify_session()),
+):
+    user_id = s.get_user_id()
+    parsed_data = json.loads(data)
+    new_dataset = await dataset_collection.insert_one(
+        {
+            "creator_id": user_id,
+            "name": parsed_data["name"],
+            "description": parsed_data["description"]
+            if "description" in parsed_data
+            else None,
+            "dataset_type": dataset_type,
+            "created_at": datetime.now(),
+            "status": "saving",
+            "metadata": {},
+        }
+    )
+    dataset = await get_dataset(dataset_id=str(new_dataset.inserted_id))
+    await update_dataset_status(dataset_id=dataset.id, status="processing")
+    background_tasks.add_task(
+        create_segmentation_dataset_background, dataset=dataset, file=file.file
+    )
 
 
 @router.post("/own")
