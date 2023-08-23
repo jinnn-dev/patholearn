@@ -5,13 +5,14 @@ import ContentContainer from '../../../components/containers/ContentContainer.vu
 import { useRoute, useRouter } from 'vue-router';
 import SaveButton from '../../../components/general/SaveButton.vue';
 import DatasetStatus from '../../../components/ai/datasets/DatasetStatus.vue';
+import DatasetType from '../../../components/ai/datasets/DatasetType.vue';
 import LazyImage from '../../../components/general/LazyImage.vue';
 import Spinner from '../../../components/general/Spinner.vue';
 import DatasetMetadata from '../../../components/ai/datasets/DatasetMetadata.vue';
 import { addNotification } from '../../../utils/notification-state';
 import ConfirmDialog from '../../../components/general/ConfirmDialog.vue';
 
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useChannel } from '../../../composables/ws/useChannel';
 import { DatasetStatus as DatsetSchema } from '../../../model/ai/datasets/dataset';
 
@@ -27,21 +28,29 @@ const {
 
 const { run, result: deleteResult, loading: deleteLoading } = useService(AiService.deleteDataset);
 
-const { channel, isConnected } = useChannel('dataset', true);
+const { channel } = useChannel('dataset', true);
 
 const showDelete = ref(false);
 
+const processStatusChange = async (data: {
+  id: string;
+  name: string;
+  new_status: DatsetSchema;
+  old_status: DatsetSchema;
+}) => {
+  if (data.id !== route.params.id || data.new_status === data.old_status) {
+    return;
+  }
+  dataset.value = await AiService.getDataset(route.params.id);
+  runGetDatasetImages(route.params.id);
+};
+
 onMounted(() => {
-  channel.value?.bind(
-    'status-changed',
-    async (data: { id: string; name: string; new_status: DatsetSchema; old_status: DatsetSchema }) => {
-      if (data.id !== route.params.id || data.new_status === data.old_status) {
-        return;
-      }
-      dataset.value = await AiService.getDataset(route.params.id);
-      runGetDatasetImages(route.params.id);
-    }
-  );
+  channel.value?.bind('status-changed', processStatusChange);
+});
+
+onUnmounted(() => {
+  channel.value?.unbind('status-changed', processStatusChange);
 });
 
 const deleteDataset = async () => {
@@ -75,9 +84,6 @@ const deleteDataset = async () => {
   <content-container :loading="loading" back-route="/ai/datasets" back-text="Datasets">
     <template #header>
       <div class="break-all">{{ dataset?.name }}</div>
-      <div class="w-full flex justify-center items-center gap-4 text-base mt-4" v-if="dataset">
-        <dataset-status :status="dataset?.status"></dataset-status>
-      </div>
     </template>
     <template #content>
       <div class="flex justify-end items-center">
@@ -87,17 +93,28 @@ const deleteDataset = async () => {
           :loading="deleteLoading"
           name="Delete"
           bg-color="bg-red-500"
+          v-if="dataset?.status !== 'saving' && dataset?.status !== 'processing'"
         ></save-button>
       </div>
-      <div class="flex gap-4 mt-4" v-if="dataset">
-        <div class="flex flex-wrap gap-4 h-32 w-full" v-if="images">
-          <div v-for="image in images" class="w-32 h-full rounded-md overflow-hidden">
-            <div class="h-full w-full">
-              <lazy-image
-                v-viewer
-                :imageClasses="'h-full w-full object-contain cursor-pointer'"
-                :imageUrl="image"
-              ></lazy-image>
+      <div v-if="dataset?.description">
+        <div class="text-gray-200 font-semibold text-xl mb-2">Description</div>
+        <div class="bg-gray-900/50 rounded-lg ring-1 ring-gray-500 p-4">
+          {{ dataset.description }}
+        </div>
+      </div>
+
+      <div class="flex gap-4 mt-6" v-if="dataset">
+        <div v-if="images">
+          <div class="text-gray-200 font-semibold mb-2 text-xl">Example Images</div>
+          <div class="flex flex-wrap gap-4 h-32 w-full">
+            <div v-for="image in images" class="w-32 h-full rounded-md overflow-hidden">
+              <div class="h-full w-full">
+                <lazy-image
+                  v-viewer
+                  :imageClasses="'h-full w-full object-contain cursor-pointer'"
+                  :imageUrl="image"
+                ></lazy-image>
+              </div>
             </div>
           </div>
         </div>
@@ -109,9 +126,49 @@ const deleteDataset = async () => {
             {{ dataset.status === 'processing' ? 'No images available yet' : 'No images available' }}
           </div>
         </div>
-        <div class="w-1/3 bg-gray-900/50 rounded-lg ring-1 ring-gray-500 p-4">
-          <dataset-metadata v-if="dataset.metadata" size="big" :dataset="dataset"></dataset-metadata>
-          <div v-else class="text-center text-gray-300">No data</div>
+        <div class="w-1/3">
+          <div class="text-gray-200 font-semibold mb-2 text-xl">Metadata</div>
+          <div class="bg-gray-900/50 rounded-lg ring-1 ring-gray-500 p-4">
+            <div class="w-full flex justify-start items-center gap-4">
+              <dataset-type :type="dataset.dataset_type"></dataset-type>
+              <dataset-status :status="dataset?.status"></dataset-status>
+            </div>
+
+            <div v-if="dataset.metadata?.class_map" class="mt-4">
+              <div class="text-gray-300 font-semibold text-lg mb-2">Classes</div>
+              <div v-if="dataset.dataset_type === 'classification'" class="flex gap-2 flex-wrap">
+                <div
+                  v-for="element in Object.keys(dataset.metadata.class_map)"
+                  class="bg-gray-500/50 ring-1 ring-gray-500 font-mono px-2 py-0.5 rounded-md"
+                >
+                  {{ element }}
+                </div>
+              </div>
+
+              <div v-else class="flex gap-2 flex-wrap">
+                <div
+                  v-for="element in Object.keys(dataset.metadata.class_map)"
+                  class="bg-gray-500/50 ring-1 ring-gray-500 font-mono px-2 py-0.5 rounded-md flex gap-2 items-center justify-center"
+                >
+                  <div
+                    class="w-5 h-5 rounded-full flex-shrink-0"
+                    :style="`background-color: rgb(${dataset.metadata.class_map[element].color[0]}, ${dataset.metadata.class_map[element].color[1]}, ${dataset.metadata.class_map[element].color[2]})`"
+                  ></div>
+
+                  <div>
+                    {{ element }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="text-gray-300 font-semibold text-lg mt-4 mb-2">Data</div>
+            <dataset-metadata
+              v-if="dataset.metadata?.class_map !== null"
+              size="normal"
+              :dataset="dataset"
+            ></dataset-metadata>
+            <div v-else class="text-gray-300">No data</div>
+          </div>
         </div>
       </div>
       <!-- <router-view></router-view> -->
