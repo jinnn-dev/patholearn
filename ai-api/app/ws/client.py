@@ -1,5 +1,6 @@
 import os
 from pusher import Pusher
+from app.schema.dataset import Dataset, DatasetStatus
 
 ws_client = Pusher(
     app_id=os.environ.get("WEBSOCKET_APP_ID"),
@@ -13,3 +14,16 @@ ws_client = Pusher(
     ),
     ssl=False if os.environ.get("WEBSOCKET_SSL") == "False" else True,
 )
+
+
+def trigger_ws_dataset_status_changed(dataset: Dataset, old_status: str):
+    ws_client.trigger(
+        "dataset",
+        f"status-changed",
+        {
+            "id": str(dataset.id),
+            "name": dataset.name,
+            "new_status": dataset.status,
+            "old_status": old_status,
+        },
+    )

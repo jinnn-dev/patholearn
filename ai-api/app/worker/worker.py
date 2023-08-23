@@ -173,7 +173,7 @@ def create_dataset_own(data: dict, dataset_id: str, cookies: dict):
         update_dataset(dataset.id, {"metadata": dataset.metadata.dict()})
     except Exception as error:
         logger.exception(f"{log_prefix} Failed parsing: {error}")
-        update_dataset(dataset.id, {"status": "failed"})
+        update_dataset_status(dataset, "failed")
         return
     clearml_dataset: ClearmlDataset = create_clearml_dataset(
         dataset_name=dataset.name,
@@ -187,7 +187,7 @@ def create_dataset_own(data: dict, dataset_id: str, cookies: dict):
         add_files_to_dataset(clearml_dataset, dataset_folder)
     except ValueError as error:
         logger.exception(f"{log_prefix} Failed adding files: {error}")
-        update_dataset_status(dataset.id, "failed")
+        update_dataset_status(dataset, "failed")
         return
 
     set_metadata_of_dataset(clearml_dataset, dataset.metadata.dict())
@@ -196,14 +196,14 @@ def create_dataset_own(data: dict, dataset_id: str, cookies: dict):
         finalize_dataset(clearml_dataset)
     except Exception as error:
         logger.exception(f"{log_prefix} Failed finalizing: {error}")
-        update_dataset_status(dataset.id, "failed")
+        update_dataset_status(dataset, "failed")
         return
 
     clearml_dataset = get_dataset_task(clearml_dataset)
     update_dataset(dataset_id=dataset.id, fields={"clearml_dataset": clearml_dataset})
 
     delete_folder(dataset_folder)
-    update_dataset_status(dataset.id, "completed")
+    update_dataset_status(dataset, "completed")
 
 
 @celery_app.task(name="create_dataset", queue="ai_api")
@@ -217,7 +217,7 @@ def create_dataset(file_path: str, dataset_id: str):
         delete_osx_files(unpack_path)
     except Exception as error:
         logger.exception(f"{log_prefix} Failed unpacking: {error}")
-        update_dataset(dataset.id, {"status": "failed"})
+        update_dataset_status(dataset, "failed")
         return
 
     try:
@@ -234,7 +234,7 @@ def create_dataset(file_path: str, dataset_id: str):
 
     except Exception as error:
         logger.exception(f"{log_prefix} Failed parsing: {error}")
-        update_dataset(dataset.id, {"status": "failed"})
+        update_dataset_status(dataset, "failed")
         return
 
     logger.info(f"{log_prefix} Creating ClearML dataset")
@@ -251,7 +251,7 @@ def create_dataset(file_path: str, dataset_id: str):
         add_files_to_dataset(clearml_dataset, unpack_path)
     except ValueError as error:
         logger.exception(f"{log_prefix} Failed adding files: {error}")
-        update_dataset_status(dataset.id, "failed")
+        update_dataset_status(dataset, "failed")
         return
 
     set_metadata_of_dataset(clearml_dataset, dataset.metadata.dict())
@@ -261,14 +261,14 @@ def create_dataset(file_path: str, dataset_id: str):
         finalize_dataset(clearml_dataset)
     except Exception as error:
         logger.exception(f"{log_prefix} Failed finalizing: {error}")
-        update_dataset_status(dataset.id, "failed")
+        update_dataset_status(dataset, "failed")
         return
 
     clearml_dataset = get_dataset_task(clearml_dataset)
     update_dataset(dataset_id=dataset.id, fields={"clearml_dataset": clearml_dataset})
 
     delete_folder(unpack_path)
-    update_dataset_status(dataset.id, "completed")
+    update_dataset_status(dataset, "completed")
 
 
 @celery_app.task(name="create_segmentation_dataset", queue="ai_api")
@@ -282,7 +282,7 @@ def create_segmentation_dataset(file_path: str, dataset_id: str):
         delete_osx_files(unpack_path)
     except Exception as error:
         logger.exception(f"{log_prefix} Failed unpacking: {error}")
-        update_dataset(dataset.id, {"status": "failed"})
+        update_dataset_status(dataset, "failed")
         return
 
     try:
@@ -297,7 +297,7 @@ def create_segmentation_dataset(file_path: str, dataset_id: str):
 
     except Exception as error:
         logger.exception(f"{log_prefix} Failed parsing: {error}")
-        update_dataset(dataset.id, {"status": "failed"})
+        update_dataset_status(dataset, "failed")
         return
 
     logger.info(f"{log_prefix} Creating ClearML dataset")
@@ -314,7 +314,7 @@ def create_segmentation_dataset(file_path: str, dataset_id: str):
         add_files_to_dataset(clearml_dataset, unpack_path)
     except ValueError as error:
         logger.exception(f"{log_prefix} Failed adding files: {error}")
-        update_dataset_status(dataset.id, "failed")
+        update_dataset_status(dataset, "failed")
         return
 
     set_metadata_of_dataset(clearml_dataset, dataset.metadata.dict())
@@ -324,14 +324,14 @@ def create_segmentation_dataset(file_path: str, dataset_id: str):
         finalize_dataset(clearml_dataset)
     except Exception as error:
         logger.exception(f"{log_prefix} Failed finalizing: {error}")
-        update_dataset_status(dataset.id, "failed")
+        update_dataset_status(dataset, "failed")
         return
 
     clearml_dataset = get_dataset_task(clearml_dataset)
     update_dataset(dataset_id=dataset.id, fields={"clearml_dataset": clearml_dataset})
 
     delete_folder(unpack_path)
-    update_dataset_status(dataset.id, "completed")
+    update_dataset_status(dataset, "completed")
 
 
 def rescale_image(image: np.ndarray, rescale: float, interpolate: bool = True):
