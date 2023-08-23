@@ -18,9 +18,9 @@ watch(
 </script>
 <template>
   <div>
-    <div class="text-xl mb-4">3. Lade den Datensatz als zip-Datei hier hoch</div>
+    <div class="text-xl mb-4">3. Upload the dataset as a .zip file</div>
     <div>
-      <div>Die zip-Datei muss folgende Struktur haben:</div>
+      <div>The zip file must have following structure:</div>
       <ul class="font-mono my-4 p-4 bg-gray-900 rounded-lg">
         <div class="flex gap-2">
           <icon name="file-zip" stroke-width="0" class="text-gray-200"></icon>
@@ -85,7 +85,7 @@ watch(
     <div>
       <file-input
         v-model="selectedFile"
-        label="Datensatz als Zip-Datei"
+        label="Dataset as zip file"
         accept=".zip"
         icon="file-zip"
         :progress="progress"

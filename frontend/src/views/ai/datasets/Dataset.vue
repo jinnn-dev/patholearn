@@ -48,8 +48,8 @@ const deleteDataset = async () => {
   await run(dataset.value!.id);
   if (deleteResult.value === null) {
     addNotification({
-      header: 'Kann nicht gelöscht werden',
-      detail: 'Datensatz wird von Aufgaben verwendet',
+      header: 'Can not be deleted',
+      detail: 'Dataset is used by experiments',
       level: 'info',
       showDate: false,
       timeout: 5000
@@ -64,13 +64,15 @@ const deleteDataset = async () => {
   <confirm-dialog
     :show="showDelete"
     custom-classes="w-96"
-    header="Datensatz löschen?"
+    header="Delete dataset?"
+    confirm-text="Yes"
+    reject-text="No"
     :loading="deleteLoading"
     @confirmation="deleteDataset"
     @reject="showDelete = false"
   ></confirm-dialog>
 
-  <content-container :loading="loading" back-route="/ai/datasets" back-text="Datensätze">
+  <content-container :loading="loading" back-route="/ai/datasets" back-text="Datasets">
     <template #header>
       <div class="break-all">{{ dataset?.name }}</div>
       <div class="w-full flex justify-center items-center gap-4 text-base mt-4" v-if="dataset">
@@ -83,7 +85,7 @@ const deleteDataset = async () => {
           class="w-32"
           @click="showDelete = true"
           :loading="deleteLoading"
-          name="Löschen"
+          name="Delete"
           bg-color="bg-red-500"
         ></save-button>
       </div>
@@ -104,12 +106,12 @@ const deleteDataset = async () => {
             <spinner></spinner> Loading
           </div>
           <div v-else class="w-full">
-            {{ dataset.status === 'processing' ? 'Noch keine Bilder vorhanden' : 'Keine Bilder vorhanden' }}
+            {{ dataset.status === 'processing' ? 'No images available yet' : 'No images available' }}
           </div>
         </div>
         <div class="w-1/3 bg-gray-900/50 rounded-lg ring-1 ring-gray-500 p-4">
           <dataset-metadata v-if="dataset.metadata" size="big" :dataset="dataset"></dataset-metadata>
-          <div v-else class="text-center text-gray-300">Keine Daten</div>
+          <div v-else class="text-center text-gray-300">No data</div>
         </div>
       </div>
       <!-- <router-view></router-view> -->

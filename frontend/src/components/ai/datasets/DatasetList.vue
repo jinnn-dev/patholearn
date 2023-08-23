@@ -16,7 +16,7 @@ const { result: datasets, loading } = useService(AiService.getDatasets, true);
     <div v-else>
       <div class="flex justify-end items-end">
         <router-link to="/ai/datasets/create"
-          ><primary-button class="justify-self-end w-fit" bg-color="bg-gray-500" name="Neuer Datensatz"></primary-button
+          ><primary-button class="justify-self-end w-fit" bg-color="bg-gray-500" name="New Dataset"></primary-button
         ></router-link>
       </div>
 
@@ -24,7 +24,7 @@ const { result: datasets, loading } = useService(AiService.getDatasets, true);
         <dataset-card v-for="dataset in datasets" :dataset="dataset"></dataset-card>
       </div>
       <div v-else>
-        <no-content text="Keine Datensätze vorhanden"></no-content>
+        <no-content text="No datasets available"></no-content>
       </div>
     </div>
   </div>
