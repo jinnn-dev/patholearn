@@ -21,7 +21,7 @@ class MaskDataset(Dataset):
             alias="${dataset_id}",
         )
         dataset_path = dataset.get_local_copy()
-        self.train_paths = np.array(glob.glob(f"{dataset_path}/images/*.png"))
+        self.train_paths = np.array(glob.glob(f"{dataset_path}/images/*.[jp][pn]g"))
         self.mask_paths = np.array(glob.glob(f"{dataset_path}/masks/*.png"))
 
         train_ratio = 0.75
