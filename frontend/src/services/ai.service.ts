@@ -510,6 +510,24 @@ export class AiService {
     return response!.data;
   }
 
+  public static async createSegmentationDataset(createDataset: CreateDataset, onUploadProgress?: (event: any) => void) {
+    const formData = new FormData();
+    formData.append('data', JSON.stringify({ name: createDataset.name, description: createDataset.description }));
+    formData.append('file', createDataset.file!);
+    formData.append('dataset_type', createDataset.type);
+
+    const [_, response] = await handleError(
+      ApiService.post<Dataset>({
+        resource: '/datasets/segmentation',
+        data: formData,
+        config: { onUploadProgress },
+        host: AI_API_URL
+      }),
+      'Dataset could not be created'
+    );
+    return response!.data;
+  }
+
   public static async createOwnDataset(createOwnDataset: CreateOwnDataset) {
     const [_, response] = await handleError(
       ApiService.post<Dataset>({

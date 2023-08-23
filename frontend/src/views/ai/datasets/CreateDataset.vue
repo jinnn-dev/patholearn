@@ -11,6 +11,7 @@ import { AiService } from '../../../services/ai.service';
 import { useRouter } from 'vue-router';
 import DatasetUpload from './DatasetUpload.vue';
 import DatasetOwn from './DatasetOwn.vue';
+import DatasetSegmentation from './DatasetSegmentation.vue';
 
 const router = useRouter();
 
@@ -25,15 +26,21 @@ const {
   result: createOwnDatasetResult
 } = useService(AiService.createOwnDataset);
 
+const {
+  run: runCreateOwnDatasetUpload,
+  loading: createOwnDatasetLoadingUpload,
+  result: createOwnDatasetResultUpload
+} = useService(AiService.createSegmentationDataset);
+
 const items: { [type in DatasetType]?: { description: string; commingSoon: boolean } } = {
   classification: {
     description: 'Bei einer Klassifikation....',
     commingSoon: false
   },
-  // detection: {
-  //   description: 'Bei einer Detektierung....',
-  //   commingSoon: true
-  // },
+  detection: {
+    description: 'Bei einer Detektierung....',
+    commingSoon: false
+  },
   segmentation: {
     description: 'Bei einer Segmentierung...',
     commingSoon: false
@@ -42,7 +49,7 @@ const items: { [type in DatasetType]?: { description: string; commingSoon: boole
 
 const DatasetTypeDisplayValue: { [type in DatasetType]?: string } = {
   classification: 'Klassifikation',
-  // detection: 'Detektion',
+  detection: 'Segmentierung 1',
   segmentation: 'Segmentierung'
 };
 
@@ -74,6 +81,9 @@ const uploadDataset = async () => {
     createOwnDatasetForm.description = createDatasetForm.description;
     createOwnDatasetForm.type = createDatasetForm.type;
     await runCreatOwnDataset(createOwnDatasetForm);
+  } else if (selectedItem.value === 'detection') {
+    createDatasetForm.type = 'segmentation';
+    await runCreateOwnDatasetUpload(createDatasetForm, updateProgress);
   } else {
     await runCreateDataset(createDatasetForm, updateProgress);
   }
@@ -146,6 +156,11 @@ const uploadDataset = async () => {
           :progress="progress"
           @file-selected="createDatasetForm.file = $event"
         ></DatasetUpload>
+        <DatasetSegmentation
+          v-else-if="selectedItem === 'detection'"
+          @file-selected="createDatasetForm.file = $event"
+          :progress="progress"
+        ></DatasetSegmentation>
         <DatasetOwn
           v-else
           :progress="progress"

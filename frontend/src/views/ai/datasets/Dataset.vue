@@ -11,21 +11,38 @@ import DatasetMetadata from '../../../components/ai/datasets/DatasetMetadata.vue
 import { addNotification } from '../../../utils/notification-state';
 import ConfirmDialog from '../../../components/general/ConfirmDialog.vue';
 
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import { useChannel } from '../../../composables/ws/useChannel';
+import { DatasetStatus as DatsetSchema } from '../../../model/ai/datasets/dataset';
 
 const route = useRoute();
 const router = useRouter();
 
 const { result: dataset, loading } = useService(AiService.getDataset, true, route.params.id as string);
-const { result: images, loading: imagesLoading } = useService(
-  AiService.getDatasetImages,
-  true,
-  route.params.id as string
-);
+const {
+  result: images,
+  loading: imagesLoading,
+  run: runGetDatasetImages
+} = useService(AiService.getDatasetImages, true, route.params.id as string);
 
 const { run, result: deleteResult, loading: deleteLoading } = useService(AiService.deleteDataset);
 
+const { channel, isConnected } = useChannel('dataset', true);
+
 const showDelete = ref(false);
+
+onMounted(() => {
+  channel.value?.bind(
+    'status-changed',
+    async (data: { id: string; name: string; new_status: DatsetSchema; old_status: DatsetSchema }) => {
+      if (data.id !== route.params.id || data.new_status === data.old_status) {
+        return;
+      }
+      dataset.value = await AiService.getDataset(route.params.id);
+      runGetDatasetImages(route.params.id);
+    }
+  );
+});
 
 const deleteDataset = async () => {
   await run(dataset.value!.id);

@@ -48,4 +48,5 @@ defineProps({
       :size="size"
     ></dataset-metadata-item>
   </div>
+  <div v-else class="text-center text-gray-300">Keine Daten</div>
 </template>

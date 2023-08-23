@@ -11,7 +11,6 @@ import { BaseTask } from '../../../model/task/baseTask';
 import { Task } from '../../../model/task/task';
 import Spinner from '../../../components/general/Spinner.vue';
 import { PatchSize, PatchMagnification } from '../../../model/ai/datasets/dataset';
-
 const { result, loading: coursesLoading, run: getCourses } = useService(CourseService.getAllCoursesToUser, true);
 const {
   result: taskGroups,
@@ -134,6 +133,7 @@ const removeSelectedTask = (index: number) => {
         </div>
       </div>
     </div>
+
     <div class="mt-4">
       <div class="text-lg">Aufgabenauswahl:</div>
 
