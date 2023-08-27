@@ -10,7 +10,7 @@ import { appState, wsIsConnected } from './utils/app.state';
 import { connect, initWebsocket, registerConnectionEvents, wsClient } from './services/ws.service';
 import { addNotification } from './utils/notification-state';
 import { builderState } from './core/ai/builder/state';
-import { Dataset, DatasetStatus } from 'model/ai/datasets/dataset';
+import { DatasetStatus } from './model/ai/datasets/dataset';
 
 const route = useRoute();
 
