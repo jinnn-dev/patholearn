@@ -63,7 +63,9 @@ class Add(torch.nn.Module):
                 layers_str = ", ".join(
                     (
                         ""
-                        if isinstance(layer, Add) or isinstance(layer, Conv2dSame)
+                        if isinstance(layer, Add)
+                        or isinstance(layer, Conv2dSame)
+                        or isinstance(layer, Concatenate)
                         else "torch.nn."
                     )
                     + str(layer)
@@ -89,7 +91,14 @@ class Concatenate(torch.nn.Module):
         for module in self.concate_modules:
             if isinstance(module, torch.nn.Sequential):
                 layers_str = ", ".join(
-                    ("" if isinstance(layer, Add) else "torch.nn.") + str(layer)
+                    (
+                        ""
+                        if isinstance(layer, Add)
+                        or isinstance(layer, Concatenate)
+                        or isinstance(layer, Conv2dSame)
+                        else "torch.nn."
+                    )
+                    + str(layer)
                     for layer in module
                 )
                 module_str = f"torch.nn.Sequential({layers_str})"
