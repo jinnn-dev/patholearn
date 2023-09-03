@@ -16,23 +16,29 @@ class Preprocess(object):
     def preprocess(
         self, body: dict, state: dict, collect_custom_statistics_fn=None
     ) -> Any:
-        image = Image.open(BytesIO(base64.b64decode(body["image"]))).convert("RGB")
+        images = body["image"]
         dataset_metadata = body["metadata"]
         dimensions = dataset_metadata["dimension"]
-        image_numpy = np.array(image)
-        if dimensions["x"] > 256:
-            dimensions["x"] = 256
-        if dimensions["y"] > 256:
-            dimensions["y"] = 256
-        transform = A.Compose(
-            [
-                A.Resize(height=dimensions["y"], width=dimensions["x"]),
-                A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
-                ToTensorV2(),
-            ]
-        )
-        data = transform(image=np.array(image_numpy))["image"]
-        return np.array([data.numpy()]).astype(np.float32)
+
+        batch = []
+        for image in images:
+            loaded_image = Image.open(BytesIO(base64.b64decode(image))).convert("RGB")
+
+            image_numpy = np.array(loaded_image)
+            if dimensions["x"] > 256:
+                dimensions["x"] = 256
+            if dimensions["y"] > 256:
+                dimensions["y"] = 256
+            transform = A.Compose(
+                [
+                    A.Resize(height=dimensions["y"], width=dimensions["x"]),
+                    A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+                    ToTensorV2(),
+                ]
+            )
+            data = transform(image=np.array(image_numpy))["image"]
+            batch.append(data.numpy())
+        return np.array(batch).astype(np.float32)
 
     def postprocess(
         self, data: Any, state: dict, collect_custom_statistics_fn=None

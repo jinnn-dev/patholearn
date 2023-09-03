@@ -100,7 +100,7 @@ def get_prediction(clearml_task_id: str, image_data: bytes, metadata: dict):
     encoded_image = base64.b64encode(image_data)
     result = requests.post(
         f"http://10.168.2.83:8080/serve/{clearml_task_id}",
-        json={"image": encoded_image.decode(), "metadata": metadata},
+        json={"image": [encoded_image.decode()], "metadata": metadata},
         headers={"Content-Type": "application/json"},
     )
     data = result.json()
