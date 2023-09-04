@@ -4,7 +4,6 @@ import { useService } from '../../../composables/useService';
 import { AiService } from '../../../services/ai.service';
 import ContentContainer from '../../../components/containers/ContentContainer.vue';
 import TaskList from '../../../components/ai/tasks/TaskList.vue';
-import TaskBuilderCreate from '../../../components/ai/tasks/TaskBuilderCreate.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -16,7 +15,7 @@ const taskCreated = async (task: any) => {
 };
 </script>
 <template>
-  <content-container :loading="loading" margin="mt-0" back-route="/ai/projects" back-text="Projekte">
+  <content-container :loading="loading" margin="mt-0" back-route="/ai/projects" back-text="Projects">
     <template #header>
       <div class="break-all">{{ projectWithTasks?.project.name }}</div>
     </template>

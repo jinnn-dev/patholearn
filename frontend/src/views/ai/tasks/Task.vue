@@ -69,7 +69,7 @@ onUnmounted(() => {
     class="fixed top-4 left-4 z-30 flex justify-center items-center py-1 px-2 cursor-pointer rounded-md gap-2 bg-gray-700/70 backdrop-blur-md ring-[1px] ring-gray-500/70 hover:ring-1 hover:ring-gray-500 hover:bg-gray-500 shadow-md shadow-gray-900"
   >
     <icon name="arrow-left" size="18"></icon>
-    <div>Projekt</div>
+    <div>Project</div>
   </router-link>
 
   <task-navigation :task-id="(route.params.id as string)"></task-navigation>

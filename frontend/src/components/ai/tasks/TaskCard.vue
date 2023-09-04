@@ -87,7 +87,7 @@ const computedStatus = computed(() => {
       </div>
     </div>
     <div v-else>
-      <div class="text-gray-300">Keine Beschreibung</div>
+      <div class="text-gray-300">No Description</div>
     </div>
 
     <div class="flex w-full justify-between items-center gap-4 bg-gray-800 p-2 rounded-lg font-mono mt-4 text-lg">
