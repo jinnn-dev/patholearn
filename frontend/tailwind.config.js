@@ -1,7 +1,7 @@
 module.exports = {
   darkMode: 'class',
 
-  content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
+  content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx,md}'],
   safelist: [
     'bg-gray-700/95',
 
@@ -55,5 +55,5 @@ module.exports = {
       }
     }
   },
-  plugins: [require('@tailwindcss/forms')]
+  plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography')]
 };

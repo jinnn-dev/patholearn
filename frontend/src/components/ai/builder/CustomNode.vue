@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PropType, computed } from 'vue';
+import { PropType, computed, ref } from 'vue';
 import { NodeType } from '../../../core/ai/builder/nodes/types';
 import { getNodeColor } from '../../../core/ai/builder/node-colors';
 import { LockStatus } from '../../../core/ai/builder/sync';
@@ -7,6 +7,8 @@ import { getTextColor } from '../../../utils/colors';
 import Icon from '../../general/Icon.vue';
 import { builderState, versionHasStatus } from '../../../core/ai/builder/state';
 import { TaskVersionStatus } from '../../../model/ai/tasks/task';
+import ModalDialog from '../../containers/ModalDialog.vue';
+import InfoRenderer from './info/InfoRenderer.vue';
 
 function sortByIndex(entries: any) {
   entries.sort((a: any, b: any) => {
@@ -33,6 +35,7 @@ interface DataInterface {
 
 const props = defineProps({
   data: Object as PropType<DataInterface>,
+  seed: Number,
   emit: {
     type: Function,
     required: true
@@ -121,14 +124,27 @@ const controls = computed(() => {
 const outputs = computed(() => {
   return sortByIndex(Object.entries(props.data?.outputs));
 });
+
+const showDescription = ref();
 </script>
 
 <template>
+  <modal-dialog :show="showDescription">
+    <div class="flex justify-end gap-4">
+      <div class="p-1 hover:bg-gray-500 rounded-lg hover:cursor-pointer" @click="showDescription = false">
+        <icon name="x"></icon>
+      </div>
+    </div>
+    <info-renderer :label="data?.label!"></info-renderer>
+  </modal-dialog>
   <div class="node flex flex-col h-full" :class="nodeClasses" :style="nodeStyles" data-testid="node">
     <div
       v-if="data?.selected && data?.id && !versionHasStatus"
       class="absolute flex -top-12 rounded-lg left-0 overflow-hidden bg-gray-700 shadow-md shadow-gray-900/50"
     >
+      <div class="hover:bg-gray-500 p-1">
+        <icon name="question" size="28" stroke-width="0" @click.stop="showDescription = true"></icon>
+      </div>
       <div class="hover:bg-gray-500 p-1" @click.stop="builderState.syncPlugin?.cloneNode(data.id)">
         <icon name="copy" size="28" stroke-width="0"></icon>
       </div>
