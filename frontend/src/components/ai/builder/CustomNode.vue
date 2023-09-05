@@ -130,8 +130,11 @@ const showDescription = ref();
 
 <template>
   <modal-dialog :show="showDescription">
-    <div class="flex justify-end gap-4">
-      <div class="p-1 hover:bg-gray-500 rounded-lg hover:cursor-pointer" @click="showDescription = false">
+    <div class="relative w-full" v-if="showDescription">
+      <div
+        class="absolute right-0 p-1 hover:bg-gray-500 rounded-lg hover:cursor-pointer"
+        @click="showDescription = false"
+      >
         <icon name="x"></icon>
       </div>
     </div>

@@ -6,11 +6,11 @@ meta:
 
 # Conv2D
 
-The `Conv2D`{lang=java} node represents the convolutional layer, which is primarly used for processing images. It tries to learn features from the images (e.g, lines or corners). Chaining multiple convolutional layer together enables to learn more complex features (e.g., shapes or faces).
+The `Conv2D`{lang=java} node represents the convolutional layer, which is primarly used for processing images. It tries to learn features from the input images (e.g, lines or corners). Chaining multiple convolutional layers together enables to learn more complex features (e.g., shapes or faces).
 
-The image belows shows how a convolutional layer work. On the left is the input image. The middle is the so called **kernel** and on the right the output image that contains the features:
+The image belows shows how a convolutional layer work. On the left is the input image. The middle is the so called **kernel** and on the right is the output image that contains the features:
 <img class="w-1/3" src="../../../../assets/conv-full-layer_cropped.gif">
-The kernel has a size of $3\times3$ pixels that slides over the image. For each pixel the value on the image and on the kernel are multiplied and added to create a combined value. Thereby the center pixel of the kernel is the resulting position on the output image.
+The kernel has a size of $3\times3$ pixels that slides over the image. For each pixel the value on the image and on the kernel are multiplied and added to create a combined value. Thereby, the center pixel of the kernel is the resulting position on the output image.
 The **stride** values define how many pixels the kernel should move with each step in the vertical and horizontal direction on the image.
 
-The shown example added additional zero pixels around the image. This is called **padding**. Padding is used to ensure that the output dimension of the image is the same as the input image. If no padding is added the output image can be smaller, as always the center of the kernel is used and the border pixels of the input image are never in the center.
+The shown example added additional zero pixels around the image. This is called **padding**. Padding is used to ensure that the output dimension of the image is the same as the input image. If no padding is added the output image can be smaller, as always the center of the kernel is used and the border pixels of the input image are never in the center
