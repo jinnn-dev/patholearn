@@ -9,7 +9,12 @@ import mathjax from 'markdown-it-mathjax3';
 export default defineConfig({
   plugins: [
     vue({
-      include: [/\.vue$/, /\.md$/]
+      include: [/\.vue$/, /\.md$/],
+      template: {
+        compilerOptions: {
+          isCustomElement: (tag) => ['mjx-assistive-mml', 'math', 'mjx-container', 'mi', 'mo'].includes(tag)
+        }
+      }
     }),
     Markdown({ markdownItUses: [prism, markdownItPrismBackticks, mathjax], frontmatter: true }),
     visualizer()
