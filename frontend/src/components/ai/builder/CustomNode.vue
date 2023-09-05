@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PropType, computed, ref } from 'vue';
+import { PropType, computed, ref, version } from 'vue';
 import { NodeType } from '../../../core/ai/builder/nodes/types';
 import { getNodeColor } from '../../../core/ai/builder/node-colors';
 import { LockStatus } from '../../../core/ai/builder/sync';
@@ -7,8 +7,7 @@ import { getTextColor } from '../../../utils/colors';
 import Icon from '../../general/Icon.vue';
 import { builderState, versionHasStatus } from '../../../core/ai/builder/state';
 import { TaskVersionStatus } from '../../../model/ai/tasks/task';
-import ModalDialog from '../../containers/ModalDialog.vue';
-import InfoRenderer from './info/InfoRenderer.vue';
+import NodeActions from './NodeActions.vue';
 
 function sortByIndex(entries: any) {
   entries.sort((a: any, b: any) => {
@@ -126,10 +125,16 @@ const outputs = computed(() => {
 });
 
 const showDescription = ref();
+
+const nodeActions = [
+  {
+    id: 'node-question'
+  }
+];
 </script>
 
 <template>
-  <modal-dialog :show="showDescription">
+  <!-- <modal-dialog :show="showDescription">
     <div class="relative w-full" v-if="showDescription">
       <div
         class="absolute right-0 p-1 hover:bg-gray-500 rounded-lg hover:cursor-pointer"
@@ -139,11 +144,14 @@ const showDescription = ref();
       </div>
     </div>
     <info-renderer :label="data?.label!"></info-renderer>
-  </modal-dialog>
+  </modal-dialog> -->
   <div class="node flex flex-col h-full" :class="nodeClasses" :style="nodeStyles" data-testid="node">
-    <div
+    <div v-if="data?.selected && data.id && !versionHasStatus">
+      <NodeActions :id="data.id" :selected="data.selected" :label="data.label"></NodeActions>
+    </div>
+    <!-- <div
       v-if="data?.selected && data?.id && !versionHasStatus"
-      class="absolute flex -top-12 rounded-lg left-0 overflow-hidden bg-gray-700 shadow-md shadow-gray-900/50"
+      class="absolute flex -top-12 rounded-lg left-0 overflow-hidden ring-1 ring-gray-500 bg-gray-700 shadow-md shadow-gray-900/50"
     >
       <div class="hover:bg-gray-500 p-1">
         <icon name="question" size="28" stroke-width="0" @click.stop="showDescription = true"></icon>
@@ -154,7 +162,7 @@ const showDescription = ref();
       <div class="hover:bg-gray-500 p-1">
         <icon name="trash" size="28" @click.stop="builderState.syncPlugin?.removeNode(data.id)"></icon>
       </div>
-    </div>
+    </div> -->
 
     <div class="overflow-hidden rounded-t-lg shrink-0">
       <div class="title" data-testid="title" :class="titleClasses">
