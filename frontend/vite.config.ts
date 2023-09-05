@@ -12,7 +12,8 @@ export default defineConfig({
       include: [/\.vue$/, /\.md$/],
       template: {
         compilerOptions: {
-          isCustomElement: (tag) => ['mjx-assistive-mml', 'math', 'mjx-container', 'mi', 'mo'].includes(tag)
+          isCustomElement: (tag) =>
+            ['mjx-assistive-mml', 'math', 'mjx-container', 'mi', 'mo', 'mtext', 'mrow', 'mfrac'].includes(tag)
         }
       }
     }),
