@@ -15,6 +15,7 @@ export class PoolingNode extends Node<
     kernel: DimensionControl;
     stride: DimensionControl;
     type: DropdownControl;
+    padding: DropdownControl;
   }
 > {
   width = 200;
@@ -57,5 +58,6 @@ export class PoolingNode extends Node<
       )
     );
     this.addControl('type', new DropdownControl(['max', 'average'], 'Type', 'type', 'max'));
+    this.addControl('padding', new DropdownControl(['none', 'same'], 'Padding', 'padding', 'none'));
   }
 }
