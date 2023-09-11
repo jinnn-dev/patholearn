@@ -27,9 +27,6 @@ from torchvision.models import ResNet
 def get_layer_string(
     layer: torch.nn.Module, node_data: Node = None, prefix: str = "torch.nn."
 ):
-    logger.info(f"Layer String:{prefix}, {layer}")
-    logger.info(layer)
-    logger.info(node_data)
     if isinstance(node_data, ArchitectureNode):
         return f"""torchvision.models.get_model(name="{node_data.version}", weights={None if node_data.pretrained == 'No'  else '"DEFAULT"'})"""
     return prefix + get_torch_layer_string(layer)
@@ -61,14 +58,6 @@ def get_classification_model(
     )
 
     if architecture_node is not None:
-        # result = parse_layer(
-        #     architecture_node, dataset_node.channels, layer_data_shape=input_data_shape
-        # )[0][0]
-
-        # modules = list(result.children())[:-1]
-        # model = torch.nn.Sequential(*modules, torch.nn.Flatten(start_dim=1, end_dim=-1))
-        # output_shape = get_output_shape(model, input_data_shape)
-        # logger.info(output_shape)
         result, result_strings, in_channels, layer_data = parse_network(
             path, graph, dataset_node.channels, layer_data_shape=input_data_shape
         )

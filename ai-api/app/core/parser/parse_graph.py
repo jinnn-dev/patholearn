@@ -21,6 +21,8 @@ class FlattenNode(Node):
 
 
 ResNetVersion = Literal["resnet18", "resnet34", "resnet50", "resnet101", "resnet152"]
+VggVersions = Literal["vgg11", "vgg13", "vgg16", "vgg19"]
+
 PretrainedOptions = Literal["General", "Medical", "No"]
 
 SegmentationModels = Literal["UNet", "UNet++", "DeepLab V3 Plus"]
@@ -30,11 +32,15 @@ SegmentationEncoderVersions = Literal[
 
 
 class ArchitectureNode(Node):
-    version: Union[SegmentationModels, ResNetVersion]
+    version: Union[SegmentationModels, ResNetVersion, VggVersions]
     pretrained: PretrainedOptions
 
 
 class ResNetNode(ArchitectureNode):
+    pass
+
+
+class VggNode(ArchitectureNode):
     pass
 
 
@@ -138,6 +144,8 @@ Metric = Literal[
     "Epoch",
     "IOU",
 ]
+
+ClassifierMapping = {ResNetNode: "fc", VggNode: "classifier"}
 
 
 class MetricNode(Node):
@@ -321,6 +329,14 @@ async def get_resnet_node(node: INode):
     )
 
 
+async def get_vgg_node(node: INode):
+    return VggNode(
+        id=node.id,
+        version=node.controls[0].value,
+        pretrained=node.controls[1].value,
+    )
+
+
 async def get_segmentation_node(node: INode):
     return SegmentationNode(
         id=node.id,
@@ -359,6 +375,7 @@ node_type_map = {
     NodeType.ConcatenateNode: get_concatenate_node,
     NodeType.MetricNode: get_metric_node,
     NodeType.ResNetNode: get_resnet_node,
+    NodeType.VggNode: get_vgg_node,
     NodeType.SegmentationNode: get_segmentation_node,
 }
 

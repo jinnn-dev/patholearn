@@ -5,9 +5,12 @@ import torch
 import torchvision
 import numpy as np
 import math
+from functools import reduce
+from operator import mul
 
 from app.core.parser.parse_graph import (
     ActivationFunction,
+    ArchitectureNode,
     BatchNormNode,
     Conv2dLayer,
     DropoutNode,
@@ -16,6 +19,7 @@ from app.core.parser.parse_graph import (
     Node,
     PoolingLayer,
     ResNetNode,
+    VggNode,
 )
 from app.schema.parser import ActivationFunctionModule
 
@@ -108,10 +112,10 @@ class AvgPool2dSame(torch.nn.AvgPool2d):
         ih, iw = x.size()[-2:]
 
         pad_h = self.calc_same_pad(
-            i=ih, k=self.kernel_size[0], s=self.stride[0], d=self.dilation[0]
+            i=ih, k=self.kernel_size[0], s=self.stride[0], d=self.dilation
         )
         pad_w = self.calc_same_pad(
-            i=iw, k=self.kernel_size[1], s=self.stride[1], d=self.dilation[1]
+            i=iw, k=self.kernel_size[1], s=self.stride[1], d=self.dilation
         )
 
         if pad_h > 0 or pad_w > 0:
@@ -217,17 +221,30 @@ def parse_batch_norm_node(
     return [layer], in_channels, layer_data_shape
 
 
-def parse_resnet_node(
-    layer_data: ResNetNode, in_channels: int, layer_data_shape: tuple
-) -> Tuple[List[torch.nn.Module], int, Tuple]:
+def parse_architecture_node(
+    layer_data: ArchitectureNode, in_channels: int, layer_data_shape: tuple
+):
     pretrained_layer = torchvision.models.get_model(
         layer_data.version, weights=None if layer_data.pretrained == "No" else "DEFAULT"
     )
-
+    logger.info(pretrained_layer)
     modules = list(pretrained_layer.children())[:-1]
-    layer = torch.nn.Sequential(*modules)
+    layer = torch.nn.Sequential(*modules, torch.nn.Flatten(start_dim=1))
     output_shape = get_output_shape(layer, layer_data_shape)
+
     return [pretrained_layer], output_shape[1], output_shape
+
+
+def parse_resnet_node(
+    layer_data: ResNetNode, in_channels: int, layer_data_shape: tuple
+) -> Tuple[List[torch.nn.Module], int, Tuple]:
+    return parse_architecture_node(layer_data, in_channels, layer_data_shape)
+
+
+def parse_vgg_node(
+    layer_data: VggNode, in_channels: int, layer_data_shape: tuple
+) -> Tuple[List[torch.nn.Module], int, Tuple]:
+    return parse_architecture_node(layer_data, in_channels, layer_data_shape)
 
 
 def get_activation_function(activation_function: ActivationFunction) -> torch.nn.Module:
@@ -269,6 +286,7 @@ parse_dict = {
     DropoutNode: parse_dropout_node,
     BatchNormNode: parse_batch_norm_node,
     ResNetNode: parse_resnet_node,
+    VggNode: parse_vgg_node,
 }
 
 
@@ -282,12 +300,11 @@ def parse_layer(
 
 def get_torch_layer_string(layer: torch.nn.Module):
     if isinstance(layer, torch.nn.Conv2d):
-        return f"""Conv2d({layer.in_channels}, {layer.out_channels}, kernel_size={layer.kernel_size}, stride={layer.stride}, padding="{layer.padding}")"""
+        return f"""Conv2d({layer.in_channels}, {layer.out_channels}, kernel_size={layer.kernel_size}, stride={layer.stride}, padding={'"same"' if layer.padding == "same" else layer.padding})"""
     return str(layer)
 
 
 def get_torch_prefix(layer: torch.nn.Module):
-    logger.info(f"Prefix: {layer}")
     return (
         ""
         if isinstance(layer, Add)

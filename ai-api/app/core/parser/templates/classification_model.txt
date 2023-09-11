@@ -23,10 +23,10 @@ class MaxPool2dSame(torch.nn.MaxPool2d):
         ih, iw = x.size()[-2:]
 
         pad_h = self.calc_same_pad(
-            i=ih, k=self.kernel_size[0], s=self.stride[0], d=self.dilation[0]
+            i=ih, k=self.kernel_size[0], s=self.stride[0], d=self.dilation
         )
         pad_w = self.calc_same_pad(
-            i=iw, k=self.kernel_size[1], s=self.stride[1], d=self.dilation[1]
+            i=iw, k=self.kernel_size[1], s=self.stride[1], d=self.dilation
         )
 
         if pad_h > 0 or pad_w > 0:
@@ -40,8 +40,9 @@ class MaxPool2dSame(torch.nn.MaxPool2d):
             self.padding,
             self.dilation,
             self.ceil_mode,
-            self.return_indices
+            self.return_indices,
         )
+
 
 class AvgPool2dSame(torch.nn.AvgPool2d):
     def calc_same_pad(self, i: int, k: int, s: int, d: int) -> int:
@@ -51,10 +52,10 @@ class AvgPool2dSame(torch.nn.AvgPool2d):
         ih, iw = x.size()[-2:]
 
         pad_h = self.calc_same_pad(
-            i=ih, k=self.kernel_size[0], s=self.stride[0], d=self.dilation[0]
+            i=ih, k=self.kernel_size[0], s=self.stride[0], d=self.dilation
         )
         pad_w = self.calc_same_pad(
-            i=iw, k=self.kernel_size[1], s=self.stride[1], d=self.dilation[1]
+            i=iw, k=self.kernel_size[1], s=self.stride[1], d=self.dilation
         )
 
         if pad_h > 0 or pad_w > 0:
@@ -68,8 +69,9 @@ class AvgPool2dSame(torch.nn.AvgPool2d):
             self.padding,
             self.ceil_mode,
             self.count_include_pad,
-            self.divisor_override
+            self.divisor_override,
         )
+
 
 class ClassificationModel(torch.nn.Module):
     def __init__(self):
