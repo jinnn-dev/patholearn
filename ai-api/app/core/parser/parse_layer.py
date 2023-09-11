@@ -15,6 +15,7 @@ from app.core.parser.parse_graph import (
     Conv2dLayer,
     DropoutNode,
     FlattenNode,
+    GoogleNetNode,
     LinearLayer,
     Node,
     PoolingLayer,
@@ -224,10 +225,11 @@ def parse_batch_norm_node(
 def parse_architecture_node(
     layer_data: ArchitectureNode, in_channels: int, layer_data_shape: tuple
 ):
+    version = layer_data.version if layer_data.version != None else "googlenet"
     pretrained_layer = torchvision.models.get_model(
-        layer_data.version, weights=None if layer_data.pretrained == "No" else "DEFAULT"
+        version,
+        weights=None if layer_data.pretrained == "No" else "DEFAULT",
     )
-    logger.info(pretrained_layer)
     modules = list(pretrained_layer.children())[:-1]
     layer = torch.nn.Sequential(*modules, torch.nn.Flatten(start_dim=1))
     output_shape = get_output_shape(layer, layer_data_shape)
@@ -243,6 +245,12 @@ def parse_resnet_node(
 
 def parse_vgg_node(
     layer_data: VggNode, in_channels: int, layer_data_shape: tuple
+) -> Tuple[List[torch.nn.Module], int, Tuple]:
+    return parse_architecture_node(layer_data, in_channels, layer_data_shape)
+
+
+def parse_googlenet_node(
+    layer_data: GoogleNetNode, in_channels: int, layer_data_shape: tuple
 ) -> Tuple[List[torch.nn.Module], int, Tuple]:
     return parse_architecture_node(layer_data, in_channels, layer_data_shape)
 
@@ -287,6 +295,7 @@ parse_dict = {
     BatchNormNode: parse_batch_norm_node,
     ResNetNode: parse_resnet_node,
     VggNode: parse_vgg_node,
+    GoogleNetNode: parse_googlenet_node,
 }
 
 

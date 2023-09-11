@@ -32,7 +32,7 @@ SegmentationEncoderVersions = Literal[
 
 
 class ArchitectureNode(Node):
-    version: Union[SegmentationModels, ResNetVersion, VggVersions]
+    version: Optional[Union[SegmentationModels, ResNetVersion, VggVersions]]
     pretrained: PretrainedOptions
 
 
@@ -41,6 +41,10 @@ class ResNetNode(ArchitectureNode):
 
 
 class VggNode(ArchitectureNode):
+    pass
+
+
+class GoogleNetNode(ArchitectureNode):
     pass
 
 
@@ -145,7 +149,7 @@ Metric = Literal[
     "IOU",
 ]
 
-ClassifierMapping = {ResNetNode: "fc", VggNode: "classifier"}
+ClassifierMapping = {ResNetNode: "fc", GoogleNetNode: "fc", VggNode: "classifier"}
 
 
 class MetricNode(Node):
@@ -337,6 +341,14 @@ async def get_vgg_node(node: INode):
     )
 
 
+async def get_googlenet_node(node: INode):
+    logger.info(node.controls)
+    return GoogleNetNode(
+        id=node.id,
+        pretrained=node.controls[0].value,
+    )
+
+
 async def get_segmentation_node(node: INode):
     return SegmentationNode(
         id=node.id,
@@ -376,6 +388,7 @@ node_type_map = {
     NodeType.MetricNode: get_metric_node,
     NodeType.ResNetNode: get_resnet_node,
     NodeType.VggNode: get_vgg_node,
+    NodeType.GoogleNetNode: get_googlenet_node,
     NodeType.SegmentationNode: get_segmentation_node,
 }
 
