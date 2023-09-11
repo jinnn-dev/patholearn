@@ -13,7 +13,7 @@ export default defineConfig({
       template: {
         compilerOptions: {
           isCustomElement: (tag) =>
-            ['mjx-assistive-mml', 'math', 'mjx-container', 'mi', 'mo', 'mtext', 'mrow', 'mfrac'].includes(tag)
+            ['mjx-assistive-mml', 'math', 'mjx-container', 'mi', 'mo', 'mtext', 'mrow', 'mfrac', 'mn'].includes(tag)
         }
       }
     }),
