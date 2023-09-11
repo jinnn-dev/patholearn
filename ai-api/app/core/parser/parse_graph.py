@@ -100,6 +100,7 @@ class PoolingLayer(Node):
     kernel_size: tuple
     stride: tuple
     type: Literal["max", "average"]
+    padding: Literal[0, "same"]
 
 
 class DropoutNode(Node):
@@ -280,7 +281,6 @@ async def get_flatten_node(node: INode):
 
 
 async def get_pooling_node(node: INode):
-    # logger.debug(node.controls)
     return PoolingLayer(
         id=node.id,
         kernel_size=(
@@ -289,6 +289,7 @@ async def get_pooling_node(node: INode):
         ),
         stride=(node.controls[1].value["x"], node.controls[1].value["y"]),
         type=node.controls[2].value,
+        padding=0 if node.controls[3].value == "none" else node.controls[3].value,
     )
 
 

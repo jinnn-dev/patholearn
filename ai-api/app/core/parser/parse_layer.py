@@ -1,4 +1,5 @@
 from typing import List, Tuple
+from app.utils.logger import logger
 
 import torch
 import torchvision
@@ -70,25 +71,74 @@ class Concatenate(torch.nn.Module):
         return f"Concatenate({', '.join(module_strings)})"
 
 
+class MaxPool2dSame(torch.nn.MaxPool2d):
+    def calc_same_pad(self, i: int, k: int, s: int, d: int) -> int:
+        return max((math.ceil(i / s) - 1) * s + (k - 1) * d + 1 - i, 0)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        ih, iw = x.size()[-2:]
+
+        pad_h = self.calc_same_pad(
+            i=ih, k=self.kernel_size[0], s=self.stride[0], d=self.dilation
+        )
+        pad_w = self.calc_same_pad(
+            i=iw, k=self.kernel_size[1], s=self.stride[1], d=self.dilation
+        )
+
+        if pad_h > 0 or pad_w > 0:
+            x = torch.nn.functional.pad(
+                x, [pad_w // 2, pad_w - pad_w // 2, pad_h // 2, pad_h - pad_h // 2]
+            )
+        return torch.nn.functional.max_pool2d(
+            x,
+            self.kernel_size,
+            self.stride,
+            self.padding,
+            self.dilation,
+            self.ceil_mode,
+            self.return_indices,
+        )
+
+
+class AvgPool2dSame(torch.nn.AvgPool2d):
+    def calc_same_pad(self, i: int, k: int, s: int, d: int) -> int:
+        return max((math.ceil(i / s) - 1) * s + (k - 1) * d + 1 - i, 0)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        ih, iw = x.size()[-2:]
+
+        pad_h = self.calc_same_pad(
+            i=ih, k=self.kernel_size[0], s=self.stride[0], d=self.dilation[0]
+        )
+        pad_w = self.calc_same_pad(
+            i=iw, k=self.kernel_size[1], s=self.stride[1], d=self.dilation[1]
+        )
+
+        if pad_h > 0 or pad_w > 0:
+            x = torch.nn.functional.pad(
+                x, [pad_w // 2, pad_w - pad_w // 2, pad_h // 2, pad_h - pad_h // 2]
+            )
+        return torch.nn.functional.avg_pool2d(
+            x,
+            self.kernel_size,
+            self.stride,
+            self.padding,
+            self.ceil_mode,
+            self.count_include_pad,
+            self.divisor_override,
+        )
+
+
 def parse_conv2d_layer(
     layer_data: Conv2dLayer, in_channels: int, layer_data_shape: tuple
 ) -> Tuple[List[torch.nn.Module], int, Tuple]:
-    if layer_data.padding == "same":
-        layer = torch.nn.Conv2d(
-            in_channels=in_channels,
-            out_channels=layer_data.out_features,
-            kernel_size=layer_data.kernel_size,
-            stride=layer_data.stride,
-            padding="same",
-        )
-    else:
-        layer = torch.nn.Conv2d(
-            in_channels=in_channels,
-            out_channels=layer_data.out_features,
-            kernel_size=layer_data.kernel_size,
-            stride=layer_data.stride,
-            padding=0,
-        )
+    layer = torch.nn.Conv2d(
+        in_channels=in_channels,
+        out_channels=layer_data.out_features,
+        kernel_size=layer_data.kernel_size,
+        stride=layer_data.stride,
+        padding=layer_data.padding,
+    )
 
     layer_data_shape
 
@@ -120,13 +170,23 @@ def parse_pooling_layer(
     layer_data: PoolingLayer, in_channels: int, layer_data_shape: tuple
 ) -> Tuple[List[torch.nn.Module], int, Tuple]:
     if layer_data.type == "average":
-        layer = torch.nn.AvgPool2d(
-            kernel_size=layer_data.kernel_size, stride=layer_data.kernel_size
-        )
+        if layer_data.padding == "same":
+            layer = AvgPool2dSame(
+                kernel_size=layer_data.kernel_size, stride=layer_data.kernel_size
+            )
+        else:
+            layer = torch.nn.AvgPool2d(
+                kernel_size=layer_data.kernel_size, stride=layer_data.kernel_size
+            )
     else:
-        layer = torch.nn.MaxPool2d(
-            kernel_size=layer_data.kernel_size, stride=layer_data.stride
-        )
+        if layer_data.padding == "same":
+            layer = MaxPool2dSame(
+                kernel_size=layer_data.kernel_size, stride=layer_data.stride
+            )
+        else:
+            layer = torch.nn.MaxPool2d(
+                kernel_size=layer_data.kernel_size, stride=layer_data.stride
+            )
 
     return [layer], in_channels, get_output_shape(layer, layer_data_shape)
 
@@ -227,6 +287,12 @@ def get_torch_layer_string(layer: torch.nn.Module):
 
 
 def get_torch_prefix(layer: torch.nn.Module):
+    logger.info(f"Prefix: {layer}")
     return (
-        "" if isinstance(layer, Add) or isinstance(layer, Concatenate) else "torch.nn."
+        ""
+        if isinstance(layer, Add)
+        or isinstance(layer, Concatenate)
+        or isinstance(layer, MaxPool2dSame)
+        or isinstance(layer, AvgPool2dSame)
+        else "torch.nn."
     )

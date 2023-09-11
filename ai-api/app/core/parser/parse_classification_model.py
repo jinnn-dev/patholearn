@@ -27,6 +27,9 @@ from torchvision.models import ResNet
 def get_layer_string(
     layer: torch.nn.Module, node_data: Node = None, prefix: str = "torch.nn."
 ):
+    logger.info(f"Layer String:{prefix}, {layer}")
+    logger.info(layer)
+    logger.info(node_data)
     if isinstance(node_data, ArchitectureNode):
         return f"""torchvision.models.get_model(name="{node_data.version}", weights={None if node_data.pretrained == 'No'  else '"DEFAULT"'})"""
     return prefix + get_torch_layer_string(layer)
@@ -146,11 +149,10 @@ def parse_network(
                         path_layers, splitting_shape
                     )
                     logger.debug(f"New shape after concat: {shape}")
-                logger.info("HERE IS CONCAT")
                 current_in_channels = channels
                 current_shape = shape
                 layers.append(combined_layer)
-                prefix = get_torch_prefix(layer)
+                prefix = get_torch_prefix(combined_layer)
                 layer_strings.append(
                     get_layer_string(
                         combined_layer,
