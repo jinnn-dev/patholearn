@@ -19,35 +19,6 @@ from app.core.parser.parse_graph import (
 from app.schema.parser import ActivationFunctionModule
 
 
-class Conv2dSame(torch.nn.Conv2d):
-    def calc_same_pad(self, i: int, k: int, s: int, d: int) -> int:
-        return max((math.ceil(i / s) - 1) * s + (k - 1) * d + 1 - i, 0)
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        ih, iw = x.size()[-2:]
-
-        pad_h = self.calc_same_pad(
-            i=ih, k=self.kernel_size[0], s=self.stride[0], d=self.dilation[0]
-        )
-        pad_w = self.calc_same_pad(
-            i=iw, k=self.kernel_size[1], s=self.stride[1], d=self.dilation[1]
-        )
-
-        if pad_h > 0 or pad_w > 0:
-            x = torch.nn.functional.pad(
-                x, [pad_w // 2, pad_w - pad_w // 2, pad_h // 2, pad_h - pad_h // 2]
-            )
-        return torch.nn.functional.conv2d(
-            x,
-            self.weight,
-            self.bias,
-            self.stride,
-            self.padding,
-            self.dilation,
-            self.groups,
-        )
-
-
 class Add(torch.nn.Module):
     def __init__(self, *modules):
         super().__init__()
@@ -60,20 +31,15 @@ class Add(torch.nn.Module):
         module_strings = []
         for module in self.sum_modules:
             if isinstance(module, torch.nn.Sequential):
-                layers_str = ", ".join(
-                    (
-                        ""
-                        if isinstance(layer, Add)
-                        or isinstance(layer, Conv2dSame)
-                        or isinstance(layer, Concatenate)
-                        else "torch.nn."
-                    )
-                    + str(layer)
-                    for layer in module
-                )
+                layer_strings = []
+                for layer in module:
+                    prefix = get_torch_prefix(layer)
+                    layer_string = get_torch_layer_string(layer)
+                    layer_strings.append(prefix + layer_string)
+                layers_str = ", ".join(layer_strings)
                 module_str = f"torch.nn.Sequential({layers_str})"
             else:
-                module_str = str(module)
+                module_str = get_torch_layer_string(module)
             module_strings.append(module_str)
         return f"Add({', '.join(module_strings)})"
 
@@ -90,21 +56,17 @@ class Concatenate(torch.nn.Module):
         module_strings = []
         for module in self.concate_modules:
             if isinstance(module, torch.nn.Sequential):
-                layers_str = ", ".join(
-                    (
-                        ""
-                        if isinstance(layer, Add)
-                        or isinstance(layer, Concatenate)
-                        or isinstance(layer, Conv2dSame)
-                        else "torch.nn."
-                    )
-                    + str(layer)
-                    for layer in module
-                )
+                layer_strings = []
+                for layer in module:
+                    prefix = get_torch_prefix(layer)
+                    layer_string = get_torch_layer_string(layer)
+                    layer_strings.append(prefix + layer_string)
+                layers_str = ", ".join(layer_strings)
                 module_str = f"torch.nn.Sequential({layers_str})"
             else:
-                module_str = str(module)
+                module_str = get_torch_layer_string(module)
             module_strings.append(module_str)
+
         return f"Concatenate({', '.join(module_strings)})"
 
 
@@ -112,11 +74,12 @@ def parse_conv2d_layer(
     layer_data: Conv2dLayer, in_channels: int, layer_data_shape: tuple
 ) -> Tuple[List[torch.nn.Module], int, Tuple]:
     if layer_data.padding == "same":
-        layer = Conv2dSame(
+        layer = torch.nn.Conv2d(
             in_channels=in_channels,
             out_channels=layer_data.out_features,
             kernel_size=layer_data.kernel_size,
             stride=layer_data.stride,
+            padding="same",
         )
     else:
         layer = torch.nn.Conv2d(
@@ -124,6 +87,7 @@ def parse_conv2d_layer(
             out_channels=layer_data.out_features,
             kernel_size=layer_data.kernel_size,
             stride=layer_data.stride,
+            padding=0,
         )
 
     layer_data_shape
@@ -254,3 +218,15 @@ def parse_layer(
     if type(layer_data) not in parse_dict:
         return None, in_channels, layer_data_shape
     return parse_dict[type(layer_data)](layer_data, in_channels, layer_data_shape)
+
+
+def get_torch_layer_string(layer: torch.nn.Module):
+    if isinstance(layer, torch.nn.Conv2d):
+        return f"""Conv2d({layer.in_channels}, {layer.out_channels}, kernel_size={layer.kernel_size}, stride={layer.stride}, padding="{layer.padding}")"""
+    return str(layer)
+
+
+def get_torch_prefix(layer: torch.nn.Module):
+    return (
+        "" if isinstance(layer, Add) or isinstance(layer, Concatenate) else "torch.nn."
+    )

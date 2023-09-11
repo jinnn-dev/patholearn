@@ -1,8 +1,9 @@
 from typing import List, Optional, Tuple, Union
 from app.core.parser.parse_layer import (
     Add,
-    Conv2dSame,
     Concatenate,
+    get_torch_layer_string,
+    get_torch_prefix,
     parse_add_layer,
     parse_concatenate_layer,
     parse_layer,
@@ -28,7 +29,7 @@ def get_layer_string(
 ):
     if isinstance(node_data, ArchitectureNode):
         return f"""torchvision.models.get_model(name="{node_data.version}", weights={None if node_data.pretrained == 'No'  else '"DEFAULT"'})"""
-    return prefix + str(layer)
+    return prefix + get_torch_layer_string(layer)
 
 
 def get_classification_layer(
@@ -37,11 +38,9 @@ def get_classification_layer(
     classification_layer = torch.nn.Linear(
         in_features=in_channels, out_features=classes
     )
-    # activation_function = torch.nn.Softmax(dim=1)
+
     result.append(classification_layer)
-    # result.append(activation_function)
     result_strings.append(get_layer_string(classification_layer))
-    # result_strings.append(get_layer_string(activation_function))
 
 
 def get_classification_model(
@@ -102,13 +101,7 @@ def parse_network(
                 if splitting_layer_data is not None:
                     layers += splitting_layer_data
                     for layer in splitting_layer_data:
-                        prefix = (
-                            ""
-                            if isinstance(layer, Conv2dSame)
-                            or isinstance(layer, Add)
-                            or isinstance(layer, Concatenate)
-                            else "torch.nn."
-                        )
+                        prefix = get_torch_prefix(layer)
                         layer_strings.append(
                             get_layer_string(layer, node_data=node_data, prefix=prefix)
                         )
@@ -129,14 +122,7 @@ def parse_network(
                     path_layers.append(torch.nn.Sequential(*path_layer))
                     seq_string = "torch.nn.Sequential(\n"
                     for layer in path_layer:
-                        if (
-                            isinstance(layer, Add)
-                            or isinstance(layer, Conv2dSame)
-                            or isinstance(layer, Concatenate)
-                        ):
-                            prefix = ""
-                        else:
-                            prefix = "torch.nn."
+                        prefix = get_torch_prefix(layer)
                         seq_string += (
                             "    "
                             + get_layer_string(
@@ -160,17 +146,11 @@ def parse_network(
                         path_layers, splitting_shape
                     )
                     logger.debug(f"New shape after concat: {shape}")
-
+                logger.info("HERE IS CONCAT")
                 current_in_channels = channels
                 current_shape = shape
                 layers.append(combined_layer)
-                prefix = (
-                    ""
-                    if isinstance(combined_layer, Add)
-                    or isinstance(combined_layer, Concatenate)
-                    or isinstance(combined_layer, Conv2dSame)
-                    else "torch.nn."
-                )
+                prefix = get_torch_prefix(layer)
                 layer_strings.append(
                     get_layer_string(
                         combined_layer,
@@ -191,7 +171,7 @@ def parse_network(
             if layer_data is not None:
                 layers += layer_data
                 for layer in layer_data:
-                    prefix = "" if isinstance(layer, Conv2dSame) else "torch.nn."
+                    prefix = get_torch_prefix(layer)
                     layer_strings.append(
                         get_layer_string(layer, node_data=node_data, prefix=prefix)
                     )
