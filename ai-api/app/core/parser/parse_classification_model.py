@@ -122,7 +122,8 @@ def parse_network(
                     ) = parse_network(
                         path, graph, splitting_in_channels, splitting_shape
                     )
-                    path_layers.append(torch.nn.Sequential(*path_layer))
+                    if len(path_layer) > 0:
+                        path_layers.append(torch.nn.Sequential(*path_layer))
                     seq_string = "torch.nn.Sequential(\n"
                     for layer in path_layer:
                         prefix = get_torch_prefix(layer)
