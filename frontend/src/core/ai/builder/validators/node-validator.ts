@@ -4,6 +4,7 @@ import { Schemes } from '../use-editor';
 import { getNodeByType, nodeTypeExists } from '../editor-utils';
 import { addNotification } from '../../../../utils/notification-state';
 import { NodeValidation, ValidationItems } from './validation-settings';
+import { ArchitectureNode } from '../nodes/architectures/architecture-node';
 
 export function nodeCanBeCreated(node: NodeClassesType, editor: NodeEditor<Schemes>) {
   const validationElement = NodeValidation[node.type];
@@ -14,17 +15,21 @@ export function nodeCanBeCreated(node: NodeClassesType, editor: NodeEditor<Schem
 }
 
 function checkNodeIsUnique(node: NodeClassesType, validationElement: ValidationItems, editor: NodeEditor<Schemes>) {
-  let nodeExits = nodeTypeExists(node.type, editor);
-  if (node.type === 'ResNetNode' || node.type === 'SegmentationNode') {
-    const resnetExists = nodeTypeExists('ResNetNode', editor);
-    const segmentationExists = nodeTypeExists('SegmentationNode', editor);
-    nodeExits = resnetExists || segmentationExists;
+  let nodeExists = true;
+  let nodeLabel = node.label;
+  if (node instanceof ArchitectureNode) {
+    const architectureNodeExists =
+      editor.getNodes().find((curNode) => curNode instanceof ArchitectureNode) !== undefined;
+    nodeExists = architectureNodeExists;
+    nodeLabel = 'Architecture';
+  } else {
+    nodeExists = nodeTypeExists(node.type, editor);
   }
 
-  if (validationElement.unique && nodeExits) {
+  if (validationElement.unique && nodeExists) {
     addNotification({
       header: 'Not possible',
-      detail: `Only one ${node.label} node can exist!`,
+      detail: `Only one ${nodeLabel} node can exist!`,
       level: 'warning',
       showDate: false,
       timeout: 10000

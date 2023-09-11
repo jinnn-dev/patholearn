@@ -2,13 +2,13 @@ import { ClassicPreset } from 'rete';
 import { INode } from '../../serializable';
 import { Socket } from '../../sockets/socket';
 import { DropdownControl } from '../../controls';
-import { ResnetVersions } from './versions';
+import { VggVersions } from './versions';
 import { ArchitectureNode } from './architecture-node';
 
-export interface IResnetNode extends INode {}
+export interface IVggNode extends INode {}
 
-export class ResNetNode extends ArchitectureNode<
-  IResnetNode,
+export class VggNode extends ArchitectureNode<
+  IVggNode,
   { dataset: Socket },
   { fc: Socket },
   { version: DropdownControl; pretrained: DropdownControl }
@@ -16,11 +16,11 @@ export class ResNetNode extends ArchitectureNode<
   width = 180;
 
   constructor() {
-    super('ResNet', 'ResNetNode', { input: '2D', output: 'Linear' });
+    super('VGG', 'VggNode', { input: '2D', output: 'Linear' });
   }
 
-  public duplicate(): ResNetNode {
-    const node = new ResNetNode();
+  public duplicate(): VggNode {
+    const node = new VggNode();
     for (const [key, control] of Object.entries(this.controls)) {
       // @ts-ignore
       node.controls[key] = control.duplicate();
@@ -34,13 +34,7 @@ export class ResNetNode extends ArchitectureNode<
   public addElements(...value: any[]): void {
     this.addInput('dataset', new ClassicPreset.Input(this.sockets.input!, 'dataset'));
     this.addOutput('fc', new ClassicPreset.Output(this.sockets.output!, 'fc'));
-    this.addControl(
-      'version',
-      new DropdownControl(ResnetVersions, 'Version', 'version', value[0] || ResnetVersions[0])
-    );
-    this.addControl(
-      'pretrained',
-      new DropdownControl(['General', 'Medical', 'No'], 'Pretrained', 'pretrained', 'General')
-    );
+    this.addControl('version', new DropdownControl(VggVersions, 'Version', 'version', value[0] || VggVersions[0]));
+    this.addControl('pretrained', new DropdownControl(['General', 'No'], 'Pretrained', 'pretrained', 'General'));
   }
 }

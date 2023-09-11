@@ -5,9 +5,10 @@ import { ConnectionMatrix } from '../sockets/socket';
 import { DatasetNode } from '../nodes';
 import { Dataset } from 'model/ai/datasets/dataset';
 import { NodeValidation } from './validation-settings';
+import { ArchitectureNode } from '../nodes/architectures/architecture-node';
 
 export function nodesCanConnect(source: NodeClassesType, target: NodeClassesType): boolean {
-  if (target.type === 'ResNetNode' && source.type !== 'DatasetNode') {
+  if (target instanceof ArchitectureNode && source.type !== 'DatasetNode') {
     newSocketNotification(`Only a dataset node can be connected with a ${target.label} node`);
     return false;
   }

@@ -70,7 +70,7 @@ export function nodeTypeExists(nodeType: NodeType, editor: NodeEditor<Schemes>) 
 }
 
 export function getNodeByType(nodeType: NodeType, editor: NodeEditor<Schemes>): NodeClassesType {
-  return editor.getNodes().find((node) => node.type === nodeType);
+  return editor.getNodes().find((node) => node.type === nodeType) as NodeClassesType;
 }
 
 export function getSelectedDataset(editor: NodeEditor<Schemes>): Dataset {

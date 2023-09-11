@@ -7,8 +7,8 @@ import { LockStatus } from '../sync';
 import { Socket, SocketType } from '../sockets/socket';
 import { getSocket } from '../factories/socket-factory';
 
-type InputsMap = { [key in string]: Socket };
-type OutputsMap = { [key in string]: Socket };
+export type InputsMap = { [key in string]: Socket };
+export type OutputsMap = { [key in string]: Socket };
 
 interface SocketConfig {
   input?: SocketType;

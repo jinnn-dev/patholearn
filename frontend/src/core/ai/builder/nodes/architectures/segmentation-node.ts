@@ -2,12 +2,12 @@ import { ClassicPreset } from 'rete';
 import { DropdownControl } from '../../controls';
 import { INode } from '../../serializable';
 import { Socket } from '../../sockets/socket';
-import { Node } from '../node';
 import { SegmentationEcoderVersions, SegmentationModelVersions } from './versions';
+import { ArchitectureNode } from './architecture-node';
 
 export interface ISegmentationNode extends INode {}
 
-export class SegmentationNode extends Node<
+export class SegmentationNode extends ArchitectureNode<
   ISegmentationNode,
   { dataset: Socket },
   { output: Socket },

@@ -85,7 +85,13 @@ export function useEditor() {
             ['Pooling', () => createNodeInstance('PoolingNode') as NodeProps]
           ]
         ],
-        ['Architecture', [['ResNet', () => createNodeInstance('ResNetNode') as NodeProps]]],
+        [
+          'Architecture',
+          [
+            ['ResNet', () => createNodeInstance('ResNetNode') as NodeProps],
+            ['Vgg', () => createNodeInstance('VggNode') as NodeProps]
+          ]
+        ],
         [
           'Transform',
           [
