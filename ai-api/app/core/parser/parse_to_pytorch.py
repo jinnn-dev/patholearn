@@ -52,7 +52,7 @@ class PytorchModel(BaseModel):
         return format_string(line_break.join(elements))
 
 
-class CustomDataset:
+class ClassificationDataset:
     def __init__(self, dataset: DatasetNode) -> None:
         with open(
             f"/app/core/parser/templates/{dataset.dataset_type}/dataset.txt", "r"
@@ -129,7 +129,7 @@ class ClassificationModel:
 
 
 def get_dataset_module(dataset_node: DatasetNode, output_node: OutputNode):
-    dataset = CustomDataset(dataset=dataset_node)
+    dataset = ClassificationDataset(dataset=dataset_node)
     data_module = DatasetModule(dataset=dataset_node)
     data_module_instance = data_module.get_instance(batch_size=output_node.batch_size)
 

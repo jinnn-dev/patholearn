@@ -1,5 +1,5 @@
 # Classification dataset
-class CustomDataset(Dataset):
+class ClassificationDataset(Dataset):
     def __init__(self):
         dataset = ClearmlDataset.get(dataset_id="${dataset_id}")
         dataset_path = dataset.get_local_copy()
