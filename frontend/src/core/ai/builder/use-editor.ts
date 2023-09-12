@@ -90,7 +90,8 @@ export function useEditor() {
           [
             ['ResNet', () => createNodeInstance('ResNetNode') as NodeProps],
             ['Vgg', () => createNodeInstance('VggNode') as NodeProps],
-            ['GoogLeNet', () => createNodeInstance('GoogleNetNode') as NodeProps]
+            ['GoogLeNet', () => createNodeInstance('GoogleNetNode') as NodeProps],
+            ['Alexnet', () => createNodeInstance('AlexnetNode') as NodeProps]
           ]
         ],
         [
