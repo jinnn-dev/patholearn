@@ -72,11 +72,29 @@ class AvgPool2dSame(torch.nn.AvgPool2d):
             self.divisor_override,
         )
 
+# Required for Adaptive Pooling support in ONNX in pretrained models
+# From: https://github.com/pytorch/pytorch/issues/42653#issuecomment-1168816422
+class AdaptiveAvgPool2dCustom(torch.nn.Module):
+    def __init__(self, output_size):
+        super(AdaptiveAvgPool2dCustom, self).__init__()
+        self.output_size = np.array(output_size)
+
+    def forward(self, x: torch.Tensor):
+        stride_size = np.floor(np.array(x.shape[-2:]) / self.output_size).astype(
+            np.int32
+        )
+        kernel_size = np.array(x.shape[-2:]) - (self.output_size - 1) * stride_size
+        avg = torch.nn.AvgPool2d(
+            kernel_size=list(kernel_size), stride=list(stride_size)
+        )
+        x = avg(x)
+        return x
 
 class ClassificationModel(torch.nn.Module):
     def __init__(self):
         super().__init__()
         self.model = $model
+        $model_replace
         $weights_download
         $weights_load
         $weights_replace

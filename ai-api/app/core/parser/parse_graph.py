@@ -48,6 +48,10 @@ class GoogleNetNode(ArchitectureNode):
     pass
 
 
+class AlexnetNode(ArchitectureNode):
+    pass
+
+
 class SegmentationNode(ArchitectureNode):
     encoderVersion: SegmentationEncoderVersions
 
@@ -149,7 +153,12 @@ Metric = Literal[
     "IOU",
 ]
 
-ClassifierMapping = {ResNetNode: "fc", GoogleNetNode: "fc", VggNode: "classifier"}
+ClassifierMapping = {
+    ResNetNode: "fc",
+    GoogleNetNode: "fc",
+    AlexnetNode: "classifier",
+    VggNode: "classifier",
+}
 
 
 class MetricNode(Node):
@@ -342,8 +351,14 @@ async def get_vgg_node(node: INode):
 
 
 async def get_googlenet_node(node: INode):
-    logger.info(node.controls)
     return GoogleNetNode(
+        id=node.id,
+        pretrained=node.controls[0].value,
+    )
+
+
+async def get_alexnet_node(node: INode):
+    return AlexnetNode(
         id=node.id,
         pretrained=node.controls[0].value,
     )
@@ -389,6 +404,7 @@ node_type_map = {
     NodeType.ResNetNode: get_resnet_node,
     NodeType.VggNode: get_vgg_node,
     NodeType.GoogleNetNode: get_googlenet_node,
+    NodeType.AlexnetNode: get_alexnet_node,
     NodeType.SegmentationNode: get_segmentation_node,
 }
 

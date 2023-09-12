@@ -117,6 +117,7 @@ class ClassificationModel:
                     "weights_replace": "self.model.load_state_dict(model_weights, strict=False)"
                     if architecture_node.pretrained == "Medical"
                     else "",
+                    "model_replace": "self.model.avgpool = AdaptiveAvgPool2dCustom(output_size=self.model.avgpool.output_size)",
                     "modelfc": f"self.model.{ClassifierMapping[type(architecture_node)]} = torch.nn.Sequential("
                     + ",\n".join(layers[1:])
                     + ")",

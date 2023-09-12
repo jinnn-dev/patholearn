@@ -28,8 +28,7 @@ def get_layer_string(
     layer: torch.nn.Module, node_data: Node = None, prefix: str = "torch.nn."
 ):
     if isinstance(node_data, ArchitectureNode):
-        version = node_data.version if node_data.version != None else "googlenet"
-        return f"""torchvision.models.get_model(name="{version}", weights={None if node_data.pretrained == 'No'  else '"DEFAULT"'})"""
+        return f"""torchvision.models.get_model(name="{node_data.version}", weights={None if node_data.pretrained == 'No'  else '"DEFAULT"'})"""
     return prefix + get_torch_layer_string(layer)
 
 

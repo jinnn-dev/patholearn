@@ -23,6 +23,7 @@ class NodeType(Enum):
     MetricNode = "MetricNode"
     VggNode = "VggNode"
     GoogleNetNode = "GoogleNetNode"
+    AlexnetNode = "AlexnetNode"
     ResNetNode = "ResNetNode"
     SegmentationNode = "SegmentationNode"
 

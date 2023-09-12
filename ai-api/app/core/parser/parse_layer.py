@@ -10,6 +10,7 @@ from operator import mul
 
 from app.core.parser.parse_graph import (
     ActivationFunction,
+    AlexnetNode,
     ArchitectureNode,
     BatchNormNode,
     Conv2dLayer,
@@ -134,6 +135,27 @@ class AvgPool2dSame(torch.nn.AvgPool2d):
         )
 
 
+# From: https://github.com/pytorch/pytorch/issues/42653#issuecomment-1168816422
+class AdaptiveAvgPool2dCustom(torch.nn.Module):
+    def __init__(self, output_size):
+        super(AdaptiveAvgPool2dCustom, self).__init__()
+        self.output_size = np.array(output_size)
+
+    def forward(self, x: torch.Tensor):
+        stride_size = np.floor(np.array(x.shape[-2:]) / self.output_size).astype(
+            np.int32
+        )
+        kernel_size = np.array(x.shape[-2:]) - (self.output_size - 1) * stride_size
+        avg = torch.nn.AvgPool2d(
+            kernel_size=list(kernel_size), stride=list(stride_size)
+        )
+        x = avg(x)
+        return x
+
+    def __str__(self) -> str:
+        return f"AdaptiveAvgPool2dCustom(output_size=({self.output_size[0]}, {self.output_size[1]}))"
+
+
 def parse_conv2d_layer(
     layer_data: Conv2dLayer, in_channels: int, layer_data_shape: tuple
 ) -> Tuple[List[torch.nn.Module], int, Tuple]:
@@ -231,9 +253,15 @@ def parse_architecture_node(
         weights=None if layer_data.pretrained == "No" else "DEFAULT",
     )
     modules = list(pretrained_layer.children())[:-1]
+    last_layer = modules[-1]
+    if isinstance(last_layer, torch.nn.AdaptiveAvgPool2d):
+        new_last_layer = AdaptiveAvgPool2dCustom(last_layer.output_size)
+        modules[-1] = new_last_layer
+        pretrained_layer.avgpool = AdaptiveAvgPool2dCustom(last_layer.output_size)
+    logger.info(modules)
     layer = torch.nn.Sequential(*modules, torch.nn.Flatten(start_dim=1))
     output_shape = get_output_shape(layer, layer_data_shape)
-
+    logger.info(pretrained_layer)
     return [pretrained_layer], output_shape[1], output_shape
 
 
@@ -252,6 +280,14 @@ def parse_vgg_node(
 def parse_googlenet_node(
     layer_data: GoogleNetNode, in_channels: int, layer_data_shape: tuple
 ) -> Tuple[List[torch.nn.Module], int, Tuple]:
+    layer_data.version = "googlenet"
+    return parse_architecture_node(layer_data, in_channels, layer_data_shape)
+
+
+def parse_alexnet_node(
+    layer_data: AlexnetNode, in_channels: int, layer_data_shape: tuple
+) -> Tuple[List[torch.nn.Module], int, Tuple]:
+    layer_data.version = "alexnet"
     return parse_architecture_node(layer_data, in_channels, layer_data_shape)
 
 
@@ -296,6 +332,7 @@ parse_dict = {
     ResNetNode: parse_resnet_node,
     VggNode: parse_vgg_node,
     GoogleNetNode: parse_googlenet_node,
+    AlexnetNode: parse_alexnet_node,
 }
 
 
