@@ -14,3 +14,35 @@ The kernel has a size of $3\times3$ pixels that slides over the image. For each 
 The **stride** values define how many pixels the kernel should move with each step in the vertical and horizontal direction on the image.
 
 The shown example added additional zero pixels around the image. This is called **padding**. Padding is used to ensure that the output dimension of the image is the same as the input image. If no padding is added the output image can be smaller, as always the center of the kernel is used and the border pixels of the input image are never in the center
+
+---
+
+## Node Parameters
+
+### `Filters`{lang=java}
+
+Defines how many kernels (filters) should be used simultaneously.
+
+### `Kernel`{lang=java}
+
+Defines the size of each kernel. Normally, only symmetric kernels are used, e.g. $3 \times 3$ or $5 \times 5$.
+
+### `Stride`{lang=java}
+
+Defines how many pixels the kernel should in each step for every direction. Normally, these values are equal in both directions.
+
+### `Padding`{lang=java}
+
+Can either be `None`{lang=java}, where no padding is used and the output image can have different dimensions as the input image, or `Same`{lang=java}, where the input and output image dimensions are the same.
+
+### `Activation`{lang=java}
+
+The activation function is applied after the convolution operation. Generally `ReLU`{lang=java} is the best fitting function.
+
+---
+
+**Additional information:**
+
+- https://en.wikipedia.org/wiki/Convolutional_neural_network
+- https://en.wikipedia.org/wiki/Convolution
+- https://pytorch.org/docs/stable/generated/torch.nn.Conv2d.html
