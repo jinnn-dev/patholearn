@@ -1,7 +1,9 @@
 from typing import List, Optional, Tuple, Union
 from app.core.parser.parse_layer import (
     Add,
-    Conv2dSame,
+    Concatenate,
+    get_torch_layer_string,
+    get_torch_prefix,
     parse_add_layer,
     parse_concatenate_layer,
     parse_layer,
@@ -27,8 +29,7 @@ def get_layer_string(
 ):
     if isinstance(node_data, ArchitectureNode):
         return f"""torchvision.models.get_model(name="{node_data.version}", weights={None if node_data.pretrained == 'No'  else '"DEFAULT"'})"""
-
-    return prefix + str(layer)
+    return prefix + get_torch_layer_string(layer)
 
 
 def get_classification_layer(
@@ -37,11 +38,9 @@ def get_classification_layer(
     classification_layer = torch.nn.Linear(
         in_features=in_channels, out_features=classes
     )
-    # activation_function = torch.nn.Softmax(dim=1)
+
     result.append(classification_layer)
-    # result.append(activation_function)
     result_strings.append(get_layer_string(classification_layer))
-    # result_strings.append(get_layer_string(activation_function))
 
 
 def get_classification_model(
@@ -59,14 +58,6 @@ def get_classification_model(
     )
 
     if architecture_node is not None:
-        # result = parse_layer(
-        #     architecture_node, dataset_node.channels, layer_data_shape=input_data_shape
-        # )[0][0]
-
-        # modules = list(result.children())[:-1]
-        # model = torch.nn.Sequential(*modules, torch.nn.Flatten(start_dim=1, end_dim=-1))
-        # output_shape = get_output_shape(model, input_data_shape)
-        # logger.info(output_shape)
         result, result_strings, in_channels, layer_data = parse_network(
             path, graph, dataset_node.channels, layer_data_shape=input_data_shape
         )
@@ -74,10 +65,10 @@ def get_classification_model(
             in_channels, dataset_node.classes, result, result_strings
         )
         return torch.nn.Sequential(*result), result_strings
-
     result, result_strings, in_channels, layer_data = parse_network(
         path, graph, dataset_node.channels, layer_data_shape=input_data_shape
     )
+
     get_classification_layer(in_channels, dataset_node.classes, result, result_strings)
 
     return torch.nn.Sequential(*result), result_strings
@@ -102,8 +93,10 @@ def parse_network(
                 if splitting_layer_data is not None:
                     layers += splitting_layer_data
                     for layer in splitting_layer_data:
-                        prefix = "" if isinstance(layer, Conv2dSame) else "torch.nn."
-                        layer_strings.append(get_layer_string(layer, node_data, prefix))
+                        prefix = get_torch_prefix(layer)
+                        layer_strings.append(
+                            get_layer_string(layer, node_data=node_data, prefix=prefix)
+                        )
 
                 path_layers = []
                 combined_in_channels = 0
@@ -118,16 +111,16 @@ def parse_network(
                     ) = parse_network(
                         path, graph, splitting_in_channels, splitting_shape
                     )
-                    path_layers.append(torch.nn.Sequential(*path_layer))
+                    if len(path_layer) > 0:
+                        path_layers.append(torch.nn.Sequential(*path_layer))
                     seq_string = "torch.nn.Sequential(\n"
                     for layer in path_layer:
-                        if isinstance(layer, Add) or isinstance(layer, Conv2dSame):
-                            prefix = ""
-                        else:
-                            prefix = "torch.nn."
+                        prefix = get_torch_prefix(layer)
                         seq_string += (
                             "    "
-                            + get_layer_string(layer, node_data, prefix=prefix)
+                            + get_layer_string(
+                                layer, node_data=node_data, prefix=prefix
+                            )
                             + ",\n"
                         )
                     seq_string += ")"
@@ -146,19 +139,15 @@ def parse_network(
                         path_layers, splitting_shape
                     )
                     logger.debug(f"New shape after concat: {shape}")
-
                 current_in_channels = channels
                 current_shape = shape
                 layers.append(combined_layer)
-
+                prefix = get_torch_prefix(combined_layer)
                 layer_strings.append(
                     get_layer_string(
                         combined_layer,
-                        node_data,
-                        prefix=""
-                        if isinstance(combined_layer, Add)
-                        or isinstance(combined_layer, Conv2dSame)
-                        else "torch.nn",
+                        node_data=node_data,
+                        prefix=prefix,
                     )
                 )
                 # current_in_channels = combined_in_channels
@@ -174,7 +163,9 @@ def parse_network(
             if layer_data is not None:
                 layers += layer_data
                 for layer in layer_data:
-                    prefix = "" if isinstance(layer, Conv2dSame) else "torch.nn."
-                    layer_strings.append(get_layer_string(layer, node_data, prefix))
+                    prefix = get_torch_prefix(layer)
+                    layer_strings.append(
+                        get_layer_string(layer, node_data=node_data, prefix=prefix)
+                    )
 
     return layers, layer_strings, current_in_channels, current_shape

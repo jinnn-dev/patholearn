@@ -44,7 +44,7 @@ const createTask = async () => {
 <template>
   <div class="flex justify-end items-center">
     <div>
-      <primary-button bg-color="bg-gray-500" name="Neues Experiment" @click="openDialog"></primary-button>
+      <primary-button bg-color="bg-gray-500" name="New experiment" @click="openDialog"></primary-button>
     </div>
   </div>
 
@@ -53,20 +53,15 @@ const createTask = async () => {
     <input-field
       v-model:model-value="createTaskData.name"
       label="Name"
-      tip="Name der Aufgabe"
+      tip="Name of the experiment"
       :required="true"
     ></input-field>
-    <input-area
-      v-model:model-value="createTaskData.description"
-      class="h-64"
-      label="Beschreibung"
-      tip="Beschreibung der Aufgabe"
-    ></input-area>
+    <input-area v-model:model-value="createTaskData.description" class="h-64" label="Description"></input-area>
     <confirm-buttons
       class="mt-4"
       :loading="loading"
-      confirm-text="Speichern"
-      reject-text="Abbrechen"
+      confirm-text="Save"
+      reject-text="Abort"
       @reject="showCreate = false"
       @confirm="createTask"
     ></confirm-buttons>

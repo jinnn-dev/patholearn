@@ -13,6 +13,7 @@ import networkx as nx
 from app.core.parser.parse_graph import (
     AddNode,
     ArchitectureNode,
+    ClassifierMapping,
     ConcatenateNode,
     DatasetNode,
     MetricNode,
@@ -52,7 +53,7 @@ class PytorchModel(BaseModel):
         return format_string(line_break.join(elements))
 
 
-class CustomDataset:
+class ClassificationDataset:
     def __init__(self, dataset: DatasetNode) -> None:
         with open(
             f"/app/core/parser/templates/{dataset.dataset_type}/dataset.txt", "r"
@@ -93,7 +94,6 @@ class ClassificationModel:
         architecture_node: Optional[ArchitectureNode],
     ) -> None:
         with open("/app/core/parser/templates/classification_model.txt", "r") as f:
-            logger.info(architecture_node)
             src = Template(f.read())
             if architecture_node is None:
                 combined_layers = ",\n".join(layers)
@@ -117,7 +117,8 @@ class ClassificationModel:
                     "weights_replace": "self.model.load_state_dict(model_weights, strict=False)"
                     if architecture_node.pretrained == "Medical"
                     else "",
-                    "modelfc": "self.model.fc = torch.nn.Sequential("
+                    "model_replace": "self.model.avgpool = AdaptiveAvgPool2dCustom(output_size=self.model.avgpool.output_size)",
+                    "modelfc": f"self.model.{ClassifierMapping[type(architecture_node)]} = torch.nn.Sequential("
                     + ",\n".join(layers[1:])
                     + ")",
                 }
@@ -129,7 +130,7 @@ class ClassificationModel:
 
 
 def get_dataset_module(dataset_node: DatasetNode, output_node: OutputNode):
-    dataset = CustomDataset(dataset=dataset_node)
+    dataset = ClassificationDataset(dataset=dataset_node)
     data_module = DatasetModule(dataset=dataset_node)
     data_module_instance = data_module.get_instance(batch_size=output_node.batch_size)
 

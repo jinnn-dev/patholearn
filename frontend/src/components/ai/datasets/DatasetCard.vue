@@ -6,6 +6,7 @@ import { AiService } from '../../../services/ai.service';
 import Icon from '../../general/Icon.vue';
 import { formatBytes } from '../../../utils/format-bytes';
 import DatasetStatus from './DatasetStatus.vue';
+import DatasetType from './DatasetType.vue';
 import DatasetMetadata from './DatasetMetadata.vue';
 
 const props = defineProps({
@@ -22,11 +23,18 @@ const props = defineProps({
       <div class="text-xl text-ellipsis overflow-hidden">{{ dataset.name }}</div>
       <router-link :to="`/ai/datasets/${dataset.id}`"><icon name="arrow-right"></icon></router-link>
     </div>
+
     <div class="text-sm text-gray-200 mb-2">{{ new Date(dataset.created_at).toLocaleDateString() }}</div>
+    <div></div>
     <div class="flex flex-col gap-4 items-center">
-      <dataset-status :status="dataset.status"></dataset-status>
-      <dataset-metadata :dataset="dataset"></dataset-metadata>
+      <!-- <dataset-metadata :dataset="dataset"></dataset-metadata> -->
     </div>
+    <div class="flex items-center justify-start gap-3 mb-1">
+      <dataset-type :type="dataset.dataset_type" size="small"></dataset-type>
+
+      <dataset-status class="flex-shrink-0" size="small" :status="dataset.status"></dataset-status>
+    </div>
+
     <!-- <pre class="text-xs">{{ JSON.stringify(dataset, null, 2) }}</pre>
 
     <div>Detailed Task</div>

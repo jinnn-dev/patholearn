@@ -6,11 +6,11 @@ class DataModule(pl.LightningDataModule):
 
     def prepare_data(self):
         # download
-        CustomDataset()
+        ClassificationDataset()
 
     def setup(self, stage: str):
         # Assign train/val datasets for use in dataloaders
-        self.full_dataset = CustomDataset()
+        self.full_dataset = ClassificationDataset()
         self.train_dataset, self.val_dataset, self.test_dataset = random_split(self.full_dataset, [0.7, 0.1, 0.2])
 
     def train_dataloader(self):

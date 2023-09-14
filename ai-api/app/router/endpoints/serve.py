@@ -19,9 +19,11 @@ router = APIRouter()
 async def get_prediction(task_id: str, version_id: str, image: UploadFile):
     _, version = await get_task_with_version(task_id, version_id)
     dataset = await get_dataset(dataset_id=version.dataset_id)
-
+    image_data = image.file.read()
     propabilities = get_prediction_to_version(
-        version=version, image_data=image.file.read(), dataset=dataset
+        version=version,
+        image_data=[image_data],
+        dataset=dataset,
     )
 
     if dataset.dataset_type == "classification":
@@ -30,8 +32,8 @@ async def get_prediction(task_id: str, version_id: str, image: UploadFile):
         }
 
         data = {
-            "propabilities": propabilities,
-            "max_index": propabilities.index(max(propabilities)),
+            "propabilities": propabilities[0],
+            "max_index": propabilities[0].index(max(propabilities[0])),
             "dataset": dataset.metadata,
         }
     else:
@@ -77,7 +79,7 @@ async def get_serving(task_id: str, version_id: str):
         im_bytes = BytesIO()
         im.save(im_bytes, "PNG")
         get_prediction_to_version(
-            version=version, image_data=im_bytes.getvalue(), dataset=dataset
+            version=version, image_data=[im_bytes.getvalue()], dataset=dataset
         )
         return True
 

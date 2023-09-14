@@ -10,6 +10,7 @@ import { appState, wsIsConnected } from './utils/app.state';
 import { connect, initWebsocket, registerConnectionEvents, wsClient } from './services/ws.service';
 import { addNotification } from './utils/notification-state';
 import { builderState } from './core/ai/builder/state';
+import { DatasetStatus } from './model/ai/datasets/dataset';
 
 const route = useRoute();
 
@@ -51,7 +52,7 @@ watch(
     if (route.path !== '/login' && route.path !== '/register') {
       if (initWebsocket()) {
         registerConnectionEvents();
-        connect()
+        connect();
       }
       if (!wsIsConnected.value) {
         connect();
@@ -73,6 +74,21 @@ watch(
           timeout: 2000
         });
       });
+
+      wsClient.value
+        .subscribe('dataset')
+        .bind(
+          'status-changed',
+          (data: { id: string; name: string; new_status: DatasetStatus; old_status: DatasetStatus }) => {
+            addNotification({
+              header: `Status of the ${data.name} dataset changed`,
+              detail: `The status changed from ${data.old_status} to ${data.new_status}`,
+              level: data.new_status === 'failed' ? 'error' : data.new_status === 'completed' ? 'sucess' : 'info',
+              showDate: true,
+              timeout: 5000
+            });
+          }
+        );
     }
   }
 );

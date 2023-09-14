@@ -14,7 +14,8 @@ class Concatenate(torch.nn.Module):
     def forward(self, x):
         return torch.cat([module(x) for module in self.concate_modules], dim=1)
 
-class Conv2dSame(torch.nn.Conv2d):
+
+class MaxPool2dSame(torch.nn.MaxPool2d):
     def calc_same_pad(self, i: int, k: int, s: int, d: int) -> int:
         return max((math.ceil(i / s) - 1) * s + (k - 1) * d + 1 - i, 0)
 
@@ -22,30 +23,78 @@ class Conv2dSame(torch.nn.Conv2d):
         ih, iw = x.size()[-2:]
 
         pad_h = self.calc_same_pad(
-            i=ih, k=self.kernel_size[0], s=self.stride[0], d=self.dilation[0]
+            i=ih, k=self.kernel_size[0], s=self.stride[0], d=self.dilation
         )
         pad_w = self.calc_same_pad(
-            i=iw, k=self.kernel_size[1], s=self.stride[1], d=self.dilation[1]
+            i=iw, k=self.kernel_size[1], s=self.stride[1], d=self.dilation
         )
 
         if pad_h > 0 or pad_w > 0:
             x = torch.nn.functional.pad(
                 x, [pad_w // 2, pad_w - pad_w // 2, pad_h // 2, pad_h - pad_h // 2]
             )
-        return torch.nn.functional.conv2d(
+        return torch.nn.functional.max_pool2d(
             x,
-            self.weight,
-            self.bias,
+            self.kernel_size,
             self.stride,
             self.padding,
             self.dilation,
-            self.groups,
+            self.ceil_mode,
+            self.return_indices,
         )
+
+
+class AvgPool2dSame(torch.nn.AvgPool2d):
+    def calc_same_pad(self, i: int, k: int, s: int, d: int) -> int:
+        return max((math.ceil(i / s) - 1) * s + (k - 1) * d + 1 - i, 0)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        ih, iw = x.size()[-2:]
+
+        pad_h = self.calc_same_pad(
+            i=ih, k=self.kernel_size[0], s=self.stride[0], d=self.dilation
+        )
+        pad_w = self.calc_same_pad(
+            i=iw, k=self.kernel_size[1], s=self.stride[1], d=self.dilation
+        )
+
+        if pad_h > 0 or pad_w > 0:
+            x = torch.nn.functional.pad(
+                x, [pad_w // 2, pad_w - pad_w // 2, pad_h // 2, pad_h - pad_h // 2]
+            )
+        return torch.nn.functional.avg_pool2d(
+            x,
+            self.kernel_size,
+            self.stride,
+            self.padding,
+            self.ceil_mode,
+            self.count_include_pad,
+            self.divisor_override,
+        )
+
+# Required for Adaptive Pooling support in ONNX in pretrained models
+# From: https://github.com/pytorch/pytorch/issues/42653#issuecomment-1168816422
+class AdaptiveAvgPool2dCustom(torch.nn.Module):
+    def __init__(self, output_size):
+        super(AdaptiveAvgPool2dCustom, self).__init__()
+        self.output_size = np.array(output_size)
+
+    def forward(self, x: torch.Tensor):
+        stride_size = np.floor(np.array(x.shape[-2:]) / self.output_size).astype(
+            np.int32
+        )
+        kernel_size = np.array(x.shape[-2:]) - (self.output_size - 1) * stride_size
+        avg = torch.nn.AvgPool2d(
+            kernel_size=list(kernel_size), stride=list(stride_size)
+        )
+        x = avg(x)
+        return x
 
 class ClassificationModel(torch.nn.Module):
     def __init__(self):
         super().__init__()
         self.model = $model
+        $model_replace
         $weights_download
         $weights_load
         $weights_replace

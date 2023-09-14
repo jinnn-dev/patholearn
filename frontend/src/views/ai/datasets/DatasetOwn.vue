@@ -11,7 +11,6 @@ import { BaseTask } from '../../../model/task/baseTask';
 import { Task } from '../../../model/task/task';
 import Spinner from '../../../components/general/Spinner.vue';
 import { PatchSize, PatchMagnification } from '../../../model/ai/datasets/dataset';
-
 const { result, loading: coursesLoading, run: getCourses } = useService(CourseService.getAllCoursesToUser, true);
 const {
   result: taskGroups,
@@ -112,10 +111,10 @@ const removeSelectedTask = (index: number) => {
 </script>
 <template>
   <div>
-    <div class="text-xl mb-4">3. Erstelle einen Datensatz aus Aufgaben in PathoLearn</div>
+    <div class="text-xl mb-4">3. Create a dataset from tasks in PathoLearn</div>
     <div>
-      <div class="text-lg">Ausgewählte Aufgaben:</div>
-      <div class="text-gray-300" v-if="selectedTasks.length === 0">Keine Aufgaben ausgewählt</div>
+      <div class="text-lg">Selected tasks:</div>
+      <div class="text-gray-300" v-if="selectedTasks.length === 0">No tasks selected</div>
       <div v-else>
         <div class="flex flex-wrap gap-4 mt-4">
           <div
@@ -134,11 +133,12 @@ const removeSelectedTask = (index: number) => {
         </div>
       </div>
     </div>
+
     <div class="mt-4">
-      <div class="text-lg">Aufgabenauswahl:</div>
+      <div class="text-lg">Tasks:</div>
 
       <div class="flex items-center gap-2 mt-4">
-        <div @click="goBackToCourses()" class="cursor-pointer">Kurse</div>
+        <div @click="goBackToCourses()" class="cursor-pointer">Courses</div>
         <div v-if="selectedCourse" class="flex items-center gap-2">
           <icon name="caret-right" size="16"></icon>
           <div @click="goBackToTaskGroups" class="cursor-pointer">{{ selectedCourse.name }}</div>
@@ -196,7 +196,7 @@ const removeSelectedTask = (index: number) => {
         </div>
       </div>
     </div>
-    <div class="mt-4 text-xl">Auf welche größen sollen die WSI skaliert werden?</div>
+    <div class="mt-4 text-xl">To which magnification should the slide be scaled to?</div>
     <div class="flex w-full justify-evenly items-center mt-4">
       <div class="flex items-center ring-2 ring-gray-500 rounded-lg h-10 overflow-hidden">
         <div
@@ -229,7 +229,7 @@ const removeSelectedTask = (index: number) => {
         </div>
       </div>
     </div>
-    <div class="mt-4 text-xl">Wie groß soll eine Bildkachel sein?</div>
+    <div class="mt-4 text-xl">How large should each image tile be?</div>
     <div class="flex w-full justify-evenly items-center mt-4">
       <div class="flex items-center ring-2 ring-gray-500 rounded-lg h-10 overflow-hidden">
         <div

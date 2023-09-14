@@ -45,7 +45,7 @@ const abort = () => {
 };
 </script>
 <template>
-  <h1 class="text-2xl">Generate An Artificial Intelligence Model</h1>
+  <h1 class="text-2xl">Generate A Neural Network Model</h1>
   <div class="mt-4">
     <div class="text-xl mb-2">1. Select a dataset</div>
     <dataset-dropdown @value-changed="selectedDataset = $event"></dataset-dropdown>
@@ -79,17 +79,29 @@ const abort = () => {
     </div>
     <div class="my-2">
       <div class="mb-2 font-semibold text-gray-100">Training speed</div>
-      <div
-        class="h-4 bg-highlight-800 transition-all rounded-full"
-        :style="`width: ${ComplexityMapping[selectedComplexity].speed * 100}%`"
-      ></div>
+      <div class="h-2 rounded-md w-full overflow-hidden bg-gray-600">
+        <span
+          class="block h-2 bg-green-400 rounded-md transition-all"
+          :style="`width: ${ComplexityMapping[selectedComplexity].speed * 100}%`"
+        ></span>
+      </div>
+      <div class="flex justify-between font-semibold text-xs text-gray-300 mt-1 font-mono">
+        <div>SLOWEST</div>
+        <div>FASTEST</div>
+      </div>
     </div>
-    <div>
+    <div class="mt-4">
       <div class="mb-2 font-semibold text-gray-100">Ability to capture complex patterns from the dataset</div>
-      <div
-        class="h-4 bg-highlight-800 transition-all rounded-full"
-        :style="`width: ${ComplexityMapping[selectedComplexity].featureCapturing * 100}%`"
-      ></div>
+      <div class="h-2 rounded-md w-full overflow-hidden bg-gray-600">
+        <span
+          class="block h-2 bg-green-400 rounded-md transition-all"
+          :style="`width: ${ComplexityMapping[selectedComplexity].featureCapturing * 100}%`"
+        ></span>
+      </div>
+      <div class="flex justify-between font-semibold text-xs text-gray-300 mt-1 font-mono">
+        <div>LOWEST</div>
+        <div>HIGHEST</div>
+      </div>
     </div>
 
     <div class="flex gap-4 justify-end mt-4">

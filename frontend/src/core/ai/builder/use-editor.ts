@@ -85,7 +85,15 @@ export function useEditor() {
             ['Pooling', () => createNodeInstance('PoolingNode') as NodeProps]
           ]
         ],
-        ['Architecture', [['ResNet', () => createNodeInstance('ResNetNode') as NodeProps]]],
+        [
+          'Architecture',
+          [
+            ['ResNet', () => createNodeInstance('ResNetNode') as NodeProps],
+            ['Vgg', () => createNodeInstance('VggNode') as NodeProps],
+            ['GoogLeNet', () => createNodeInstance('GoogleNetNode') as NodeProps],
+            ['Alexnet', () => createNodeInstance('AlexnetNode') as NodeProps]
+          ]
+        ],
         [
           'Transform',
           [

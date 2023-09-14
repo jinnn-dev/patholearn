@@ -21,6 +21,9 @@ class NodeType(Enum):
     ConcatenateNode = "ConcatenateNode"
     OutputNode = "OutputNode"
     MetricNode = "MetricNode"
+    VggNode = "VggNode"
+    GoogleNetNode = "GoogleNetNode"
+    AlexnetNode = "AlexnetNode"
     ResNetNode = "ResNetNode"
     SegmentationNode = "SegmentationNode"
 

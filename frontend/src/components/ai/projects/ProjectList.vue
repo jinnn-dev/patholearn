@@ -66,21 +66,11 @@ const cancelUpdate = async () => {
 <template>
   <div>
     <modal-dialog :show="showEditDialog" custom-classes="w-96">
-      <input-field
-        v-model:model-value="updateData.name"
-        label="Name"
-        tip="Name des Projekts"
-        :required="true"
-      ></input-field>
-      <input-area
-        v-model:model-value="updateData.description"
-        class="h-64"
-        label="Beschreibung"
-        tip="Beschreibung des Projekts"
-      ></input-area>
+      <input-field v-model:model-value="updateData.name" label="Name" :required="true"></input-field>
+      <input-area v-model:model-value="updateData.description" class="h-64" label="Description"></input-area>
       <confirm-buttons
-        confirm-text="Speichern"
-        reject-text="Abbrechen"
+        confirm-text="Save"
+        reject-text="Abort"
         @confirm="runUpdate"
         @reject="cancelUpdate"
         :loading="updateLoading"
@@ -97,7 +87,7 @@ const cancelUpdate = async () => {
             <project-card :project="project" @delete="onProjectDelete" @edit="editProject(project)"></project-card>
           </div>
         </div>
-        <no-content v-else text="Noch kein Projekt vorhanden"></no-content>
+        <no-content v-else text="No Projects"></no-content>
       </div>
     </div>
   </div>

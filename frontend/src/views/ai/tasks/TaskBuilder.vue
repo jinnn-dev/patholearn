@@ -21,7 +21,7 @@ onUnmounted(() => {
         v-if="!builderState.builderLoaded && !builderState.initialGraphLoaded"
         class="absolute select-none flex flex-col gap-4 justify-center items-center w-full h-full bg-gray-900/80 backdrop-blur-sm z-20 top-0"
       >
-        <div class="text-2xl font-bold">Editor wird geladen</div>
+        <div class="text-2xl font-bold">Loading Editor</div>
         <div class="w-96">
           <ping-pong-loader></ping-pong-loader>
         </div>

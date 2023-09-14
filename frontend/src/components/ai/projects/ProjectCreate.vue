@@ -30,29 +30,19 @@ const createProject = async () => {
 <template>
   <div class="flex justify-end items-center">
     <div>
-      <primary-button bg-color="bg-gray-500" name="Neues Projekt" @click="showCreate = true"></primary-button>
+      <primary-button bg-color="bg-gray-500" name="Create Project" @click="showCreate = true"></primary-button>
     </div>
   </div>
 
   <modal-dialog :show="showCreate" custom-classes="w-96">
-    <div class="text-xl">Projekt erstellen</div>
-    <input-field
-      v-model:model-value="createProjectData.name"
-      label="Name"
-      tip="Name des Projekts"
-      :required="true"
-    ></input-field>
-    <input-area
-      v-model:model-value="createProjectData.description"
-      class="h-64"
-      label="Beschreibung"
-      tip="Beschreibung des Projekts"
-    ></input-area>
+    <div class="text-xl">Create Project</div>
+    <input-field v-model:model-value="createProjectData.name" label="Name" :required="true"></input-field>
+    <input-area v-model:model-value="createProjectData.description" class="h-64" label="Description"></input-area>
 
     <confirm-buttons
       :loading="loading"
-      confirm-text="Speichern"
-      reject-text="Abbrechen"
+      confirm-text="Save"
+      reject-text="Abort"
       @reject="showCreate = false"
       @confirm="createProject"
     ></confirm-buttons>

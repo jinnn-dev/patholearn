@@ -18,9 +18,9 @@ watch(
 </script>
 <template>
   <div>
-    <div class="text-xl mb-4">3. Lade den Datensatz als zip-Datei hier hoch</div>
+    <div class="text-xl mb-4">3. Upload the dataset as a .zip file</div>
     <div>
-      <div>Die zip-Datei muss folgende Struktur haben:</div>
+      <div>The file must have the following structure:</div>
       <ul class="font-mono my-4 p-4 bg-gray-900 rounded-lg">
         <div class="flex gap-2">
           <icon name="file-zip" stroke-width="0" class="text-gray-200"></icon>
@@ -75,17 +75,17 @@ watch(
         </li>
       </ul>
       <div>
-        Die Ordner <span class="font-mono bg-gray-900 px-2 rounded-md">x</span> und
-        <span class="font-mono bg-gray-900 px-2 rounded-md">y</span> sind dabei die Namen der Klassen. Alle Bilder die
-        sich innerhalb eines Ordners befinden, gehören zu dieser Klasse. Die Ordneranzahl muss entsprechend der
-        gewünschten Klassenanzahl entsprechen. Innerhalb der Ordner dürfen keine weiteren Ordner sein.
+        The name of the folders e.g., <span class="font-mono bg-gray-900 px-2 rounded-md">x</span> and
+        <span class="font-mono bg-gray-900 px-2 rounded-md">y</span> correspond to the classes that should be used
+        during the training. All images that are inside of each folder, belong to this class. Inside one folder no other
+        folder must exist.
       </div>
     </div>
 
     <div>
       <file-input
         v-model="selectedFile"
-        label="Datensatz als Zip-Datei"
+        label="Dataset as zip file"
         accept=".zip"
         icon="file-zip"
         :progress="progress"

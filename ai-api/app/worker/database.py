@@ -7,7 +7,7 @@ from pymongo.database import Database
 import os
 
 from app.schema.dataset import Dataset, DatasetStatus
-
+from app.ws.client import trigger_ws_dataset_status_changed
 
 client: MongoClient = MongoClient(os.environ["DATABASE_URL"])
 database: Database = client.ai
@@ -22,8 +22,11 @@ def update_dataset(dataset_id: str, fields: Dict):
     return updated
 
 
-def update_dataset_status(dataset_id: str, status: DatasetStatus):
-    return update_dataset(dataset_id=dataset_id, fields={"status": status})
+def update_dataset_status(dataset: Dataset, status: DatasetStatus):
+    old_status = dataset.status
+    dataset.status = status
+    trigger_ws_dataset_status_changed(dataset, old_status)
+    return update_dataset(dataset_id=dataset.id, fields={"status": status})
 
 
 def get_dataset(dataset_id: str):

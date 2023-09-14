@@ -21,6 +21,8 @@ class FlattenNode(Node):
 
 
 ResNetVersion = Literal["resnet18", "resnet34", "resnet50", "resnet101", "resnet152"]
+VggVersions = Literal["vgg11", "vgg13", "vgg16", "vgg19"]
+
 PretrainedOptions = Literal["General", "Medical", "No"]
 
 SegmentationModels = Literal["UNet", "UNet++", "DeepLab V3 Plus"]
@@ -30,11 +32,23 @@ SegmentationEncoderVersions = Literal[
 
 
 class ArchitectureNode(Node):
-    version: Union[SegmentationModels, ResNetVersion]
+    version: Optional[Union[SegmentationModels, ResNetVersion, VggVersions]]
     pretrained: PretrainedOptions
 
 
 class ResNetNode(ArchitectureNode):
+    pass
+
+
+class VggNode(ArchitectureNode):
+    pass
+
+
+class GoogleNetNode(ArchitectureNode):
+    pass
+
+
+class AlexnetNode(ArchitectureNode):
     pass
 
 
@@ -100,6 +114,7 @@ class PoolingLayer(Node):
     kernel_size: tuple
     stride: tuple
     type: Literal["max", "average"]
+    padding: Literal[0, "same"]
 
 
 class DropoutNode(Node):
@@ -137,6 +152,13 @@ Metric = Literal[
     "Epoch",
     "IOU",
 ]
+
+ClassifierMapping = {
+    ResNetNode: "fc",
+    GoogleNetNode: "fc",
+    AlexnetNode: "classifier",
+    VggNode: "classifier",
+}
 
 
 class MetricNode(Node):
@@ -280,7 +302,6 @@ async def get_flatten_node(node: INode):
 
 
 async def get_pooling_node(node: INode):
-    # logger.debug(node.controls)
     return PoolingLayer(
         id=node.id,
         kernel_size=(
@@ -289,6 +310,7 @@ async def get_pooling_node(node: INode):
         ),
         stride=(node.controls[1].value["x"], node.controls[1].value["y"]),
         type=node.controls[2].value,
+        padding=0 if node.controls[3].value == "none" else node.controls[3].value,
     )
 
 
@@ -317,6 +339,28 @@ async def get_resnet_node(node: INode):
         id=node.id,
         version=node.controls[0].value,
         pretrained=node.controls[1].value,
+    )
+
+
+async def get_vgg_node(node: INode):
+    return VggNode(
+        id=node.id,
+        version=node.controls[0].value,
+        pretrained=node.controls[1].value,
+    )
+
+
+async def get_googlenet_node(node: INode):
+    return GoogleNetNode(
+        id=node.id,
+        pretrained=node.controls[0].value,
+    )
+
+
+async def get_alexnet_node(node: INode):
+    return AlexnetNode(
+        id=node.id,
+        pretrained=node.controls[0].value,
     )
 
 
@@ -358,6 +402,9 @@ node_type_map = {
     NodeType.ConcatenateNode: get_concatenate_node,
     NodeType.MetricNode: get_metric_node,
     NodeType.ResNetNode: get_resnet_node,
+    NodeType.VggNode: get_vgg_node,
+    NodeType.GoogleNetNode: get_googlenet_node,
+    NodeType.AlexnetNode: get_alexnet_node,
     NodeType.SegmentationNode: get_segmentation_node,
 }
 

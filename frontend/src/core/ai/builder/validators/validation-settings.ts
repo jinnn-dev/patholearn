@@ -17,6 +17,18 @@ export const NodeValidation: { [type in NodeType]?: ValidationItems } = {
     unique: true,
     datasetType: 'classification'
   },
+  VggNode: {
+    unique: true,
+    datasetType: 'classification'
+  },
+  GoogleNetNode: {
+    unique: true,
+    datasetType: 'classification'
+  },
+  AlexnetNode: {
+    unique: true,
+    datasetType: 'classification'
+  },
   SegmentationNode: {
     unique: true,
     datasetType: 'segmentation'

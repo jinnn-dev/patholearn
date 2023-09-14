@@ -1,13 +1,13 @@
 import { ClassicPreset } from 'rete';
 import { INode } from '../../serializable';
 import { Socket } from '../../sockets/socket';
-import { Node } from '../node';
 import { DropdownControl } from '../../controls';
 import { ResnetVersions } from './versions';
+import { ArchitectureNode } from './architecture-node';
 
 export interface IResnetNode extends INode {}
 
-export class ResNetNode extends Node<
+export class ResNetNode extends ArchitectureNode<
   IResnetNode,
   { dataset: Socket },
   { fc: Socket },
@@ -34,7 +34,10 @@ export class ResNetNode extends Node<
   public addElements(...value: any[]): void {
     this.addInput('dataset', new ClassicPreset.Input(this.sockets.input!, 'dataset'));
     this.addOutput('fc', new ClassicPreset.Output(this.sockets.output!, 'fc'));
-    this.addControl('version', new DropdownControl(ResnetVersions, 'Version', 'version', value[0] || 'resnet18'));
+    this.addControl(
+      'version',
+      new DropdownControl(ResnetVersions, 'Version', 'version', value[0] || ResnetVersions[0])
+    );
     this.addControl(
       'pretrained',
       new DropdownControl(['General', 'Medical', 'No'], 'Pretrained', 'pretrained', 'General')

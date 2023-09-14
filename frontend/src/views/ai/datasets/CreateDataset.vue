@@ -11,6 +11,8 @@ import { AiService } from '../../../services/ai.service';
 import { useRouter } from 'vue-router';
 import DatasetUpload from './DatasetUpload.vue';
 import DatasetOwn from './DatasetOwn.vue';
+import DatasetSegmentation from './DatasetSegmentation.vue';
+import { addNotification } from '../../../utils/notification-state';
 
 const router = useRouter();
 
@@ -25,15 +27,21 @@ const {
   result: createOwnDatasetResult
 } = useService(AiService.createOwnDataset);
 
+const {
+  run: runCreateOwnDatasetUpload,
+  loading: createOwnDatasetLoadingUpload,
+  result: createOwnDatasetResultUpload
+} = useService(AiService.createSegmentationDataset);
+
 const items: { [type in DatasetType]?: { description: string; commingSoon: boolean } } = {
   classification: {
     description: 'Bei einer Klassifikation....',
     commingSoon: false
   },
-  // detection: {
-  //   description: 'Bei einer Detektierung....',
-  //   commingSoon: true
-  // },
+  detection: {
+    description: 'Bei einer Detektierung....',
+    commingSoon: false
+  },
   segmentation: {
     description: 'Bei einer Segmentierung...',
     commingSoon: false
@@ -41,9 +49,9 @@ const items: { [type in DatasetType]?: { description: string; commingSoon: boole
 };
 
 const DatasetTypeDisplayValue: { [type in DatasetType]?: string } = {
-  classification: 'Klassifikation',
-  // detection: 'Detektion',
-  segmentation: 'Segmentierung'
+  classification: 'Classification',
+  detection: 'Segmentation 1',
+  segmentation: 'Segmentation'
 };
 
 const datasetTypeSelection = ref<'upload' | 'own'>('own');
@@ -73,8 +81,31 @@ const uploadDataset = async () => {
     createOwnDatasetForm.name = createDatasetForm.name;
     createOwnDatasetForm.description = createDatasetForm.description;
     createOwnDatasetForm.type = createDatasetForm.type;
+    if (!createOwnDatasetForm.tasks.length) {
+      addNotification({
+        header: 'No tasks selected',
+        detail: 'You must select at least one task',
+        level: 'warning',
+        showDate: false,
+        timeout: 5000
+      });
+      return;
+    }
     await runCreatOwnDataset(createOwnDatasetForm);
+  } else if (selectedItem.value === 'detection') {
+    createDatasetForm.type = 'segmentation';
+    await runCreateOwnDatasetUpload(createDatasetForm, updateProgress);
   } else {
+    if (!createDatasetForm.file) {
+      addNotification({
+        header: 'No file selected',
+        detail: 'You must add a zip file',
+        level: 'warning',
+        showDate: false,
+        timeout: 5000
+      });
+      return;
+    }
     await runCreateDataset(createDatasetForm, updateProgress);
   }
 
@@ -88,12 +119,12 @@ const uploadDataset = async () => {
 };
 </script>
 <template>
-  <ContentContainer back-route="/ai/datasets" back-text="Datensätze">
-    <template #header> <h1>Neuer Datensatz</h1></template>
+  <ContentContainer back-route="/ai/datasets" back-text="Datasets">
+    <template #header> <h1>New Dataset</h1></template>
     <template #content>
       <div class="flex flex-col gap-8">
         <div>
-          <div class="text-xl">1. Welche Art von Aufgabe soll auf diesem Datensatz trainiert werden?</div>
+          <div class="text-xl">1. Which kind of task should be trained?</div>
           <div class="flex w-full justify-evenly items-center mt-4">
             <div class="flex items-center ring-2 ring-gray-500 rounded-lg h-16 overflow-hidden">
               <div
@@ -108,17 +139,17 @@ const uploadDataset = async () => {
           </div>
         </div>
         <div>
-          <div class="text-xl">2. Informationen zum Datensatz</div>
+          <div class="text-xl">2. Dataset Information</div>
           <div>
             <input-field
               v-model="createDatasetForm.name"
-              label="Name"
-              tip="Gebe dem Datensatz einen eindeutigen Namen"
+              label="Name*"
+              tip="Give the dataset a unique name"
               :required="true"
             ></input-field>
             <input-area
-              label="Beschreibung"
-              tip="Optional kann du eine Beschreibung hinzufügen"
+              label="Description"
+              tip="Optionally, you can add description"
               v-model="createDatasetForm.description"
             ></input-area>
           </div>
@@ -146,6 +177,11 @@ const uploadDataset = async () => {
           :progress="progress"
           @file-selected="createDatasetForm.file = $event"
         ></DatasetUpload>
+        <DatasetSegmentation
+          v-else-if="selectedItem === 'detection'"
+          @file-selected="createDatasetForm.file = $event"
+          :progress="progress"
+        ></DatasetSegmentation>
         <DatasetOwn
           v-else
           :progress="progress"
@@ -157,7 +193,7 @@ const uploadDataset = async () => {
           <save-button
             class="w-48"
             :loading="createDatasetLoading || createOwnDatasetLoading"
-            name="Hochladen"
+            name="Create"
             @click="uploadDataset"
           ></save-button>
         </div>
