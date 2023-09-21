@@ -19,3 +19,14 @@ The set of images is split into three different datasets: `training`, `validatio
 The dataset on which the neural network should be trained on.
 
 ---
+
+<script setup>
+import DatasetInfoText from '../../datasets/DatasetInfoText.vue'
+import {builderState} from '../../../../core/ai/builder/state.ts'
+</script>
+
+## {{builderState.selectedDatasset.name}}
+
+<DatasetInfoText :dataset="builderState.selectedDatasset"></DatasetInfoText>
+
+<!-- <DatasetCard :dataset="builderState.selectedDatasset"></DatasetCard> -->
