@@ -39,7 +39,7 @@ const trainingSize = computed(() => {
     The dataset contains <span class="font-mono">{{ dataset.clearml_dataset?.runtime.ds_file_count }}</span> images.
     <span class="font-mono">80% ({{ trainingSize }})</span>
     are used for training. The remaining <span class="font-mono">20%</span> are used for the validation and test dataset
-    ({{ Math.round(dataset.clearml_dataset?.runtime.ds_file_count! * 0.1) }}).
+    ({{ Math.round(dataset.clearml_dataset?.runtime.ds_file_count! * 0.1) }} each).
   </p>
   <p>Example images:</p>
   <dataset-images :dataset-id="dataset.id"></dataset-images>

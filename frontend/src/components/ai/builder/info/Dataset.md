@@ -25,8 +25,8 @@ import DatasetInfoText from '../../datasets/DatasetInfoText.vue'
 import {builderState} from '../../../../core/ai/builder/state.ts'
 </script>
 
-## {{builderState.selectedDatasset.name}}
+## {{builderState.selectedDatasset?.name}}
 
-<DatasetInfoText :dataset="builderState.selectedDatasset"></DatasetInfoText>
+<DatasetInfoText v-if="builderState.selectedDatasset" :dataset="builderState.selectedDatasset"></DatasetInfoText>
 
 <!-- <DatasetCard :dataset="builderState.selectedDatasset"></DatasetCard> -->

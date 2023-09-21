@@ -15,11 +15,6 @@ const { result, loading } = useService(AiService.getDatasetImages, true, props.d
 <template>
   <Spinner v-if="loading"></Spinner>
   <div class="flex items-center gap-4 flex-wrap">
-    <lazy-image
-      v-for="image in result"
-      :image-url="image"
-      class="w-[150px]"
-      image-classes="w-full cursor-pointer"
-    ></lazy-image>
+    <lazy-image v-for="image in result" :image-url="image" class="w-[150px]" image-classes="w-full "></lazy-image>
   </div>
 </template>
