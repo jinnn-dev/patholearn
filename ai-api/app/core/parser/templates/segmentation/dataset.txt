@@ -2,65 +2,49 @@ class MaskDataset(Dataset):
     def __init__(
         self,
         *,
-        transform: A.Compose = None,
-        split="train",
-        rgb_to_int_map=None,
         random_seed=1234,
     ):
-        self.transform = transform
-        self.split = split
-        self.data = None
         self.random_seed = random_seed
         self.x_paths = []
         self.y_paths = []
-        self.init_dataset(rgb_to_int_map)
 
-    def init_dataset(self, rgb_to_int_map=None):
+        self.init_dataset()
+
+    def init_dataset(self):
         dataset = ClearMlDataset.get(
             dataset_id="${dataset_id}",
             alias="${dataset_id}",
         )
+
         dataset_path = dataset.get_local_copy()
-        self.train_paths = np.array(glob.glob(f"{dataset_path}/images/*.[jp][pn]g"))
-        self.mask_paths = np.array(glob.glob(f"{dataset_path}/masks/*.png"))
-
-        train_ratio = 0.75
-        validation_ratio = 0.15
-        test_ratio = 0.10
-
-        # train is now 75% of the entire data set
-        x_train, x_test, y_train, y_test = train_test_split(
-            self.train_paths,
-            self.mask_paths,
-            test_size=1 - train_ratio,
-            random_state=self.random_seed,
-        )
-
-        # test is now 10% of the initial data set
-        # validation is now 15% of the initial data set
-        x_val, x_test, y_val, y_test = train_test_split(
-            x_test,
-            y_test,
-            test_size=test_ratio / (test_ratio + validation_ratio),
-            random_state=self.random_seed,
-        )
-
-        if self.split == "train":
-            self.x_paths = x_train
-            self.y_paths = y_train
-        elif self.split == "val":
-            self.x_paths = x_val
-            self.y_paths = y_val
-        else:
-            self.x_paths = x_test
-            self.y_paths = y_test
+        self.x_paths = np.array(glob.glob(f"{dataset_path}/images/*.[jp][pn]g"))
+        self.y_paths = np.array(glob.glob(f"{dataset_path}/masks/*.png"))
 
         metadata = dataset.get_metadata()
-        class_map: dict = metadata["class_map"]
+
+        self.class_map = metadata["class_map"]
+        self.classes = metadata["classes"]
+        self.dimension = metadata["dimension"]
+        self.is_grayscale = metadata["is_grayscale"]
+
+        normalize = A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
+        resize_dimension = self.dimension
+        if resize_dimension["x"] > 256:
+            resize_dimension["x"] = 256
+        if resize_dimension["y"] > 256:
+            resize_dimension["y"] = 256
+        self.transform = A.Compose(
+            [
+                A.Resize(height=resize_dimension["y"], width=resize_dimension["x"]),
+                normalize,
+                ToTensorV2(),
+            ]
+        )
+
         self.rgb_to_int_map = {}
-        for name in class_map.keys():
-            color = class_map[name]["color"]
-            self.rgb_to_int_map[(color[0], color[1], color[2])] = class_map[name][
+        for name in self.class_map.keys():
+            color = self.class_map[name]["color"]
+            self.rgb_to_int_map[(color[0], color[1], color[2])] = self.class_map[name][
                 "index"
             ]
 

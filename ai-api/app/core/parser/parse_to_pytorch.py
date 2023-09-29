@@ -258,7 +258,7 @@ def parse_to_pytorch(
             "import lightning as pl",
             "import torch",
             "from clearml import Task, Dataset as ClearMlDataset, OutputModel",
-            "from torch.utils.data import DataLoader, Dataset",
+            "from torch.utils.data import random_split, DataLoader, Dataset",
             "import albumentations as A",
             "import numpy as np",
             "import glob",
