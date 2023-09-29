@@ -7,37 +7,14 @@ class DataModule(pl.LightningDataModule):
         super().__init__()
 
         self.save_hyperparameters(logger=False)
-        self.train_transform = A.Compose(
-            [
-                A.VerticalFlip(p=0.5),
-                A.HorizontalFlip(p=0.5),
-                A.RandomRotate90(p=0.5),
-                A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
-                ToTensorV2(),
-            ]
-        )
-        self.rest_transform = A.Compose(
-            [
-                A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
-                ToTensorV2(),
-            ]
-        )
-        self.data_train = MaskDataset(
-            transform=self.train_transform,
-            split="train",
-            random_seed=split_seed,
-        )
-        self.data_val = MaskDataset(
-            transform=self.rest_transform,
-            split="val",
-            rgb_to_int_map=self.data_train.rgb_to_int_map,
-            random_seed=split_seed,
-        )
-        self.data_test = MaskDataset(
-            transform=self.rest_transform,
-            split="test",
-            rgb_to_int_map=self.data_train.rgb_to_int_map,
-            random_seed=split_seed,
+        self.full_dataset = MaskDataset()
+        self.train_dataset = None
+        self.val_dataset = None
+        self.test_dataset = None
+
+    def prepare_data(self):
+        self.train_dataset, self.val_dataset, self.test_dataset = random_split(
+            self.full_dataset, [0.8, 0.1, 0.1]
         )
 
     def collate(self, batch):
@@ -45,7 +22,7 @@ class DataModule(pl.LightningDataModule):
 
     def train_dataloader(self):
         return DataLoader(
-            dataset=self.data_train,
+            dataset=self.train_dataset,
             batch_size=self.hparams.batch_size,
             num_workers=multiprocessing.cpu_count(),
             shuffle=True,
@@ -53,14 +30,16 @@ class DataModule(pl.LightningDataModule):
 
     def val_dataloader(self):
         return DataLoader(
-            dataset=self.data_val,
+            dataset=self.val_dataset,
             batch_size=self.hparams.batch_size,
             num_workers=multiprocessing.cpu_count(),
+            shuffle=False,
+            drop_last=False,
         )
 
     def test_dataloader(self):
         return DataLoader(
-            dataset=self.data_test,
+            dataset=self.test_dataset,
             batch_size=self.hparams.batch_size,
             num_workers=multiprocessing.cpu_count(),
             shuffle=False,

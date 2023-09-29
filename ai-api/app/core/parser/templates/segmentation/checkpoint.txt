@@ -4,7 +4,7 @@ trained_model = MaskModel.load_from_checkpoint(
     encoder_name="${encoder}",
     in_channels=3,
     out_classes=len(
-        data_module.data_train.rgb_to_int_map.values()
+        data_module.full_dataset.rgb_to_int_map.values()
     ),
 )
 trained_model.freeze()

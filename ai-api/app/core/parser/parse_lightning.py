@@ -98,7 +98,7 @@ class SegmentationModel:
         return None, None
 
     def get_instance(self, variable_name: str, segmentation_node: SegmentationNode):
-        return f"""{variable_name} = MaskModel(arch="{ArchitectureString[segmentation_node.version]}", encoder_name="{segmentation_node.encoderVersion}", in_channels=3, out_classes=len(data_module.data_train.rgb_to_int_map.values()))"""
+        return f"""{variable_name} = MaskModel(arch="{ArchitectureString[segmentation_node.version]}", encoder_name="{segmentation_node.encoderVersion}", in_channels=3, out_classes=len(data_module.full_dataset.rgb_to_int_map.values()))"""
 
 
 class LightningModel:
