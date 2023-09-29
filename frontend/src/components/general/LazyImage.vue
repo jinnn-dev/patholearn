@@ -79,7 +79,7 @@ const imageLoadError = ref(false);
     <div v-if="!imageLoadError" class="w-full h-full overflow-hidden flex justify-center items-center">
       <img
         :key="url"
-        :class="loaded ? 'show ' + imageClasses : ''"
+        :class="loaded ? 'show m-0 ' + imageClasses : ''"
         :src="url"
         alt="Lazy image"
         class="rounded-lg"
@@ -95,7 +95,7 @@ const imageLoadError = ref(false);
 <style scoped>
 img {
   opacity: 0;
-  transition: 0.5s ease-in-out;
+  transition: 0.5s opacity ease-in-out;
 }
 
 img.show {
