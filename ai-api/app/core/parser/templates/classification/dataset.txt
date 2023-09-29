@@ -8,7 +8,6 @@ class ClassificationDataset(Dataset):
         metadata = dataset.get_metadata()
 
         self.class_map = metadata["class_map"]
-        self.classes = metadata["classes"]
         self.dimension = metadata["dimension"]
         self.is_grayscale = metadata["is_grayscale"]
 
