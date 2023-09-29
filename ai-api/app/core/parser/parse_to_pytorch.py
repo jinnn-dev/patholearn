@@ -100,6 +100,7 @@ class ClassificationModel:
                 result_string = "torch.nn.Sequential(" + combined_layers + ")"
                 replacements = {
                     "model": result_string,
+                    "model_replace": "",
                     "modelfc": "",
                     "weights_download": "",
                     "weights_load": "",
@@ -206,7 +207,8 @@ def get_splitting_paths(graph: nx.DiGraph, start_node_id: str):
             split_node_instance, ConcatenateNode
         ):
             paths[start_node_id]["combine"] = split_node
-
+    logger.info(graph.nodes(data=True)[start_node_id])
+    logger.info("-----")
     return paths
 
 

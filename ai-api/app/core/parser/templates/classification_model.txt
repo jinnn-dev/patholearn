@@ -4,6 +4,13 @@ class Add(torch.nn.Module):
         self.sum_modules = torch.nn.ModuleList(modules)
 
     def forward(self, x):
+        first_in = self.sum_modules[0][0].in_channels
+        second_in = self.sum_modules[1][0].in_channels
+
+        if first_in != second_in:
+            out = self.sum_modules[0](x)
+            module_sum = out + sum(module(out) for module in self.sum_modules[1:])
+            return module_sum
         return sum(module(x) for module in self.sum_modules)
 
 class Concatenate(torch.nn.Module):
@@ -12,6 +19,14 @@ class Concatenate(torch.nn.Module):
         self.concate_modules = torch.nn.ModuleList(modules)
 
     def forward(self, x):
+        first_in = self.concate_modules[0][0].in_channels
+        second_in = self.concate_modules[1][0].in_channels
+
+        if first_in != second_in:
+            out = self.concate_modules[0](x)
+            outputs = [out]
+            outputs += [module(out) for module in self.concate_modules[1:]]
+            return torch.cat(outputs, dim=1)
         return torch.cat([module(x) for module in self.concate_modules], dim=1)
 
 
