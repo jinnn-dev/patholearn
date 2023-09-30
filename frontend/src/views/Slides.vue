@@ -37,7 +37,7 @@ const deleteSlide = async (slide: Slide, index: number) => {
 <template>
   <content-container>
     <template v-slot:header>
-      <div class="text-center">Hochgeladene Bilder</div>
+      <div class="text-center">Available WSI</div>
     </template>
     <template v-slot:content>
       <slide-upload @slide-uploaded="onUpload($event)" />
@@ -46,7 +46,7 @@ const deleteSlide = async (slide: Slide, index: number) => {
         <primary-button
           class="w-32 mt-2"
           fontWeight="font-semibold"
-          name="Aktualisieren"
+          name="Refresh"
           @click="loadSlides"
         ></primary-button>
       </div>

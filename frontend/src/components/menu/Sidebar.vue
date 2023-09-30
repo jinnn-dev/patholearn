@@ -14,34 +14,34 @@ const sidebarRoutes = ref<SidebarRoute[]>([
   {
     to: '/home',
     icon: 'house',
-    label: 'Startseite'
+    label: 'Home'
   },
   {
     to: '/slides',
     icon: 'images',
-    label: 'Vorhandene WSI',
+    label: 'Available WSI',
     restricted: true
   },
   {
     to: '/users',
     icon: 'users',
-    label: 'Benutzerverwaltung',
+    label: 'User Management',
     restricted: true
   },
   {
     to: '/ai',
     icon: 'brain',
-    label: 'Künstliche Intelligenz',
+    label: 'Artificial Intelligence',
     children: [
       {
         to: '/ai/datasets',
         icon: 'database',
-        label: 'Datensätze'
+        label: 'Datasets'
       },
       {
         to: '/ai/projects',
         icon: 'folder-notch',
-        label: 'Projekte'
+        label: 'Projects'
       }
     ]
   },
