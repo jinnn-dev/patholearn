@@ -3,6 +3,7 @@ import { Area2D, AreaPlugin, BaseArea } from 'rete-area-plugin';
 import { Connection, ConnectionPlugin } from 'rete-connection-plugin';
 import { builderState, getLockedBy, versionHasStatus } from '../state';
 import {
+  EventData,
   NodeTranslatedEvent,
   lockElement,
   pushConnectionCreatedEvent,
@@ -13,7 +14,8 @@ import {
   pushNodeCreatedEvent,
   pushNodeRemovedEvent,
   pushNodeTranslatedEvent,
-  unlockElement
+  unlockElement,
+  handleEvent
 } from '../sync';
 import { Channel, PresenceChannel } from 'pusher-js';
 import { AreaExtra, ConnProps, NodeProps, Schemes } from '../use-editor';
@@ -240,6 +242,8 @@ export class SyncPlugin {
       return;
     }
 
+    const showDebug = true;
+
     builderState.memberRemovedCallbacks.push((leftMember: Member) => {
       if (!builderState.task?.lockStatus) {
         return;
@@ -256,139 +260,177 @@ export class SyncPlugin {
       }
     });
 
-    builderState.channel.bind('client-node-dragged', async (data: NodeTranslatedEvent) => {
-      console.log('NODE DRAGGED EVENT');
-      const area = this.area.parent as AreaPlugin<Schemes, AreaExtra>;
-      const node = area.nodeViews.get(data.nodeId);
+    builderState.channel.bind(
+      'client-node-dragged',
+      handleEvent((event: EventData<NodeTranslatedEvent>) => {
+        const area = this.area.parent as AreaPlugin<Schemes, AreaExtra>;
+        const node = area.nodeViews.get(event.data.nodeId);
 
-      if (node) {
-        this.externalDrag = true;
-        // node.translate(data.position.x, data.position.y);
-        const translate = async (x: number, y: number) => {
-          // console.log(x, y);
+        if (node) {
+          this.externalDrag = true;
+          // node.translate(data.position.x, data.position.y);
+          const translate = async (x: number, y: number) => {
+            // console.log(x, y);
 
-          await node.translate(x, y);
-          node.position = { x: x, y: y };
-          // console.log(node.position);
-        };
+            await node.translate(x, y);
+            node.position = { x: x, y: y };
+            // console.log(node.position);
+          };
 
-        // await animateBetweenTwoPoints(node.position, { x: data.position.x, y: data.position.y }, 0.05, translate);
-        node.translate(data.position.x, data.position.y);
-        // const points = calculatePointsBetween(node.position, data.position, 100);
-        // for (const point of pointss) {
-        //   node.translate(point.x, point.y);
-        // }
-      }
-    });
+          // await animateBetweenTwoPoints(node.position, { x: data.position.x, y: data.position.y }, 0.05, translate);
+          node.translate(event.data.position.x, event.data.position.y);
+          // const points = calculatePointsBetween(node.position, data.position, 100);
+          // for (const point of pointss) {
+          //   node.translate(point.x, point.y);
+          // }
+        }
+      }, showDebug)
+    );
 
     builderState.channel.bind(
       'client-node-created',
-      async (data: { node: INode; position: { x: number; y: number } }) => {
-        console.log('NODE CREATED EVENT', data.node, data.position);
-        await omitSyncEvents(addNodeAtPosition, this.editor, this.areaPlugin, parseNode(data.node), data.position);
-      }
+      handleEvent(async (event: EventData<{ node: INode; position: { x: number; y: number } }>) => {
+        // console.log('NODE CREATED EVENT', event.data.node, event.data.position);
+        await omitSyncEvents(
+          addNodeAtPosition,
+          this.editor,
+          this.areaPlugin,
+          parseNode(event.data.node),
+          event.data.position
+        );
+      }, true)
     );
 
-    builderState.channel.bind('client-node-removed', async (nodeId: string) => {
-      console.log('NODE REMOVED EVENT');
-      await removeNodeAndConnections(this.editor, nodeId);
-    });
+    builderState.channel.bind(
+      'client-node-removed',
+      handleEvent(async (event: EventData<string>) => {
+        // console.log('NODE REMOVED EVENT');
+        await removeNodeAndConnections(this.editor, event.data);
+      }, showDebug)
+    );
 
-    builderState.channel.bind('client-node-locked', (data: { nodeId: string; userId: string }) => {
-      console.log('CLIENT NODE LOCKED');
-      const node = this.editor.getNode(data.nodeId);
-      node.lock({
-        lockedBy: builderState.channel?.members.get(data.userId),
-        externalLock: true
-      });
-      // const nodeView = this.areaPlugin.nodeViews.get(data.nodeId);
-      // if (nodeView?.element) {
-      //   nodeView.element.style.transition = 'transform 50ms ease-in-out';
-      // }
-      if (builderState.task) {
-        if (builderState.task.lockStatus) {
-          builderState.task.lockStatus[data.nodeId] = data.userId;
-        } else {
-          builderState.task.lockStatus = {
-            [data.nodeId]: data.userId
-          };
+    builderState.channel.bind(
+      'client-node-locked',
+      handleEvent((event: EventData<{ nodeId: string; userId: string }>) => {
+        const node = this.editor.getNode(event.data.nodeId);
+        node.lock({
+          lockedBy: builderState.channel?.members.get(event.userId),
+          externalLock: true
+        });
+        // const nodeView = this.areaPlugin.nodeViews.get(data.nodeId);
+        // if (nodeView?.element) {
+        //   nodeView.element.style.transition = 'transform 50ms ease-in-out';
+        // }
+        if (builderState.task) {
+          if (builderState.task.lockStatus) {
+            builderState.task.lockStatus[event.data.nodeId] = event.userId;
+          } else {
+            builderState.task.lockStatus = {
+              [event.data.nodeId]: event.userId
+            };
+          }
         }
-      }
 
-      this.areaPlugin.update('node', data.nodeId);
-      this.externalPicked = true;
-    });
+        this.areaPlugin.update('node', event.data.nodeId);
+        this.externalPicked = true;
+      }, showDebug)
+    );
 
-    builderState.channel.bind('client-node-unlocked', (nodeId: string) => {
-      console.log('CLIENT NODE UNLOCKED');
-      delete builderState.task?.lockStatus[nodeId];
-      this.editor.getNode(nodeId)?.unlock();
-      // const nodeView = this.areaPlugin.nodeViews.get(nodeId);
-      // if (nodeView?.element) {
-      //   nodeView.element.style.transition = '';
-      // }
-      this.areaPlugin.update('node', nodeId);
-    });
+    console.log('CLIENT NODE UNLOCKED');
+    builderState.channel.bind(
+      'client-node-unlocked',
+      handleEvent((event: EventData<string>) => {
+        // console.log('CLIENT NODE UNLOCKED');
+        delete builderState.task?.lockStatus[event.data];
+        this.editor.getNode(event.data)?.unlock();
+        // const nodeView = this.areaPlugin.nodeViews.get(nodeId);
+        // if (nodeView?.element) {
+        //   nodeView.element.style.transition = '';
+        // }
+        this.areaPlugin.update('node', event.data);
+      }, showDebug)
+    );
 
-    builderState.channel.bind('client-connection-created', (connectionData: ConnProps) => {
-      console.log('CONNECTION CREATED EVENT');
-      this.externalConnectionCreated = true;
-      this.editor.addConnection(connectionData);
-    });
+    builderState.channel.bind(
+      'client-connection-created',
+      handleEvent((event: EventData<ConnProps>) => {
+        // console.log('CONNECTION CREATED EVENT');
+        this.externalConnectionCreated = true;
+        this.editor.addConnection(event.data);
+      }, showDebug)
+    );
 
-    builderState.channel.bind('client-connection-removed', (connectionId: string) => {
-      console.log('CONNECTION REMOVED EVENT');
+    builderState.channel.bind(
+      'client-connection-removed',
+      handleEvent((event: EventData<string>) => {
+        // console.log('CONNECTION REMOVED EVENT');
 
-      this.externalConnectionRemoved = true;
-      this.editor.removeConnection(connectionId);
-    });
+        this.externalConnectionRemoved = true;
+        this.editor.removeConnection(event.data);
+      }, showDebug)
+    );
 
-    builderState.channel.bind('client-control-locked', (controlId: string) => {
-      console.log('CONTROL LOCKED EVENT');
+    builderState.channel.bind(
+      'client-control-locked',
+      handleEvent((event: EventData<string>) => {
+        const controlId = event.data;
+        const node = builderState.controlToNode.get(controlId);
+        const control = node?.getControl(controlId);
+        if (node && node.lockStatus && control && control.lockStatus) {
+          node.lockStatus.lockedControlId = controlId;
+          control.lockStatus.lockedControlId = controlId;
+          this.areaPlugin.update('control', controlId);
+          this.areaPlugin.update('node', node.id);
+        }
+      }, showDebug)
+    );
 
-      const node = builderState.controlToNode.get(controlId);
-      const control = node?.getControl(controlId);
-      if (node && node.lockStatus && control && control.lockStatus) {
-        node.lockStatus.lockedControlId = controlId;
-        control.lockStatus.lockedControlId = controlId;
-        this.areaPlugin.update('control', controlId);
-        this.areaPlugin.update('node', node.id);
-      }
-    });
+    builderState.channel.bind(
+      'client-control-unlocked',
+      handleEvent((event: EventData<string>) => {
+        const controlId = event.data;
+        const node = builderState.controlToNode.get(controlId);
+        const control = node?.getControl(controlId);
+        if (node && node.lockStatus && control && control.lockStatus) {
+          node.lockStatus.lockedControlId = undefined;
+          control.lockStatus.lockedControlId = undefined;
+          this.areaPlugin.update('control', controlId);
+          this.areaPlugin.update('node', node.id);
+        }
+      }, showDebug)
+    );
 
-    builderState.channel.bind('client-control-unlocked', (controlId: string) => {
-      const node = builderState.controlToNode.get(controlId);
-      const control = node?.getControl(controlId);
-      if (node && node.lockStatus && control && control.lockStatus) {
-        node.lockStatus.lockedControlId = undefined;
-        control.lockStatus.lockedControlId = undefined;
-        this.areaPlugin.update('control', controlId);
-        this.areaPlugin.update('node', node.id);
-      }
-    });
+    builderState.channel.bind(
+      'client-control-changed',
+      handleEvent((event: EventData<{ nodeId: string; controlId: string; value: any }>) => {
+        const node = builderState.controlToNode.get(event.data.controlId);
+        if (!node) {
+          return;
+        }
+        const control = node.getControl(event.data.controlId);
+        if (control) {
+          control.setValue(...event.data.value);
+        }
+      }, showDebug)
+    );
 
-    builderState.channel.bind('client-control-changed', (data: { nodeId: string; controlId: string; value: any }) => {
-      const node = builderState.controlToNode.get(data.controlId);
-      if (!node) {
-        return;
-      }
-      const control = node.getControl(data.controlId);
-      if (control) {
-        control.setValue(...data.value);
-      }
-    });
+    builderState.channel.bind(
+      'client-training-started',
+      handleEvent((event: EventData<TaskVersionStatus>) => {
+        if (builderState.selectedVersion) {
+          builderState.selectedVersion.status = event.data;
+        }
+      }, showDebug)
+    );
 
-    builderState.channel.bind('client-training-started', (status: TaskVersionStatus) => {
-      if (builderState.selectedVersion) {
-        builderState.selectedVersion.status = status;
-      }
-    });
-
-    builderState.channel.bind('client-training-reseted', (resetedVersion?: TaskVersion) => {
-      if (resetedVersion) {
-        builderState.selectedVersion = resetedVersion;
-        builderState.versionMetrics = undefined;
-      }
-    });
+    builderState.channel.bind(
+      'client-training-reseted',
+      handleEvent((event: EventData<TaskVersion>) => {
+        if (event.data) {
+          builderState.selectedVersion = event.data;
+          builderState.versionMetrics = undefined;
+        }
+      }, showDebug)
+    );
   }
 }
