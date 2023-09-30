@@ -26,7 +26,7 @@ import { Member } from '../../../../composables/ws/usePresenceChannel';
 import { animateBetweenTwoPoints, calculatePointsBetween } from '../../../../utils/animate';
 import { addNodeAtPosition, cloneNodeAndAdd, omitSyncEvents, removeNodeAndConnections } from '../editor-utils';
 import { TaskVersion, TaskVersionStatus } from '../../../../model/ai/tasks/task';
-
+import { getEnv } from '../../../../config';
 export class SyncPlugin {
   root = new Scope<never, [Root<Schemes>]>('sync');
   area = new Scope<never, [BaseArea<Schemes>, Root<Schemes>]>('sync');
@@ -241,8 +241,9 @@ export class SyncPlugin {
     if (this.eventsRegistered || !builderState.channel) {
       return;
     }
+    console.log(typeof getEnv('WEBSOCKET_DEBUG'));
 
-    const showDebug = true;
+    const showDebug = getEnv('WEBSOCKET_DEBUG').toLowerCase() === 'true';
 
     builderState.memberRemovedCallbacks.push((leftMember: Member) => {
       if (!builderState.task?.lockStatus) {

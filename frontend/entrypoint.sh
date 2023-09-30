@@ -16,6 +16,7 @@ JSON_STRING='window.configs = { \
   "VITE_WEBSOCKET_HOST":"'"${VITE_WEBSOCKET_HOST}"'", \
   "VITE_WEBSOCKET_PORT":"'"${VITE_WEBSOCKET_PORT}"'", \
   "VITE_WEBSOCKET_PORT":"'"${VITE_WEBSOCKET_PORT}"'", \
+  "VITE_WEBSOCKET_DEBUG":"'"${VITE_WEBSOCKET_DEBUG}"'", \
 }'
 sed -i "s@// CONFIGURATIONS_PLACEHOLDER@${JSON_STRING}@" /usr/share/nginx/html/index.html
 exec "$@"
