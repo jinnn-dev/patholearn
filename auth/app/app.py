@@ -97,6 +97,8 @@ async def ws_login(body: dict, s: SessionContainer = Depends(verify_session())):
     return auth
 
 
+print(config.app_info.website_domain)
+
 app = CORSMiddleware(
     app=app,
     allow_origins=[config.app_info.website_domain],

@@ -28,6 +28,7 @@ origins = [
     "http://patholearn.de",
     "https://dev.patholearn.de",
     "https://janeee.de",
+    "http://10.168.2.83:5174",
 ]
 
 init(

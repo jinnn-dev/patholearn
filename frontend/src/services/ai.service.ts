@@ -383,7 +383,7 @@ export class AiService {
     const [_, response] = await handleError(
       ApiService.put({
         resource: '/user/metadata',
-        host: 'http://localhost:3001',
+        host: 'http://10.168.2.83:3001',
         data: {
           user_id: user_id,
           metadata: metadata

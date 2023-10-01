@@ -29,7 +29,7 @@ recipe_list = [
     emailpassword.init(sign_up_feature=emailpassword.InputSignUpFeature()),
     session.init(
         cookie_domain=os.environ.get("COOKIE_DOMAIN", ".localhost"),
-        cookie_secure=True,
+        cookie_secure=False,
         cookie_same_site="lax",
         session_expired_status_code=401,
     ),
