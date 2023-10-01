@@ -1,3 +1,3 @@
 export function getCurrentTime() {
-  return performance.timeOrigin + performance.now();
+  return Date.now();
 }
