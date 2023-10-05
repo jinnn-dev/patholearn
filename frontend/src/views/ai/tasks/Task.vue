@@ -60,6 +60,7 @@ watch(
 
 onUnmounted(() => {
   resetBuilderState();
+  builderState.channel?.unbind_all()
 });
 </script>
 <template>

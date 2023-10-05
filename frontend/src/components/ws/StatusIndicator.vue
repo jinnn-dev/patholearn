@@ -52,10 +52,10 @@ const toggleWsConnection = () => {
       <div class="relative flex justify-start items-center z-0">
         <transition name="sidebar-item">
           <div v-if="!isCollapsed" class="flex gap-4 items-center">
-            <div v-if="websocketLoading">Wird verbunden...</div>
+            <div v-if="websocketLoading">Connecting...</div>
             <div v-else>
-              <div v-if="wsIsConnected" class="text-green-500">Verbunden</div>
-              <div v-else class="text-red-500">Nicht verbunden</div>
+              <div v-if="wsIsConnected" class="text-green-500">Connected</div>
+              <div v-else class="text-red-500">Not connected</div>
             </div>
           </div>
         </transition>

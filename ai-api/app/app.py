@@ -46,7 +46,7 @@ init(
     recipe_list=[
         session.init(
             cookie_domain=os.environ.get("COOKIE_DOMAIN", ".localhost"),
-            cookie_secure=True,
+            cookie_secure=False,
             anti_csrf=os.environ.get("ANTI_CSRF", "VIA_TOKEN"),
             session_expired_status_code=401,
         ),
@@ -58,7 +58,11 @@ logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 
 app = FastAPI()
 app.include_router(api_router)
-origins = ["http://localhost:5173", "http://localhost:5174"]
+origins = [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://10.168.2.83:5174",
+]
 
 
 sentry_sdk.init(

@@ -84,22 +84,16 @@ def parse_network(
     for element in network:
         if isinstance(element, dict):
             for node_id, paths in element.items():
-                node_data = graph.nodes[node_id]["data"]
+                split_node_data = graph.nodes[node_id]["data"]
                 (
                     splitting_layer_data,
                     splitting_in_channels,
                     splitting_shape,
-                ) = parse_layer(node_data, current_in_channels, current_shape)
-                if splitting_layer_data is not None:
-                    layers += splitting_layer_data
-                    for layer in splitting_layer_data:
-                        prefix = get_torch_prefix(layer)
-                        layer_strings.append(
-                            get_layer_string(layer, node_data=node_data, prefix=prefix)
-                        )
+                ) = parse_layer(split_node_data, current_in_channels, current_shape)
 
                 path_layers = []
                 combined_in_channels = 0
+                use_split_node = False
                 for path in paths["paths"]:
                     path_in_channels = current_in_channels
                     path_shape = current_shape
@@ -113,13 +107,18 @@ def parse_network(
                     )
                     if len(path_layer) > 0:
                         path_layers.append(torch.nn.Sequential(*path_layer))
+                    else:
+                        path_layers.insert(
+                            0, torch.nn.Sequential(*splitting_layer_data)
+                        )
+                        use_split_node = True
                     seq_string = "torch.nn.Sequential(\n"
                     for layer in path_layer:
                         prefix = get_torch_prefix(layer)
                         seq_string += (
                             "    "
                             + get_layer_string(
-                                layer, node_data=node_data, prefix=prefix
+                                layer, node_data=split_node_data, prefix=prefix
                             )
                             + ",\n"
                         )
@@ -127,26 +126,37 @@ def parse_network(
 
                     combined_in_channels += new_in_channels
                 combine_node_id = paths["combine"]
-
                 combine_node_data = graph.nodes[combine_node_id]["data"]
                 if isinstance(combine_node_data, AddNode):
                     combined_layer, channels, shape = parse_add_layer(
-                        path_layers, splitting_shape
+                        path_layers,
+                        current_shape if use_split_node else splitting_shape,
                     )
                 if isinstance(combine_node_data, ConcatenateNode):
                     logger.debug(f"New shape before concat: {new_shape}")
                     combined_layer, channels, shape = parse_concatenate_layer(
-                        path_layers, splitting_shape
+                        path_layers,
+                        current_shape if use_split_node else splitting_shape,
                     )
                     logger.debug(f"New shape after concat: {shape}")
+                if not use_split_node and splitting_layer_data != None:
+                    layers += splitting_layer_data
+                    for layer in splitting_layer_data:
+                        prefix = get_torch_prefix(layer)
+                        layer_strings.append(
+                            get_layer_string(
+                                layer, node_data=split_node_data, prefix=prefix
+                            )
+                        )
                 current_in_channels = channels
                 current_shape = shape
+                logger.info(shape)
                 layers.append(combined_layer)
                 prefix = get_torch_prefix(combined_layer)
                 layer_strings.append(
                     get_layer_string(
                         combined_layer,
-                        node_data=node_data,
+                        node_data=split_node_data,
                         prefix=prefix,
                     )
                 )
@@ -155,9 +165,9 @@ def parse_network(
 
         else:
             node_id = element
-            node_data = graph.nodes[node_id]["data"]
+            split_node_data = graph.nodes[node_id]["data"]
             layer_data, current_in_channels, current_shape = parse_layer(
-                node_data, current_in_channels, current_shape
+                split_node_data, current_in_channels, current_shape
             )
 
             if layer_data is not None:
@@ -165,7 +175,9 @@ def parse_network(
                 for layer in layer_data:
                     prefix = get_torch_prefix(layer)
                     layer_strings.append(
-                        get_layer_string(layer, node_data=node_data, prefix=prefix)
+                        get_layer_string(
+                            layer, node_data=split_node_data, prefix=prefix
+                        )
                     )
 
     return layers, layer_strings, current_in_channels, current_shape

@@ -11,4 +11,5 @@ interface ImportMetaEnv {
   VITE_WEBSOCKET_APP_KEY: string;
   VITE_WEBSOCKET_HOST: string;
   VITE_WEBSOCKET_PORT: string;
+  VITE_WEBSOCKET_DEBUG: boolean;
 }

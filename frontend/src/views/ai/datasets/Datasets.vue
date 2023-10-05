@@ -4,7 +4,7 @@ import ContentContainer from '../../../components/containers/ContentContainer.vu
 </script>
 <template>
   <content-container margin="mt-8">
-    <template #header> Datensätze </template>
+    <template #header> Datasets </template>
     <template #content>
       <dataset-list></dataset-list>
     </template>
