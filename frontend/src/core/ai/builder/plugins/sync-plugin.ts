@@ -27,6 +27,7 @@ import { animateBetweenTwoPoints, calculatePointsBetween } from '../../../../uti
 import { addNodeAtPosition, cloneNodeAndAdd, omitSyncEvents, removeNodeAndConnections } from '../editor-utils';
 import { TaskVersion, TaskVersionStatus } from '../../../../model/ai/tasks/task';
 import { getEnv } from '../../../../config';
+import { getCurrentTime } from '../../../../utils/time';
 export class SyncPlugin {
   root = new Scope<never, [Root<Schemes>]>('sync');
   area = new Scope<never, [BaseArea<Schemes>, Root<Schemes>]>('sync');
@@ -241,7 +242,6 @@ export class SyncPlugin {
     if (this.eventsRegistered || !builderState.channel) {
       return;
     }
-    console.log(typeof getEnv('WEBSOCKET_DEBUG'));
 
     const showDebug = getEnv('WEBSOCKET_DEBUG').toLowerCase() === 'true';
 
@@ -260,6 +260,15 @@ export class SyncPlugin {
         }
       }
     });
+
+    builderState.channel.bind(
+      'client-response',
+      (event: EventData<EventData<any>>) => {
+        const timeDiff = getCurrentTime() - event.data.timestamp;
+        // console.log(`${event.event} took ${timeDiff}ms to receive`);
+        console.log(event.data.userId, event.data.event, event.userId, timeDiff  / 2);
+      }
+    )
 
     builderState.channel.bind(
       'client-node-dragged',
@@ -285,7 +294,7 @@ export class SyncPlugin {
           //   node.translate(point.x, point.y);
           // }
         }
-      }, showDebug)
+      }, showDebug, builderState.channel as PresenceChannel)
     );
 
     builderState.channel.bind(
@@ -299,15 +308,14 @@ export class SyncPlugin {
           parseNode(event.data.node),
           event.data.position
         );
-      }, true)
+      }, showDebug, builderState.channel as PresenceChannel)
     );
 
     builderState.channel.bind(
       'client-node-removed',
       handleEvent(async (event: EventData<string>) => {
-        // console.log('NODE REMOVED EVENT');
         await removeNodeAndConnections(this.editor, event.data);
-      }, showDebug)
+      }, showDebug, builderState.channel as PresenceChannel)
     );
 
     builderState.channel.bind(
@@ -334,10 +342,8 @@ export class SyncPlugin {
 
         this.areaPlugin.update('node', event.data.nodeId);
         this.externalPicked = true;
-      }, showDebug)
+      }, showDebug, builderState.channel as PresenceChannel)
     );
-
-    console.log('CLIENT NODE UNLOCKED');
     builderState.channel.bind(
       'client-node-unlocked',
       handleEvent((event: EventData<string>) => {
@@ -349,26 +355,26 @@ export class SyncPlugin {
         //   nodeView.element.style.transition = '';
         // }
         this.areaPlugin.update('node', event.data);
-      }, showDebug)
+      }, showDebug, builderState.channel as PresenceChannel)
     );
 
     builderState.channel.bind(
       'client-connection-created',
       handleEvent((event: EventData<ConnProps>) => {
-        // console.log('CONNECTION CREATED EVENT');
+        // // console.log('CONNECTION CREATED EVENT');
         this.externalConnectionCreated = true;
         this.editor.addConnection(event.data);
-      }, showDebug)
+      }, showDebug, builderState.channel as PresenceChannel)
     );
 
     builderState.channel.bind(
       'client-connection-removed',
       handleEvent((event: EventData<string>) => {
-        // console.log('CONNECTION REMOVED EVENT');
+        // // console.log('CONNECTION REMOVED EVENT');
 
         this.externalConnectionRemoved = true;
         this.editor.removeConnection(event.data);
-      }, showDebug)
+      }, showDebug, builderState.channel as PresenceChannel)
     );
 
     builderState.channel.bind(
@@ -383,7 +389,7 @@ export class SyncPlugin {
           this.areaPlugin.update('control', controlId);
           this.areaPlugin.update('node', node.id);
         }
-      }, showDebug)
+      }, showDebug, builderState.channel as PresenceChannel)
     );
 
     builderState.channel.bind(
@@ -398,7 +404,7 @@ export class SyncPlugin {
           this.areaPlugin.update('control', controlId);
           this.areaPlugin.update('node', node.id);
         }
-      }, showDebug)
+      }, showDebug, builderState.channel as PresenceChannel)
     );
 
     builderState.channel.bind(
@@ -412,7 +418,7 @@ export class SyncPlugin {
         if (control) {
           control.setValue(...event.data.value);
         }
-      }, showDebug)
+      }, showDebug, builderState.channel as PresenceChannel)
     );
 
     builderState.channel.bind(
@@ -421,7 +427,7 @@ export class SyncPlugin {
         if (builderState.selectedVersion) {
           builderState.selectedVersion.status = event.data;
         }
-      }, showDebug)
+      }, showDebug, builderState.channel as PresenceChannel)
     );
 
     builderState.channel.bind(
@@ -431,7 +437,7 @@ export class SyncPlugin {
           builderState.selectedVersion = event.data;
           builderState.versionMetrics = undefined;
         }
-      }, showDebug)
+      }, showDebug, builderState.channel as PresenceChannel)
     );
   }
 }

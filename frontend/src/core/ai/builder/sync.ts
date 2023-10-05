@@ -40,12 +40,12 @@ export interface EventData<T> {
   data: T;
 }
 
-export function handleEvent<T>(eventCallback: (event: EventData<T>) => void, debugLog: boolean = false) {
+export function handleEvent<T>(eventCallback: (event: EventData<T>) => void, debugLog: boolean = false, channel: PresenceChannel) {
   return (event: EventData<T>) => {
     if (debugLog) {
       const timeDiff = getCurrentTime() - event.timestamp;
       // console.log(`${event.event} took ${timeDiff}ms to receive`);
-      console.log(event.event, timeDiff);
+      // triggerEvent(channel, 'client-response', {timestamp: event.timestamp, userId: event.userId, event: event.event})
     }
     eventCallback(event);
   };

@@ -26,9 +26,7 @@ class Preprocess(object):
 
         batch = []
         for image in images:
-            loaded_image = Image.open(BytesIO(base64.b64decode(body["image"]))).convert(
-                "RGB"
-            )
+            loaded_image = Image.open(BytesIO(base64.b64decode(image))).convert("RGB")
             image_numpy = np.array(loaded_image)
             transform = A.Compose(
                 [
@@ -37,7 +35,7 @@ class Preprocess(object):
                     ToTensorV2(),
                 ]
             )
-            data = transform(image=np.array(image))["image"]
+            data = transform(image=np.array(image_numpy))["image"]
             batch.append(data.numpy())
         return np.array(batch).astype(np.float32)
 
@@ -52,14 +50,16 @@ class Preprocess(object):
         binary_masks = (data > 0.5).astype(np.uint8)
         pred = binary_masks
         encoded_images = []
+        width = pred[0][0].shape[1]
+        height = pred[0][0].shape[1]
         for mask in binary_masks:
             encoded_images.append(base64.b64encode(mask).decode())
         return dict(
             propabilities=[
                 dict(
                     mask=encoded_images,
-                    width=pred.shape[1],
-                    height=pred.shape[2],
+                    width=width,
+                    height=height,
                 )
             ]
         )

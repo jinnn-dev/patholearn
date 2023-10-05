@@ -44,9 +44,15 @@ async def get_prediction(task_id: str, version_id: str, image: UploadFile):
             color = class_map[name]["color"]
             label_to_rgb[class_map[name]["index"]] = (color[0], color[1], color[2])
 
-        image_bytes = base64.b64decode(propabilities["mask"])
+        mask_prediction = propabilities[0]
+        masks = mask_prediction["mask"]
+        mask_width = mask_prediction["width"]
+        mask_height = mask_prediction["height"]
+
+        image_bytes = base64.b64decode(masks[0])
+        logger.info(len(image_bytes))
         pred = np.frombuffer(image_bytes, dtype=np.uint8).reshape(
-            len(class_map.keys()), propabilities["width"], propabilities["height"]
+            len(class_map.keys()), mask_width, mask_height
         )
         composite_mask = np.zeros((pred.shape[1], pred.shape[2], 3), dtype=np.uint8)
         for label, color in label_to_rgb.items():

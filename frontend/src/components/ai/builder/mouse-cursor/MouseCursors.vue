@@ -2,7 +2,7 @@
 import { onMounted, ref, watch } from 'vue';
 import Icon from '../../../general/Icon.vue';
 import { builderState } from '../../../../core/ai/builder/state';
-import { MouseMoveEvent } from '../../../../core/ai/builder/sync';
+import { MouseMoveEvent, EventData } from '../../../../core/ai/builder/sync';
 
 const isSubscribed = ref(false);
 
@@ -13,16 +13,16 @@ defineProps({
 });
 
 // TODO: FIX THE MOUSER CURSOR OFFSET WHEN DIFFERENT SCALES ARE USED
-const applyMouseMove = (event: MouseMoveEvent) => {
-  userMap.value.set(event.id, {
-    x: event.x,
-    y: event.y,
-    scale: event.scale
+const applyMouseMove = (event: EventData<MouseMoveEvent>) => {
+  userMap.value.set(event.data.id, {
+    x: event.data.x,
+    y: event.data.y,
+    scale: event.data.scale
   });
 };
 
 onMounted(() => {
-  builderState.channel?.bind('client-mouse-moved', (event: MouseMoveEvent) => {
+  builderState.channel?.bind('client-mouse-moved', (event: EventData<MouseMoveEvent>) => {
     applyMouseMove(event);
   });
   isSubscribed.value = true;
@@ -32,7 +32,7 @@ watch(
   () => builderState.isConnected,
   () => {
     if (!isSubscribed.value && builderState.isConnected) {
-      builderState.channel?.bind('client-mouse-moved', (event: MouseMoveEvent) => {
+      builderState.channel?.bind('client-mouse-moved', (event: EventData<MouseMoveEvent>) => {
         applyMouseMove(event);
       });
 
