@@ -12,6 +12,20 @@ env:
   REGISTRY: hafen.noxz.dev
 
 jobs:
+  free-disk-space:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Free Disk Space (Ubuntu)
+      uses: jlumbroso/free-disk-space@main
+      with:
+        # all of these default to true, but feel free to set to
+        # "false" if necessary for your workflow
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: true
+        swap-storage: true
   learn_api:
     runs-on: ubuntu-latest
     steps:
