@@ -9,6 +9,11 @@ COPY requirements.txt /
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
+RUN rm -rf /usr/share/dotnet
+RUN rm -rf /opt/ghc
+RUN rm -rf "/usr/local/share/boost"
+RUN rm -rf "$AGENT_TOOLSDIRECTORY"
+
 COPY ./app /app
 COPY entry.sh /
 ENTRYPOINT [ "/entry.sh" ]
