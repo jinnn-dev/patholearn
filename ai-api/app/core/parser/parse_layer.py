@@ -26,6 +26,35 @@ from app.core.parser.parse_graph import (
 from app.schema.parser import ActivationFunctionModule
 
 
+class Conv2dSame(torch.nn.Conv2d):
+    def calc_same_pad(self, i: int, k: int, s: int, d: int) -> int:
+        return max((math.ceil(i / s) - 1) * s + (k - 1) * d + 1 - i, 0)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        ih, iw = x.size()[-2:]
+
+        pad_h = self.calc_same_pad(
+            i=ih, k=self.kernel_size[0], s=self.stride[0], d=self.dilation[0]
+        )
+        pad_w = self.calc_same_pad(
+            i=iw, k=self.kernel_size[1], s=self.stride[1], d=self.dilation[1]
+        )
+
+        if pad_h > 0 or pad_w > 0:
+            x = torch.nn.functional.pad(
+                x, [pad_w // 2, pad_w - pad_w // 2, pad_h // 2, pad_h - pad_h // 2]
+            )
+        return torch.nn.functional.conv2d(
+            x,
+            self.weight,
+            self.bias,
+            self.stride,
+            self.padding,
+            self.dilation,
+            self.groups,
+        )
+
+
 class Add(torch.nn.Module):
     def __init__(self, *modules):
         super().__init__()
@@ -174,13 +203,21 @@ class AdaptiveAvgPool2dCustom(torch.nn.Module):
 def parse_conv2d_layer(
     layer_data: Conv2dLayer, in_channels: int, layer_data_shape: tuple
 ) -> Tuple[List[torch.nn.Module], int, Tuple]:
-    layer = torch.nn.Conv2d(
-        in_channels=in_channels,
-        out_channels=layer_data.out_features,
-        kernel_size=layer_data.kernel_size,
-        stride=layer_data.stride,
-        padding=layer_data.padding,
-    )
+    logger.info(layer_data.padding)
+    if layer_data.padding == "same":
+        layer = Conv2dSame(
+            in_channels=in_channels,
+            out_channels=layer_data.out_features,
+            kernel_size=layer_data.kernel_size,
+            stride=layer_data.stride,
+        )
+    else:
+        layer = torch.nn.Conv2d(
+            in_channels=in_channels,
+            out_channels=layer_data.out_features,
+            kernel_size=layer_data.kernel_size,
+            stride=layer_data.stride,
+        )
 
     layer_data_shape
 
@@ -360,8 +397,8 @@ def parse_layer(
 
 
 def get_torch_layer_string(layer: torch.nn.Module):
-    if isinstance(layer, torch.nn.Conv2d):
-        return f"""Conv2d({layer.in_channels}, {layer.out_channels}, kernel_size={layer.kernel_size}, stride={layer.stride}, padding={'"same"' if layer.padding == "same" else layer.padding})"""
+    if isinstance(layer, Conv2dSame):
+        return f"""Conv2dSame(in_channels={layer.in_channels}, out_channels={layer.out_channels}, kernel_size={layer.kernel_size}, stride={layer.stride})"""
     return str(layer)
 
 
@@ -372,5 +409,6 @@ def get_torch_prefix(layer: torch.nn.Module):
         or isinstance(layer, Concatenate)
         or isinstance(layer, MaxPool2dSame)
         or isinstance(layer, AvgPool2dSame)
+        or isinstance(layer, Conv2dSame)
         else "torch.nn."
     )
