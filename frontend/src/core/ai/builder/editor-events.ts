@@ -2,7 +2,6 @@ import { IconNames } from '../../../../icons';
 import { NodeType } from './nodes/types';
 
 export type EventName =
-  | 'arrange'
   | 'center'
   | 'save'
   | 'clear'
@@ -25,7 +24,6 @@ interface EventSettingItem {
 type EventSetting = Record<EventName, EventSettingItem>;
 
 export const eventSettings: EventSetting = {
-  arrange: { icon: 'layout', label: 'Arrange', divider: true, disableOnTraining: true },
   center: { icon: 'arrow-counter-clockwise', label: 'Center' },
   save: { icon: 'floppy-disk', label: 'Save', disableOnTraining: true },
   clear: { icon: 'broom', label: 'Clear', disableOnTraining: true },
@@ -53,5 +51,8 @@ export const eventSettings: EventSetting = {
   OutputNode: { icon: 'flag', label: 'Output', divider: true, disableOnTraining: true },
   MetricNode: { icon: 'chart-line', label: 'Metric', divider: true, disableOnTraining: true },
   ResNetNode: { icon: 'image', label: 'ResNet', divider: true, disableOnTraining: true },
+  GoogleNetNode: { icon: 'image', label: 'GoogLeNet', disableOnTraining: true },
+  AlexnetNode: { icon: 'image', label: 'AlexNet',disableOnTraining: true },
+  VggNode: { icon: 'image', label: 'Vgg',disableOnTraining: true },
   SegmentationNode: { icon: 'polygon-new', label: 'Segmentation', disableOnTraining: true }
 };
