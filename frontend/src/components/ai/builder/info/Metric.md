@@ -57,7 +57,7 @@ Based on these four values, different metrics can be calculated:
 - **F1 Score**\
  Provides a single score that balances between the precision and and recall.
 $$2 \times \frac{Precision \times Recall}{Precision + Recall}$$
-<!-- $$
-Loss = Quantifies \ the \ discrepancy \ between \ the \ predicted \ values \ and \
-$$Accuracy = \frac{Number \ of \ correct \ predictions}{Total \ number \ of \ predictions}$$
-$$ -->
+
+- **Intersection Over Union (IoU)**\
+  Calculates how good the prediceted masks overlaps with the original mask
+  $$\frac{TP}{TP + FP + FN}$$ 
